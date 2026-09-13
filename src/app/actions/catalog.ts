@@ -232,6 +232,7 @@ export async function createVehiculo(
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/catalogo");
+  revalidatePath("/inventario");
   revalidatePath("/vehiculos");
   revalidatePath(`/vehiculos/${data.id}`);
 
@@ -269,6 +270,7 @@ export async function updateVehiculo(
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/catalogo");
+  revalidatePath("/inventario");
   revalidatePath("/vehiculos");
   revalidatePath(`/vehiculos/${id}`);
   revalidatePath(`/vehiculos/${id}/editar`);
@@ -299,6 +301,7 @@ export async function updateVehiclePhotos(
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/catalogo");
+  revalidatePath("/inventario");
   revalidatePath("/vehiculos");
   revalidatePath(`/vehiculos/${id}`);
   revalidatePath(`/vehiculos/${id}/editar`);
@@ -337,6 +340,7 @@ export async function createRepuesto(
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/catalogo");
+  revalidatePath("/inventario");
   revalidatePath("/repuestos");
 
   if (isModalSubmit(formData)) {
@@ -370,6 +374,7 @@ export async function updateRepuesto(
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/catalogo");
+  revalidatePath("/inventario");
   revalidatePath("/repuestos");
   revalidatePath(`/repuestos/${id}/editar`);
   redirect("/repuestos?actualizado=1");

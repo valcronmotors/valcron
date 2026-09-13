@@ -1,33 +1,29 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  Field,
-  FormError,
-  SelectInput,
-  TextArea,
-  TextInput,
-} from "@/components/form-fields";
-import { Modal } from "@/components/ui/modal";
-import { formatDop, formatUsd } from "@/lib/money";
-import {
-  catalogWhatsappHref,
-  publicVehicleTitle,
-  type PublicVehicle,
-} from "@/lib/public-catalog";
+import { useSearchParams } from "next/navigation";
+import { InventoryEmptyState } from "@/components/public/LandingInventory";
+import { VehicleCard } from "@/components/public/VehicleCard";
+import type { PublicVehicle } from "@/lib/public-catalog";
+import { createClient } from "@/utils/supabase/client";
+
+const fieldClass = "field-input";
 
 export function VehicleCatalog() {
+  const searchParams = useSearchParams();
   const [vehicles, setVehicles] = useState<PublicVehicle[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [marca, setMarca] = useState("");
-  const [ano, setAno] = useState("");
-  const [precioMin, setPrecioMin] = useState("");
-  const [precioMax, setPrecioMax] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [listing, setListing] = useState(searchParams.get("listing") ?? "");
+  const [marca, setMarca] = useState(searchParams.get("marca") ?? "");
+  const [ano, setAno] = useState(searchParams.get("ano") ?? "");
+  const [precioMin, setPrecioMin] = useState(searchParams.get("precioMin") ?? "");
+  const [precioMax, setPrecioMax] = useState(searchParams.get("precioMax") ?? "");
+  const [search, setSearch] = useState(searchParams.get("q") ?? "");
 
   useEffect(() => {
     let cancelled = false;
+
     async function load() {
       setLoading(true);
       try {
@@ -37,7 +33,7 @@ export function VehicleCatalog() {
           error?: string;
         };
         if (!response.ok) {
-          throw new Error(payload.error ?? "No se pudo cargar el inventario público.");
+          throw new Error(payload.error ?? "No se pudo cargar el inventario.");
         }
         if (!cancelled) {
           setVehicles(payload.data ?? []);
@@ -57,373 +53,197 @@ export function VehicleCatalog() {
         }
       }
     }
+
     void load();
+
+    const supabase = createClient();
+    const channel = supabase
+      .channel("inventario-vehiculos")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "vehiculos" },
+        () => {
+          void load();
+        },
+      )
+      .subscribe();
+
     return () => {
       cancelled = true;
+      void supabase.removeChannel(channel);
     };
   }, []);
 
-  const marcas = useMemo(
-    () => [...new Set(vehicles.map((vehicle) => vehicle.marca))].sort(),
-    [vehicles],
-  );
-  const anos = useMemo(
-    () => [...new Set(vehicles.map((vehicle) => vehicle.ano))].sort((a, b) => b - a),
-    [vehicles],
-  );
+  useEffect(() => {
+    setListing(searchParams.get("listing") ?? "");
+    setMarca(searchParams.get("marca") ?? "");
+    setAno(searchParams.get("ano") ?? "");
+    setPrecioMin(searchParams.get("precioMin") ?? "");
+    setPrecioMax(searchParams.get("precioMax") ?? "");
+    setSearch(searchParams.get("q") ?? "");
+  }, [searchParams]);
+
+  const marcas = useMemo(() => {
+    const values = new Set(vehicles.map((vehicle) => vehicle.marca));
+    if (marca) {
+      values.add(marca);
+    }
+    return [...values].sort();
+  }, [marca, vehicles]);
+  const anos = useMemo(() => {
+    const values = new Set(vehicles.map((vehicle) => vehicle.ano));
+    if (ano) {
+      values.add(Number(ano));
+    }
+    return [...values].filter((value) => Number.isFinite(value)).sort((a, b) => b - a);
+  }, [ano, vehicles]);
+
   const visible = useMemo(() => {
-    const min = Number(precioMin);
-    const max = Number(precioMax);
+    const needle = search.trim().toLowerCase();
+    const minUsd = Number(precioMin);
+    const maxUsd = Number(precioMax);
+
     return vehicles.filter((vehicle) => {
+      if (listing === "dealer" && vehicle.listingKind !== "dealer") {
+        return false;
+      }
+      if (listing === "auction" && vehicle.listingKind !== "auction") {
+        return false;
+      }
       if (marca && vehicle.marca !== marca) {
         return false;
       }
       if (ano && String(vehicle.ano) !== ano) {
         return false;
       }
-      if (Number.isFinite(min) && min > 0 && vehicle.precioVentaDop < min) {
+      if (Number.isFinite(minUsd) && minUsd > 0 && vehicle.precioVentaUsd < minUsd) {
         return false;
       }
-      if (Number.isFinite(max) && max > 0 && vehicle.precioVentaDop > max) {
+      if (Number.isFinite(maxUsd) && maxUsd > 0 && vehicle.precioVentaUsd > maxUsd) {
         return false;
       }
-      return true;
+      if (!needle) {
+        return true;
+      }
+      return [vehicle.marca, vehicle.modelo, vehicle.trim ?? "", vehicle.vin, String(vehicle.ano)]
+        .join(" ")
+        .toLowerCase()
+        .includes(needle);
     });
-  }, [ano, marca, precioMax, precioMin, vehicles]);
-  const selected = vehicles.find((vehicle) => vehicle.id === selectedId) ?? null;
+  }, [ano, listing, marca, precioMax, precioMin, search, vehicles]);
 
   return (
-    <div className="grid gap-6">
-      <FormError message={error} />
-      <div className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 md:grid-cols-4">
-        <Field label="Marca">
-          <SelectInput value={marca} onChange={(event) => setMarca(event.target.value)}>
+    <div className="grid gap-8">
+      {error ? (
+        <p className="rounded-2xl border border-line bg-white px-5 py-4 text-sm text-muted">
+          {error}
+        </p>
+      ) : null}
+
+      <div className="grid gap-4 rounded-2xl border border-line bg-surface p-5 md:grid-cols-2 xl:grid-cols-3">
+        <label className="block text-sm text-muted md:col-span-2 xl:col-span-3">
+          Búsqueda por palabra clave o VIN
+          <input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Marca, modelo o VIN de 17 caracteres"
+            className={fieldClass}
+          />
+        </label>
+        <label className="block text-sm text-muted">
+          Estado
+          <select
+            value={listing}
+            onChange={(event) => setListing(event.target.value)}
+            className={fieldClass}
+          >
+            <option value="">Todos</option>
+            <option value="dealer">Disponible en RD</option>
+            <option value="auction">En Subasta Copart / Manheim</option>
+          </select>
+        </label>
+        <label className="block text-sm text-muted">
+          Marca
+          <select value={marca} onChange={(event) => setMarca(event.target.value)} className={fieldClass}>
             <option value="">Todas</option>
             {marcas.map((option) => (
               <option key={option} value={option}>
                 {option}
               </option>
             ))}
-          </SelectInput>
-        </Field>
-        <Field label="Año">
-          <SelectInput value={ano} onChange={(event) => setAno(event.target.value)}>
+          </select>
+        </label>
+        <label className="block text-sm text-muted">
+          Año
+          <select value={ano} onChange={(event) => setAno(event.target.value)} className={fieldClass}>
             <option value="">Todos</option>
             {anos.map((option) => (
               <option key={option} value={option}>
                 {option}
               </option>
             ))}
-          </SelectInput>
-        </Field>
-        <Field label="Precio mínimo (DOP)">
-          <TextInput
+          </select>
+        </label>
+        <label className="block text-sm text-muted">
+          Precio mínimo (USD)
+          <input
             type="number"
             min={0}
             value={precioMin}
             onChange={(event) => setPrecioMin(event.target.value)}
             placeholder="0"
+            className={fieldClass}
           />
-        </Field>
-        <Field label="Precio máximo (DOP)">
-          <TextInput
+        </label>
+        <label className="block text-sm text-muted">
+          Precio máximo (USD)
+          <input
             type="number"
             min={0}
             value={precioMax}
             onChange={(event) => setPrecioMax(event.target.value)}
             placeholder="Sin límite"
+            className={fieldClass}
           />
-        </Field>
+        </label>
+        <div className="flex items-end">
+          <button
+            type="button"
+            onClick={() => {
+              setListing("");
+              setMarca("");
+              setAno("");
+              setPrecioMin("");
+              setPrecioMax("");
+              setSearch("");
+            }}
+            className="h-11 w-full rounded-lg border border-line text-sm text-foreground transition hover:border-accent hover:text-accent"
+          >
+            Limpiar filtros
+          </button>
+        </div>
       </div>
 
+      <p className="text-sm text-muted">
+        {loading ? "Sincronizando inventario..." : `${visible.length} unidad${visible.length === 1 ? "" : "es"}`}
+      </p>
+
       {loading ? (
-        <p className="rounded-2xl border border-white/10 px-6 py-12 text-center text-sm text-[#8A909A]">
-          Sincronizando inventario público...
+        <p className="rounded-2xl border border-line px-6 py-12 text-center text-sm text-muted">
+          Sincronizando inventario...
         </p>
       ) : visible.length === 0 ? (
-        <div className="rounded-[2rem] border border-[#D4AF37]/30 bg-[#12141C]/80 px-6 py-12 text-center">
-          <p className="text-sm text-[#F4F5F7]">
-            No hay vehículos en stock en este momento. ¡Contáctanos para importar el tuyo
-            por encargo!
-          </p>
-        </div>
+        <InventoryEmptyState
+          title="Sin coincidencias"
+          copy="Ajusta los filtros o escríbenos por WhatsApp para localizar o importar la unidad que buscas."
+        />
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {visible.map((vehicle) => (
-            <CatalogVehicleCard
-              key={vehicle.id}
-              vehicle={vehicle}
-              onOpen={() => setSelectedId(vehicle.id)}
-            />
+            <VehicleCard key={vehicle.id} vehicle={vehicle} />
           ))}
         </div>
       )}
-
-      <VehicleDetailModal
-        vehicle={selected}
-        onClose={() => setSelectedId(null)}
-      />
-    </div>
-  );
-}
-
-function CatalogVehicleCard({
-  vehicle,
-  onOpen,
-}: {
-  vehicle: PublicVehicle;
-  onOpen: () => void;
-}) {
-  const cover = vehicle.fotosUrls[0];
-  const whatsapp = catalogWhatsappHref(vehicle);
-
-  return (
-    <article className="flex flex-col overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#12141C] shadow-lg shadow-black/20 transition hover:border-[#D4AF37]/50">
-      <button type="button" onClick={onOpen} className="relative block aspect-[16/10] bg-[#0B0C10]">
-        {cover ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={cover}
-            alt={publicVehicleTitle(vehicle)}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <span className="flex h-full items-center justify-center text-sm text-[#8A909A]">
-            Sin foto
-          </span>
-        )}
-      </button>
-      <div className="flex flex-1 flex-col gap-3 p-5">
-        <div>
-          <h2 className="font-display text-xl text-[#F4F5F7]">
-            {publicVehicleTitle(vehicle)}
-          </h2>
-          <p className="mt-1 text-xs text-[#8A909A]">{vehicle.ubicacion}</p>
-        </div>
-        <p className="text-xl font-semibold text-[#FFD700]">
-          {formatUsd(vehicle.precioVentaUsd)}
-        </p>
-        <p className="text-sm text-[#8A909A]">{formatDop(vehicle.precioVentaDop)}</p>
-        <div className="mt-auto flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={onOpen}
-            className="inline-flex h-10 items-center rounded-full bg-white/5 px-4 text-sm font-semibold text-[#F4F5F7] ring-1 ring-white/10 hover:bg-white/10"
-          >
-            Ver detalle
-          </button>
-          {whatsapp ? (
-            <a
-              href={whatsapp}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex h-10 items-center rounded-full bg-[#FF5500] px-4 text-sm font-semibold text-white hover:bg-[#ff6a1a]"
-            >
-              Consultar por WhatsApp
-            </a>
-          ) : null}
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function VehicleDetailModal({
-  vehicle,
-  onClose,
-}: {
-  vehicle: PublicVehicle | null;
-  onClose: () => void;
-}) {
-  const [index, setIndex] = useState(0);
-  const [pending, setPending] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setIndex(0);
-    setSent(false);
-    setError(null);
-  }, [vehicle?.id]);
-
-  if (!vehicle) {
-    return null;
-  }
-
-  const currentVehicle = vehicle;
-  const photos = currentVehicle.fotosUrls;
-  const current = photos[index] ?? photos[0] ?? null;
-  const whatsapp = catalogWhatsappHref(currentVehicle);
-
-  async function handleLead(formData: FormData) {
-    setPending(true);
-    setError(null);
-    try {
-      const response = await fetch("/api/public/lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre: formData.get("nombre"),
-          telefono: formData.get("telefono"),
-          email: formData.get("email"),
-          mensaje: formData.get("mensaje"),
-          vehiculoId: currentVehicle.id,
-          vin: currentVehicle.vin,
-        }),
-      });
-      const payload = (await response.json()) as { error?: string };
-      if (!response.ok) {
-        setError(payload.error ?? "No se pudo enviar la solicitud.");
-        return;
-      }
-      setSent(true);
-    } catch {
-      setError("No se pudo enviar la solicitud. Intenta de nuevo.");
-    } finally {
-      setPending(false);
-    }
-  }
-
-  return (
-    <Modal
-      open
-      size="xl"
-      title={publicVehicleTitle(currentVehicle)}
-      subtitle={`${formatDop(currentVehicle.precioVentaDop)} · ${formatUsd(currentVehicle.precioVentaUsd)} · VIN ${currentVehicle.vin}`}
-      onClose={onClose}
-    >
-      <div className="grid gap-6">
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#07111f]">
-          <div className="relative aspect-[16/9]">
-            {current ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={current}
-                alt={publicVehicleTitle(currentVehicle)}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center text-sm text-slate-500">
-                Sin fotos públicas
-              </div>
-            )}
-            {photos.length > 1 ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setIndex((currentIndex) => (currentIndex - 1 + photos.length) % photos.length)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-slate-950/70 px-3 py-2 text-sm text-white"
-                >
-                  Anterior
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIndex((currentIndex) => (currentIndex + 1) % photos.length)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-slate-950/70 px-3 py-2 text-sm text-white"
-                >
-                  Siguiente
-                </button>
-              </>
-            ) : null}
-          </div>
-          {photos.length > 1 ? (
-            <div className="flex gap-2 overflow-x-auto p-3">
-              {photos.map((url, photoIndex) => (
-                <button
-                  key={url}
-                  type="button"
-                  onClick={() => setIndex(photoIndex)}
-                  className={`h-16 w-24 shrink-0 overflow-hidden rounded-xl ring-2 ${
-                    photoIndex === index ? "ring-cyan-300" : "ring-transparent"
-                  }`}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={url} alt="" className="h-full w-full object-cover" />
-                </button>
-              ))}
-            </div>
-          ) : null}
-        </div>
-
-        <dl className="grid gap-3 rounded-2xl border border-white/10 p-4 sm:grid-cols-2">
-          <Spec label="Marca" value={currentVehicle.especificaciones.marca} />
-          <Spec label="Modelo" value={currentVehicle.especificaciones.modelo} />
-          <Spec label="Año" value={String(currentVehicle.especificaciones.ano)} />
-          <Spec
-            label="Trim / Versión"
-            value={currentVehicle.especificaciones.version || "No especificada"}
-          />
-          <Spec label="VIN" value={currentVehicle.especificaciones.vin} />
-          <Spec
-            label="Precio de venta"
-            value={`${formatDop(currentVehicle.precioVentaDop)} · ${formatUsd(currentVehicle.precioVentaUsd)}`}
-          />
-        </dl>
-
-        {whatsapp ? (
-          <a
-            href={whatsapp}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex h-12 items-center justify-center rounded-full bg-emerald-400 px-6 text-sm font-semibold text-slate-950 hover:bg-emerald-300"
-          >
-            Consultar por WhatsApp
-          </a>
-        ) : null}
-
-        <form action={handleLead} className="grid gap-4 rounded-2xl border border-white/10 p-5">
-          <div>
-            <h3 className="text-sm font-semibold text-white">Solicitar información</h3>
-            <p className="mt-1 text-xs text-slate-400">
-              El formulario entra al CRM como lead Web vinculado a este VIN.
-            </p>
-          </div>
-          <FormError message={error} />
-          {sent ? (
-            <p className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
-              Recibimos tu solicitud. Un asesor te contactará en breve.
-            </p>
-          ) : (
-            <>
-              <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Nombre">
-                  <TextInput name="nombre" required placeholder="Tu nombre" />
-                </Field>
-                <Field label="Teléfono">
-                  <TextInput name="telefono" placeholder="809-000-0000" />
-                </Field>
-                <Field label="Correo">
-                  <TextInput name="email" type="email" placeholder="correo@cliente.com" />
-                </Field>
-              </div>
-              <Field label="Mensaje">
-                <TextArea
-                  name="mensaje"
-                  placeholder="Cuéntanos horario de visita o forma de pago"
-                />
-              </Field>
-              <button
-                type="submit"
-                disabled={pending}
-                className="inline-flex h-11 items-center justify-center rounded-full bg-cyan-400 px-5 text-sm font-semibold text-slate-950 hover:bg-cyan-300 disabled:opacity-60"
-              >
-                {pending ? "Enviando..." : "Enviar al CRM"}
-              </button>
-            </>
-          )}
-        </form>
-      </div>
-    </Modal>
-  );
-}
-
-function Spec({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-        {label}
-      </dt>
-      <dd className="mt-1 text-sm text-white">{value}</dd>
     </div>
   );
 }

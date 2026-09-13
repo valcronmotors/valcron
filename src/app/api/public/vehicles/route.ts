@@ -19,6 +19,9 @@ export function OPTIONS(request: Request) {
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const marca = url.searchParams.get("marca")?.trim() ?? "";
+  const listing = url.searchParams.get("listing")?.trim() ?? "";
+  const search = (url.searchParams.get("q") ?? url.searchParams.get("vin") ?? "").trim();
+  const ano = Number(url.searchParams.get("ano") ?? "");
   const anoMin = Number(url.searchParams.get("anoMin") ?? "");
   const anoMax = Number(url.searchParams.get("anoMax") ?? "");
   const precioMin = Number(url.searchParams.get("precioMin") ?? "");
@@ -49,6 +52,9 @@ export async function GET(request: Request) {
   if (marca) {
     query = query.ilike("marca", marca);
   }
+  if (Number.isFinite(ano) && ano > 0) {
+    query = query.eq("ano", ano);
+  }
   if (Number.isFinite(anoMin) && anoMin > 0) {
     query = query.gte("ano", anoMin);
   }
@@ -67,13 +73,25 @@ export async function GET(request: Request) {
     return publicJson(request, { error: error.message }, 500);
   }
 
-  return publicJson(
-    request,
-    {
-      data: ((data ?? []) as PublicVehicleRow[])
-        .filter(isPublicVehicleListing)
-        .map(toPublicVehicle),
-    },
-    200,
-  );
+  const needle = search.toLowerCase();
+  const vehicles = ((data ?? []) as PublicVehicleRow[])
+    .filter(isPublicVehicleListing)
+    .map(toPublicVehicle)
+    .filter((vehicle) => {
+      if (listing === "dealer" && vehicle.listingKind !== "dealer") {
+        return false;
+      }
+      if ((listing === "auction" || listing === "subasta") && vehicle.listingKind !== "auction") {
+        return false;
+      }
+      if (!needle) {
+        return true;
+      }
+      return [vehicle.marca, vehicle.modelo, vehicle.trim ?? "", vehicle.vin, String(vehicle.ano)]
+        .join(" ")
+        .toLowerCase()
+        .includes(needle);
+    });
+
+  return publicJson(request, { data: vehicles }, 200);
 }

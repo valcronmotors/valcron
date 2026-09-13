@@ -25,24 +25,21 @@ export function FaqAccordion() {
   const [open, setOpen] = useState(0);
 
   return (
-    <div className="grid gap-3">
+    <div className="divide-y divide-white/10 border-y border-white/10">
       {FAQS.map((item, index) => {
         const active = open === index;
         return (
-          <div
-            key={item.q}
-            className="rounded-2xl border border-white/10 bg-[#12141C]/70 backdrop-blur-xl transition hover:border-[#D4AF37]/50"
-          >
+          <div key={item.q}>
             <button
               type="button"
-              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+              className="flex w-full items-center justify-between gap-4 py-5 text-left"
               onClick={() => setOpen(active ? -1 : index)}
             >
-              <span className="text-sm font-semibold text-[#F4F5F7]">{item.q}</span>
-              <span className="text-[#D4AF37]">{active ? "–" : "+"}</span>
+              <span className="text-sm font-medium text-white">{item.q}</span>
+              <span className="text-accent">{active ? "–" : "+"}</span>
             </button>
             {active ? (
-              <p className="px-5 pb-5 text-sm leading-7 text-[#8A909A]">{item.a}</p>
+              <p className="pb-5 text-sm leading-relaxed text-white/60">{item.a}</p>
             ) : null}
           </div>
         );

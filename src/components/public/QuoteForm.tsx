@@ -1,10 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Field, FormError, TextArea, TextInput } from "@/components/form-fields";
 import { SITE } from "@/lib/site";
 
-export function QuoteForm() {
+const fieldClass = "field-input";
+
+export function QuoteForm({
+  submitLabel = "Solicitar asesoría",
+  showVehicleInterest = false,
+}: {
+  submitLabel?: string;
+  showVehicleInterest?: boolean;
+}) {
   const [pending, setPending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -13,6 +20,12 @@ export function QuoteForm() {
     setPending(true);
     setError(null);
     try {
+      const vehiculoInteres = String(formData.get("vehiculoInteres") ?? "").trim();
+      const mensajeBase = String(formData.get("mensaje") ?? "").trim();
+      const mensaje = [vehiculoInteres ? `Vehículo de interés: ${vehiculoInteres}` : null, mensajeBase]
+        .filter(Boolean)
+        .join("\n");
+
       const response = await fetch("/api/public/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -21,7 +34,7 @@ export function QuoteForm() {
           telefono: formData.get("telefono"),
           email: formData.get("email"),
           vin: formData.get("vin"),
-          mensaje: formData.get("mensaje"),
+          mensaje,
         }),
       });
       const payload = (await response.json()) as { error?: string };
@@ -40,41 +53,67 @@ export function QuoteForm() {
   return (
     <form
       action={handleSubmit}
-      className="grid gap-4 rounded-[2rem] border border-white/10 bg-[#12141C]/80 p-6 backdrop-blur-xl"
+      className="grid gap-4 rounded-2xl border border-line bg-white p-6 shadow-[0_12px_40px_rgba(11,12,16,0.06)]"
     >
-      <FormError message={error} />
+      {error ? (
+        <p className="rounded-lg border border-line px-4 py-3 text-sm text-muted">
+          {error}
+        </p>
+      ) : null}
       {sent ? (
-        <p className="rounded-xl border border-[#D4AF37]/30 bg-[#D4AF37]/10 px-4 py-3 text-sm text-[#FFD700]">
+        <p className="rounded-lg border border-accent/40 px-4 py-3 text-sm text-accent">
           Recibimos tu solicitud. Un asesor de {SITE.shortName} te contactará en breve.
         </p>
       ) : (
         <>
           <div className="grid gap-4 md:grid-cols-2">
-            <Field label="Nombre">
-              <TextInput name="nombre" required placeholder="Tu nombre" />
-            </Field>
-            <Field label="Teléfono">
-              <TextInput name="telefono" placeholder={SITE.phoneOffice} />
-            </Field>
-            <Field label="Correo">
-              <TextInput name="email" type="email" placeholder={SITE.email} />
-            </Field>
-            <Field label="VIN (opcional)">
-              <TextInput name="vin" maxLength={17} placeholder="17 caracteres" />
-            </Field>
+            <label className="block text-sm text-muted">
+              Nombre
+              <input name="nombre" required placeholder="Tu nombre" className={fieldClass} />
+            </label>
+            <label className="block text-sm text-muted">
+              Teléfono
+              <input name="telefono" placeholder={SITE.phoneOffice} className={fieldClass} />
+            </label>
+            <label className="block text-sm text-muted md:col-span-2">
+              Correo
+              <input
+                name="email"
+                type="email"
+                placeholder={SITE.email}
+                className={fieldClass}
+              />
+            </label>
+            {showVehicleInterest ? (
+              <label className="block text-sm text-muted md:col-span-2">
+                Vehículo de interés
+                <input
+                  name="vehiculoInteres"
+                  placeholder="Marca, modelo, año o VIN"
+                  className={fieldClass}
+                />
+              </label>
+            ) : (
+              <label className="block text-sm text-muted md:col-span-2">
+                VIN (opcional)
+                <input name="vin" maxLength={17} placeholder="17 caracteres" className={fieldClass} />
+              </label>
+            )}
           </div>
-          <Field label="Mensaje">
-            <TextArea
+          <label className="block text-sm text-muted">
+            Mensaje
+            <textarea
               name="mensaje"
               placeholder="Cuéntanos si buscas venta local, financiamiento o importación por encargo"
+              className="mt-2 min-h-24 w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-accent"
             />
-          </Field>
+          </label>
           <button
             type="submit"
             disabled={pending}
-            className="inline-flex h-12 items-center justify-center rounded-full bg-[#FF5500] px-6 text-sm font-semibold text-white transition hover:bg-[#ff6a1a] disabled:opacity-60"
+            className="btn-primary disabled:opacity-60"
           >
-            {pending ? "Enviando..." : "Solicitar asesoría"}
+            {pending ? "Enviando..." : submitLabel}
           </button>
         </>
       )}

@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { isPublicPath, safeNextPath } from "@/lib/site";
+import { isAdminHostname } from "@/lib/hosts";
+import { isAdminPublicPath, isPublicPath, safeNextPath } from "@/lib/site";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -36,8 +37,13 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
   const pathname = request.nextUrl.pathname;
+  const adminHost = isAdminHostname(request.headers.get("host"));
+  const effectivePath = adminHost && pathname === "/" ? "/admin" : pathname;
+  const allowedWithoutAuth = adminHost
+    ? isAdminPublicPath(effectivePath)
+    : isPublicPath(pathname);
 
-  if (!claims && !isPublicPath(pathname)) {
+  if (!claims && !allowedWithoutAuth) {
     if (pathname.startsWith("/api/")) {
       return copyCookies(
         NextResponse.json({ error: "No autorizado." }, { status: 401 }),
@@ -48,8 +54,8 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.search = "";
-    if (pathname !== "/login") {
-      url.searchParams.set("next", `${pathname}${request.nextUrl.search}`);
+    if (effectivePath !== "/login") {
+      url.searchParams.set("next", `${effectivePath}${request.nextUrl.search}`);
     }
     return copyCookies(NextResponse.redirect(url), supabaseResponse);
   }
@@ -60,6 +66,12 @@ export async function updateSession(request: NextRequest) {
     url.pathname = next;
     url.search = "";
     return copyCookies(NextResponse.redirect(url), supabaseResponse);
+  }
+
+  if (adminHost && pathname === "/") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/admin";
+    return copyCookies(NextResponse.rewrite(url), supabaseResponse);
   }
 
   return supabaseResponse;

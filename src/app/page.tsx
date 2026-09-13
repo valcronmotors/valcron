@@ -1,22 +1,17 @@
 import type { Metadata } from "next";
-import { FaqAccordion } from "@/components/public/FaqAccordion";
-import { LandingInventory } from "@/components/public/LandingInventory";
-import { QuoteForm } from "@/components/public/QuoteForm";
-import { PublicShell } from "@/components/public/SiteChrome";
+import Link from "next/link";
+import { FeaturedInventory } from "@/components/public/FeaturedInventory";
+import { HeroShowcase } from "@/components/public/HeroShowcase";
+import { HomeFinance } from "@/components/public/HomeFinance";
+import { ImportJourney } from "@/components/public/ImportJourney";
 import { loadPublicVehicles } from "@/lib/public-inventory";
-import {
-  SITE,
-  autoDealerJsonLd,
-  officeTelHref,
-  whatsappHref,
-} from "@/lib/site";
+import { SITE, autoDealerJsonLd, whatsappHref } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Valcron Motors Group | Dealer, Financiamiento e Importación Directa en RD",
+    absolute: "Valcron Motors Group | Dealer, Importación y Financiamiento en RD",
   },
-  description:
-    "Vendemos, importamos y financiamos vehículos de marcas confiables en República Dominicana. Asesoría Ley 103-13 y subastas Copart/Manheim.",
+  description: SITE.valueProposition,
   keywords: [
     "dealer Santo Domingo Este",
     "importacion de vehiculos RD",
@@ -28,56 +23,17 @@ export const metadata: Metadata = {
     locale: "es_DO",
     type: "website",
     siteName: SITE.name,
-    title: "Valcron Motors Group | Dealer, Financiamiento e Importación Directa en RD",
-    description:
-      "Vendemos, importamos y financiamos vehículos de marcas confiables en República Dominicana. Asesoría Ley 103-13 y subastas Copart/Manheim.",
+    title: "Valcron Motors Group | Dealer, Importación y Financiamiento en RD",
+    description: SITE.valueProposition,
     url: SITE.url,
   },
 };
 
-const TRUST_BADGES = [
-  "+30 Vehículos en Stock y Subastas",
-  "100% Asesoría Transparente",
-  "Expertos Ley 103-13 Incentivo Eco",
-  "Garantía y Diagnóstico Técnico",
-];
-
-const IMPORT_STEPS = [
-  {
-    title: "Selección en Copart / Manheim",
-    copy: "Identificamos la unidad según tu presupuesto, historial y uso en República Dominicana.",
-  },
-  {
-    title: "Puja e inspección",
-    copy: "Pujamos con licencia de dealer e inspeccionamos daños, motor y documentación antes de comprometer capital.",
-  },
-  {
-    title: "Embarque marítimo",
-    copy: "Coordinamos el flete, seguro y tracking desde el puerto de origen hasta RD.",
-  },
-  {
-    title: "Despacho aduanal en RD",
-    copy: "Gestionamos DGA, impuestos y entrega en Santo Domingo Este, con costos claros de principio a fin.",
-  },
-];
-
-const SERVICES = [
-  {
-    title: "Importación por encargo",
-    copy: "Traemos el modelo que buscas desde subastas de EE. UU. con un expediente de costos y tiempos.",
-  },
-  {
-    title: "Financiamiento flexible",
-    copy: "Estructuramos opciones con banca local para venta en RD o unidades importadas a tu nombre.",
-  },
-  {
-    title: "Asesoría Ley 103-13",
-    copy: "Evaluamos si tu vehículo califica al incentivo eco y preparamos la documentación correspondiente.",
-  },
-  {
-    title: "Inspección y logística",
-    copy: "Diagnóstico técnico, título, transporte interno y entrega con acompañamiento personalizado.",
-  },
+const METRICS = [
+  { value: "+30", label: "Vehículos en Stock y Subastas" },
+  { value: "Copart & Manheim", label: "Importación Directa desde EE. UU." },
+  { value: "Ley 103-13", label: "Asesoría de Exoneración Eco" },
+  { value: "Certificado", label: "Garantía Mecánica y Diagnóstico" },
 ];
 
 const TESTIMONIALS = [
@@ -95,233 +51,160 @@ const TESTIMONIALS = [
   },
   {
     name: "Patricia G.",
-    place: "Bávaro",
+    place: "Santiago",
     quote:
       "Me orientaron con Ley 103-13 y encontré una unidad eco con un proceso ordenado de principio a fin.",
   },
 ];
 
+const WARRANTY = [
+  { title: "Motor", copy: "Cobertura de diagnóstico y respaldo mecánico en unidades entregadas por el dealer." },
+  { title: "Transmisión", copy: "Revisión de operación y criterio técnico antes de publicar o entregar la unidad." },
+  { title: "Chasis", copy: "Certificación visual y documental del chasis, título e historial de importación." },
+];
+
 export default async function Home() {
   const inventory = await loadPublicVehicles();
   const gallery = inventory.data
-    .flatMap((vehicle) =>
-      vehicle.fotosUrls.slice(0, 2).map((src) => ({
+    .flatMap((vehicle, index) =>
+      vehicle.fotosUrls.slice(0, 2).map((src, photoIndex) => ({
         src,
         alt: `${vehicle.marca} ${vehicle.modelo} ${vehicle.ano}`,
+        city: (index + photoIndex) % 2 === 0 ? "Santo Domingo" : "Santiago",
       })),
     )
     .slice(0, 6);
 
   return (
-    <PublicShell>
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(autoDealerJsonLd()) }}
       />
       <main>
-        <section className="relative overflow-hidden">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(212,175,55,0.16),_transparent_36%),radial-gradient(circle_at_bottom_left,_rgba(255,85,0,0.12),_transparent_32%)]" />
-          <div className="relative mx-auto grid max-w-7xl gap-10 px-5 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:px-8 lg:py-28">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[#D4AF37]">
-                {SITE.name}
-              </p>
-              <h1 className="mt-5 font-display text-4xl leading-tight text-[#F4F5F7] sm:text-6xl">
-                {SITE.heroTitle}
-              </h1>
-              <p className="mt-6 max-w-2xl text-base leading-8 text-[#8A909A] sm:text-lg">
-                {SITE.heroSubtitle}
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <a
-                  href="#inventario"
-                  className="inline-flex h-12 items-center rounded-full bg-[#D4AF37] px-6 text-sm font-semibold text-[#0B0C10] transition hover:bg-[#FFD700]"
-                >
-                  Ver Inventario
-                </a>
-                <a
-                  href={whatsappHref(
-                    "Hola, quiero consultar venta local, financiamiento o importación directa con Valcron Motors.",
-                  )}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex h-12 items-center rounded-full bg-[#FF5500] px-6 text-sm font-semibold text-white shadow-[0_0_24px_rgba(255,85,0,0.35)] transition hover:bg-[#ff6a1a]"
-                >
-                  Consultar WhatsApp
-                </a>
-              </div>
-            </div>
-            <div className="grid gap-4 rounded-[2rem] border border-white/10 bg-[#12141C]/70 p-6 backdrop-blur-xl">
-              <p className="text-sm text-[#8A909A]">{SITE.address.full}</p>
-              <p className="text-sm text-[#F4F5F7]">
-                Oficina comercial{" "}
-                <a href={officeTelHref()} className="text-[#FFD700]">
-                  {SITE.phoneOffice}
-                </a>
-              </p>
-              <p className="text-sm text-[#F4F5F7]">
-                WhatsApp{" "}
-                <a href={whatsappHref()} className="text-[#FFD700]">
-                  {SITE.whatsapp}
-                </a>
-              </p>
-              <p className="text-sm text-[#F4F5F7]">
-                Correo{" "}
-                <a href={`mailto:${SITE.email}`} className="text-[#FFD700]">
-                  {SITE.email}
-                </a>
-              </p>
-            </div>
-          </div>
-        </section>
+        <HeroShowcase vehicles={inventory.data} />
 
-        <section className="border-y border-white/10 bg-[#12141C]">
-          <div className="mx-auto grid max-w-7xl gap-4 px-5 py-10 sm:grid-cols-2 lg:grid-cols-4 lg:px-8">
-            {TRUST_BADGES.map((badge) => (
-              <div
-                key={badge}
-                className="rounded-2xl border border-white/10 bg-white/5 px-5 py-5 text-sm font-medium text-[#F4F5F7] backdrop-blur-xl"
-              >
-                {badge}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <LandingInventory initialVehicles={inventory.data} error={inventory.error} />
-
-        <section id="importacion" className="scroll-mt-24 border-t border-white/10 bg-[#12141C]/40">
-          <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#D4AF37]">
-              Dealer license
-            </p>
-            <h2 className="mt-3 font-display text-4xl text-[#F4F5F7]">
-              Subastas e importación directa
-            </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#8A909A]">
-              Operamos Copart y Manheim con un proceso de dealer: selección, puja, inspección,
-              embarque marítimo y despacho aduanal en República Dominicana.
-            </p>
-            <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              {IMPORT_STEPS.map((step, index) => (
-                <article
-                  key={step.title}
-                  className="rounded-[1.75rem] border border-white/10 bg-[#0B0C10]/70 p-6 backdrop-blur-xl transition hover:border-[#D4AF37]/50"
-                >
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#FF5500]">
-                    0{index + 1}
-                  </p>
-                  <h3 className="mt-3 font-display text-xl text-[#F4F5F7]">{step.title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-[#8A909A]">{step.copy}</p>
+        <section className="bg-white pt-28">
+          <div className="mx-auto max-w-7xl px-5 lg:px-8">
+            <div className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line shadow-[0_16px_48px_rgba(11,12,16,0.05)] sm:grid-cols-2 lg:grid-cols-4">
+              {METRICS.map((metric) => (
+                <article key={metric.label} className="bg-white px-6 py-8">
+                  <p className="font-display text-2xl text-accent sm:text-3xl">{metric.value}</p>
+                  <p className="mt-2 text-sm leading-6 text-muted">{metric.label}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="financiamiento" className="scroll-mt-24 border-t border-white/10">
-          <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#D4AF37]">
-              Servicios
-            </p>
-            <h2 className="mt-3 font-display text-4xl text-[#F4F5F7]">
-              Financiamiento y acompañamiento
-            </h2>
-            <div className="mt-10 grid gap-4 md:grid-cols-2">
-              {SERVICES.map((service) => (
-                <article
-                  key={service.title}
-                  className="rounded-[1.75rem] border border-white/10 bg-[#12141C]/80 p-6 backdrop-blur-xl transition hover:border-[#D4AF37]/50"
-                >
-                  <h3 className="font-display text-2xl text-[#F4F5F7]">{service.title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-[#8A909A]">{service.copy}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
+        <FeaturedInventory initialVehicles={inventory.data} error={inventory.error} />
+        <ImportJourney />
+        <HomeFinance vehicles={inventory.data} />
 
-        <section id="nosotros" className="scroll-mt-24 border-t border-white/10 bg-[#12141C]/40">
-          <div className="mx-auto grid max-w-7xl gap-10 px-5 py-20 lg:grid-cols-2 lg:px-8">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#D4AF37]">
-                Prueba social
-              </p>
-              <h2 className="mt-3 font-display text-4xl text-[#F4F5F7]">
-                Entregas recientes en RD
-              </h2>
-              <p className="mt-3 text-sm leading-7 text-[#8A909A]">
-                Clientes en Santo Domingo Este y todo el país reciben unidades de venta local e
-                importación directa con diagnóstico técnico y garantía de proceso.
-              </p>
-              <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-[#D4AF37]/40 bg-[#D4AF37]/10 px-5 py-3">
-                <span className="text-lg font-semibold text-[#FFD700]">
-                  {SITE.googleReviews.rating} ★
-                </span>
-                <span className="text-sm text-[#F4F5F7]">
-                  Google Reviews · {SITE.googleReviews.count} opiniones
-                </span>
+        <section className="bg-surface">
+          <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="kicker">
+                  Google Reviews {SITE.googleReviews.rating}
+                </p>
+                <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+                  Entregas recientes
+                </h2>
+                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted">
+                  Clientes en Santo Domingo y Santiago reciben unidades de stock local e importación
+                  directa, con opiniones verificadas y un promedio de {SITE.googleReviews.rating} estrellas.
+                </p>
               </div>
-              {gallery.length > 0 ? (
-                <div className="mt-8 grid grid-cols-3 gap-3">
-                  {gallery.map((photo) => (
-                    <div
-                      key={photo.src}
-                      className="overflow-hidden rounded-2xl border border-white/10 bg-[#0B0C10]"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={photo.src}
-                        alt={photo.alt}
-                        className="aspect-square h-full w-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              ) : null}
+              <div className="inline-flex items-center gap-3 rounded-full border border-accent bg-white px-5 py-3">
+                <span className="text-sm font-medium text-accent">★★★★★ {SITE.googleReviews.rating}</span>
+                <span className="text-sm text-muted">{SITE.googleReviews.count} opiniones</span>
+              </div>
             </div>
-            <div className="grid gap-4">
+
+            {gallery.length > 0 ? (
+              <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {gallery.map((photo) => (
+                  <figure
+                    key={`${photo.src}-${photo.city}`}
+                    className="overflow-hidden rounded-2xl border border-line bg-white shadow-[0_10px_32px_rgba(11,12,16,0.06)]"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={photo.src} alt={photo.alt} className="aspect-[4/3] w-full object-cover" />
+                    <figcaption className="px-4 py-3 text-xs uppercase tracking-[0.16em] text-muted">
+                      Entrega · {photo.city}
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            ) : null}
+
+            <div className="mt-10 grid gap-4 lg:grid-cols-3">
               {TESTIMONIALS.map((item) => (
                 <blockquote
                   key={item.name}
-                  className="rounded-[1.75rem] border border-white/10 bg-[#0B0C10]/70 p-5 backdrop-blur-xl"
+                  className="rounded-2xl border border-line bg-white p-6"
                 >
-                  <p className="text-sm leading-7 text-[#F4F5F7]">“{item.quote}”</p>
-                  <footer className="mt-3 text-xs uppercase tracking-[0.18em] text-[#8A909A]">
+                  <p className="text-xs tracking-[0.18em] text-accent">★★★★★</p>
+                  <p className="mt-3 text-sm leading-relaxed text-foreground">“{item.quote}”</p>
+                  <footer className="mt-4 text-xs uppercase tracking-[0.16em] text-muted">
                     {item.name} · {item.place}
                   </footer>
                 </blockquote>
               ))}
             </div>
+
+            <div className="mt-12 rounded-2xl border border-line bg-white px-6 py-10 shadow-[0_12px_40px_rgba(11,12,16,0.05)] lg:px-10">
+              <p className="kicker">
+                Garantía Valcron
+              </p>
+              <h3 className="mt-3 font-display text-3xl text-foreground">
+                Cobertura de motor, transmisión y chasis
+              </h3>
+              <p className="mt-4 max-w-3xl text-sm leading-relaxed text-muted">
+                Cada unidad importada o vendida en dealer se entrega con diagnóstico técnico,
+                revisión de título y certificación de chasis. El respaldo cubre el criterio de
+                recepción: motor, transmisión y estructura.
+              </p>
+              <div className="mt-8 grid gap-6 md:grid-cols-3">
+                {WARRANTY.map((item) => (
+                  <article key={item.title}>
+                    <h4 className="font-display text-xl text-foreground">{item.title}</h4>
+                    <p className="mt-2 text-sm leading-relaxed text-muted">{item.copy}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className="border-t border-white/10">
+        <section className="relative isolate overflow-hidden bg-footer">
           <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
-            <h2 className="font-display text-4xl text-[#F4F5F7]">Preguntas frecuentes</h2>
-            <div className="mt-8">
-              <FaqAccordion />
+            <p className="kicker text-accent!">Por encargo</p>
+            <h2 className="mt-4 max-w-4xl font-display text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+              ¿Buscas una unidad específica o configuración exclusiva? Lo importamos para ti.
+            </h2>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                href="/importacion"
+                className="inline-flex h-12 items-center rounded-full bg-white px-6 text-sm font-medium text-foreground transition hover:bg-white/90"
+              >
+                Cotizar importación
+              </Link>
+              <a
+                href={whatsappHref(
+                  "Hola, busco una unidad específica o configuración exclusiva para importar con Valcron Motors.",
+                )}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-whatsapp h-12 px-6"
+              >
+                WhatsApp {SITE.whatsapp}
+              </a>
             </div>
-          </div>
-        </section>
-
-        <section id="contacto" className="scroll-mt-24 border-t border-white/10 bg-[#12141C]/40">
-          <div className="mx-auto grid max-w-7xl gap-10 px-5 py-20 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#D4AF37]">
-                Contacto
-              </p>
-              <h2 className="mt-3 font-display text-4xl text-[#F4F5F7]">Hablemos de tu próximo vehículo</h2>
-              <p className="mt-4 text-sm leading-7 text-[#8A909A]">{SITE.address.full}</p>
-              <p className="mt-3 text-sm text-[#F4F5F7]">
-                Oficina {SITE.phoneOffice} · WhatsApp {SITE.whatsapp}
-              </p>
-              <p className="text-sm text-[#F4F5F7]">{SITE.email}</p>
-            </div>
-            <QuoteForm />
           </div>
         </section>
       </main>
-    </PublicShell>
+    </>
   );
 }

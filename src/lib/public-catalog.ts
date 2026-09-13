@@ -4,14 +4,12 @@ import { SITE } from "@/lib/site";
 export const PUBLIC_VEHICLE_SELECT =
   "id, vin, marca, modelo, trim, trim_version, ano, precio_venta_dop, tasa_usd_dop, fotos_urls, estado, fuente_subasta, ubicacion_lote";
 
-export const PUBLIC_PART_SELECT =
-  "id, codigo_pieza, nombre, cantidad, precio_venta";
-
 export const PUBLIC_CATALOG_ORIGIN = "https://valcronmotors.com";
 
 const ALLOWED_ORIGINS = new Set([
   PUBLIC_CATALOG_ORIGIN,
   "https://www.valcronmotors.com",
+  "https://admin.valcronmotors.com",
   "http://localhost:3000",
   "http://127.0.0.1:3000",
 ]);
@@ -56,22 +54,6 @@ export type PublicVehicleRow = {
   ubicacion_lote?: string | null;
 };
 
-export type PublicPart = {
-  id: string;
-  codigoPieza: string;
-  nombre: string;
-  cantidad: number;
-  precioVentaUsd: number;
-};
-
-export type PublicPartRow = {
-  id: string;
-  codigo_pieza: string;
-  nombre: string;
-  cantidad: number | null;
-  precio_venta: number | null;
-};
-
 export function isVinQuery(value: string) {
   return /^[A-HJ-NPR-Z0-9]{17}$/i.test(value.trim());
 }
@@ -85,30 +67,39 @@ export function dealerWhatsappDigits() {
   return digits;
 }
 
+export function isCopartOrManheim(value: string | null | undefined) {
+  const fuente = (value ?? "").trim().toLowerCase();
+  return fuente === "copart" || fuente === "manheim";
+}
+
 export function isPublicVehicleListing(row: Pick<PublicVehicleRow, "estado" | "fuente_subasta">) {
   const estado = row.estado ?? "";
   if (estado === "Disponible") {
     return true;
   }
 
-  const fuente = (row.fuente_subasta ?? "").toLowerCase();
-  return (
-    estado === "En Subasta" &&
-    (fuente === "copart" || fuente === "manheim" || fuente.length === 0)
-  );
+  return estado === "En Subasta" && (isCopartOrManheim(row.fuente_subasta) || !row.fuente_subasta);
 }
 
-export function listingKindFromEstado(estado: string | null | undefined): "dealer" | "auction" {
-  return estado === "En Subasta" ? "auction" : "dealer";
+export function listingKindFromRow(
+  row: Pick<PublicVehicleRow, "estado" | "fuente_subasta">,
+): "dealer" | "auction" {
+  if (row.estado === "En Subasta" || isCopartOrManheim(row.fuente_subasta)) {
+    return "auction";
+  }
+
+  return "dealer";
 }
 
 export function publicVehicleLocation(row: PublicVehicleRow) {
-  if (listingKindFromEstado(row.estado) === "auction") {
-    const source = row.fuente_subasta ? `Subasta ${row.fuente_subasta}` : "Subasta Copart / Manheim";
+  if (listingKindFromRow(row) === "auction") {
+    const source = row.fuente_subasta
+      ? `Subasta ${row.fuente_subasta}`
+      : "Subasta Copart / Manheim";
     return row.ubicacion_lote ? `${source} · ${row.ubicacion_lote}` : source;
   }
 
-  return "Stock en dealer · Santo Domingo Este, RD";
+  return "Stock en RD · Santo Domingo Este";
 }
 
 export function vehicleInterestMessage(vehicle: {
@@ -140,27 +131,6 @@ export function catalogWhatsappHref(vehicle: {
   return `https://wa.me/${phone}?text=${text}`;
 }
 
-export function partInterestMessage(part: { codigoPieza: string; nombre: string }) {
-  return `Hola, me interesa el repuesto ${part.codigoPieza} · ${part.nombre} visto en valcronmotors.com`;
-}
-
-export function catalogPartWhatsappHref(part: { codigoPieza: string; nombre: string }) {
-  const phone = dealerWhatsappDigits();
-  if (!phone) {
-    return null;
-  }
-  return `https://wa.me/${phone}?text=${encodeURIComponent(partInterestMessage(part))}`;
-}
-
-export function vinPartsWhatsappHref(vin: string) {
-  const phone = dealerWhatsappDigits();
-  if (!phone) {
-    return null;
-  }
-  const text = `Hola, busco un repuesto para el VIN ${vin} visto en valcronmotors.com`;
-  return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
-}
-
 export function dealerWhatsappHref(message?: string) {
   const phone = dealerWhatsappDigits();
   if (!phone) {
@@ -183,7 +153,7 @@ export function toPublicVehicle(row: PublicVehicleRow): PublicVehicle {
   const precioVentaDop = Number(row.precio_venta_dop ?? 0);
   const precioVentaUsd = Math.round((precioVentaDop / tasaUsdDop) * 100) / 100;
   const estado = row.estado || "Disponible";
-  const listingKind = listingKindFromEstado(estado);
+  const listingKind = listingKindFromRow({ estado, fuente_subasta: row.fuente_subasta });
 
   return {
     id: row.id,
@@ -207,16 +177,6 @@ export function toPublicVehicle(row: PublicVehicleRow): PublicVehicle {
       version: trim,
       vin: row.vin,
     },
-  };
-}
-
-export function toPublicPart(row: PublicPartRow): PublicPart {
-  return {
-    id: row.id,
-    codigoPieza: row.codigo_pieza,
-    nombre: row.nombre,
-    cantidad: Number(row.cantidad ?? 0),
-    precioVentaUsd: Number(row.precio_venta ?? 0),
   };
 }
 

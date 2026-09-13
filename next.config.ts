@@ -1,7 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: "/",
+          has: [{ type: "host", value: "admin.valcronmotors.com" }],
+          destination: "/admin",
+        },
+      ],
+    };
+  },
 };
 
 export default nextConfig;

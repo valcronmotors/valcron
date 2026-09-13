@@ -1,30 +1,38 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0b0c10;
-  --foreground: #f4f5f7;
-  --carbon: #0b0c10;
-  --carbon-2: #12141c;
-  --gold: #d4af37;
-  --gold-bright: #ffd700;
-  --amber-glow: #ff5500;
-  --titanium: #f4f5f7;
-  --muted-metal: #8a909a;
+  --background: #ffffff;
+  --surface: #f8f9fa;
+  --surface-2: #f3f4f6;
+  --foreground: #0b0c10;
+  --ink: #374151;
+  --muted: #4b5563;
+  --accent: #c5a059;
+  --accent-gold: #d4af37;
+  --line: #e5e7eb;
+  --graphite: #1f2937;
+  --whatsapp: #059669;
+  --whatsapp-hover: #047857;
+  --footer: #0b0c10;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-foreground: var(--foreground);
-  --color-carbon: var(--carbon);
-  --color-carbon-2: var(--carbon-2);
-  --color-gold: var(--gold);
-  --color-gold-bright: var(--gold-bright);
-  --color-amber-glow: var(--amber-glow);
-  --color-titanium: var(--titanium);
-  --color-muted-metal: var(--muted-metal);
-  --font-sans: var(--font-geist-sans);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-gold: var(--accent-gold);
+  --color-line: var(--line);
+  --color-graphite: var(--graphite);
+  --color-whatsapp: var(--whatsapp);
+  --color-whatsapp-hover: var(--whatsapp-hover);
+  --color-footer: var(--footer);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-jakarta);
   --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-playfair);
 }
 
 html {
@@ -32,7 +40,111 @@ html {
 }
 
 body {
-  background: var(--carbon);
-  color: var(--titanium);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), Inter, Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  line-height: 1.625;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-jakarta), "Plus Jakarta Sans", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--foreground);
+}
+
+@utility kicker {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+@utility btn-primary {
+  display: inline-flex;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: var(--foreground);
+  padding-inline: 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #ffffff;
+  transition: background-color 150ms ease;
+  &:hover {
+    background-color: var(--graphite);
+  }
+}
+
+@utility btn-secondary {
+  display: inline-flex;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid var(--accent);
+  padding-inline: 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--accent);
+  transition: background-color 150ms ease;
+  &:hover {
+    background-color: color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+}
+
+@utility btn-whatsapp {
+  display: inline-flex;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: var(--whatsapp);
+  padding-inline: 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #ffffff;
+  transition: background-color 150ms ease;
+  &:hover {
+    background-color: var(--whatsapp-hover);
+  }
+}
+
+@utility field-input {
+  margin-top: 0.5rem;
+  height: 2.75rem;
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid var(--line);
+  background-color: #ffffff;
+  padding-inline: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  outline: none;
+  transition: border-color 150ms ease;
+  &:focus {
+    border-color: var(--accent);
+  }
+}
+
+@utility badge-status {
+  border-radius: 9999px;
+  border: 1px solid var(--accent);
+  background-color: color-mix(in srgb, #ffffff 92%, transparent);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
 }

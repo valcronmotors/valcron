@@ -2,12 +2,10 @@ import { COMPANIES } from "@/lib/companies";
 import { DEFAULT_CRM_STATE } from "@/lib/crm";
 import { getEmpresaIdByCompany } from "@/lib/empresas";
 import {
-  PUBLIC_PART_SELECT,
   PUBLIC_VEHICLE_SELECT,
   publicJson,
   publicOptions,
   vehicleInterestMessage,
-  type PublicPartRow,
   type PublicVehicleRow,
   isVinQuery,
 } from "@/lib/public-catalog";
@@ -36,7 +34,6 @@ export async function POST(request: Request) {
   const mensaje = String(body.mensaje ?? "").trim() || null;
   const vehiculoId = String(body.vehiculoId ?? body.vehiculo_id ?? "").trim();
   const vin = String(body.vin ?? "").trim().toUpperCase();
-  const codigoPieza = String(body.codigoPieza ?? body.codigo_pieza ?? "").trim();
 
   if (!nombre) {
     return publicJson(request, { error: "El nombre es obligatorio." }, 400);
@@ -49,15 +46,11 @@ export async function POST(request: Request) {
   }
 
   const valcron = COMPANIES.find((company) => company.inventario === "vehiculos");
-  const partsDirect = COMPANIES.find((company) => company.inventario === "repuestos");
-  if (!valcron || !partsDirect) {
-    return publicJson(request, { error: "No se encontraron las empresas públicas." }, 500);
+  if (!valcron) {
+    return publicJson(request, { error: "No se encontró Valcron Motors Group SRL." }, 500);
   }
 
-  const [valcronEmpresa, partsEmpresa] = await Promise.all([
-    getEmpresaIdByCompany(valcron),
-    getEmpresaIdByCompany(partsDirect),
-  ]);
+  const valcronEmpresa = await getEmpresaIdByCompany(valcron);
   if (!valcronEmpresa.id) {
     return publicJson(
       request,
@@ -68,13 +61,13 @@ export async function POST(request: Request) {
 
   const supabase = await createClient();
   let vehicle: (PublicVehicleRow & { empresa_id: string; estado: string }) | null = null;
-  let part: PublicPartRow | null = null;
 
   if (UUID_PATTERN.test(vehiculoId) || isVinQuery(vin)) {
     let vehicleQuery = supabase
       .from("vehiculos")
       .select(`${PUBLIC_VEHICLE_SELECT}, empresa_id, estado`)
-      .eq("empresa_id", valcronEmpresa.id);
+      .eq("empresa_id", valcronEmpresa.id)
+      .in("estado", ["Disponible", "En Subasta"]);
 
     if (UUID_PATTERN.test(vehiculoId)) {
       vehicleQuery = vehicleQuery.eq("id", vehiculoId);
@@ -86,26 +79,11 @@ export async function POST(request: Request) {
     if (error) {
       return publicJson(request, { error: error.message }, 500);
     }
-    if (data && data.estado === "Disponible") {
+    if (data) {
       vehicle = data as PublicVehicleRow & { empresa_id: string; estado: string };
     }
   }
 
-  if (codigoPieza && partsEmpresa.id) {
-    const { data, error } = await supabase
-      .from("repuestos")
-      .select(PUBLIC_PART_SELECT)
-      .eq("empresa_id", partsEmpresa.id)
-      .ilike("codigo_pieza", codigoPieza)
-      .maybeSingle();
-
-    if (error) {
-      return publicJson(request, { error: error.message }, 500);
-    }
-    part = (data as PublicPartRow | null) ?? null;
-  }
-
-  const empresaId = vehicle || !part || !partsEmpresa.id ? valcronEmpresa.id : partsEmpresa.id;
   const notas = [
     mensaje,
     vehicle
@@ -118,11 +96,6 @@ export async function POST(request: Request) {
       : vin
         ? `VIN consultado: ${vin}`
         : null,
-    part
-      ? `Repuesto consultado: ${part.codigo_pieza} · ${part.nombre}`
-      : codigoPieza
-        ? `Código de pieza consultado: ${codigoPieza}`
-        : null,
   ]
     .filter(Boolean)
     .join("\n");
@@ -130,12 +103,11 @@ export async function POST(request: Request) {
   const { data, error } = await supabase
     .from("prospectos")
     .insert({
-      empresa_id: empresaId,
+      empresa_id: valcronEmpresa.id,
       nombre,
       telefono,
       email,
       vehiculo_interes_id: vehicle?.id ?? null,
-      repuesto_interes_id: vehicle ? null : part?.id ?? null,
       origen_lead: "Web",
       estado_crm: DEFAULT_CRM_STATE,
       notas: notas || null,
