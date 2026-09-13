@@ -1,9 +1,15 @@
 import { extractAuctionListing } from "@/lib/extract-auction";
+import { getAdminClaims } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
 export async function POST(request: Request) {
+  const claims = await getAdminClaims();
+  if (!claims) {
+    return Response.json({ error: "No autorizado." }, { status: 401 });
+  }
+
   let query = "";
 
   try {

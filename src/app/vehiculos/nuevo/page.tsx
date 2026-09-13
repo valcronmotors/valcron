@@ -15,7 +15,7 @@ export default async function NuevoVehiculoPage() {
       actions={
         <>
           <SecondaryButtonLink href="/vehiculos">Volver al listado</SecondaryButtonLink>
-          <PrimaryButtonLink href="/">Dashboard</PrimaryButtonLink>
+          <PrimaryButtonLink href="/admin">Dashboard</PrimaryButtonLink>
         </>
       }
     >

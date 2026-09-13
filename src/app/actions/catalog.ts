@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireAdmin } from "@/lib/auth";
 import { COMPANIES } from "@/lib/companies";
 import { getEmpresaIdByCompany } from "@/lib/empresas";
 import type { PartRow, VehicleRow } from "@/lib/inventory";
@@ -200,6 +201,7 @@ export async function createVehiculo(
   _prev: ActionState<VehicleRow> | null,
   formData: FormData,
 ): Promise<ActionState<VehicleRow>> {
+  await requireAdmin();
   const empresa = await resolveEmpresaId("vehiculos");
   if (!empresa.id) {
     return { error: empresa.error };
@@ -228,6 +230,8 @@ export async function createVehiculo(
   }
 
   revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath("/catalogo");
   revalidatePath("/vehiculos");
   revalidatePath(`/vehiculos/${data.id}`);
 
@@ -243,6 +247,7 @@ export async function updateVehiculo(
   _prev: ActionState<VehicleRow> | null,
   formData: FormData,
 ): Promise<ActionState<VehicleRow>> {
+  await requireAdmin();
   const parsed = parseVehiclePayload(formData);
   if (parsed.error || !parsed.row) {
     return { error: parsed.error };
@@ -262,6 +267,8 @@ export async function updateVehiculo(
   }
 
   revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath("/catalogo");
   revalidatePath("/vehiculos");
   revalidatePath(`/vehiculos/${id}`);
   revalidatePath(`/vehiculos/${id}/editar`);
@@ -272,6 +279,7 @@ export async function updateVehiclePhotos(
   id: string,
   urls: string[],
 ): Promise<ActionState<VehicleRow>> {
+  await requireAdmin();
   const fotosUrls = urls
     .filter((item) => typeof item === "string" && /^https?:\/\//i.test(item))
     .slice(0, MAX_VEHICLE_PHOTOS);
@@ -289,6 +297,8 @@ export async function updateVehiclePhotos(
   }
 
   revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath("/catalogo");
   revalidatePath("/vehiculos");
   revalidatePath(`/vehiculos/${id}`);
   revalidatePath(`/vehiculos/${id}/editar`);
@@ -299,6 +309,7 @@ export async function createRepuesto(
   _prev: ActionState<PartRow> | null,
   formData: FormData,
 ): Promise<ActionState<PartRow>> {
+  await requireAdmin();
   const empresa = await resolveEmpresaId("repuestos");
   if (!empresa.id) {
     return { error: empresa.error };
@@ -324,6 +335,8 @@ export async function createRepuesto(
   }
 
   revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath("/catalogo");
   revalidatePath("/repuestos");
 
   if (isModalSubmit(formData)) {
@@ -338,6 +351,7 @@ export async function updateRepuesto(
   _prev: ActionState<PartRow> | null,
   formData: FormData,
 ): Promise<ActionState<PartRow>> {
+  await requireAdmin();
   const parsed = parsePartPayload(formData);
   if (parsed.error || !parsed.row) {
     return { error: parsed.error };
@@ -354,6 +368,8 @@ export async function updateRepuesto(
   }
 
   revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath("/catalogo");
   revalidatePath("/repuestos");
   revalidatePath(`/repuestos/${id}/editar`);
   redirect("/repuestos?actualizado=1");

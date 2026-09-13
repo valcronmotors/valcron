@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth";
 import { COMPANIES } from "@/lib/companies";
 import {
   DEFAULT_CRM_STATE,
@@ -91,6 +92,7 @@ export async function createProspecto(
   _prev: CrmActionState | null,
   formData: FormData,
 ): Promise<CrmActionState> {
+  await requireAdmin();
   const nombre = requiredText(formData, "nombre");
   const telefono = optionalText(formData, "telefono");
   const email = optionalText(formData, "email");
@@ -186,6 +188,7 @@ export async function createProspecto(
 
   revalidatePath("/crm");
   revalidatePath("/");
+  revalidatePath("/admin");
   return { error: null, record: normalizeProspecto(data) };
 }
 
@@ -193,6 +196,7 @@ export async function updateProspectoEstado(
   id: string,
   estadoCrm: string,
 ): Promise<CrmActionState> {
+  await requireAdmin();
   if (!isUuid(id)) {
     return { error: "El prospecto no es válido." };
   }
@@ -224,6 +228,7 @@ export async function updateProspectoInteres(
   vehiculoId: string | null,
   repuestoId: string | null,
 ): Promise<CrmActionState> {
+  await requireAdmin();
   if (!isUuid(id)) {
     return { error: "El prospecto no es válido." };
   }
@@ -283,6 +288,7 @@ export async function updateProspectoInteres(
 }
 
 export async function listActividades(prospectoId: string) {
+  await requireAdmin();
   if (!isUuid(prospectoId)) {
     return { error: "El prospecto no es válido.", data: [] as CrmActividad[] };
   }
@@ -304,6 +310,7 @@ export async function listActividades(prospectoId: string) {
 export async function createActividad(
   formData: FormData,
 ): Promise<ActivityActionState> {
+  await requireAdmin();
   const prospectoId = requiredText(formData, "prospecto_id");
   const tipo = requiredText(formData, "tipo");
   const descripcion = optionalText(formData, "descripcion");
@@ -345,6 +352,7 @@ export async function createActividad(
 }
 
 export async function listCotizaciones(prospectoId: string) {
+  await requireAdmin();
   if (!isUuid(prospectoId)) {
     return { error: "El prospecto no es válido.", data: [] as CotizacionRow[] };
   }
@@ -374,6 +382,7 @@ export async function createCotizacion(input: {
   items: CotizacionItem[];
   notas: string | null;
 }): Promise<QuoteActionState> {
+  await requireAdmin();
   if (!isUuid(input.prospectoId)) {
     return { error: "El prospecto no es válido." };
   }

@@ -35,7 +35,7 @@ export default async function EditarVehiculoPage({
         <>
           <SecondaryButtonLink href={`/vehiculos/${id}`}>Ver ficha</SecondaryButtonLink>
           <SecondaryButtonLink href="/vehiculos">Volver al listado</SecondaryButtonLink>
-          <PrimaryButtonLink href="/">Dashboard</PrimaryButtonLink>
+          <PrimaryButtonLink href="/admin">Dashboard</PrimaryButtonLink>
         </>
       }
     >

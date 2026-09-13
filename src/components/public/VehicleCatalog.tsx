@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "@/components/form-fields";
 import { Modal } from "@/components/ui/modal";
-import { formatDop } from "@/lib/money";
+import { formatDop, formatUsd } from "@/lib/money";
 import {
   catalogWhatsappHref,
   publicVehicleTitle,
@@ -137,17 +137,20 @@ export function VehicleCatalog() {
       </div>
 
       {loading ? (
-        <p className="rounded-2xl border border-white/10 px-6 py-12 text-center text-sm text-slate-400">
+        <p className="rounded-2xl border border-white/10 px-6 py-12 text-center text-sm text-[#8A909A]">
           Sincronizando inventario público...
         </p>
       ) : visible.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-white/15 px-6 py-12 text-center text-sm text-slate-400">
-          No hay vehículos disponibles con esos filtros en valcronmotors.com.
-        </p>
+        <div className="rounded-[2rem] border border-[#D4AF37]/30 bg-[#12141C]/80 px-6 py-12 text-center">
+          <p className="text-sm text-[#F4F5F7]">
+            No hay vehículos en stock en este momento. ¡Contáctanos para importar el tuyo
+            por encargo!
+          </p>
+        </div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {visible.map((vehicle) => (
-            <VehicleCard
+            <CatalogVehicleCard
               key={vehicle.id}
               vehicle={vehicle}
               onOpen={() => setSelectedId(vehicle.id)}
@@ -164,7 +167,7 @@ export function VehicleCatalog() {
   );
 }
 
-function VehicleCard({
+function CatalogVehicleCard({
   vehicle,
   onOpen,
 }: {
@@ -175,8 +178,8 @@ function VehicleCard({
   const whatsapp = catalogWhatsappHref(vehicle);
 
   return (
-    <article className="flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0b1726] shadow-lg shadow-black/20">
-      <button type="button" onClick={onOpen} className="relative block aspect-[16/10] bg-[#07111f]">
+    <article className="flex flex-col overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#12141C] shadow-lg shadow-black/20 transition hover:border-[#D4AF37]/50">
+      <button type="button" onClick={onOpen} className="relative block aspect-[16/10] bg-[#0B0C10]">
         {cover ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -185,31 +188,27 @@ function VehicleCard({
             className="h-full w-full object-cover"
           />
         ) : (
-          <span className="flex h-full items-center justify-center text-sm text-slate-500">
+          <span className="flex h-full items-center justify-center text-sm text-[#8A909A]">
             Sin foto
           </span>
         )}
       </button>
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div>
-          <h2 className="text-lg font-semibold text-white">
+          <h2 className="font-display text-xl text-[#F4F5F7]">
             {publicVehicleTitle(vehicle)}
           </h2>
-          <p className="mt-1 text-xs text-slate-400">VIN {vehicle.vin}</p>
+          <p className="mt-1 text-xs text-[#8A909A]">{vehicle.ubicacion}</p>
         </div>
-        <p className="text-sm text-slate-300">
-          {vehicle.especificaciones.version
-            ? `Versión ${vehicle.especificaciones.version}`
-            : "Especificaciones disponibles en la ficha"}
+        <p className="text-xl font-semibold text-[#FFD700]">
+          {formatUsd(vehicle.precioVentaUsd)}
         </p>
-        <p className="text-xl font-semibold text-cyan-200">
-          {formatDop(vehicle.precioVentaDop)}
-        </p>
+        <p className="text-sm text-[#8A909A]">{formatDop(vehicle.precioVentaDop)}</p>
         <div className="mt-auto flex flex-wrap gap-2">
           <button
             type="button"
             onClick={onOpen}
-            className="inline-flex h-10 items-center rounded-full bg-white/5 px-4 text-sm font-semibold text-slate-100 ring-1 ring-white/10 hover:bg-white/10"
+            className="inline-flex h-10 items-center rounded-full bg-white/5 px-4 text-sm font-semibold text-[#F4F5F7] ring-1 ring-white/10 hover:bg-white/10"
           >
             Ver detalle
           </button>
@@ -218,7 +217,7 @@ function VehicleCard({
               href={whatsapp}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-10 items-center rounded-full bg-emerald-400 px-4 text-sm font-semibold text-slate-950 hover:bg-emerald-300"
+              className="inline-flex h-10 items-center rounded-full bg-[#FF5500] px-4 text-sm font-semibold text-white hover:bg-[#ff6a1a]"
             >
               Consultar por WhatsApp
             </a>
@@ -290,7 +289,7 @@ function VehicleDetailModal({
       open
       size="xl"
       title={publicVehicleTitle(currentVehicle)}
-      subtitle={`${formatDop(currentVehicle.precioVentaDop)} · VIN ${currentVehicle.vin}`}
+      subtitle={`${formatDop(currentVehicle.precioVentaDop)} · ${formatUsd(currentVehicle.precioVentaUsd)} · VIN ${currentVehicle.vin}`}
       onClose={onClose}
     >
       <div className="grid gap-6">
@@ -355,7 +354,10 @@ function VehicleDetailModal({
             value={currentVehicle.especificaciones.version || "No especificada"}
           />
           <Spec label="VIN" value={currentVehicle.especificaciones.vin} />
-          <Spec label="Precio de venta" value={formatDop(currentVehicle.precioVentaDop)} />
+          <Spec
+            label="Precio de venta"
+            value={`${formatDop(currentVehicle.precioVentaDop)} · ${formatUsd(currentVehicle.precioVentaUsd)}`}
+          />
         </dl>
 
         {whatsapp ? (

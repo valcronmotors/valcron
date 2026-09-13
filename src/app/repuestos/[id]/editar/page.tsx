@@ -34,7 +34,7 @@ export default async function EditarRepuestoPage({
       actions={
         <>
           <SecondaryButtonLink href="/repuestos">Volver al listado</SecondaryButtonLink>
-          <PrimaryButtonLink href="/">Dashboard</PrimaryButtonLink>
+          <PrimaryButtonLink href="/admin">Dashboard</PrimaryButtonLink>
         </>
       }
     >

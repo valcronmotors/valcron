@@ -2,6 +2,7 @@ import { COMPANIES } from "@/lib/companies";
 import { getEmpresaIdByCompany } from "@/lib/empresas";
 import {
   PUBLIC_VEHICLE_SELECT,
+  isPublicVehicleListing,
   publicJson,
   publicOptions,
   toPublicVehicle,
@@ -42,7 +43,7 @@ export async function GET(request: Request) {
     .from("vehiculos")
     .select(PUBLIC_VEHICLE_SELECT)
     .eq("empresa_id", empresa.id)
-    .eq("estado", "Disponible")
+    .in("estado", ["Disponible", "En Subasta"])
     .order("ano", { ascending: false });
 
   if (marca) {
@@ -68,7 +69,11 @@ export async function GET(request: Request) {
 
   return publicJson(
     request,
-    { data: ((data ?? []) as PublicVehicleRow[]).map(toPublicVehicle) },
+    {
+      data: ((data ?? []) as PublicVehicleRow[])
+        .filter(isPublicVehicleListing)
+        .map(toPublicVehicle),
+    },
     200,
   );
 }

@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { signOut } from "@/app/actions/auth";
 
 const navItems = [
-  { href: "/", label: "Dashboard" },
+  { href: "/admin", label: "Dashboard" },
   { href: "/vehiculos", label: "Vehículos" },
   { href: "/repuestos", label: "Repuestos" },
   { href: "/crm", label: "CRM" },
@@ -46,6 +47,14 @@ export function AppShell({
                 {item.label}
               </Link>
             ))}
+            <form action={signOut}>
+              <button
+                type="submit"
+                className="rounded-full px-3 py-1.5 text-xs font-medium text-slate-500 hover:bg-white/10 hover:text-slate-300"
+              >
+                Salir
+              </button>
+            </form>
           </nav>
         </div>
         <header className="flex flex-col gap-4 border-b border-white/10 pb-8 lg:flex-row lg:items-end lg:justify-between">
