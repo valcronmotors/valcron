@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { requireAdmin } from "@/lib/auth";
+import { AdminShell } from "@/components/admin/AdminShell";
+import { getAdminProfile } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  title: "Dashboard operativo",
+  title: {
+    default: "Dashboard",
+    template: "%s | Valcron ERP",
+  },
 };
 
 export default async function AdminLayout({
@@ -10,6 +14,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await requireAdmin();
-  return children;
+  const user = await getAdminProfile();
+
+  return <AdminShell user={user}>{children}</AdminShell>;
 }

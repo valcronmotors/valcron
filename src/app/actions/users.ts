@@ -32,6 +32,7 @@ function currentUserId(claims: Record<string, unknown>) {
 
 function revalidateUsers() {
   revalidatePath("/admin/usuarios");
+  revalidatePath("/admin/configuracion/usuarios");
 }
 
 export async function listStaffUsers(): Promise<{

@@ -1,19 +1,5 @@
-import { StaffUsersWorkspace } from "@/components/admin/StaffUsersWorkspace";
-import { listStaffUsers } from "@/app/actions/users";
-import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Gestión de Usuarios",
-};
-
-export default async function UsuariosPage() {
-  const { users, error, currentUserId } = await listStaffUsers();
-
-  return (
-    <StaffUsersWorkspace
-      users={users}
-      error={error}
-      currentUserId={currentUserId}
-    />
-  );
+export default function UsuariosRedirectPage() {
+  redirect("/admin/configuracion/usuarios");
 }

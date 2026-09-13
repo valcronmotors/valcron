@@ -197,6 +197,17 @@ function isModalSubmit(formData: FormData) {
   return requiredText(formData, "mode") === "modal";
 }
 
+function safeAdminReturnPath(value: string) {
+  if (
+    !value.startsWith("/admin") ||
+    value.startsWith("//") ||
+    value.includes("://")
+  ) {
+    return null;
+  }
+  return value.split("?")[0];
+}
+
 export async function createVehiculo(
   _prev: ActionState<VehicleRow> | null,
   formData: FormData,
@@ -231,6 +242,7 @@ export async function createVehiculo(
 
   revalidatePath("/");
   revalidatePath("/admin");
+  revalidatePath("/admin/inventario");
   revalidatePath("/catalogo");
   revalidatePath("/inventario");
   revalidatePath("/vehiculos");
@@ -240,7 +252,8 @@ export async function createVehiculo(
     return { error: null, record: data as VehicleRow };
   }
 
-  redirect("/vehiculos?creado=1");
+  const returnTo = safeAdminReturnPath(requiredText(formData, "return_to"));
+  redirect(returnTo ? `${returnTo}?creado=1` : "/vehiculos?creado=1");
 }
 
 export async function updateVehiculo(
