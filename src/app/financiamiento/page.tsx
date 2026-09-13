@@ -1,5 +1,6 @@
 import { FinanceForm } from "@/components/public/FinanceForm";
 import { PageHero } from "@/components/public/PageHero";
+import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
 import type { Metadata } from "next";
 
@@ -40,6 +41,8 @@ export default function FinanciamientoPage() {
           kicker="Financiamiento"
           title="Banca local, proceso ordenado"
           subtitle="Estructuramos pre-evaluaciones con Banreservas, Banco Popular, BHD y otras instituciones para stock en RD o unidades importadas a tu nombre."
+          image={PAGE_HERO_IMAGES.financiamiento}
+          imageAlt={PAGE_HERO_ALTS.financiamiento}
         />
 
         <section className="bg-white">

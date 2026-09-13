@@ -4,24 +4,27 @@ export function PageHero({
   kicker,
   title,
   subtitle,
-  image = "/hero-luxury.png",
+  image,
+  imageAlt = "",
 }: {
   kicker: string;
   title: string;
   subtitle: string;
-  image?: string;
+  image: string;
+  imageAlt?: string;
 }) {
   return (
     <section className="relative isolate min-h-[48vh] overflow-hidden">
       <Image
         src={image}
-        alt=""
+        alt={imageAlt}
         fill
         priority
-        className="object-cover"
+        className="object-cover object-center contrast-[1.05]"
         sizes="100vw"
       />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(11,12,16,0.78)_0%,rgba(11,12,16,0.38)_58%,rgba(11,12,16,0.16)_100%),linear-gradient(to_top,rgba(11,12,16,0.55),transparent_48%)]" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/15 to-transparent" />
       <div className="relative mx-auto flex min-h-[48vh] max-w-7xl items-end px-5 py-16 lg:px-8 lg:py-20">
         <div className="max-w-3xl">
           <p className="kicker text-accent!">{kicker}</p>

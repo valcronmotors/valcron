@@ -1,5 +1,6 @@
 import { ImportQuoteForm } from "@/components/public/ImportQuoteForm";
 import { PageHero } from "@/components/public/PageHero";
+import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
 import type { Metadata } from "next";
 
@@ -40,6 +41,8 @@ export default function ImportacionPage() {
           kicker="Importación Directa"
           title="Por encargo desde Copart y Manheim"
           subtitle="Traemos a tu nombre la unidad que buscas, con un expediente transparente de costos, tiempos y despacho en República Dominicana."
+          image={PAGE_HERO_IMAGES.importacion}
+          imageAlt={PAGE_HERO_ALTS.importacion}
         />
 
         <section className="bg-white">

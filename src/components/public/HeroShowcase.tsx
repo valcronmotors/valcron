@@ -10,22 +10,8 @@ import {
   uniqueMarcas,
 } from "@/lib/public-filters";
 import type { PublicVehicle } from "@/lib/public-catalog";
+import { HOME_HERO_SLIDES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
-
-const SLIDES = [
-  {
-    src: "/hero-luxury.png",
-    alt: "Sedán de lujo Valcron Motors al atardecer",
-  },
-  {
-    src: "/hero-showroom.png",
-    alt: "Showroom de lujo Valcron Motors Group",
-  },
-  {
-    src: "/hero-coast.png",
-    alt: "Vehículo de importación en carretera costera",
-  },
-] as const;
 
 const fieldClass = "field-input mt-1.5";
 
@@ -43,14 +29,14 @@ export function HeroShowcase({ vehicles }: { vehicles: PublicVehicle[] }) {
 
   useEffect(() => {
     const timer = window.setInterval(() => {
-      setIndex((current) => (current + 1) % SLIDES.length);
+      setIndex((current) => (current + 1) % HOME_HERO_SLIDES.length);
     }, 7000);
     return () => window.clearInterval(timer);
   }, []);
 
   return (
     <section className="relative isolate min-h-[88vh] pb-32">
-      {SLIDES.map((slide, slideIndex) => (
+      {HOME_HERO_SLIDES.map((slide, slideIndex) => (
         <div
           key={slide.src}
           className={`absolute inset-0 overflow-hidden transition-opacity duration-1000 ${
@@ -63,11 +49,12 @@ export function HeroShowcase({ vehicles }: { vehicles: PublicVehicle[] }) {
             fill
             priority={slideIndex === 0}
             sizes="100vw"
-            className="object-cover"
+            className="object-cover object-center contrast-[1.05]"
           />
         </div>
       ))}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(11,12,16,0.78)_0%,rgba(11,12,16,0.32)_58%,rgba(11,12,16,0.12)_100%),linear-gradient(to_top,rgba(11,12,16,0.72),transparent_48%)]" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent" />
 
       <div className="relative mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-end px-5 pb-36 pt-28 lg:px-8">
         <div className="max-w-3xl">
@@ -81,7 +68,7 @@ export function HeroShowcase({ vehicles }: { vehicles: PublicVehicle[] }) {
         </div>
 
         <div className="mt-8 flex gap-2">
-          {SLIDES.map((slide, slideIndex) => (
+          {HOME_HERO_SLIDES.map((slide, slideIndex) => (
             <button
               key={slide.src}
               type="button"

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { PageHero } from "@/components/public/PageHero";
+import { NOSOTROS_GALLERY_IMAGE, PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
 import type { Metadata } from "next";
 
@@ -31,6 +32,8 @@ export default function NosotrosPage() {
           kicker={SITE.name}
           title="Sobre Valcron Motors Group"
           subtitle="Dealer en República Dominicana dedicado a vender, importar y financiar vehículos con un estándar de lujo sobrio: claridad, criterio técnico y entrega puntual."
+          image={PAGE_HERO_IMAGES.nosotros}
+          imageAlt={PAGE_HERO_ALTS.nosotros}
         />
 
         <section className="bg-white">
@@ -54,7 +57,7 @@ export default function NosotrosPage() {
             </div>
             <div className="relative min-h-[320px] overflow-hidden rounded-2xl border border-line">
               <Image
-                src="/hero-luxury.png"
+                src={NOSOTROS_GALLERY_IMAGE}
                 alt="Instalaciones y estándar visual de Valcron Motors Group"
                 fill
                 className="object-cover"

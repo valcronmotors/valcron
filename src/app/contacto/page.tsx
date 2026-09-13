@@ -1,5 +1,6 @@
 import { PageHero } from "@/components/public/PageHero";
 import { QuoteForm } from "@/components/public/QuoteForm";
+import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE, mailtoHref, officeTelHref, whatsappHref } from "@/lib/site";
 import type { Metadata } from "next";
 
@@ -23,6 +24,8 @@ export default function ContactoPage() {
           kicker="Contacto"
           title="Hablemos de tu próximo vehículo"
           subtitle="Oficina en Santo Domingo Este, atención comercial en horario extendido y respuesta directa por WhatsApp."
+          image={PAGE_HERO_IMAGES.contacto}
+          imageAlt={PAGE_HERO_ALTS.contacto}
         />
 
         <section className="bg-white">

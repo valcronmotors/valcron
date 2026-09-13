@@ -10,6 +10,7 @@ const navItems = [
   { href: "/repuestos", label: "Repuestos" },
   { href: "/crm", label: "CRM" },
   { href: "/catalogo", label: "Catálogo" },
+  { href: "/admin/usuarios", label: "Usuarios" },
 ];
 
 export function AppShell({
