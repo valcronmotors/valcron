@@ -13,11 +13,13 @@ export default async function AdminPage() {
   ]);
 
   return (
-    <AdminDashboardView
-      vehicles={vehicles}
-      error={error ?? quotes.error}
-      receivableUsd={quotes.totalUsd}
-      receivableCount={quotes.count}
-    />
+    <div className="flex h-full min-h-full w-full flex-col">
+      <AdminDashboardView
+        vehicles={vehicles}
+        error={error ?? quotes.error}
+        receivableUsd={quotes.totalUsd}
+        receivableCount={quotes.count}
+      />
+    </div>
   );
 }

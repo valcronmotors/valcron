@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { formatUsd } from "@/lib/money";
+import { formatDop, formatUsd } from "@/lib/money";
 import type { PublicVehicle } from "@/lib/public-catalog";
 import { publicVehicleTitle } from "@/lib/public-catalog";
 import { monthlyPayment } from "@/lib/public-filters";
@@ -17,9 +17,11 @@ export function HomeFinance({ vehicles }: { vehicles: PublicVehicle[] }) {
 
   const selected = priced.find((vehicle) => vehicle.id === vehicleId) ?? priced[0];
   const amount = selected?.precioVentaUsd ?? 25000;
+  const tasa = selected?.tasaUsdDop ?? 62;
   const down = Math.round(amount * (Math.max(downPct, 20) / 100));
   const financed = Math.max(amount - down, 0);
   const cuota = monthlyPayment(financed, plazo);
+  const cuotaDop = cuota * tasa;
 
   const href = useMemo(
     () =>
@@ -30,12 +32,12 @@ export function HomeFinance({ vehicles }: { vehicles: PublicVehicle[] }) {
           `Monto: ${formatUsd(amount)}`,
           `Inicial: ${formatUsd(down)} (${Math.max(downPct, 20)}%)`,
           `Plazo: ${plazo} meses`,
-          `Cuota ilustrativa: ${formatUsd(cuota)} / mes`,
+          `Cuota ilustrativa: ${formatUsd(cuota)} / mes · ${formatDop(cuotaDop)}`,
         ]
           .filter(Boolean)
           .join("\n"),
       ),
-    [amount, cuota, down, downPct, plazo, selected],
+    [amount, cuota, cuotaDop, down, downPct, plazo, selected],
   );
 
   return (
@@ -52,7 +54,7 @@ export function HomeFinance({ vehicles }: { vehicles: PublicVehicle[] }) {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-line bg-surface p-6 shadow-[0_12px_40px_rgba(11,12,16,0.05)] md:p-8">
+        <div className="rounded-3xl border border-line bg-surface p-6 shadow-[0_16px_48px_rgba(11,12,16,0.06)] md:p-8">
           <label className="block text-sm text-muted">
             Vehículo
             <select
@@ -78,46 +80,35 @@ export function HomeFinance({ vehicles }: { vehicles: PublicVehicle[] }) {
               step={1}
               value={downPct}
               onChange={(event) => setDownPct(Number(event.target.value))}
-              className="mt-4 w-full accent-accent"
+              className="luxury-range mt-4 w-full"
             />
           </label>
 
           <label className="mt-5 block text-sm text-muted">
-            Plazo
-            <select
+            Plazo {plazo} meses
+            <input
+              type="range"
+              min={24}
+              max={72}
+              step={12}
               value={plazo}
               onChange={(event) => setPlazo(Number(event.target.value))}
-              className={fieldClass}
-            >
-              {[24, 36, 48, 60, 72].map((months) => (
-                <option key={months} value={months}>
-                  {months} meses
-                </option>
-              ))}
-            </select>
+              className="luxury-range mt-4 w-full"
+            />
           </label>
 
-          <div className="mt-6 grid gap-3 rounded-xl border border-accent/35 bg-white p-4 sm:grid-cols-3">
+          <div className="mt-6 grid gap-3 rounded-2xl border border-emerald-100 bg-white p-4 sm:grid-cols-2">
             <div>
-              <p className="kicker">Monto</p>
-              <p className="mt-1 text-lg text-foreground">{formatUsd(amount)}</p>
+              <p className="kicker">Cuota USD</p>
+              <p className="mt-1 font-display text-2xl text-foreground">{formatUsd(cuota)}</p>
             </div>
             <div>
-              <p className="kicker">A financiar</p>
-              <p className="mt-1 text-lg text-foreground">{formatUsd(financed)}</p>
-            </div>
-            <div>
-              <p className="kicker">Cuota</p>
-              <p className="mt-1 text-lg text-accent">{formatUsd(cuota)}</p>
+              <p className="kicker">Cuota DOP</p>
+              <p className="mt-1 font-display text-2xl text-emerald-700">{formatDop(cuotaDop)}</p>
             </div>
           </div>
 
-          <a
-            href={href}
-            target="_blank"
-            rel="noreferrer"
-            className="btn-whatsapp mt-6 w-full"
-          >
+          <a href={href} target="_blank" rel="noreferrer" className="btn-whatsapp mt-6 w-full">
             Solicitar pre-evaluación por WhatsApp
           </a>
         </div>

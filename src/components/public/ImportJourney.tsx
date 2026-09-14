@@ -2,6 +2,12 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import {
+  BadgeCheck,
+  Scale,
+  ShieldCheck,
+  Ship,
+} from "lucide-react";
 import { formatUsd } from "@/lib/money";
 import { SITE, whatsappHref } from "@/lib/site";
 
@@ -9,21 +15,29 @@ const STEPS = [
   {
     step: "01",
     title: "Selección e Inspección",
+    icon: ShieldCheck,
+    tone: "bg-emerald-50 text-emerald-600",
     copy: "Definimos presupuesto y condición. Inspeccionamos opciones reales en Copart y Manheim, incluyendo historial CARFAX y daños reportados, antes de pujar.",
   },
   {
     step: "02",
     title: "Adjudicación y Seguro Marítimo",
+    icon: Ship,
+    tone: "bg-cyan-50 text-cyan-600",
     copy: "Pujamos con techo acordado, aseguramos el título y contratamos inland más seguro de carga hasta el puerto de destino.",
   },
   {
     step: "03",
     title: "Despacho Aduanal en Santo Domingo",
+    icon: Scale,
+    tone: "bg-amber-50 text-amber-600",
     copy: "Gestión ante DGA, impuestos, exoneraciones Ley 103-13 cuando aplican, y nacionalización con expediente transparente.",
   },
   {
     step: "04",
     title: "Entrega de Llaves",
+    icon: BadgeCheck,
+    tone: "bg-blue-50 text-blue-600",
     copy: "Diagnóstico de recepción, placa y matrícula al día, y entrega en Santo Domingo Este con garantía de proceso Valcron.",
   },
 ] as const;
@@ -59,16 +73,21 @@ export function ImportJourney() {
                   key={item.step}
                   type="button"
                   onClick={() => setActive(index)}
-                  className={`rounded-2xl border px-5 py-5 text-left transition ${
+                  className={`rounded-2xl border px-5 py-5 text-left transition-all duration-200 ${
                     open
                       ? "border-accent/50 bg-white shadow-[0_12px_40px_rgba(11,12,16,0.06)]"
                       : "border-line bg-white/60 hover:border-accent/35"
                   }`}
                 >
-                  <p className="kicker">
-                    Fase {item.step}
-                  </p>
-                  <h3 className="mt-2 font-display text-2xl text-foreground">{item.title}</h3>
+                  <span className="flex items-center gap-3">
+                    <span className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${item.tone}`}>
+                      <item.icon className="h-5 w-5" strokeWidth={2.2} />
+                    </span>
+                    <span>
+                      <p className="kicker">Fase {item.step}</p>
+                      <h3 className="mt-1 font-display text-2xl text-foreground">{item.title}</h3>
+                    </span>
+                  </span>
                   {open ? (
                     <p className="mt-3 text-sm leading-relaxed text-muted">{item.copy}</p>
                   ) : null}
@@ -90,7 +109,7 @@ export function ImportJourney() {
               step={500}
               value={value}
               onChange={(event) => setValue(Number(event.target.value))}
-              className="mt-4 w-full accent-accent"
+          className="luxury-range mt-4 w-full"
             />
             <span className="mt-2 block text-foreground">{formatUsd(value)}</span>
           </label>

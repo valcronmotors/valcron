@@ -1,4 +1,9 @@
 import Image from "next/image";
+import {
+  BadgeCheck,
+  Scale,
+  ShieldCheck,
+} from "lucide-react";
 import { PageHero } from "@/components/public/PageHero";
 import { NOSOTROS_GALLERY_IMAGE, PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
@@ -12,14 +17,20 @@ export const metadata: Metadata = {
 const VALUES = [
   {
     title: "Transparencia",
+    icon: Scale,
+    tone: "bg-amber-50 text-amber-600",
     copy: "Cada partida de costo, título y tiempo de entrega se documenta. No hay letras pequeñas en el proceso.",
   },
   {
     title: "Calidad técnica",
+    icon: ShieldCheck,
+    tone: "bg-emerald-50 text-emerald-600",
     copy: "Diagnóstico de recepción, revisión de historial y criterio de dealer antes de ofrecer una unidad.",
   },
   {
     title: "Servicio de excelencia",
+    icon: BadgeCheck,
+    tone: "bg-blue-50 text-blue-600",
     copy: "Un mismo equipo acompaña desde la primera consulta hasta la entrega en Santo Domingo Este.",
   },
 ];
@@ -97,7 +108,10 @@ export default function NosotrosPage() {
             <div className="mt-6 grid gap-6 md:grid-cols-3">
               {VALUES.map((value) => (
                 <article key={value.title} className="rounded-2xl border border-line bg-white p-8">
-                  <h3 className="font-display text-2xl font-semibold text-foreground">{value.title}</h3>
+                  <span className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${value.tone}`}>
+                    <value.icon className="h-5 w-5" strokeWidth={2.2} />
+                  </span>
+                  <h3 className="mt-4 font-display text-2xl font-semibold text-foreground">{value.title}</h3>
                   <p className="mt-3 text-sm leading-relaxed text-muted">{value.copy}</p>
                 </article>
               ))}

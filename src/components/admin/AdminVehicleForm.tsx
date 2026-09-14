@@ -19,7 +19,7 @@ export function AdminVehicleForm() {
   const [state, action, pending] = useActionState(createVehiculo, null);
 
   return (
-    <AdminCard className="max-w-4xl">
+    <AdminCard className="w-full">
       <h2 className="font-display text-lg font-semibold text-[#0B0C10]">
         Alta de inventario
       </h2>

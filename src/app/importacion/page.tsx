@@ -1,4 +1,4 @@
-import { ImportQuoteForm } from "@/components/public/ImportQuoteForm";
+import { ImportCostCalculator } from "@/components/public/ImportCostCalculator";
 import { PageHero } from "@/components/public/PageHero";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
@@ -116,16 +116,16 @@ export default function ImportacionPage() {
         <section className="bg-white">
           <div className="mx-auto grid max-w-7xl gap-12 px-5 py-24 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
             <div>
-              <p className="kicker">Cotización</p>
+              <p className="kicker">Calculadora</p>
               <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-foreground">
-                Solicita tu cotización
+                Estima el costo de traer tu unidad
               </h2>
               <p className="mt-5 text-sm leading-relaxed text-muted">
-                Completa el formulario y lo enviamos directo al WhatsApp {SITE.whatsapp} para
-                iniciar la asesoría.
+                Ajusta subasta, flete, DGA y puerto en tiempo real. El resultado es ilustrativo y
+                se envía al WhatsApp {SITE.whatsapp} para abrir el expediente.
               </p>
             </div>
-            <ImportQuoteForm />
+            <ImportCostCalculator />
           </div>
         </section>
       </main>

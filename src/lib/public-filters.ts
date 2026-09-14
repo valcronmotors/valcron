@@ -19,6 +19,17 @@ export function uniqueMarcas(vehicles: PublicVehicle[]) {
   return [...new Set(vehicles.map((vehicle) => vehicle.marca).filter(Boolean))].sort();
 }
 
+export function uniqueModelos(vehicles: PublicVehicle[], marca?: string) {
+  return [
+    ...new Set(
+      vehicles
+        .filter((vehicle) => !marca || vehicle.marca === marca)
+        .map((vehicle) => vehicle.modelo)
+        .filter(Boolean),
+    ),
+  ].sort();
+}
+
 export function uniqueAnos(vehicles: PublicVehicle[]) {
   return [...new Set(vehicles.map((vehicle) => vehicle.ano))].sort((a, b) => b - a);
 }
@@ -33,6 +44,7 @@ export function parsePriceRange(value: string | null | undefined) {
 
 export function inventorySearchHref(filters: {
   marca?: string;
+  modelo?: string;
   ano?: string;
   listing?: string;
   price?: string;
@@ -40,6 +52,9 @@ export function inventorySearchHref(filters: {
   const params = new URLSearchParams();
   if (filters.marca) {
     params.set("marca", filters.marca);
+  }
+  if (filters.modelo) {
+    params.set("modelo", filters.modelo);
   }
   if (filters.ano) {
     params.set("ano", filters.ano);

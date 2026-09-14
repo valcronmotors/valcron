@@ -2,9 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { CurrencySwitch } from "@/components/public/CurrencyProvider";
 import { InventoryEmptyState } from "@/components/public/LandingInventory";
 import { VehicleCard } from "@/components/public/VehicleCard";
 import type { PublicVehicle } from "@/lib/public-catalog";
+import { uniqueModelos } from "@/lib/public-filters";
 import { createClient } from "@/utils/supabase/client";
 
 const fieldClass = "field-input";
@@ -16,6 +18,7 @@ export function VehicleCatalog() {
   const [loading, setLoading] = useState(true);
   const [listing, setListing] = useState(searchParams.get("listing") ?? "");
   const [marca, setMarca] = useState(searchParams.get("marca") ?? "");
+  const [modelo, setModelo] = useState(searchParams.get("modelo") ?? "");
   const [ano, setAno] = useState(searchParams.get("ano") ?? "");
   const [precioMin, setPrecioMin] = useState(searchParams.get("precioMin") ?? "");
   const [precioMax, setPrecioMax] = useState(searchParams.get("precioMax") ?? "");
@@ -77,6 +80,7 @@ export function VehicleCatalog() {
   useEffect(() => {
     setListing(searchParams.get("listing") ?? "");
     setMarca(searchParams.get("marca") ?? "");
+    setModelo(searchParams.get("modelo") ?? "");
     setAno(searchParams.get("ano") ?? "");
     setPrecioMin(searchParams.get("precioMin") ?? "");
     setPrecioMax(searchParams.get("precioMax") ?? "");
@@ -90,6 +94,7 @@ export function VehicleCatalog() {
     }
     return [...values].sort();
   }, [marca, vehicles]);
+  const modelos = useMemo(() => uniqueModelos(vehicles, marca || undefined), [marca, vehicles]);
   const anos = useMemo(() => {
     const values = new Set(vehicles.map((vehicle) => vehicle.ano));
     if (ano) {
@@ -113,6 +118,9 @@ export function VehicleCatalog() {
       if (marca && vehicle.marca !== marca) {
         return false;
       }
+      if (modelo && vehicle.modelo !== modelo) {
+        return false;
+      }
       if (ano && String(vehicle.ano) !== ano) {
         return false;
       }
@@ -130,7 +138,7 @@ export function VehicleCatalog() {
         .toLowerCase()
         .includes(needle);
     });
-  }, [ano, listing, marca, precioMax, precioMin, search, vehicles]);
+  }, [ano, listing, marca, modelo, precioMax, precioMin, search, vehicles]);
 
   return (
     <div className="grid gap-8">
@@ -139,6 +147,15 @@ export function VehicleCatalog() {
           {error}
         </p>
       ) : null}
+
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-muted">
+          {loading
+            ? "Sincronizando inventario..."
+            : `${visible.length} unidad${visible.length === 1 ? "" : "es"}`}
+        </p>
+        <CurrencySwitch />
+      </div>
 
       <div className="grid gap-4 rounded-2xl border border-line bg-surface p-5 md:grid-cols-2 xl:grid-cols-3">
         <label className="block text-sm text-muted md:col-span-2 xl:col-span-3">
@@ -159,14 +176,36 @@ export function VehicleCatalog() {
           >
             <option value="">Todos</option>
             <option value="dealer">Disponible en RD</option>
-            <option value="auction">En Subasta Copart / Manheim</option>
+            <option value="auction">Importación por Encargo (Copart / IAAI / Manheim)</option>
           </select>
         </label>
         <label className="block text-sm text-muted">
           Marca
-          <select value={marca} onChange={(event) => setMarca(event.target.value)} className={fieldClass}>
+          <select
+            value={marca}
+            onChange={(event) => {
+              setMarca(event.target.value);
+              setModelo("");
+            }}
+            className={fieldClass}
+          >
             <option value="">Todas</option>
             {marcas.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block text-sm text-muted">
+          Modelo
+          <select
+            value={modelo}
+            onChange={(event) => setModelo(event.target.value)}
+            className={fieldClass}
+          >
+            <option value="">Todos</option>
+            {modelos.map((option) => (
               <option key={option} value={option}>
                 {option}
               </option>
@@ -212,6 +251,7 @@ export function VehicleCatalog() {
             onClick={() => {
               setListing("");
               setMarca("");
+              setModelo("");
               setAno("");
               setPrecioMin("");
               setPrecioMax("");
@@ -223,10 +263,6 @@ export function VehicleCatalog() {
           </button>
         </div>
       </div>
-
-      <p className="text-sm text-muted">
-        {loading ? "Sincronizando inventario..." : `${visible.length} unidad${visible.length === 1 ? "" : "es"}`}
-      </p>
 
       {loading ? (
         <p className="rounded-2xl border border-line px-6 py-12 text-center text-sm text-muted">

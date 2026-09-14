@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Inter, Plus_Jakarta_Sans } from "next/font/google";
-import { Footer } from "@/components/Footer";
-import { Navbar } from "@/components/Navbar";
+import { PublicExperience } from "@/components/public/PublicExperience";
 import { SITE } from "@/lib/site";
 import "./globals.css";
 
@@ -54,9 +53,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${jakarta.variable} ${geistMono.variable} h-full scroll-smooth antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background font-sans text-foreground">
-        <Navbar />
-        <div className="flex flex-1 flex-col">{children}</div>
-        <Footer />
+        <PublicExperience>{children}</PublicExperience>
       </body>
     </html>
   );

@@ -3,42 +3,17 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import {
-  Car,
-  ChevronDown,
-  ChevronsLeft,
-  CircleDollarSign,
-  CreditCard,
-  Globe,
-  LayoutDashboard,
-  LineChart,
-  LogOut,
-  Scale,
-  Settings,
-  Ship,
-  Users,
-  type LucideIcon,
-} from "lucide-react";
+import { ChevronDown, ChevronsLeft, Globe, LogOut } from "lucide-react";
 import { signOut } from "@/app/actions/auth";
+import { ADMIN_NAV_ICONS } from "@/components/admin/admin-icons";
 import { BrandLogo } from "@/components/public/BrandLogo";
 import {
   ADMIN_NAV,
+  isAdminNavChildActive,
   sectionHasActiveChild,
-  type AdminNavIcon,
   type AdminNavSection,
 } from "@/lib/admin-nav";
-
-const ICONS: Record<AdminNavIcon, LucideIcon> = {
-  dashboard: LayoutDashboard,
-  inventory: Car,
-  imports: Ship,
-  finance: CreditCard,
-  legal: Scale,
-  accounting: CircleDollarSign,
-  clients: Users,
-  reports: LineChart,
-  settings: Settings,
-};
+import { ADMIN_NAV_TONE } from "@/lib/admin-theme";
 
 export type AdminShellUser = {
   name: string;
@@ -66,14 +41,20 @@ export function AdminSidebar({
   return (
     <aside
       className={`flex h-full flex-col border-r border-gray-200 bg-white ${
-        collapsed ? "w-[4.75rem]" : "w-64"
+        collapsed ? "w-16" : "w-64"
       }`}
     >
-      <div className="flex items-center justify-between gap-2 border-b border-gray-100 px-3 py-4">
+      <div
+        className={`flex border-b border-gray-100 ${
+          collapsed
+            ? "flex-col items-center gap-2 px-1 py-3"
+            : "items-center justify-between gap-2 px-3 py-4"
+        }`}
+      >
         <Link
           href="/admin"
           onClick={onNavigate}
-          className={`min-w-0 ${collapsed ? "mx-auto" : ""}`}
+          className="min-w-0"
           aria-label="Valcron ERP"
         >
           {collapsed ? (
@@ -92,7 +73,9 @@ export function AdminSidebar({
         <button
           type="button"
           onClick={onToggleCollapsed}
-          className="hidden h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-50 hover:text-[#0B0C10] lg:inline-flex"
+          className={`inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-all duration-200 hover:bg-blue-50/70 hover:text-blue-600 ${
+            collapsed ? "" : "hidden lg:inline-flex"
+          }`}
           aria-label={collapsed ? "Expandir menú" : "Colapsar menú"}
         >
           <ChevronsLeft
@@ -115,9 +98,9 @@ export function AdminSidebar({
         </ul>
       </nav>
 
-      <div className="border-t border-gray-100 p-3">
+      <div className={`border-t border-gray-100 ${collapsed ? "p-2" : "p-3"}`}>
         <div className={`flex items-center gap-3 ${collapsed ? "justify-center" : ""}`}>
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#0B0C10] text-[11px] font-semibold text-white">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-800 to-[#0B0C10] text-[11px] font-semibold text-white shadow-sm">
             {initials(user.name)}
           </span>
           {collapsed ? null : (
@@ -129,23 +112,27 @@ export function AdminSidebar({
             </div>
           )}
         </div>
-        <div className={`mt-3 grid gap-1 ${collapsed ? "" : ""}`}>
+        <div className="mt-3 grid gap-1">
           <Link
             href="/"
             onClick={onNavigate}
-            className="inline-flex h-9 items-center justify-center gap-2 rounded-lg px-3 text-xs font-medium text-gray-500 transition hover:bg-gray-50 hover:text-[#0B0C10]"
+            className={`inline-flex h-9 items-center justify-center gap-2 rounded-lg text-xs font-medium text-gray-500 transition-all duration-200 hover:bg-cyan-50/70 hover:text-cyan-700 ${
+              collapsed ? "w-full px-0" : "px-3"
+            }`}
             title="Sitio web público"
           >
-            <Globe className="h-4 w-4" />
+            <Globe className="h-4 w-4 text-cyan-500" />
             {collapsed ? null : "Sitio web público"}
           </Link>
           <form action={signOut}>
             <button
               type="submit"
-              className="inline-flex h-9 w-full items-center justify-center gap-2 rounded-lg px-3 text-xs font-medium text-gray-500 transition hover:bg-red-50 hover:text-red-700"
+              className={`inline-flex h-9 w-full items-center justify-center gap-2 rounded-lg text-xs font-medium text-gray-500 transition-all duration-200 hover:bg-red-50 hover:text-red-700 ${
+                collapsed ? "px-0" : "px-3"
+              }`}
               title="Cerrar sesión"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-4 w-4 text-red-400" />
               {collapsed ? null : "Cerrar sesión"}
             </button>
           </form>
@@ -166,7 +153,8 @@ function NavSection({
   collapsed: boolean;
   onNavigate?: () => void;
 }) {
-  const Icon = ICONS[section.icon];
+  const Icon = ADMIN_NAV_ICONS[section.icon];
+  const tone = ADMIN_NAV_TONE[section.icon];
   const active = sectionHasActiveChild(pathname, section);
   const [open, setOpen] = useState(active);
 
@@ -176,6 +164,14 @@ function NavSection({
     }
   }, [active]);
 
+  const iconMark = (
+    <span
+      className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${tone.wrap}`}
+    >
+      <Icon className={`h-4 w-4 ${tone.icon}`} strokeWidth={2.25} />
+    </span>
+  );
+
   if (section.href) {
     return (
       <li>
@@ -183,13 +179,11 @@ function NavSection({
           href={section.href}
           onClick={onNavigate}
           title={section.label}
-          className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
-            active
-              ? "bg-[#0B0C10] text-white"
-              : "text-gray-600 hover:bg-gray-50 hover:text-[#0B0C10]"
+          className={`flex items-center gap-3 rounded-lg px-2 py-1.5 text-sm transition-all duration-200 ${
+            active ? tone.active : `text-gray-600 ${tone.hover}`
           } ${collapsed ? "justify-center px-0" : ""}`}
         >
-          <Icon className="h-4 w-4 shrink-0" />
+          {iconMark}
           {collapsed ? null : (
             <span className="font-medium">{section.label}</span>
           )}
@@ -206,13 +200,11 @@ function NavSection({
           href={first?.href ?? "/admin"}
           onClick={onNavigate}
           title={section.label}
-          className={`flex items-center justify-center rounded-lg py-2.5 text-sm transition ${
-            active
-              ? "bg-[#0B0C10] text-white"
-              : "text-gray-600 hover:bg-gray-50 hover:text-[#0B0C10]"
+          className={`flex items-center justify-center rounded-lg py-1.5 text-sm transition-all duration-200 ${
+            active ? tone.active : `text-gray-600 ${tone.hover}`
           }`}
         >
-          <Icon className="h-4 w-4" />
+          {iconMark}
         </Link>
       </li>
     );
@@ -224,31 +216,41 @@ function NavSection({
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-gray-600 transition hover:bg-gray-50 hover:text-[#0B0C10]"
+        className={`flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-left text-sm transition-all duration-200 ${
+          active ? tone.active : `text-gray-600 ${tone.hover}`
+        }`}
       >
-        <Icon className="h-4 w-4 shrink-0" />
+        {iconMark}
         <span className="flex-1 font-medium">{section.label}</span>
         <ChevronDown
           className={`h-3.5 w-3.5 text-gray-400 transition ${open ? "rotate-180" : ""}`}
         />
       </button>
       {open ? (
-        <ul className="mt-1 ml-5 space-y-0.5 border-l border-gray-100 py-1 pl-4">
-          {section.children?.map((child) => (
-            <li key={child.href}>
-              <Link
-                href={child.href}
-                onClick={onNavigate}
-                className={`block rounded-md px-2.5 py-1.5 text-[13px] leading-5 transition ${
-                  pathname === child.href
-                    ? "bg-gray-50 font-medium text-[#0B0C10] ring-1 ring-gray-200"
-                    : "text-gray-500 hover:bg-gray-50 hover:text-[#0B0C10]"
-                }`}
-              >
-                {child.label}
-              </Link>
-            </li>
-          ))}
+        <ul className="mt-1 ml-[1.35rem] space-y-0.5 border-l border-gray-100 py-1 pl-5">
+          {section.children?.map((child) => {
+            const childActive = isAdminNavChildActive(
+              pathname,
+              child.href,
+              section.children ?? [],
+            );
+            return (
+              <li key={child.href}>
+                <Link
+                  href={child.href}
+                  onClick={onNavigate}
+                  aria-current={childActive ? "page" : undefined}
+                  className={`block rounded-md px-2.5 py-1.5 text-[13px] leading-5 transition-all duration-200 ${
+                    childActive
+                      ? tone.childActive
+                      : `text-gray-500 ${tone.childHover}`
+                  }`}
+                >
+                  {child.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       ) : null}
     </li>

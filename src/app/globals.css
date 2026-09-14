@@ -148,3 +148,41 @@ h3 {
   text-transform: uppercase;
   color: var(--accent);
 }
+
+@keyframes kenburns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+.hero-kenburns {
+  animation: kenburns 14s ease-out forwards;
+}
+
+input[type="range"].luxury-range {
+  appearance: none;
+  height: 0.35rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+input[type="range"].luxury-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 9999px;
+  background: #0b0c10;
+  border: 2px solid #c5a059;
+  box-shadow: 0 0 0 4px rgba(197, 160, 89, 0.16);
+  cursor: pointer;
+}
+input[type="range"].luxury-range::-moz-range-thumb {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 9999px;
+  background: #0b0c10;
+  border: 2px solid #c5a059;
+  cursor: pointer;
+}

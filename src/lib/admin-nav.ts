@@ -1,5 +1,6 @@
 export type AdminNavIcon =
   | "dashboard"
+  | "messaging"
   | "inventory"
   | "imports"
   | "finance"
@@ -31,21 +32,49 @@ export const ADMIN_NAV: AdminNavSection[] = [
     href: "/admin",
   },
   {
+    id: "mensajeria",
+    label: "Mensajería Omnicanal & IA",
+    icon: "messaging",
+    children: [
+      {
+        href: "/admin/mensajeria",
+        label: "Bandeja unificada",
+        description:
+          "WhatsApp, Instagram y Facebook con piloto automático de IA comercial.",
+      },
+      {
+        href: "/admin/mensajeria/whatsapp",
+        label: "WhatsApp",
+        description: "Conversaciones del canal WhatsApp Business.",
+      },
+      {
+        href: "/admin/mensajeria/instagram",
+        label: "Instagram",
+        description: "Bandeja de Instagram Direct vinculada al CRM.",
+      },
+      {
+        href: "/admin/mensajeria/facebook",
+        label: "Facebook",
+        description: "Messenger y anuncios Meta conectados al embudo comercial.",
+      },
+    ],
+  },
+  {
     id: "inventario",
     label: "Inventario & Stock",
     icon: "inventory",
     children: [
       {
         href: "/admin/inventario",
-        label: "Ver Stock RD",
+        label: "Stock RD",
         description:
           "Unidades disponibles, en taller y vendidas en República Dominicana.",
       },
       {
-        href: "/admin/inventario/nuevo",
-        label: "Agregar Vehículo",
+        href: "/admin/inventario/ubicaciones",
+        label: "Ubicación / Llaves",
         description:
-          "Alta de inventario con VIN, costos de importación y precio de venta.",
+          "Control de llaves, lote, patio y ubicación física de cada unidad.",
       },
       {
         href: "/admin/inventario/recepciones",
@@ -55,9 +84,9 @@ export const ADMIN_NAV: AdminNavSection[] = [
       },
       {
         href: "/admin/inventario/taller",
-        label: "Reacondicionamiento & Taller",
+        label: "Detailing / Taller",
         description:
-          "Órdenes de reacondicionamiento, costos de taller y listos para venta.",
+          "Órdenes de detailing, reacondicionamiento y listos para venta.",
       },
     ],
   },
@@ -68,19 +97,19 @@ export const ADMIN_NAV: AdminNavSection[] = [
     children: [
       {
         href: "/admin/importaciones/subastas",
-        label: "Subastas Copart / IAAI / Manheim",
+        label: "Copart / IAAI / Manheim",
         description:
           "Pipeline de compras en Copart, IAAI y Manheim con lote y VIN.",
       },
       {
         href: "/admin/importaciones/tracker",
-        label: "Tracker Logístico por VIN",
+        label: "Logística por VIN",
         description:
           "Seguimiento de tránsito, puerto, DGA y llegada a piso de venta.",
       },
       {
         href: "/admin/importaciones/landing-cost",
-        label: "Calculadora Landing Cost",
+        label: "Landing Cost",
         description:
           "Costo total aterrizado: subasta, fees, flete, taller e impuestos DGA.",
       },
@@ -88,12 +117,12 @@ export const ADMIN_NAV: AdminNavSection[] = [
   },
   {
     id: "financiamiento",
-    label: "Financiamiento & Pre-Aprobaciones",
+    label: "Financiamiento",
     icon: "finance",
     children: [
       {
         href: "/admin/financiamiento/solicitudes",
-        label: "Solicitudes Web",
+        label: "Pre-Aprobaciones",
         description:
           "Solicitudes de pre-aprobación capturadas desde el sitio público.",
       },
@@ -105,7 +134,7 @@ export const ADMIN_NAV: AdminNavSection[] = [
       },
       {
         href: "/admin/financiamiento/simulador",
-        label: "Simulador de Cuotas",
+        label: "Simulador",
         description:
           "Simulación de inicial, plazo y cuota mensual para el cliente.",
       },
@@ -113,7 +142,7 @@ export const ADMIN_NAV: AdminNavSection[] = [
   },
   {
     id: "legales",
-    label: "Legales & Contratos",
+    label: "Legales, Matrículas & DGII",
     icon: "legal",
     children: [
       {
@@ -122,21 +151,27 @@ export const ADMIN_NAV: AdminNavSection[] = [
         description: "Generación y archivo de actos de venta notariales.",
       },
       {
-        href: "/admin/legales/contratos-importacion",
-        label: "Contratos de Importación",
-        description:
-          "Contratos de importación a nombre del cliente o de la empresa.",
+        href: "/admin/legales/traspasos",
+        label: "Traspasos",
+        description: "Expedientes de traspaso y cambio de propietario.",
       },
       {
-        href: "/admin/legales/traspasos",
-        label: "Traspasos & Matrículas",
-        description: "Control de traspasos, placas y matrículas DGII/INTRANT.",
+        href: "/admin/legales/placas",
+        label: "Placas X",
+        description:
+          "Gestión de placas X, matrículas temporales y seguimiento DGII/INTRANT.",
+      },
+      {
+        href: "/admin/legales/contratos",
+        label: "Contratos",
+        description:
+          "Contratos de importación, compraventa y documentos legales del dealer.",
       },
     ],
   },
   {
     id: "finanzas",
-    label: "Finanzas & Contabilidad",
+    label: "Finanzas & NCF",
     icon: "accounting",
     children: [
       {
@@ -151,15 +186,21 @@ export const ADMIN_NAV: AdminNavSection[] = [
       },
       {
         href: "/admin/finanzas/ncf",
-        label: "NCF / Reporte 606 & 607 DGII",
+        label: "Comprobantes 606 / 607 DGII",
         description:
-          "Emisión de comprobantes fiscales y reportes 606 / 607.",
+          "Emisión de NCF y reportes 606 / 607 para cumplimiento fiscal.",
       },
       {
         href: "/admin/finanzas/margen",
-        label: "Margen por Vehículo",
+        label: "Margen Neto",
         description:
           "Utilidad neta, ROI y desglose de costo versus precio de venta.",
+      },
+      {
+        href: "/admin/finanzas/seguros",
+        label: "Pólizas de Seguro",
+        description:
+          "Pólizas de stock, tránsito, responsabilidad civil y cobertura al cliente.",
       },
     ],
   },
@@ -170,7 +211,7 @@ export const ADMIN_NAV: AdminNavSection[] = [
     children: [
       {
         href: "/admin/clientes",
-        label: "Directorio de Clientes",
+        label: "Directorio",
         description: "Base de prospectos y clientes de Valcron Motors.",
       },
       {
@@ -180,15 +221,8 @@ export const ADMIN_NAV: AdminNavSection[] = [
       },
       {
         href: "/admin/clientes/cotizador",
-        label: "Cotizador PDF / WhatsApp",
-        description:
-          "Cotizaciones formales para envío por PDF o WhatsApp.",
-      },
-      {
-        href: "/admin/mensajeria",
-        label: "Mensajería Omnicanal & IA",
-        description:
-          "Bandeja WhatsApp, Instagram y Facebook con piloto automático de IA comercial.",
+        label: "Cotizaciones",
+        description: "Cotizaciones formales para envío por PDF o WhatsApp.",
       },
     ],
   },
@@ -199,38 +233,50 @@ export const ADMIN_NAV: AdminNavSection[] = [
     children: [
       {
         href: "/admin/reportes/rentabilidad",
-        label: "Rentabilidad por Marca",
+        label: "Rentabilidad",
         description: "Margen consolidado por marca, modelo y fuente de compra.",
       },
       {
         href: "/admin/reportes/comisiones",
-        label: "Comisiones de Vendedores",
+        label: "Comisiones",
         description: "Comisiones por cierre y productividad del equipo comercial.",
       },
     ],
   },
   {
     id: "configuracion",
-    label: "Configuración",
+    label: "Configuración & Auditoría",
     icon: "settings",
     children: [
       {
         href: "/admin/configuracion/usuarios",
-        label: "Usuarios y Permisos",
+        label: "Usuarios",
         description:
           "Alta de administradores y vendedores, claves y revocación de acceso.",
+      },
+      {
+        href: "/admin/configuracion/permisos",
+        label: "Permisos",
+        description:
+          "Roles, accesos por módulo y políticas de autorización del ERP.",
+      },
+      {
+        href: "/admin/configuracion/auditoria",
+        label: "Audit Logs",
+        description:
+          "Registro de auditoría: altas, cambios de precio, accesos y revocaciones.",
+      },
+      {
+        href: "/admin/configuracion/ia",
+        label: "IA & Webhooks Meta",
+        description:
+          "Tokens de WhatsApp, Instagram y Facebook y prompt del asesor IA.",
       },
       {
         href: "/admin/configuracion/empresa",
         label: "Datos Fiscales Empresa",
         description:
           "RNC, dirección fiscal, NCF y datos corporativos de Valcron Motors.",
-      },
-      {
-        href: "/admin/configuracion/ia",
-        label: "IA & Webhooks Meta",
-        description:
-          "Tokens de WhatsApp, Instagram y Facebook, prompt del asesor IA y verificación de webhooks.",
       },
     ],
   },
@@ -243,9 +289,20 @@ export function isAdminPathActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+export function isAdminNavChildActive(
+  pathname: string,
+  childHref: string,
+  siblings: AdminNavChild[],
+) {
+  const match = siblings
+    .filter((entry) => isAdminPathActive(pathname, entry.href))
+    .sort((a, b) => b.href.length - a.href.length)[0];
+  return match?.href === childHref;
+}
+
 export function findAdminNavItem(pathname: string) {
   for (const section of ADMIN_NAV) {
-    if (section.href && isAdminPathActive(pathname, section.href)) {
+    if (section.href && pathname === section.href) {
       return {
         section,
         item: {
@@ -256,18 +313,28 @@ export function findAdminNavItem(pathname: string) {
       };
     }
 
-    const child = section.children?.find((entry) => pathname === entry.href);
-    if (child) {
-      return { section, item: child };
+    const exact = section.children?.find((entry) => pathname === entry.href);
+    if (exact) {
+      return { section, item: exact };
+    }
+
+    const nested = section.children
+      ?.filter((entry) => pathname.startsWith(`${entry.href}/`))
+      .sort((a, b) => b.href.length - a.href.length)[0];
+    if (nested) {
+      return { section, item: nested };
     }
   }
 
   return null;
 }
 
-export function sectionHasActiveChild(pathname: string, section: AdminNavSection) {
+export function sectionHasActiveChild(
+  pathname: string,
+  section: AdminNavSection,
+) {
   if (section.href) {
-    return isAdminPathActive(pathname, section.href);
+    return pathname === section.href;
   }
   return Boolean(
     section.children?.some(

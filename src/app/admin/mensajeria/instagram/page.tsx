@@ -2,13 +2,13 @@ import { MensajeriaInbox } from "@/app/admin/mensajeria/inbox";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Mensajería Omnicanal & IA",
+  title: "Instagram",
 };
 
-export default async function MensajeriaPage({
+export default async function InstagramInboxPage({
   searchParams,
 }: {
   searchParams: Promise<{ c?: string }>;
 }) {
-  return <MensajeriaInbox searchParams={searchParams} />;
+  return <MensajeriaInbox canal="instagram" searchParams={searchParams} />;
 }

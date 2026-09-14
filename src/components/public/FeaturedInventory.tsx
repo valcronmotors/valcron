@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { CurrencySwitch } from "@/components/public/CurrencyProvider";
 import { InventoryEmptyState } from "@/components/public/LandingInventory";
 import { VehicleCard } from "@/components/public/VehicleCard";
 import type { PublicVehicle } from "@/lib/public-catalog";
@@ -97,12 +98,12 @@ export function FeaturedInventory({
               activas en Copart y Manheim.
             </p>
           </div>
-          <Link
-            href="/inventario"
-            className="btn-secondary shrink-0"
-          >
-            Ver inventario completo
-          </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <CurrencySwitch />
+            <Link href="/inventario" className="btn-secondary shrink-0">
+              Ver inventario completo
+            </Link>
+          </div>
         </div>
 
         <div className="mt-10 flex flex-wrap gap-2">

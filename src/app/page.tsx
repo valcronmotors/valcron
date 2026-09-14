@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import {
+  BadgeCheck,
+  Scale,
+  ShieldCheck,
+  Ship,
+} from "lucide-react";
 import { FeaturedInventory } from "@/components/public/FeaturedInventory";
 import { HeroShowcase } from "@/components/public/HeroShowcase";
 import { HomeFinance } from "@/components/public/HomeFinance";
@@ -30,10 +36,30 @@ export const metadata: Metadata = {
 };
 
 const METRICS = [
-  { value: "+30", label: "Vehículos en Stock y Subastas" },
-  { value: "Copart & Manheim", label: "Importación Directa desde EE. UU." },
-  { value: "Ley 103-13", label: "Asesoría de Exoneración Eco" },
-  { value: "Certificado", label: "Garantía Mecánica y Diagnóstico" },
+  {
+    value: "+30",
+    label: "Vehículos en Stock y Subastas",
+    icon: ShieldCheck,
+    tone: "bg-emerald-50 text-emerald-600",
+  },
+  {
+    value: "Copart & Manheim",
+    label: "Importación Directa desde EE. UU.",
+    icon: Ship,
+    tone: "bg-cyan-50 text-cyan-600",
+  },
+  {
+    value: "Ley 103-13",
+    label: "Asesoría de Exoneración Eco",
+    icon: Scale,
+    tone: "bg-amber-50 text-amber-600",
+  },
+  {
+    value: "Certificado",
+    label: "Garantía Mecánica y Diagnóstico",
+    icon: BadgeCheck,
+    tone: "bg-blue-50 text-blue-600",
+  },
 ];
 
 const TESTIMONIALS = [
@@ -58,9 +84,24 @@ const TESTIMONIALS = [
 ];
 
 const WARRANTY = [
-  { title: "Motor", copy: "Cobertura de diagnóstico y respaldo mecánico en unidades entregadas por el dealer." },
-  { title: "Transmisión", copy: "Revisión de operación y criterio técnico antes de publicar o entregar la unidad." },
-  { title: "Chasis", copy: "Certificación visual y documental del chasis, título e historial de importación." },
+  {
+    title: "Motor",
+    copy: "Cobertura de diagnóstico y respaldo mecánico en unidades entregadas por el dealer.",
+    icon: ShieldCheck,
+    tone: "bg-emerald-50 text-emerald-600",
+  },
+  {
+    title: "Transmisión",
+    copy: "Revisión de operación y criterio técnico antes de publicar o entregar la unidad.",
+    icon: BadgeCheck,
+    tone: "bg-blue-50 text-blue-600",
+  },
+  {
+    title: "Chasis",
+    copy: "Certificación visual y documental del chasis, título e historial de importación.",
+    icon: Scale,
+    tone: "bg-amber-50 text-amber-600",
+  },
 ];
 
 export default async function Home() {
@@ -89,7 +130,12 @@ export default async function Home() {
             <div className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line shadow-[0_16px_48px_rgba(11,12,16,0.05)] sm:grid-cols-2 lg:grid-cols-4">
               {METRICS.map((metric) => (
                 <article key={metric.label} className="bg-white px-6 py-8">
-                  <p className="font-display text-2xl text-accent sm:text-3xl">{metric.value}</p>
+                  <span
+                    className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${metric.tone}`}
+                  >
+                    <metric.icon className="h-5 w-5" strokeWidth={2.2} />
+                  </span>
+                  <p className="mt-4 font-display text-2xl text-accent sm:text-3xl">{metric.value}</p>
                   <p className="mt-2 text-sm leading-6 text-muted">{metric.label}</p>
                 </article>
               ))}
@@ -169,7 +215,12 @@ export default async function Home() {
               <div className="mt-8 grid gap-6 md:grid-cols-3">
                 {WARRANTY.map((item) => (
                   <article key={item.title}>
-                    <h4 className="font-display text-xl text-foreground">{item.title}</h4>
+                    <span
+                      className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${item.tone}`}
+                    >
+                      <item.icon className="h-5 w-5" strokeWidth={2.2} />
+                    </span>
+                    <h4 className="mt-4 font-display text-xl text-foreground">{item.title}</h4>
                     <p className="mt-2 text-sm leading-relaxed text-muted">{item.copy}</p>
                   </article>
                 ))}

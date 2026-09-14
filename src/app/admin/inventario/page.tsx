@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminStatusBadge, AuctionBadge } from "@/components/admin/AdminBadges";
 import { AdminSuccess } from "@/components/admin/ui";
 import { getValcronVehicles } from "@/lib/admin-data";
 import {
@@ -12,21 +13,6 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Stock RD",
 };
-
-function statusClass(estado: string | null) {
-  switch (estado) {
-    case "Disponible":
-      return "bg-emerald-50 text-emerald-800";
-    case "Vendido":
-      return "bg-gray-100 text-gray-600";
-    case "En Taller":
-      return "bg-amber-50 text-amber-800";
-    case "En Tránsito":
-      return "bg-sky-50 text-sky-800";
-    default:
-      return "bg-gray-50 text-gray-700";
-  }
-}
 
 export default async function AdminInventarioPage({
   searchParams,
@@ -87,14 +73,10 @@ export default async function AdminInventarioPage({
                       {vehicle.vin}
                     </td>
                     <td className="px-4 py-3">
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusClass(vehicle.estado)}`}
-                      >
-                        {vehicle.estado ?? "—"}
-                      </span>
+                      <AdminStatusBadge estado={vehicle.estado} />
                     </td>
-                    <td className="px-4 py-3 text-gray-500">
-                      {vehicle.fuente_subasta || "—"}
+                    <td className="px-4 py-3">
+                      <AuctionBadge source={vehicle.fuente_subasta} />
                     </td>
                     <td className="px-4 py-3">{formatUsdPlain(vehicleCostUsd(vehicle))}</td>
                     <td className="px-4 py-3">{formatUsdPlain(vehicleSaleUsd(vehicle))}</td>

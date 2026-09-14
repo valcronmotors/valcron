@@ -1,3 +1,4 @@
+import { AdminCrmBadge } from "@/components/admin/AdminBadges";
 import { getValcronProspectos } from "@/lib/admin-data";
 import { CRM_STATES } from "@/lib/crm";
 import type { Metadata } from "next";
@@ -27,8 +28,9 @@ export default async function KanbanPage() {
             className="w-72 shrink-0 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
           >
             <div className="mb-4 flex items-center justify-between gap-2">
-              <h2 className="text-sm font-medium text-[#0B0C10]">{estado}</h2>
-              <span className="rounded-full bg-gray-50 px-2 py-0.5 text-xs text-gray-500">
+              <h2 className="sr-only">{estado}</h2>
+              <AdminCrmBadge estado={estado} />
+              <span className="rounded-full bg-gray-50 px-2 py-0.5 text-xs font-medium text-gray-500">
                 {cards.length}
               </span>
             </div>

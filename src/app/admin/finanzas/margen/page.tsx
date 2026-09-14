@@ -1,3 +1,4 @@
+import { AdminStatusBadge } from "@/components/admin/AdminBadges";
 import { getValcronVehicles } from "@/lib/admin-data";
 import {
   formatUsdPlain,
@@ -47,7 +48,9 @@ export default async function MargenPage() {
                 <td className="px-4 py-3 font-medium text-[#0B0C10]">
                   {vehicleLabel(vehicle)}
                 </td>
-                <td className="px-4 py-3 text-gray-500">{vehicle.estado ?? "—"}</td>
+                <td className="px-4 py-3">
+                  <AdminStatusBadge estado={vehicle.estado} />
+                </td>
                 <td className="px-4 py-3">{formatUsdPlain(vehicleCostUsd(vehicle))}</td>
                 <td className="px-4 py-3">{formatUsdPlain(vehicleSaleUsd(vehicle))}</td>
                 <td

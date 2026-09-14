@@ -2,13 +2,13 @@ import { MensajeriaInbox } from "@/app/admin/mensajeria/inbox";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Mensajería Omnicanal & IA",
+  title: "WhatsApp",
 };
 
-export default async function MensajeriaPage({
+export default async function WhatsAppInboxPage({
   searchParams,
 }: {
   searchParams: Promise<{ c?: string }>;
 }) {
-  return <MensajeriaInbox searchParams={searchParams} />;
+  return <MensajeriaInbox canal="whatsapp" searchParams={searchParams} />;
 }

@@ -13,7 +13,7 @@ export function AdminPlaceholder({
   actionLabel?: string;
 }) {
   return (
-    <AdminCard className="max-w-3xl">
+    <AdminCard className="w-full">
       <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#C5A059]">
         Módulo operativo
       </p>

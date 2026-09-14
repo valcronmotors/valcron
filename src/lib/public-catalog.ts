@@ -69,7 +69,7 @@ export function dealerWhatsappDigits() {
 
 export function isCopartOrManheim(value: string | null | undefined) {
   const fuente = (value ?? "").trim().toLowerCase();
-  return fuente === "copart" || fuente === "manheim";
+  return fuente === "copart" || fuente === "manheim" || fuente === "iaai";
 }
 
 export function isPublicVehicleListing(row: Pick<PublicVehicleRow, "estado" | "fuente_subasta">) {

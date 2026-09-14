@@ -1,3 +1,4 @@
+import { AdminCrmBadge } from "@/components/admin/AdminBadges";
 import { getValcronProspectos } from "@/lib/admin-data";
 import type { Metadata } from "next";
 
@@ -44,9 +45,7 @@ export default async function ClientesPage() {
               <td className="px-4 py-3 text-gray-600">{row.email || "—"}</td>
               <td className="px-4 py-3 text-gray-500">{row.origen_lead}</td>
               <td className="px-4 py-3">
-                <span className="rounded-full bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700">
-                  {row.estado_crm}
-                </span>
+                <AdminCrmBadge estado={row.estado_crm} />
               </td>
             </tr>
           ))}

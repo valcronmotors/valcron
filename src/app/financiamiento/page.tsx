@@ -3,6 +3,7 @@ import { PageHero } from "@/components/public/PageHero";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Financiamiento Bancario",
@@ -102,7 +103,15 @@ export default function FinanciamientoPage() {
                 pre-evaluación al WhatsApp {SITE.whatsapp}.
               </p>
             </div>
-            <FinanceForm />
+            <Suspense
+              fallback={
+                <div className="rounded-3xl border border-line bg-white p-8 text-sm text-muted">
+                  Cargando simulador...
+                </div>
+              }
+            >
+              <FinanceForm />
+            </Suspense>
           </div>
         </section>
       </main>

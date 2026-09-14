@@ -35,7 +35,7 @@ function requiredText(formData: FormData, key: string) {
 }
 
 function revalidateInbox() {
-  revalidatePath("/admin/mensajeria");
+  revalidatePath("/admin/mensajeria", "layout");
 }
 
 type ConversationRow = {

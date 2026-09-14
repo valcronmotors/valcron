@@ -82,6 +82,8 @@ export function MessagingWorkspace({
   vehicles,
   agents,
   error,
+  canalFilter = null,
+  basePath = "/admin/mensajeria",
 }: {
   conversations: InboxConversation[];
   messages: InboxMessage[];
@@ -89,6 +91,8 @@ export function MessagingWorkspace({
   vehicles: VehicleMetrics[];
   agents: StaffUser[];
   error: string | null;
+  canalFilter?: MessageChannel | null;
+  basePath?: string;
 }) {
   const router = useRouter();
   const [filter, setFilter] = useState<InboxFilter>("todos");
@@ -115,11 +119,14 @@ export function MessagingWorkspace({
   );
 
   const filtered = useMemo(() => {
+    const byCanal = canalFilter
+      ? conversations.filter((row) => row.canal === canalFilter)
+      : conversations;
     if (filter === "todos") {
-      return conversations;
+      return byCanal;
     }
-    return conversations.filter((row) => row.status === filter);
-  }, [conversations, filter]);
+    return byCanal.filter((row) => row.status === filter);
+  }, [canalFilter, conversations, filter]);
 
   const selected = conversations.find((row) => row.id === selectedId) ?? null;
 
@@ -144,7 +151,7 @@ export function MessagingWorkspace({
   );
 
   return (
-    <div className="grid h-full min-h-0 bg-[#F8F9FA] lg:grid-cols-[18.5rem_minmax(0,1fr)_19.5rem]">
+    <div className="grid h-full min-h-0 w-full min-w-0 bg-[#F8F9FA] lg:grid-cols-[18.5rem_minmax(0,1fr)_19.5rem]">
       <section
         className={`flex min-h-0 flex-col border-r border-gray-200 bg-white ${
           selected ? "hidden lg:flex" : "flex"
@@ -152,7 +159,7 @@ export function MessagingWorkspace({
       >
         <div className="border-b border-gray-100 px-4 py-4">
           <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-gray-400">
-            Bandeja
+            {canalFilter ? canalLabel(canalFilter) : "Bandeja unificada"}
           </p>
           <div className="mt-3 grid grid-cols-3 gap-1 rounded-lg bg-[#F8F9FA] p-1">
             {(
@@ -190,7 +197,7 @@ export function MessagingWorkspace({
               return (
                 <Link
                   key={row.id}
-                  href={`/admin/mensajeria?c=${row.id}`}
+                  href={`${basePath}?c=${row.id}`}
                   className={`flex w-full items-start gap-3 border-b border-gray-50 px-4 py-3 text-left transition ${
                     active ? "bg-[#F8F9FA]" : "hover:bg-gray-50"
                   }`}
@@ -238,7 +245,7 @@ export function MessagingWorkspace({
               <button
                 type="button"
                 className="lg:hidden"
-                onClick={() => router.push("/admin/mensajeria")}
+                onClick={() => router.push(basePath)}
                 aria-label="Volver a la bandeja"
               >
                 <ArrowLeft className="h-4 w-4" />

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { BrandLogo } from "@/components/public/BrandLogo";
+import { CurrencySwitch } from "@/components/public/CurrencyProvider";
 import { PUBLIC_NAV, SITE, usesMarketingChrome } from "@/lib/site";
 
 function isActivePath(pathname: string, href: string) {
@@ -55,7 +56,10 @@ export function Navbar() {
           })}
         </nav>
 
-        <div className="flex items-center justify-end lg:min-h-9">
+        <div className="flex items-center justify-end gap-3 lg:min-h-9">
+          <div className="hidden sm:block">
+            <CurrencySwitch compact />
+          </div>
           <button
             type="button"
             className="inline-flex h-9 items-center border border-gray-100 px-3 font-medium uppercase text-xs tracking-widest text-gray-800 lg:hidden"
@@ -85,6 +89,9 @@ export function Navbar() {
               );
             })}
           </nav>
+          <div className="mt-4 sm:hidden">
+            <CurrencySwitch />
+          </div>
         </div>
       ) : null}
     </header>
