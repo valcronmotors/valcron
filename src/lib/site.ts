@@ -73,9 +73,10 @@ export const PUBLIC_PATHS = [
   "/terminos",
   "/privacidad",
   "/api/public",
+  "/api/webhooks",
 ] as const;
 
-const ADMIN_UNAUTH_PATHS = ["/login", "/api/public"] as const;
+const ADMIN_UNAUTH_PATHS = ["/login", "/api/public", "/api/webhooks"] as const;
 
 export function isPublicPath(pathname: string) {
   if (pathname === "/" || pathname.startsWith("/_next")) {

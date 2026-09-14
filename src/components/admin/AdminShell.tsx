@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import {
@@ -17,6 +18,8 @@ export function AdminShell({
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const pathname = usePathname();
+  const compact = pathname.startsWith("/admin/mensajeria");
 
   return (
     <div className="flex h-[100dvh] overflow-hidden bg-[#F8F9FA] text-[#0B0C10]">
@@ -57,7 +60,13 @@ export function AdminShell({
 
       <div className="flex min-w-0 flex-1 flex-col">
         <AdminHeader onMenu={() => setMobileOpen(true)} />
-        <main className="flex-1 overflow-y-auto px-4 py-6 lg:px-8 lg:py-8">
+        <main
+          className={
+            compact
+              ? "min-h-0 flex-1 overflow-hidden"
+              : "flex-1 overflow-y-auto px-4 py-6 lg:px-8 lg:py-8"
+          }
+        >
           {children}
         </main>
       </div>

@@ -184,6 +184,12 @@ export const ADMIN_NAV: AdminNavSection[] = [
         description:
           "Cotizaciones formales para envío por PDF o WhatsApp.",
       },
+      {
+        href: "/admin/mensajeria",
+        label: "Mensajería Omnicanal & IA",
+        description:
+          "Bandeja WhatsApp, Instagram y Facebook con piloto automático de IA comercial.",
+      },
     ],
   },
   {
@@ -219,6 +225,12 @@ export const ADMIN_NAV: AdminNavSection[] = [
         label: "Datos Fiscales Empresa",
         description:
           "RNC, dirección fiscal, NCF y datos corporativos de Valcron Motors.",
+      },
+      {
+        href: "/admin/configuracion/ia",
+        label: "IA & Webhooks Meta",
+        description:
+          "Tokens de WhatsApp, Instagram y Facebook, prompt del asesor IA y verificación de webhooks.",
       },
     ],
   },

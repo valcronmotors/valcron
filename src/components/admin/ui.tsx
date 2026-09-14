@@ -1,4 +1,10 @@
-import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from "react";
+import type {
+  ButtonHTMLAttributes,
+  InputHTMLAttributes,
+  ReactNode,
+  SelectHTMLAttributes,
+  TextareaHTMLAttributes,
+} from "react";
 
 export const adminFieldClass =
   "mt-2 h-11 w-full rounded-lg border border-gray-200 bg-[#F9FAFB] px-3 text-sm text-[#0B0C10] outline-none transition placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-[#C5A059]";
@@ -27,6 +33,17 @@ export function AdminInput(props: InputHTMLAttributes<HTMLInputElement>) {
 export function AdminSelect(props: SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <select {...props} className={`${adminFieldClass} ${props.className ?? ""}`} />
+  );
+}
+
+export function AdminTextArea(
+  props: TextareaHTMLAttributes<HTMLTextAreaElement>,
+) {
+  return (
+    <textarea
+      {...props}
+      className={`mt-2 min-h-28 w-full rounded-lg border border-gray-200 bg-[#F9FAFB] px-3 py-2 text-sm text-[#0B0C10] outline-none transition placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-[#C5A059] ${props.className ?? ""}`}
+    />
   );
 }
 
