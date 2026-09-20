@@ -7,7 +7,6 @@ export const SITE = {
   brand: "valcronMotors",
   legalName: "Valcron Motors Group, SRL",
   url: "https://valcronmotors.com",
-  email: "info@valcronmotors.com",
   heroEyebrow: "Valcron Motors • República Dominicana",
   heroTitle: "Conectamos tus sueños sin fronteras.",
   heroSubtitle:
@@ -15,10 +14,13 @@ export const SITE = {
   valueProposition:
     "Valcron Motors: dealer en República Dominicana para compra, importación y venta de vehículos desde Estados Unidos, con inventario local y asesoría en todo el proceso.",
   address: {
-    sector: "Brisa Oriental",
+    street: "Av Principal 20",
+    streetAddress: "Av Principal 20",
+    sector: "Av Principal 20",
     city: "Santo Domingo Este",
-    country: "Rep. Dom.",
-    full: "Brisa Oriental, Santo Domingo Este, Rep. Dom.",
+    country: "República Dominicana",
+    countryCode: "DO",
+    full: "Av Principal 20, Santo Domingo Este, República Dominicana",
   },
   phoneOffice: "(809) 623-9381",
   officePhoneDisplay: "(809) 623-9381",
@@ -37,8 +39,16 @@ export const SITE = {
   newsletterEnabled: false,
   defaultWhatsappMessage:
     "Hola, estoy interesado en información sobre un vehículo de Valcron Motors.",
+  maps: {
+    query: "Valcron Motors Group, Av Principal 20, Santo Domingo Este, República Dominicana",
+    embedTitle: "Ubicación de Valcron Motors Group en Santo Domingo Este",
+    embedSrc:
+      "https://maps.google.com/maps?hl=es&q=Valcron%20Motors%20Group%2C%20Av%20Principal%2020%2C%20Santo%20Domingo%20Este%2C%20Rep%C3%BAblica%20Dominicana&z=16&output=embed",
+    directionsUrl:
+      "https://www.google.com/maps/dir/?api=1&destination=Valcron%20Motors%20Group%2C%20Av%20Principal%2020%2C%20Santo%20Domingo%20Este%2C%20Rep%C3%BAblica%20Dominicana",
+  },
   mapEmbedSrc:
-    "https://maps.google.com/maps?q=Brisa%20Oriental%2C%20Santo%20Domingo%20Este%2C%20Rep%C3%BAblica%20Dominicana&z=15&output=embed",
+    "https://maps.google.com/maps?hl=es&q=Valcron%20Motors%20Group%2C%20Av%20Principal%2020%2C%20Santo%20Domingo%20Este%2C%20Rep%C3%BAblica%20Dominicana&z=16&output=embed",
 } as const;
 
 export const companyConfig = SITE;
@@ -56,7 +66,7 @@ export const PUBLIC_NAV = [
 
 export const RESOURCE_NAV = [
   { href: "/blog", label: "Blog" },
-  { href: "/blog", label: "Guías" },
+  { href: "/guias", label: "Guías" },
   { href: "/preguntas-frecuentes", label: "Preguntas Frecuentes" },
   { href: "/calculadoras", label: "Calculadoras" },
 ] as const;
@@ -77,7 +87,7 @@ export const FOOTER_SERVICES = [
 
 export const FOOTER_RESOURCES = [
   { href: "/blog", label: "Blog" },
-  { href: "/blog", label: "Guías" },
+  { href: "/guias", label: "Guías" },
   { href: "/calculadoras", label: "Calculadoras" },
   { href: "/preguntas-frecuentes", label: "Preguntas frecuentes" },
 ] as const;
@@ -99,6 +109,7 @@ export const FOOTER_NAV = [
   ...FOOTER_EXPLORE,
   ...FOOTER_COMPANY,
   { href: "/blog", label: "Blog" },
+  { href: "/guias", label: "Guías" },
 ] as const;
 
 export const LEGAL_NAV = [
@@ -118,6 +129,7 @@ export const PUBLIC_PATHS = [
   "/financiamiento",
   "/contacto",
   "/blog",
+  "/guias",
   "/nosotros",
   "/politicas",
   "/terminos",
@@ -178,10 +190,6 @@ export function officeTelHref() {
   return `tel:${SITE.phoneOfficeInternational}`;
 }
 
-export function mailtoHref() {
-  return `mailto:${SITE.email}`;
-}
-
 export function whatsappHref(message?: string) {
   const text = message ?? SITE.defaultWhatsappMessage;
   if (!text) {
@@ -211,25 +219,56 @@ export function configuredSocialLinks() {
   ].filter((item): item is NonNullable<typeof item> => Boolean(item));
 }
 
+export function mapsDirectionsUrl() {
+  return SITE.maps.directionsUrl;
+}
+
 export function autoDealerJsonLd() {
-  return {
-    "@context": "https://schema.org",
-    "@type": "AutoDealer",
+  const business = {
+    "@type": ["Organization", "LocalBusiness", "AutoDealer"],
+    "@id": `${SITE.url}/#business`,
     name: SITE.legalName,
-    alternateName: SITE.brand,
+    legalName: SITE.legalName,
+    alternateName: [SITE.shortName, SITE.brand],
+    brand: {
+      "@type": "Brand",
+      name: SITE.shortName,
+      alternateName: SITE.brand,
+    },
     url: SITE.url,
-    email: SITE.email,
-    telephone: [SITE.phoneOfficeInternational, SITE.whatsappInternational],
+    telephone: "+1-809-623-9381",
     address: {
       "@type": "PostalAddress",
-      streetAddress: SITE.address.sector,
+      streetAddress: SITE.address.streetAddress,
       addressLocality: SITE.address.city,
-      addressCountry: "DO",
+      addressCountry: SITE.address.countryCode,
     },
     areaServed: {
       "@type": "Country",
       name: "República Dominicana",
     },
-    priceRange: "$$",
+    sameAs: [SITE.instagramUrl, SITE.facebookUrl],
+    hasMap: SITE.maps.directionsUrl,
+  };
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      business,
+      {
+        "@type": "WebSite",
+        "@id": `${SITE.url}/#website`,
+        name: SITE.shortName,
+        alternateName: SITE.brand,
+        url: SITE.url,
+        inLanguage: "es-DO",
+        publisher: { "@id": `${SITE.url}/#business` },
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${SITE.url}/inventario?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
+      },
+    ],
   };
 }

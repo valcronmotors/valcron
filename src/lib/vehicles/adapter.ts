@@ -135,4 +135,8 @@ export async function getSimilarVehicles(vehicle: PublicVehicle, limit = 4) {
   return { data: similarVehicles(vehicle, loaded.data, limit), error: null };
 }
 
+export async function getPublicDetailVehicles() {
+  return loadNormalized({ includeSold: true });
+}
+
 export { loadNormalized as getAllPublicVehicles };

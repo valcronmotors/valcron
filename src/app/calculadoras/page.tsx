@@ -2,12 +2,13 @@ import Link from "next/link";
 import { PageHero } from "@/components/public/PageHero";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
-import type { Metadata } from "next";
+import { publicPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Calculadoras",
+export const metadata = publicPageMetadata({
+  title: "Calculadoras de importación y financiamiento",
   description: `Herramientas de ${SITE.shortName} para planificar financiamiento, importación y subastas. Las cifras son estimaciones.`,
-};
+  path: "/calculadoras",
+});
 
 const CARDS = [
   {

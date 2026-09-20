@@ -3,7 +3,7 @@ import { BookOpen, Calculator, CircleHelp, Mail } from "lucide-react";
 
 const ITEMS = [
   { href: "/contacto", title: "Escríbenos", copy: "Cuéntanos qué buscas.", icon: Mail },
-  { href: "/blog", title: "Guías y recursos", copy: "Información antes de comprar.", icon: BookOpen },
+  { href: "/blog", title: "Blog", copy: "Artículos para decidir con más contexto.", icon: BookOpen },
   { href: "/calculadoras", title: "Calculadoras", copy: "Explora costos y cuotas.", icon: Calculator },
   { href: "/preguntas-frecuentes", title: "Preguntas frecuentes", copy: "Respuestas claras al proceso.", icon: CircleHelp },
 ];

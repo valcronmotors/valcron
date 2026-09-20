@@ -7,6 +7,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Acceso Administrativo",
   description: "Acceso al CMS del website de Valcron Motors.",
+  robots: { index: false, follow: false },
 };
 
 export default async function LoginPage({

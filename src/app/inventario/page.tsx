@@ -2,12 +2,13 @@ import { PageHero } from "@/components/public/PageHero";
 import { VehicleCatalog } from "@/components/public/VehicleCatalog";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
-import type { Metadata } from "next";
+import { publicPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = publicPageMetadata({
   title: "Inventario de vehículos",
   description: `Inventario de ${SITE.shortName}: vehículos disponibles en República Dominicana y unidades en proceso de subasta o importación.`,
-};
+  path: "/inventario",
+});
 
 function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");

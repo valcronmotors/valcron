@@ -1,4 +1,5 @@
 import { DEFAULT_TASA_USD_DOP } from "@/lib/vehicle-costs";
+import { SITE } from "@/lib/site";
 import { buildVehicleSlug } from "@/lib/vehicles/vehicle-slugs";
 import {
   listingKindFromAvailability,
@@ -49,7 +50,7 @@ export function normalizeVehicle(row: PublicVehicleRow): PublicVehicle {
           .join(" · ")
       : availability === "in_transit"
         ? "En tránsito hacia República Dominicana"
-        : "Brisa Oriental, Santo Domingo Este, Rep. Dom.";
+        : SITE.address.full;
 
   const auction =
     availability === "auction" || lotNumber || platform

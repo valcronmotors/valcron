@@ -1,14 +1,15 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/public/PageHero";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
+import { publicPageMetadata } from "@/lib/seo";
 import { SITE, whatsappHref } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = publicPageMetadata({
   title: "Calculadora de subasta",
   description: `Prepara una búsqueda y una estimación antes de comprar en subasta con ${SITE.shortName}.`,
-};
+  path: "/calculadoras/subasta",
+});
 
 export default function CalculadoraSubastaPage() {
   return (

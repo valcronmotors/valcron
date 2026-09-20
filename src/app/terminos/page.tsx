@@ -1,10 +1,12 @@
 import { ContentPage } from "@/components/public/ContentPage";
 import { SITE } from "@/lib/site";
-import type { Metadata } from "next";
+import { publicPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Términos y Condiciones",
-};
+export const metadata = publicPageMetadata({
+  title: "Términos y condiciones",
+  description: `Términos y condiciones de uso del sitio de ${SITE.legalName}.`,
+  path: "/terminos",
+});
 
 export default function TerminosPage() {
   return (

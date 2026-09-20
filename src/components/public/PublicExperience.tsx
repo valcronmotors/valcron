@@ -46,7 +46,7 @@ export function PublicExperience({ children }: { children: ReactNode }) {
       <div className="public-site flex min-h-full flex-1 flex-col bg-[#050608] text-[#fafafa]">
         <Navbar />
         <div className="flex min-h-0 flex-1 flex-col">{children}</div>
-        <Footer />
+        <Footer showCompactMap={pathname !== "/contacto"} />
         <WhatsAppFab />
       </div>
     </CurrencyProvider>

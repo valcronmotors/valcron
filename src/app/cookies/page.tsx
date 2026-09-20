@@ -1,10 +1,12 @@
 import { ContentPage } from "@/components/public/ContentPage";
 import { SITE } from "@/lib/site";
-import type { Metadata } from "next";
+import { publicPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = publicPageMetadata({
   title: "Cookies",
-};
+  description: `Información sobre cookies técnicas en el sitio de ${SITE.legalName}.`,
+  path: "/cookies",
+});
 
 export default function CookiesPage() {
   return (
@@ -15,7 +17,8 @@ export default function CookiesPage() {
       </p>
       <p>
         No utilizamos estas cookies para vender tu información. Puedes gestionar o bloquear cookies
-        desde la configuración de tu navegador. Si tienes preguntas, escríbenos a {SITE.email}.
+        desde la configuración de tu navegador. Si tienes preguntas, contáctanos por WhatsApp al{" "}
+        {SITE.whatsappDisplay} o llama a la oficina {SITE.officePhoneDisplay}.
       </p>
     </ContentPage>
   );

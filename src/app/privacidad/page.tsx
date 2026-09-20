@@ -1,10 +1,12 @@
 import { ContentPage } from "@/components/public/ContentPage";
 import { SITE } from "@/lib/site";
-import type { Metadata } from "next";
+import { publicPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Privacidad",
-};
+export const metadata = publicPageMetadata({
+  title: "Política de privacidad",
+  description: `Política de privacidad de ${SITE.legalName}.`,
+  path: "/privacidad",
+});
 
 export default function PrivacidadPage() {
   return (
@@ -14,8 +16,8 @@ export default function PrivacidadPage() {
         atender tu solicitud comercial y entran al CRM interno de {SITE.name}.
       </p>
       <p>
-        No vendemos tu información. Puedes pedir actualización o eliminación escribiendo a{" "}
-        {SITE.email}.
+        No vendemos tu información. Puedes pedir actualización o eliminación por WhatsApp al{" "}
+        {SITE.whatsappDisplay} o llamando a la oficina {SITE.officePhoneDisplay}.
       </p>
     </ContentPage>
   );

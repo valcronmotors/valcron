@@ -1,15 +1,16 @@
-import type { Metadata } from "next";
+import { publicPageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Car, Gavel, MessageCircle, Search, Ship } from "lucide-react";
 import { PageHero } from "@/components/public/PageHero";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE, whatsappHref } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Servicios",
+export const metadata = publicPageMetadata({
+  title: "Servicios de dealer en Santo Domingo Este",
   description:
-    "Servicios de Valcron Motors: compra en subastas, importación a República Dominicana, inventario local, búsqueda personalizada y asesoría automotriz.",
-};
+    "Servicios de Valcron Motors: inventario local, subastas de Estados Unidos, importación a República Dominicana, búsqueda personalizada y asesoría.",
+  path: "/servicios",
+});
 
 const SERVICES = [
   {

@@ -1,10 +1,12 @@
 import { ContentPage } from "@/components/public/ContentPage";
 import { SITE } from "@/lib/site";
-import type { Metadata } from "next";
+import { publicPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Políticas de Uso",
-};
+export const metadata = publicPageMetadata({
+  title: "Políticas de uso",
+  description: `Políticas de uso del sitio de ${SITE.legalName}.`,
+  path: "/politicas",
+});
 
 export default function PoliticasPage() {
   return (

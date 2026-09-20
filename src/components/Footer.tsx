@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MapPin, Phone } from "lucide-react";
 import { BrandLogo } from "@/components/public/BrandLogo";
+import { BusinessLocation } from "@/components/public/BusinessLocation";
 import { FooterSocialIcons } from "@/components/shared/SocialLinks";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import {
@@ -10,6 +11,7 @@ import {
   FOOTER_SERVICES,
   LEGAL_NAV,
   SITE,
+  mapsDirectionsUrl,
   officeTelHref,
 } from "@/lib/site";
 
@@ -18,7 +20,7 @@ const headingClass =
 const linkClass =
   "text-[#D4D4D4] transition duration-200 hover:translate-x-0.5 hover:text-white hover:underline motion-reduce:transform-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
 
-export function Footer() {
+export function Footer({ showCompactMap = true }: { showCompactMap?: boolean }) {
   const year = new Date().getFullYear();
 
   return (
@@ -52,13 +54,19 @@ export function Footer() {
           <FooterColumn title="Legal" items={LEGAL_NAV} />
         </nav>
 
-        <section className="mt-14 max-w-md border-t border-white/10 pt-10">
+        <section
+          className={`mt-14 grid min-w-0 gap-8 border-t border-white/10 pt-10 ${
+            showCompactMap ? "md:grid-cols-2 md:items-start lg:max-w-[44rem]" : "max-w-md"
+          }`}
+        >
+          <div className="min-w-0 max-w-md">
           <h2 className={headingClass}>Contacto</h2>
           <address className="not-italic">
             <p className="flex gap-3 text-sm leading-relaxed text-[#D4D4D4]">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#C7A96B]" aria-hidden="true" />
               <span>
-                {SITE.address.sector},
+                <span className="block font-medium text-white">{SITE.facebookDisplay}</span>
+                {SITE.address.street},
                 <br />
                 {SITE.address.city},
                 <br />
@@ -92,7 +100,21 @@ export function Footer() {
                 </a>
               </span>
             </p>
+            {!showCompactMap ? (
+              <p className="mt-5">
+                <a
+                  className={linkClass}
+                  href={mapsDirectionsUrl()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Cómo llegar
+                </a>
+              </p>
+            ) : null}
           </address>
+          </div>
+          {showCompactMap ? <BusinessLocation variant="compact" tone="dark" /> : null}
         </section>
       </div>
 

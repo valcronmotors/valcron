@@ -1,14 +1,15 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/public/PageHero";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
+import { publicPageMetadata } from "@/lib/seo";
 import { SITE, whatsappHref } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Cómo funciona",
+export const metadata = publicPageMetadata({
+  title: "Cómo funciona Valcron Motors",
   description: `Cómo funciona ${SITE.shortName}: del primer mensaje a tu próximo vehículo en República Dominicana.`,
-};
+  path: "/como-funciona",
+});
 
 const STEPS = [
   { step: "01", title: "Cuéntanos qué buscas" },

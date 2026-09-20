@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { PublicVehicleDetail } from "@/components/public/PublicVehicleDetail";
-import { publicVehicleTitle } from "@/lib/public-catalog";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { loadPublicVehicleById } from "@/lib/public-inventory";
+import { breadcrumbJsonLd, publicPageMetadata, vehicleJsonLd } from "@/lib/seo";
+import { getSimilarVehicles } from "@/lib/vehicles/adapter";
+import { vehicleDisplayTitle, vehicleSeoDescription } from "@/lib/vehicles/vehicle-formatters";
+import { isVehicleUuid, vehiclePath } from "@/lib/vehicles/vehicle-slugs";
 
 export async function generateMetadata({
   params,
@@ -14,10 +18,14 @@ export async function generateMetadata({
   if (!result.data) {
     return { title: "Vehículo" };
   }
-  const title = publicVehicleTitle(result.data);
+  const title = vehicleDisplayTitle(result.data);
   return {
-    title,
-    description: `${title} disponible en Valcron Motors. Consulta precio, estado y detalles de importación o inventario en República Dominicana.`,
+    ...publicPageMetadata({
+      title,
+      description: vehicleSeoDescription(result.data),
+      path: vehiclePath(result.data.slug),
+    }),
+    robots: { index: true, follow: true },
   };
 }
 
@@ -32,9 +40,24 @@ export default async function InventarioDetallePage({
     notFound();
   }
 
+  if (isVehicleUuid(id) && result.data.slug !== id) {
+    permanentRedirect(vehiclePath(result.data.slug));
+  }
+
+  const similar = await getSimilarVehicles(result.data, 4);
+  const title = vehicleDisplayTitle(result.data);
+
   return (
     <main>
-      <PublicVehicleDetail vehicle={result.data} />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Inicio", path: "/" },
+          { name: "Inventario", path: "/inventario" },
+          { name: title, path: vehiclePath(result.data.slug) },
+        ])}
+      />
+      <JsonLd data={vehicleJsonLd(result.data)} />
+      <PublicVehicleDetail vehicle={result.data} similar={similar.data} />
     </main>
   );
 }

@@ -8,12 +8,13 @@ import {
   LEGAL_NAV,
   PUBLIC_NAV,
 } from "@/lib/site";
-import type { Metadata } from "next";
+import { publicPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = publicPageMetadata({
   title: "Mapa del sitio",
   description: "Navegación pública de Valcron Motors: inventario, servicios, recursos y contacto.",
-};
+  path: "/mapa-del-sitio",
+});
 
 const GROUPS = [
   { title: "Principal", items: PUBLIC_NAV },

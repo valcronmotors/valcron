@@ -2,12 +2,13 @@ import { PageHero } from "@/components/public/PageHero";
 import { FaqAccordion } from "@/components/public/FaqAccordion";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
-import type { Metadata } from "next";
+import { publicPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = publicPageMetadata({
   title: "Preguntas frecuentes",
   description: `Preguntas frecuentes de ${SITE.shortName} sobre inventario, subastas, importación y financiamiento en República Dominicana.`,
-};
+  path: "/preguntas-frecuentes",
+});
 
 export default function FaqPage() {
   return (

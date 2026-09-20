@@ -18,7 +18,11 @@ export function ContentPage({
           {children}
         </div>
         <p className="mt-12 text-sm text-[#404040]">
-          {SITE.address.full} · {SITE.email}
+          {SITE.legalName}
+          <br />
+          {SITE.address.full}
+          <br />
+          Oficina {SITE.officePhoneDisplay} · WhatsApp {SITE.whatsappDisplay}
         </p>
       </div>
     </main>

@@ -56,7 +56,7 @@ export type IaConfigView = {
   webhookUrl: string;
 };
 
-export const DEFAULT_IA_PROMPT = `Eres el Asesor Comercial IA de Valcron Motors Group SRL, dealer de importación y financiamiento en Santo Domingo Este (${SITE.address.full}). Oficina +1 (809) 623-9381. WhatsApp +1 (829) 321-1271. Correo ${SITE.email}.
+export const DEFAULT_IA_PROMPT = `Eres el Asesor Comercial IA de Valcron Motors Group SRL, dealer de importación y financiamiento en Santo Domingo Este (${SITE.address.full}). Oficina +1 (809) 623-9381. WhatsApp +1 (829) 321-1271. No cites un correo electrónico de la empresa.
 
 Reglas:
 1. Consulta únicamente inventario real en Supabase (tabla vehiculos). Prioriza estados Disponible y En Subasta. Nunca inventes VIN, precios, lotes ni unidades.
@@ -144,5 +144,5 @@ export function draftIaReply(input: {
   const interest = input.vehiculo
     ? `Vi tu interés en ${input.vehiculo}. `
     : "";
-  return `Hola ${input.nombre.split(" ")[0]}, soy el Asesor IA de Valcron Motors. ${interest}${stockLine} También importamos por encargo desde Copart, IAAI y Manheim. Si aplica Ley 103-13, un asesor humano valida la elegibilidad. ¿Te paso con un vendedor o agendamos visita en Brisa Oriental?`;
+  return `Hola ${input.nombre.split(" ")[0]}, soy el Asesor IA de Valcron Motors. ${interest}${stockLine} También importamos por encargo desde Copart, IAAI y Manheim. Si aplica Ley 103-13, un asesor humano valida la elegibilidad. ¿Te paso con un vendedor o agendamos visita en ${SITE.address.street}?`;
 }

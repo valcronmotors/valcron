@@ -4,13 +4,14 @@ import { EditorialImage } from "@/components/shared/EditorialImage";
 import { EDITORIAL } from "@/lib/editorial-media";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
-import type { Metadata } from "next";
+import { publicPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Importación de vehículos",
+export const metadata = publicPageMetadata({
+  title: "Importación de vehículos a República Dominicana",
   description:
-    "Importación de vehículos desde Estados Unidos a República Dominicana: búsqueda, transporte, documentación y acompañamiento durante el proceso.",
-};
+    "Importar un vehículo desde Estados Unidos a República Dominicana: búsqueda, transporte, documentación y acompañamiento con Valcron Motors en Santo Domingo Este.",
+  path: "/importacion",
+});
 
 const PHASES = [
   {

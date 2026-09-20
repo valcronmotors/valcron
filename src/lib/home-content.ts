@@ -31,33 +31,33 @@ export const HOME_FAQS = [
 
 export const HOME_ARTICLES = [
   {
-    href: "/blog",
-    category: "Importación",
-    title: "Cómo se organiza una importación",
-    excerpt: "Las etapas habituales desde la búsqueda hasta el proceso en República Dominicana.",
+    href: "/guias/importar-vehiculo-estados-unidos-republica-dominicana",
+    category: "Guías",
+    title: "Guía para importar un vehículo a República Dominicana",
+    excerpt: "Las etapas habituales desde la selección hasta el despacho y la primera placa.",
     image: {
       src: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1600&q=75",
-      alt: "Logística marítima asociada a la importación de vehículos",
+      alt: "Imagen ilustrativa de logística marítima asociada a la importación de vehículos",
     },
   },
   {
-    href: "/blog",
-    category: "Subastas",
-    title: "Qué revisar antes de una subasta",
-    excerpt: "Condición, título, costos y tipo de puja: información para decidir con más contexto.",
+    href: "/blog/evaluar-vehiculo-subasta-antes-de-ofertar",
+    category: "Blog",
+    title: "Cómo evaluar un vehículo de subasta antes de ofertar",
+    excerpt: "Fotos, título, daños y techo de puja: un orden para decidir con más contexto.",
     image: {
       src: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=1600&q=75",
-      alt: "Patio de vehículos e inspección previa a una subasta",
+      alt: "Imagen ilustrativa de un patio de vehículos e inspección",
     },
   },
   {
-    href: "/blog",
-    category: "Financiamiento",
-    title: "Cómo leer una cuota estimada",
-    excerpt: "Inicial, tasa y plazo cambian el escenario. La cuota del website es una referencia, no una aprobación.",
+    href: "/blog/vehiculos-hibridos-republica-dominicana",
+    category: "Blog",
+    title: "Vehículos híbridos en República Dominicana",
+    excerpt: "Uso, batería y cuidado al hablar de incentivos: lo que conviene revisar antes de comprar.",
     image: {
-      src: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1600&q=75",
-      alt: "Planificación documental para una compra de vehículo",
+      src: "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=1600&q=75",
+      alt: "Imagen ilustrativa de un vehículo electrificado",
     },
   },
 ] as const;

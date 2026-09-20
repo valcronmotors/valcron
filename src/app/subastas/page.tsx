@@ -1,15 +1,16 @@
-import type { Metadata } from "next";
+import { publicPageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { PageHero } from "@/components/public/PageHero";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE, whatsappHref } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Subastas internacionales",
+export const metadata = publicPageMetadata({
+  title: "Subastas de vehículos en Estados Unidos",
   description:
-    "Valcron Motors ayuda a buscar y gestionar vehículos en plataformas de subastas de Estados Unidos, como Copart, IAAI y Manheim, con importación a República Dominicana.",
-};
+    "Cómo Valcron Motors ayuda a buscar vehículos en Copart, IAA/IAAI y Manheim desde República Dominicana, sin presentar esas plataformas como socias.",
+  path: "/subastas",
+});
 
 const PLATFORMS = [
   {

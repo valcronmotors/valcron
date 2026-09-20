@@ -2,14 +2,15 @@ import { FinanceForm } from "@/components/public/FinanceForm";
 import { PageHero } from "@/components/public/PageHero";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
-import type { Metadata } from "next";
+import { publicPageMetadata } from "@/lib/seo";
 import { Suspense } from "react";
 
-export const metadata: Metadata = {
-  title: "Financiamiento Bancario",
+export const metadata = publicPageMetadata({
+  title: "Financiamiento de vehículos en RD",
   description:
-    "Opciones de financiamiento con banca local de República Dominicana y pre-evaluación de Valcron Motors Group.",
-};
+    "Orientación de Valcron Motors para financiar un vehículo en República Dominicana. La aprobación y las condiciones las define cada institución financiera.",
+  path: "/financiamiento",
+});
 
 const BANKS = ["Banreservas", "Banco Popular", "BHD", "Scotiabank", "Banco BDI"];
 

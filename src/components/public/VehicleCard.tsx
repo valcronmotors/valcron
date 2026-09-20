@@ -9,6 +9,24 @@ import { publicListingBadge, sourceLabel } from "@/lib/vehicles/vehicle-status";
 import { vehiclePath } from "@/lib/vehicles/vehicle-slugs";
 import type { PublicVehicle } from "@/types/vehicle";
 
+function DetailsCta({ href, light }: { href: string; light: boolean }) {
+  return (
+    <Link
+      href={href}
+      className={
+        light
+          ? "inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-[0.9rem] bg-[#111111] px-4 text-sm font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-[#1c1c1c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C7A96B]"
+          : "inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-[0.9rem] bg-white px-4 text-sm font-semibold uppercase tracking-[0.14em] text-[#111111] transition-colors hover:bg-[#111111] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C7A96B]"
+      }
+    >
+      Ver detalles
+      <span aria-hidden className="text-[#C7A96B]">
+        →
+      </span>
+    </Link>
+  );
+}
+
 export function VehicleCard({
   vehicle,
   tone = "light",
@@ -86,9 +104,7 @@ export function VehicleCard({
         ) : null}
 
         <div className="mt-auto grid gap-2 pt-2">
-          <Link href={href} className="btn-secondary w-full">
-            Ver detalles
-          </Link>
+          <DetailsCta href={href} light={light} />
           {whatsapp ? (
             <a
               href={whatsapp}

@@ -2,13 +2,14 @@ import { FinanceForm } from "@/components/public/FinanceForm";
 import { PageHero } from "@/components/public/PageHero";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
-import type { Metadata } from "next";
+import { publicPageMetadata } from "@/lib/seo";
 import { Suspense } from "react";
 
-export const metadata: Metadata = {
+export const metadata = publicPageMetadata({
   title: "Calculadora de financiamiento",
   description: `Estima una cuota ilustrativa de financiamiento con ${SITE.shortName}. No es una aprobación.`,
-};
+  path: "/calculadoras/financiamiento",
+});
 
 export default function CalculadoraFinanciamientoPage() {
   return (

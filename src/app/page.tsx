@@ -26,6 +26,7 @@ export const metadata: Metadata = {
     absolute: "Valcron Motors | Vehículos importados en República Dominicana",
   },
   description: SITE.valueProposition,
+  alternates: { canonical: "/" },
   keywords: [
     "Valcron Motors",
     "dealer República Dominicana",

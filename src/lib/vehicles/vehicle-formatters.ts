@@ -1,4 +1,5 @@
 import { SITE, whatsappHref } from "@/lib/site";
+import { availabilityLabel, sourceLabel } from "@/lib/vehicles/vehicle-status";
 import type { PublicVehicle, VehicleCurrency, VehiclePriceKind } from "@/types/vehicle";
 
 export const VIN_PUBLIC_POLICY = {
@@ -71,8 +72,9 @@ export function displayVehiclePrice(
   const dop = pricing.rdPrice ?? 0;
   const primary = currency === "DOP" ? formatVehiclePrice(dop, "DOP") : formatVehiclePrice(usd, "USD");
   const secondary = currency === "DOP" ? formatVehiclePrice(usd, "USD") : formatVehiclePrice(dop, "DOP");
+  const auctionListing = vehicle.availability === "auction" || vehicle.listingKind === "auction";
   return {
-    label: priceKindLabel(pricing.kind),
+    label: auctionListing && pricing.kind === "sale" ? "Precio publicado" : priceKindLabel(pricing.kind),
     primary: primary ?? "Consultar precio",
     secondary: secondary ?? undefined,
   };
@@ -127,10 +129,164 @@ export function vehicleImageAlt(vehicle: PublicVehicle, index = 0) {
   if (category === "interior") return `${title} — interior`;
   if (category === "damage") return `${title} — daños reportados`;
   if (category === "engine") return `${title} — motor`;
-  if (index === 0) return `${title} — vista principal`;
+  if (index === 0) {
+    return vehicle.availability === "sold"
+      ? `${title} en Valcron Motors`
+      : `${title} disponible en Valcron Motors`;
+  }
   return `${title} — imagen ${index + 1}`;
 }
 
 export function canonicalVehicleUrl(vehicle: PublicVehicle) {
   return `${SITE.url}/inventario/${vehicle.slug}`;
+}
+
+function presentText(value: string | number | null | undefined) {
+  if (value == null) return null;
+  const text = String(value).trim();
+  if (!text || text === "null" || text === "undefined" || /^n\/?a$/i.test(text)) {
+    return null;
+  }
+  return text;
+}
+
+function yesNo(value: boolean | null | undefined) {
+  if (value == null) return null;
+  return value ? "Sí" : "No";
+}
+
+function formatPublicDate(value: string | null | undefined) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat("es-DO", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+}
+
+export function vehiclePublicPriceBlocks(vehicle: PublicVehicle) {
+  const pricing = vehicle.pricing;
+  const bid = pricing.currentBid ?? vehicle.auction?.currentBid;
+  const buyNow = pricing.buyNowPrice ?? vehicle.auction?.buyNowPrice;
+  const estimated = pricing.estimatedPrice;
+  const saleUsd = pricing.usdPrice;
+  const saleDop = pricing.rdPrice;
+  const blocks: { kind: VehiclePriceKind; label: string; primary: string; secondary?: string; note?: string }[] = [];
+
+  if (bid) {
+    const amount = formatVehiclePrice(bid, "USD");
+    if (amount) {
+      blocks.push({
+        kind: "current_bid",
+        label: "Oferta actual",
+        primary: amount,
+        note: "Es una puja o referencia de subasta, no el costo final de entrega en República Dominicana.",
+      });
+    }
+  }
+  if (buyNow) {
+    const amount = formatVehiclePrice(buyNow, "USD");
+    if (amount) {
+      blocks.push({
+        kind: "buy_now",
+        label: "Compra ahora",
+        primary: amount,
+        note: "Precio de compra inmediata en la plataforma, cuando está publicado. No incluye importación ni entrega en RD.",
+      });
+    }
+  }
+  if (estimated) {
+    const amount = formatVehiclePrice(estimated, "USD");
+    if (amount) {
+      blocks.push({
+        kind: "estimated",
+        label: "Estimado",
+        primary: amount,
+      });
+    }
+  }
+
+  const usd = formatVehiclePrice(saleUsd, "USD");
+  const dop = formatVehiclePrice(saleDop, "DOP");
+  if ((usd || dop) && pricing.priceVisible) {
+    const isAuction = vehicle.availability === "auction" || vehicle.listingKind === "auction";
+    blocks.push({
+      kind: isAuction ? "estimated" : "sale",
+      label: isAuction ? "Precio publicado" : "Precio de venta",
+      primary: (usd ?? dop) as string,
+      secondary: usd && dop ? dop : undefined,
+      note: isAuction
+        ? "No representa el costo final de importación, impuestos ni entrega en República Dominicana."
+        : undefined,
+    });
+  }
+
+  if (!blocks.length) {
+    blocks.push({ kind: "consult", label: "Consultar precio", primary: "Consultar precio" });
+  }
+
+  return blocks;
+}
+
+export function visibleVehicleSpecs(vehicle: PublicVehicle) {
+  const platform =
+    vehicle.source === "copart" || vehicle.source === "iaai" || vehicle.source === "manheim"
+      ? sourceLabel(vehicle.source)
+      : vehicle.fuenteSubasta
+        ? sourceLabel(vehicle.source)
+        : null;
+
+  const rows: { label: string; value: string | null }[] = [
+    { label: "Año", value: vehicle.year ? String(vehicle.year) : null },
+    { label: "Marca", value: presentText(vehicle.make) },
+    { label: "Modelo", value: presentText(vehicle.model) },
+    { label: "Versión", value: presentText(vehicle.trim) },
+    { label: "VIN", value: formatPublicVin(vehicle.vin) },
+    { label: "Número de stock", value: presentText(vehicle.stockNumber) },
+    { label: "Número de lote", value: presentText(vehicle.auction?.lotNumber) },
+    { label: "Fuente / plataforma", value: platform },
+    { label: "Estado", value: availabilityLabel(vehicle.availability) },
+    { label: "Ubicación", value: presentText(vehicle.location ?? vehicle.ubicacion) },
+    { label: "Kilometraje", value: formatMileage(vehicle.mileage, vehicle.mileageUnit) },
+    { label: "Motor", value: presentText(vehicle.engine) },
+    { label: "Cilindros", value: vehicle.cylinders ? String(vehicle.cylinders) : null },
+    { label: "Combustible", value: presentText(vehicle.fuelType) },
+    { label: "Transmisión", value: presentText(vehicle.transmission) },
+    { label: "Tracción", value: presentText(vehicle.drivetrain) },
+    { label: "Color exterior", value: presentText(vehicle.exteriorColor) },
+    { label: "Color interior", value: presentText(vehicle.interiorColor) },
+    { label: "Tipo de carrocería", value: presentText(vehicle.bodyType) },
+    { label: "Tipo de título", value: presentText(vehicle.titleType) },
+    { label: "Condición", value: presentText(vehicle.condition) },
+    { label: "Daño primario", value: presentText(vehicle.primaryDamage) },
+    { label: "Daño secundario", value: presentText(vehicle.secondaryDamage) },
+    { label: "Llaves", value: yesNo(vehicle.keysAvailable) },
+    { label: "Run and Drive", value: yesNo(vehicle.runAndDrive) },
+    { label: "Estado de subasta", value: presentText(vehicle.auction?.saleStatus) },
+    { label: "Fecha de subasta", value: formatPublicDate(vehicle.auction?.saleDate) },
+    {
+      label: "Última actualización",
+      value: formatPublicDate(vehicle.updatedAt ?? vehicle.lastSyncedAt ?? vehicle.publishedAt),
+    },
+  ];
+
+  return rows.filter((row): row is { label: string; value: string } => Boolean(row.value));
+}
+
+export function vehicleSeoDescription(vehicle: PublicVehicle) {
+  const title = vehicleDisplayTitle(vehicle);
+  const parts = [title, availabilityLabel(vehicle.availability)];
+  const mileage = formatMileage(vehicle.mileage, vehicle.mileageUnit);
+  if (mileage) parts.push(mileage);
+  if (vehicle.location) parts.push(vehicle.location);
+  if (vehicle.source === "copart" || vehicle.source === "iaai" || vehicle.source === "manheim") {
+    const platform = sourceLabel(vehicle.source);
+    if (platform) parts.push(`Fuente: ${platform}`);
+  }
+  if (vehicle.availability === "sold") {
+    return `${parts.join(". ")}. Consulta unidades similares en Valcron Motors, Santo Domingo Este.`;
+  }
+  return `${parts.join(". ")}. ${SITE.shortName}, dealer en Santo Domingo Este, República Dominicana.`;
 }

@@ -30,7 +30,7 @@ export const PAGE_HERO_ALTS = {
   inventario: "Inventario premium de Valcron Motors en showroom",
   importacion: "SUV listo para importación hacia República Dominicana",
   financiamiento: "Sedán premium para compra y financiamiento en RD",
-  nosotros: "Showroom y estándar visual de Valcron Motors Group",
+  nosotros: "Imagen ilustrativa de un showroom automotriz contemporáneo",
   contacto: "Atención comercial con vehículo de alta gama",
   subastas: "Vehículo premium disponible para búsqueda en subastas",
   servicios: "Proceso de importación y acompañamiento automotriz",
