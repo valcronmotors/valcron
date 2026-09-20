@@ -54,7 +54,7 @@ export function ImportJourney() {
   }, [value]);
 
   return (
-    <section className="bg-surface">
+    <section className="section-light bg-[#faf9f6]">
       <div className="mx-auto grid max-w-7xl gap-14 px-5 py-24 lg:grid-cols-[1.15fr_0.85fr] lg:px-8">
         <div>
           <p className="kicker">Importación</p>

@@ -145,7 +145,7 @@ export function FinanceForm() {
           </select>
         </label>
       </div>
-      <p className="text-xs leading-5 text-muted">
+      <p className="text-sm leading-relaxed text-[#d4d4d4]">
         Estimación ilustrativa con tasa de referencia. La pre-aprobación definitiva la define cada
         banco según historial crediticio, capacidad de pago y documentación.
       </p>

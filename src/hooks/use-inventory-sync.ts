@@ -12,10 +12,12 @@ export function useInventorySync<T extends { id: string }>(
 ) {
   const router = useRouter();
   const [rows, setRows] = useState(initialRows);
+  const [baseline, setBaseline] = useState(initialRows);
 
-  useEffect(() => {
+  if (initialRows !== baseline) {
+    setBaseline(initialRows);
     setRows(initialRows);
-  }, [initialRows]);
+  }
 
   useEffect(() => {
     const supabase = createClient();

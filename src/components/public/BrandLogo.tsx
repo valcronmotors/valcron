@@ -12,21 +12,22 @@ export function BrandLogo({
 
   return (
     <span
-      className={`relative inline-block overflow-hidden bg-transparent ${
+      className={`brand-logo relative inline-flex items-center overflow-visible bg-transparent ${
         isHeader ? "h-10 w-[196px] sm:h-11 sm:w-[214px]" : "h-12 w-[232px]"
       }`}
     >
       <Image
-        src="/logo.png"
+        src="/logo-mark.png"
         alt={SITE.brand}
         fill
         priority={isHeader}
         sizes={isHeader ? "214px" : "232px"}
         className={
           tone === "onLight"
-            ? "object-cover object-center invert"
-            : "object-cover object-center"
+            ? "object-contain object-left invert"
+            : "object-contain object-left"
         }
+        style={tone === "onDark" ? { filter: "none", mixBlendMode: "normal" } : undefined}
       />
     </span>
   );

@@ -47,7 +47,7 @@ export const EDITORIAL = {
     alt: "Buque de carga y logística marítima",
   },
   ship: {
-    src: unsplash("photo-1494412574643-ff11af0c3c5f"),
+    src: unsplash("photo-1605745341112-85968b19335b"),
     alt: "Transporte marítimo de contenedores",
   },
   yard: {
@@ -61,5 +61,21 @@ export const EDITORIAL = {
   documents: {
     src: unsplash("photo-1554224155-6726b3ff858f"),
     alt: "Documentación y planificación sobre escritorio",
+  },
+  interiorLeather: {
+    src: unsplash("photo-1549317661-bd32c8ce0db2"),
+    alt: "Interior automotriz con detalle de volante y tablero",
+  },
+  sunsetSuv: {
+    src: unsplash("photo-1533473359331-0135ef1b58bf"),
+    alt: "SUV premium en un entorno abierto al atardecer",
+  },
+  cityDrive: {
+    src: unsplash("photo-1449965408869-eaa3f722e40d"),
+    alt: "Vehículo en entorno urbano contemporáneo",
+  },
+  hybridEv: {
+    src: unsplash("photo-1593941707882-a5bba14938c7"),
+    alt: "Vehículo eléctrico en estación de carga",
   },
 } as const;

@@ -1,7 +1,8 @@
 import { adminOrigin } from "@/lib/hosts";
 
 export const SITE = {
-  name: "Valcron Motors Group SRL",
+  name: "Valcron Motors Group, SRL",
+  companyName: "Valcron Motors Group, SRL",
   shortName: "Valcron Motors",
   brand: "valcronMotors",
   legalName: "Valcron Motors Group, SRL",
@@ -14,24 +15,33 @@ export const SITE = {
   valueProposition:
     "Valcron Motors: dealer en República Dominicana para compra, importación y venta de vehículos desde Estados Unidos, con inventario local y asesoría en todo el proceso.",
   address: {
-    street: "Avenida Principal No 20",
-    sector: "Sector Brisa Oriental",
+    sector: "Brisa Oriental",
     city: "Santo Domingo Este",
-    country: "República Dominicana",
-    full: "Avenida Principal No 20, Sector Brisa Oriental, Santo Domingo Este, República Dominicana",
+    country: "Rep. Dom.",
+    full: "Brisa Oriental, Santo Domingo Este, Rep. Dom.",
   },
-  phoneOffice: "809-623-9381",
+  phoneOffice: "(809) 623-9381",
+  officePhoneDisplay: "(809) 623-9381",
+  phoneOfficeInternational: "+18096239381",
+  officePhoneInternational: "+18096239381",
   phoneOfficeDigits: "18096239381",
-  whatsapp: "829-321-1271",
+  whatsapp: "(829) 321-1271",
+  whatsappInternational: "+18293211271",
   whatsappDigits: "18293211271",
-  whatsappDisplay: "+1 (829) 321-1271",
+  whatsappDisplay: "(829) 321-1271",
+  whatsappUrl: "https://wa.me/18293211271",
+  instagramUrl: "https://www.instagram.com/valcronmotors",
+  instagramHandle: "@valcronmotors",
+  facebookUrl: "https://www.facebook.com/people/Valcron-Motors-Group/61584457784163/",
+  facebookDisplay: "Valcron Motors Group",
+  newsletterEnabled: false,
+  defaultWhatsappMessage:
+    "Hola, estoy interesado en información sobre un vehículo de Valcron Motors.",
   mapEmbedSrc:
-    "https://maps.google.com/maps?q=Avenida%20Principal%20No%2020%2C%20Sector%20Brisa%20Oriental%2C%20Santo%20Domingo%20Este%2C%20Rep%C3%BAblica%20Dominicana&z=16&output=embed",
-  hours: {
-    weekdays: "Lunes a Viernes 9:00 - 19:00",
-    saturday: "Sábados 10:00 - 16:00",
-  },
+    "https://maps.google.com/maps?q=Brisa%20Oriental%2C%20Santo%20Domingo%20Este%2C%20Rep%C3%BAblica%20Dominicana&z=15&output=embed",
 } as const;
+
+export const companyConfig = SITE;
 
 export const PUBLIC_NAV = [
   { href: "/", label: "Inicio" },
@@ -52,27 +62,29 @@ export const RESOURCE_NAV = [
 ] as const;
 
 export const FOOTER_INVENTORY = [
-  { href: "/inventario", label: "Vehículos" },
-  { href: "/inventario", label: "Buscar" },
-  { href: "/contacto", label: "Solicitar vehículo" },
+  { href: "/inventario", label: "Vehículos disponibles" },
+  { href: "/inventario", label: "Buscar vehículo" },
+  { href: "/solicitar-vehiculo", label: "Solicitar vehículo" },
 ] as const;
 
 export const FOOTER_SERVICES = [
   { href: "/importacion", label: "Importación" },
-  { href: "/subastas", label: "Subastas" },
+  { href: "/subastas", label: "Subastas USA" },
   { href: "/financiamiento", label: "Financiamiento" },
+  { href: "/contacto", label: "Búsqueda personalizada" },
+  { href: "/servicios", label: "Asesoría" },
 ] as const;
 
 export const FOOTER_RESOURCES = [
   { href: "/blog", label: "Blog" },
   { href: "/blog", label: "Guías" },
   { href: "/calculadoras", label: "Calculadoras" },
-  { href: "/preguntas-frecuentes", label: "FAQ" },
+  { href: "/preguntas-frecuentes", label: "Preguntas frecuentes" },
 ] as const;
 
 export const FOOTER_COMPANY = [
   { href: "/nosotros", label: "Nosotros" },
-  { href: "/servicios", label: "Servicios" },
+  { href: "/como-funciona", label: "Cómo funciona" },
   { href: "/contacto", label: "Contacto" },
 ] as const;
 
@@ -92,7 +104,7 @@ export const FOOTER_NAV = [
 export const LEGAL_NAV = [
   { href: "/privacidad", label: "Privacidad" },
   { href: "/terminos", label: "Términos" },
-  { href: "/politicas", label: "Cookies" },
+  { href: "/cookies", label: "Cookies" },
 ] as const;
 
 export const PUBLIC_PATHS = [
@@ -110,8 +122,12 @@ export const PUBLIC_PATHS = [
   "/politicas",
   "/terminos",
   "/privacidad",
+  "/cookies",
+  "/como-funciona",
+  "/solicitar-vehiculo",
   "/preguntas-frecuentes",
   "/calculadoras",
+  "/mapa-del-sitio",
   "/api/public",
   "/api/webhooks",
 ] as const;
@@ -159,7 +175,7 @@ export function adminEntryHref() {
 }
 
 export function officeTelHref() {
-  return `tel:+${SITE.phoneOfficeDigits}`;
+  return `tel:${SITE.phoneOfficeInternational}`;
 }
 
 export function mailtoHref() {
@@ -167,25 +183,46 @@ export function mailtoHref() {
 }
 
 export function whatsappHref(message?: string) {
-  if (!message) {
-    return `https://wa.me/${SITE.whatsappDigits}`;
+  const text = message ?? SITE.defaultWhatsappMessage;
+  if (!text) {
+    return SITE.whatsappUrl;
   }
+  return `${SITE.whatsappUrl}?text=${encodeURIComponent(text)}`;
+}
 
-  return `https://wa.me/${SITE.whatsappDigits}?text=${encodeURIComponent(message)}`;
+export function configuredSocialLinks() {
+  return [
+    SITE.instagramUrl
+      ? {
+          id: "instagram" as const,
+          href: SITE.instagramUrl,
+          label: "Instagram de Valcron Motors",
+          display: SITE.instagramHandle,
+        }
+      : null,
+    SITE.facebookUrl
+      ? {
+          id: "facebook" as const,
+          href: SITE.facebookUrl,
+          label: "Facebook de Valcron Motors",
+          display: SITE.facebookDisplay,
+        }
+      : null,
+  ].filter((item): item is NonNullable<typeof item> => Boolean(item));
 }
 
 export function autoDealerJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "AutoDealer",
-    name: SITE.name,
+    name: SITE.legalName,
     alternateName: SITE.brand,
     url: SITE.url,
     email: SITE.email,
-    telephone: [`+${SITE.phoneOfficeDigits}`, `+${SITE.whatsappDigits}`],
+    telephone: [SITE.phoneOfficeInternational, SITE.whatsappInternational],
     address: {
       "@type": "PostalAddress",
-      streetAddress: `${SITE.address.street}, ${SITE.address.sector}`,
+      streetAddress: SITE.address.sector,
       addressLocality: SITE.address.city,
       addressCountry: "DO",
     },

@@ -4,9 +4,12 @@ import { HomeAuctions } from "@/components/home/HomeAuctions";
 import { HomeBlogPreview } from "@/components/home/HomeBlogPreview";
 import { HomeCalculators } from "@/components/home/HomeCalculators";
 import { HomeEditorial } from "@/components/home/HomeEditorial";
+import { HomeEducation } from "@/components/home/HomeEducation";
 import { HomeFaqPreview } from "@/components/home/HomeFaqPreview";
 import { HomeFinalCta } from "@/components/home/HomeFinalCta";
 import { HomeFinance } from "@/components/home/HomeFinance";
+import { HomeGallery } from "@/components/home/HomeGallery";
+import { HomeHelp } from "@/components/home/HomeHelp";
 import { HomeHero } from "@/components/home/HomeHero";
 import { HomeImmersive } from "@/components/home/HomeImmersive";
 import { HomeImport } from "@/components/home/HomeImport";
@@ -61,13 +64,16 @@ export default async function Home() {
         <HomeServices />
         <HomeImport />
         <HomeAuctions />
+        <HomeEducation />
         <HomeStory />
         <HomeFinance />
         <HomeCalculators />
         <HomeProcess />
         <HomeTrust />
+        <HomeGallery />
         <HomeBlogPreview />
         <HomeFaqPreview />
+        <HomeHelp />
         <HomeFinalCta />
       </main>
     </>

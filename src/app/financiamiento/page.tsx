@@ -49,11 +49,11 @@ export default function FinanciamientoPage() {
         <section className="bg-background">
           <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
             <div className="max-w-3xl">
-              <p className="kicker">Aliados</p>
-              <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+              <p className="kicker">Opciones</p>
+              <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-white sm:text-5xl">
                 Opciones con la banca de República Dominicana
               </h2>
-              <p className="mt-5 text-base leading-relaxed text-muted">
+              <p className="mt-5 text-base leading-relaxed text-[#d4d4d4]">
                 {SITE.shortName} prepara el expediente y te acompaña en la pre-evaluación. La
                 aprobación final corresponde a cada banco según historial, inicial y capacidad de
                 pago.
@@ -72,14 +72,14 @@ export default function FinanciamientoPage() {
           </div>
         </section>
 
-        <section className="bg-surface">
+        <section className="section-light bg-[#faf9f6]">
           <div className="mx-auto grid max-w-7xl gap-12 px-5 py-24 lg:grid-cols-2 lg:px-8">
             {REQUIREMENTS.map((group) => (
-              <article key={group.title} className="gloss-panel p-8">
-                <h3 className="font-display text-2xl font-semibold text-foreground">{group.title}</h3>
-                <ul className="mt-6 grid gap-3 text-sm leading-relaxed text-muted">
+              <article key={group.title} className="rounded-[1.15rem] border border-black/10 bg-white p-8 shadow-[0_12px_32px_rgba(0,0,0,0.04)]">
+                <h3 className="font-display text-2xl font-semibold text-[#111]">{group.title}</h3>
+                <ul className="mt-6 grid gap-3 text-sm leading-relaxed text-[#404040]">
                   {group.items.map((item) => (
-                    <li key={item} className="border-l border-accent pl-4 text-foreground">
+                    <li key={item} className="border-l-2 border-[#C7A96B] pl-4">
                       {item}
                     </li>
                   ))}

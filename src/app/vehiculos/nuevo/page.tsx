@@ -3,7 +3,6 @@ import {
   PrimaryButtonLink,
   SecondaryButtonLink,
 } from "@/components/app-shell";
-import { SuccessBanner } from "@/components/form-fields";
 import { VehicleForm } from "@/components/vehicle-form";
 import { COMPANY_NAMES } from "@/lib/companies";
 

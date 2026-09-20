@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { CurrencySwitch } from "@/components/public/CurrencyProvider";
 import { InventoryEmptyState } from "@/components/public/LandingInventory";
 import { VehicleCard } from "@/components/public/VehicleCard";
 import { Reveal } from "@/components/shared/Reveal";
@@ -64,36 +63,30 @@ export function FeaturedInventory({
   const visible = useMemo(() => vehicles.slice(0, 4), [vehicles]);
 
   return (
-    <section className="bg-background">
-      <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
+    <section className="section-light bg-white">
+      <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8 lg:py-32">
         <Reveal>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="kicker">Inventario</p>
-              <h2 className="mt-3 max-w-xl font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
-                Vehículos que merecen tu atención.
+              <p className="kicker">Vehículos destacados</p>
+              <h2 className="mt-3 max-w-xl font-display text-4xl font-bold tracking-tight text-[#111] sm:text-5xl">
+                Descubre algunas de las unidades disponibles actualmente.
               </h2>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/55">
-                Explora una selección de vehículos disponibles y descubre opciones que se adapten a
-                tus necesidades.
-              </p>
             </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <CurrencySwitch />
-              <Link href="/inventario" className="btn-secondary shrink-0">
-                Explorar todo el inventario
-              </Link>
-            </div>
+            <Link href="/inventario" className="btn-secondary shrink-0">
+              Ver todo el inventario
+            </Link>
           </div>
         </Reveal>
 
         {loadError ? (
-          <p className="mt-10 rounded-2xl border border-white/10 bg-surface px-5 py-4 text-sm text-muted">
+          <p className="mt-10 rounded-2xl border border-[#ececea] bg-[#faf9f6] px-5 py-4 text-sm text-[#525252]">
             {loadError}
           </p>
         ) : visible.length === 0 ? (
           <div className="mt-12">
             <InventoryEmptyState
+              tone="light"
               title="Inventario en actualización"
               copy="Escríbenos para localizar o importar el vehículo que buscas desde Estados Unidos."
             />
@@ -101,7 +94,7 @@ export function FeaturedInventory({
         ) : (
           <div className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
             {visible.map((vehicle) => (
-              <VehicleCard key={vehicle.id} vehicle={vehicle} />
+              <VehicleCard key={vehicle.id} vehicle={vehicle} tone="light" />
             ))}
           </div>
         )}

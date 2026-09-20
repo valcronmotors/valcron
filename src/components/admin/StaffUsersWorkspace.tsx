@@ -48,27 +48,27 @@ export function StaffUsersWorkspace({
     createStaffUser,
     createInitial,
   );
+  const [passwordUser, setPasswordUser] = useState<StaffUser | null>(null);
   const [passwordState, passwordAction, updatingPassword] = useActionState(
-    updateStaffPassword,
+    async (prev: UsersActionState, formData: FormData) => {
+      const result = await updateStaffPassword(prev, formData);
+      if (result.success) {
+        setPasswordUser(null);
+      }
+      return result;
+    },
     passwordInitial,
   );
   const [accessState, accessAction, updatingAccess] = useActionState(
     setStaffAccess,
     accessInitial,
   );
-  const [passwordUser, setPasswordUser] = useState<StaffUser | null>(null);
 
   useEffect(() => {
     if (createState.success) {
       formRef.current?.reset();
     }
   }, [createState.success]);
-
-  useEffect(() => {
-    if (passwordState.success) {
-      setPasswordUser(null);
-    }
-  }, [passwordState.success]);
 
   const notice =
     createState.success ?? passwordState.success ?? accessState.success;

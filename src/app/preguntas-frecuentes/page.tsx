@@ -19,8 +19,10 @@ export default function FaqPage() {
         image={PAGE_HERO_IMAGES.nosotros}
         imageAlt={PAGE_HERO_ALTS.nosotros}
       />
-      <section className="mx-auto max-w-4xl px-5 py-20 lg:px-8">
-        <FaqAccordion />
+      <section className="section-light bg-[#faf9f6]">
+        <div className="mx-auto max-w-4xl px-5 py-20 lg:px-8">
+          <FaqAccordion tone="light" />
+        </div>
       </section>
     </main>
   );

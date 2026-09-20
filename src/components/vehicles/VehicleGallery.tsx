@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { FormError } from "@/components/form-fields";
 import { isWorkshopPhoto } from "@/lib/storage";
 import {
@@ -31,19 +31,13 @@ export function VehicleGallery({
     () => urls.filter((url) => /^https?:\/\//i.test(url)),
     [urls],
   );
-  const current = photos[index] ?? photos[0] ?? null;
+  const clampedIndex = photos.length === 0 ? 0 : Math.min(index, photos.length - 1);
+  if (index !== clampedIndex) {
+    setIndex(clampedIndex);
+  }
+  const current = photos[clampedIndex] ?? null;
   const auctionCount = photos.filter((url) => !isWorkshopPhoto(url)).length;
   const workshopCount = photos.length - auctionCount;
-
-  useEffect(() => {
-    if (photos.length === 0) {
-      setIndex(0);
-      return;
-    }
-    if (index > photos.length - 1) {
-      setIndex(photos.length - 1);
-    }
-  }, [index, photos.length]);
 
   function goTo(next: number) {
     if (photos.length === 0) {
@@ -129,7 +123,7 @@ export function VehicleGallery({
           <div className="relative">
             <img
               src={current}
-              alt={`Foto ${index + 1} del vehículo`}
+              alt={`Foto ${clampedIndex + 1} del vehículo`}
               className={`w-full object-cover ${compact ? "h-56" : "h-80 sm:h-[28rem]"}`}
             />
             <span className="absolute left-3 top-3 rounded-full bg-slate-950/70 px-3 py-1 text-xs font-medium text-slate-100 ring-1 ring-white/10">
@@ -140,7 +134,7 @@ export function VehicleGallery({
                 <button
                   type="button"
                   aria-label="Foto anterior"
-                  onClick={() => goTo(index - 1)}
+                  onClick={() => goTo(clampedIndex - 1)}
                   className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-slate-950/70 px-3 py-2 text-sm text-white ring-1 ring-white/10"
                 >
                   ‹
@@ -148,7 +142,7 @@ export function VehicleGallery({
                 <button
                   type="button"
                   aria-label="Foto siguiente"
-                  onClick={() => goTo(index + 1)}
+                  onClick={() => goTo(clampedIndex + 1)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-slate-950/70 px-3 py-2 text-sm text-white ring-1 ring-white/10"
                 >
                   ›
@@ -158,7 +152,7 @@ export function VehicleGallery({
           </div>
           <div className="flex items-center justify-between gap-3 px-4 py-3 text-xs text-slate-400">
             <span>
-              {index + 1} / {photos.length}
+              {clampedIndex + 1} / {photos.length}
             </span>
             {allowUpload ? (
               <button
@@ -185,7 +179,7 @@ export function VehicleGallery({
               type="button"
               onClick={() => setIndex(photoIndex)}
               className={`overflow-hidden rounded-xl ring-2 ${
-                photoIndex === index ? "ring-cyan-400" : "ring-transparent"
+                photoIndex === clampedIndex ? "ring-cyan-400" : "ring-transparent"
               }`}
             >
               <img

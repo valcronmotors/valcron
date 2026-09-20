@@ -1,77 +1,74 @@
 import Link from "next/link";
-import { EditorialImage } from "@/components/shared/EditorialImage";
-import { EDITORIAL } from "@/lib/editorial-media";
+import { Car, Calculator, Gavel, MessageCircle, Search, Ship } from "lucide-react";
 
 const SERVICES = [
   {
     step: "01",
     title: "Vehículos disponibles",
-    copy: "Explora nuestro inventario.",
+    copy: "Explora unidades disponibles actualmente en nuestro inventario.",
     href: "/inventario",
-    image: EDITORIAL.muscle,
+    icon: Car,
   },
   {
     step: "02",
-    title: "Subastas USA",
-    copy: "Localizamos oportunidades en plataformas de subastas.",
-    href: "/subastas",
-    image: EDITORIAL.yard,
+    title: "Importación",
+    copy: "Te orientamos durante el proceso de traer tu vehículo desde Estados Unidos hasta República Dominicana.",
+    href: "/importacion",
+    icon: Ship,
   },
   {
     step: "03",
-    title: "Importación",
-    copy: "Coordinación del proceso desde EE.UU. hasta RD.",
-    href: "/importacion",
-    image: EDITORIAL.port,
+    title: "Subastas USA",
+    copy: "Explora oportunidades provenientes de plataformas de subastas estadounidenses.",
+    href: "/subastas",
+    icon: Gavel,
   },
   {
     step: "04",
     title: "Búsqueda personalizada",
-    copy: "Dinos qué vehículo estás buscando.",
+    copy: "Si no encuentras lo que buscas, indícanos marca, modelo, año y presupuesto.",
     href: "/contacto",
-    image: EDITORIAL.headlights,
+    icon: Search,
   },
   {
     step: "05",
     title: "Financiamiento",
-    copy: "Explora escenarios de financiamiento.",
+    copy: "Explora escenarios de inicial, tasa y plazo antes de tomar una decisión.",
     href: "/financiamiento",
-    image: EDITORIAL.documents,
+    icon: Calculator,
   },
   {
     step: "06",
     title: "Asesoría",
-    copy: "Orientación personalizada durante el proceso.",
+    copy: "Obtén información clara sobre las diferentes opciones disponibles.",
     href: "/servicios",
-    image: EDITORIAL.cabin,
+    icon: MessageCircle,
   },
 ];
 
 export function HomeServices() {
   return (
-    <section className="bg-[#0a0a0a]">
-      <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
+    <section className="section-light bg-[#ececea]">
+      <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8 lg:py-32">
         <p className="kicker">Servicios</p>
-        <h2 className="mt-3 max-w-3xl font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
-          Todo lo que necesitas.
-          <span className="block">En un solo lugar.</span>
+        <h2 className="mt-3 max-w-3xl font-display text-4xl font-bold tracking-tight text-[#111] sm:text-5xl">
+          Todo lo que necesitas
+          <span className="block">para tu próximo vehículo.</span>
         </h2>
         <div className="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {SERVICES.map((service) => (
-            <Link key={service.step} href={service.href} className="group relative isolate min-h-[22rem] overflow-hidden rounded-[1.5rem]">
-              <EditorialImage
-                src={service.image.src}
-                alt={service.image.alt}
-                sizes="(min-width: 1280px) 30vw, (min-width: 768px) 50vw, 100vw"
-                className="object-cover transition duration-500 group-hover:scale-[1.02]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-black/15" />
-              <div className="absolute inset-0 flex flex-col justify-end p-6">
-                <p className="kicker text-white/50">{service.step}</p>
-                <h3 className="mt-3 font-display text-2xl font-semibold text-white">{service.title}</h3>
-                <p className="mt-2 text-sm text-white/65">{service.copy}</p>
-              </div>
-            </Link>
+            <article
+              key={service.step}
+              className="rounded-[1.25rem] border border-white bg-[#faf9f6] p-6 transition hover:-translate-y-1 hover:border-[#C7A96B]/40"
+            >
+              <service.icon className="h-5 w-5 text-[#C7A96B]" strokeWidth={1.7} />
+              <p className="mt-5 kicker">{service.step}</p>
+              <h3 className="mt-3 font-display text-2xl font-semibold text-[#111]">{service.title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-[#525252]">{service.copy}</p>
+              <Link href={service.href} className="mt-5 inline-block text-sm font-semibold text-[#111]">
+                Conocer más
+              </Link>
+            </article>
           ))}
         </div>
       </div>

@@ -16,22 +16,22 @@ export function isEcoVehicle(vehicle: Pick<PublicVehicle, "marca" | "modelo" | "
 }
 
 export function uniqueMarcas(vehicles: PublicVehicle[]) {
-  return [...new Set(vehicles.map((vehicle) => vehicle.marca).filter(Boolean))].sort();
+  return [...new Set(vehicles.map((vehicle) => vehicle.make || vehicle.marca).filter(Boolean))].sort();
 }
 
 export function uniqueModelos(vehicles: PublicVehicle[], marca?: string) {
   return [
     ...new Set(
       vehicles
-        .filter((vehicle) => !marca || vehicle.marca === marca)
-        .map((vehicle) => vehicle.modelo)
+        .filter((vehicle) => !marca || vehicle.make === marca || vehicle.marca === marca)
+        .map((vehicle) => vehicle.model || vehicle.modelo)
         .filter(Boolean),
     ),
   ].sort();
 }
 
 export function uniqueAnos(vehicles: PublicVehicle[]) {
-  return [...new Set(vehicles.map((vehicle) => vehicle.ano))].sort((a, b) => b - a);
+  return [...new Set(vehicles.map((vehicle) => vehicle.year || vehicle.ano))].sort((a, b) => b - a);
 }
 
 export function parsePriceRange(value: string | null | undefined) {

@@ -147,7 +147,7 @@ export function ImportCostCalculator() {
         />
       </label>
 
-      <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-line bg-surface px-4 py-3 text-sm text-foreground">
+      <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-white/18 bg-white/5 px-4 py-3 text-sm text-[#f5f5f5]">
         <input
           type="checkbox"
           checked={ley103}

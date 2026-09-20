@@ -11,17 +11,17 @@ export const metadata: Metadata = {
 
 const CARDS = [
   {
-    href: "/financiamiento",
+    href: "/calculadoras/financiamiento",
     title: "Financiamiento",
     copy: "Simula inicial, plazo y cuota estimada.",
   },
   {
-    href: "/importacion",
+    href: "/calculadoras/importacion",
     title: "Importación",
     copy: "Revisa el proceso y las partidas de un costo estimado de llegada.",
   },
   {
-    href: "/subastas",
+    href: "/calculadoras/subasta",
     title: "Subasta USA",
     copy: "Prepara una búsqueda y una estimación antes de decidir.",
   },
@@ -41,7 +41,7 @@ export default function CalculadorasPage() {
         {CARDS.map((card) => (
           <Link key={card.href} href={card.href} className="gloss-panel p-8 transition hover:-translate-y-1">
             <h2 className="font-display text-2xl font-semibold text-white">{card.title}</h2>
-            <p className="mt-3 text-sm text-white/55">{card.copy}</p>
+            <p className="mt-3 text-sm text-[#d4d4d4]">{card.copy}</p>
           </Link>
         ))}
       </section>

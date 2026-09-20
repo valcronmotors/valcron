@@ -88,10 +88,10 @@ export async function POST(request: Request) {
     mensaje,
     vehicle
       ? vehicleInterestMessage({
-          marca: vehicle.marca,
-          modelo: vehicle.modelo,
-          ano: vehicle.ano,
-          vin: vehicle.vin,
+          marca: vehicle.marca ?? undefined,
+          modelo: vehicle.modelo ?? undefined,
+          ano: vehicle.ano ?? undefined,
+          vin: vehicle.vin ?? undefined,
         })
       : vin
         ? `VIN consultado: ${vin}`

@@ -5,12 +5,23 @@ import { SITE } from "@/lib/site";
 
 const fieldClass = "field-input";
 
+const SUBJECTS = [
+  "Comprar vehículo",
+  "Importar vehículo",
+  "Subasta USA",
+  "Financiamiento",
+  "Solicitar vehículo",
+  "Otro",
+] as const;
+
 export function QuoteForm({
   submitLabel = "Solicitar asesoría",
   showVehicleInterest = false,
+  showSubject = false,
 }: {
   submitLabel?: string;
   showVehicleInterest?: boolean;
+  showSubject?: boolean;
 }) {
   const [pending, setPending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -20,9 +31,14 @@ export function QuoteForm({
     setPending(true);
     setError(null);
     try {
+      const asunto = String(formData.get("asunto") ?? "").trim();
       const vehiculoInteres = String(formData.get("vehiculoInteres") ?? "").trim();
       const mensajeBase = String(formData.get("mensaje") ?? "").trim();
-      const mensaje = [vehiculoInteres ? `Vehículo de interés: ${vehiculoInteres}` : null, mensajeBase]
+      const mensaje = [
+        asunto ? `Asunto: ${asunto}` : null,
+        vehiculoInteres ? `Vehículo de interés: ${vehiculoInteres}` : null,
+        mensajeBase,
+      ]
         .filter(Boolean)
         .join("\n");
 
@@ -51,41 +67,46 @@ export function QuoteForm({
   }
 
   return (
-    <form
-      action={handleSubmit}
-      className="grid gap-4 gloss-panel p-6"
-    >
+    <form action={handleSubmit} className="grid gap-4 rounded-[1.35rem] border border-[#ececea] bg-white p-6 shadow-[0_18px_40px_rgba(0,0,0,0.05)]">
       {error ? (
-        <p className="rounded-lg border border-line px-4 py-3 text-sm text-muted">
-          {error}
-        </p>
+        <p className="rounded-lg border border-[#ececea] px-4 py-3 text-sm text-[#525252]">{error}</p>
       ) : null}
       {sent ? (
-        <p className="rounded-lg border border-accent/40 px-4 py-3 text-sm text-accent">
+        <p className="rounded-lg border border-[#C7A96B]/40 px-4 py-3 text-sm text-[#111]">
           Recibimos tu solicitud. Un asesor de {SITE.shortName} te contactará en breve.
         </p>
       ) : (
         <>
           <div className="grid gap-4 md:grid-cols-2">
-            <label className="block text-sm text-muted">
+            <label className="block text-sm text-[#525252]">
               Nombre
               <input name="nombre" required placeholder="Tu nombre" className={fieldClass} />
             </label>
-            <label className="block text-sm text-muted">
+            <label className="block text-sm text-[#525252]">
               Teléfono
-              <input name="telefono" placeholder={SITE.phoneOffice} className={fieldClass} />
+              <input name="telefono" placeholder={SITE.officePhoneDisplay} className={fieldClass} />
             </label>
-            <label className="block text-sm text-muted md:col-span-2">
+            {showSubject ? (
+              <label className="block text-sm text-[#525252] md:col-span-2">
+                ¿En qué podemos ayudarte?
+                <select name="asunto" required defaultValue="" className={fieldClass}>
+                  <option value="" disabled>
+                    Selecciona una opción
+                  </option>
+                  {SUBJECTS.map((subject) => (
+                    <option key={subject} value={subject}>
+                      {subject}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
+            <label className="block text-sm text-[#525252] md:col-span-2">
               Correo
-              <input
-                name="email"
-                type="email"
-                placeholder={SITE.email}
-                className={fieldClass}
-              />
+              <input name="email" type="email" placeholder="Tu correo electrónico" className={fieldClass} />
             </label>
             {showVehicleInterest ? (
-              <label className="block text-sm text-muted md:col-span-2">
+              <label className="block text-sm text-[#525252] md:col-span-2">
                 Vehículo de interés
                 <input
                   name="vehiculoInteres"
@@ -94,25 +115,21 @@ export function QuoteForm({
                 />
               </label>
             ) : (
-              <label className="block text-sm text-muted md:col-span-2">
+              <label className="block text-sm text-[#525252] md:col-span-2">
                 VIN (opcional)
                 <input name="vin" maxLength={17} placeholder="17 caracteres" className={fieldClass} />
               </label>
             )}
           </div>
-          <label className="block text-sm text-muted">
+          <label className="block text-sm text-[#525252]">
             Mensaje
             <textarea
               name="mensaje"
-              placeholder="Cuéntanos si buscas venta local, financiamiento o importación por encargo"
+              placeholder="Cuéntanos marca, modelo, año o el tipo de proceso que te interesa"
               className="field-input mt-2 h-auto min-h-24 py-2"
             />
           </label>
-          <button
-            type="submit"
-            disabled={pending}
-            className="btn-primary disabled:opacity-60"
-          >
+          <button type="submit" disabled={pending} className="btn-primary disabled:opacity-60">
             {pending ? "Enviando..." : submitLabel}
           </button>
         </>

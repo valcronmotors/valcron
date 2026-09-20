@@ -33,28 +33,31 @@ export const HOME_ARTICLES = [
   {
     href: "/blog",
     category: "Importación",
-    title: "Ley 103-13: incentivo eco",
-    excerpt:
-      "Antes de importar, evaluamos si la unidad califica al incentivo y qué documentación necesitas para el despacho.",
-    date: "Actualizado",
-    readingTime: "4 min",
+    title: "Cómo se organiza una importación",
+    excerpt: "Las etapas habituales desde la búsqueda hasta el proceso en República Dominicana.",
+    image: {
+      src: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1600&q=75",
+      alt: "Logística marítima asociada a la importación de vehículos",
+    },
   },
   {
     href: "/blog",
     category: "Subastas",
-    title: "Copart vs Manheim",
-    excerpt:
-      "Copart concentra inventario de seguro y salvage; Manheim opera dealer-to-dealer. Seleccionamos la fuente según presupuesto y uso en RD.",
-    date: "Guía",
-    readingTime: "5 min",
+    title: "Qué revisar antes de una subasta",
+    excerpt: "Condición, título, costos y tipo de puja: información para decidir con más contexto.",
+    image: {
+      src: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=1600&q=75",
+      alt: "Patio de vehículos e inspección previa a una subasta",
+    },
   },
   {
     href: "/blog",
     category: "Financiamiento",
-    title: "Financiamiento local",
-    excerpt:
-      "Estructuramos la compra con banca local tanto para stock en dealer como para unidades importadas a tu nombre.",
-    date: "Orientación",
-    readingTime: "3 min",
+    title: "Cómo leer una cuota estimada",
+    excerpt: "Inicial, tasa y plazo cambian el escenario. La cuota del website es una referencia, no una aprobación.",
+    image: {
+      src: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1600&q=75",
+      alt: "Planificación documental para una compra de vehículo",
+    },
   },
 ] as const;

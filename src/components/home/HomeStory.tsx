@@ -2,15 +2,6 @@ import Link from "next/link";
 import { EditorialImage } from "@/components/shared/EditorialImage";
 import { EDITORIAL } from "@/lib/editorial-media";
 
-const POINTS = [
-  "Búsqueda",
-  "Análisis de opciones",
-  "Costos",
-  "Proceso",
-  "Comunicación",
-  "Entrega",
-];
-
 export function HomeStory() {
   return (
     <section className="grid lg:grid-cols-2">
@@ -22,19 +13,17 @@ export function HomeStory() {
           className="object-cover"
         />
       </div>
-      <div className="flex items-center bg-[#111111] px-5 py-20 lg:px-16">
+      <div className="section-light flex items-center bg-[#faf9f6] px-5 py-20 lg:px-16">
         <div className="max-w-xl">
-          <h2 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
-            No solo importamos vehículos.
-            <span className="block">Simplificamos decisiones.</span>
+          <p className="kicker">Nuestra historia</p>
+          <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-[#111] sm:text-5xl">
+            No solo mostramos vehículos.
+            <span className="block">Acompañamos decisiones.</span>
           </h2>
-          <ul className="mt-8 grid gap-3 text-sm text-white/60">
-            {POINTS.map((item) => (
-              <li key={item} className="border-b border-white/10 pb-3 uppercase tracking-[0.16em]">
-                {item}
-              </li>
-            ))}
-          </ul>
+          <p className="mt-5 text-base leading-relaxed text-[#525252]">
+            Valcron Motors existe para que encontrar, importar o solicitar un vehículo sea un
+            proceso más claro: opciones, costos e información en un mismo lugar.
+          </p>
           <Link href="/nosotros" className="btn-primary mt-10">
             Conoce Valcron Motors
           </Link>

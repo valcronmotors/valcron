@@ -65,21 +65,21 @@ export function PublicVehicleDetail({ vehicle }: { vehicle: PublicVehicle }) {
         <h1 className="mt-3 font-display text-4xl font-bold tracking-tight text-white">
           {vehicle.marca} {vehicle.modelo}
         </h1>
-        <p className="mt-2 text-white/55">
+        <p className="mt-2 text-[#d4d4d4]">
           {vehicle.ano}
           {vehicle.trim ? ` · ${vehicle.trim}` : ""}
         </p>
         <p className="mt-8 font-display text-3xl text-white">
           {formatAmount(vehicle.precioVentaUsd, vehicle.precioVentaDop)}
         </p>
-        <p className="mt-1 text-sm text-white/40">
+        <p className="mt-1 text-sm text-[#a3a3a3]">
           {formatSecondary(vehicle.precioVentaUsd, vehicle.precioVentaDop)}
         </p>
         <dl className="mt-8 grid grid-cols-2 gap-4">
           {specs.map((item) => (
-            <div key={item.label} className="border-t border-white/8 pt-3">
-              <dt className="text-[11px] uppercase tracking-[0.16em] text-white/38">{item.label}</dt>
-              <dd className="mt-1 text-sm text-white/82">{item.value}</dd>
+            <div key={item.label} className="border-t border-white/10 pt-3">
+              <dt className="text-[11px] uppercase tracking-[0.16em] text-[#a3a3a3]">{item.label}</dt>
+              <dd className="mt-1 text-sm text-[#f5f5f5]">{item.value}</dd>
             </div>
           ))}
         </dl>

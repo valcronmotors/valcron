@@ -10,14 +10,25 @@ import { createClient } from "@/utils/supabase/client";
 export function InventoryEmptyState({
   title = "Sin coincidencias en este momento",
   copy = "No hay unidades que coincidan con tu búsqueda. Un asesor puede localizar o importar el vehículo que buscas.",
+  tone = "dark",
 }: {
   title?: string;
   copy?: string;
+  tone?: "dark" | "light";
 }) {
+  const light = tone === "light";
   return (
-    <div className="gloss-panel px-8 py-14 text-center">
-      <p className="font-display text-2xl text-foreground">{title}</p>
-      <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted">{copy}</p>
+    <div
+      className={
+        light
+          ? "rounded-[1.15rem] border border-black/10 bg-white px-8 py-14 text-center"
+          : "gloss-panel px-8 py-14 text-center"
+      }
+    >
+      <p className={`font-display text-2xl ${light ? "text-[#111]" : "text-white"}`}>{title}</p>
+      <p className={`mx-auto mt-3 max-w-xl text-sm leading-relaxed ${light ? "text-[#404040]" : "text-[#d4d4d4]"}`}>
+        {copy}
+      </p>
       <a
         href={whatsappHref(
           "Hola, no veo coincidencias en el inventario y quiero importar un vehículo por encargo con Valcron Motors.",
@@ -85,15 +96,15 @@ export function LandingInventory({
   }, []);
 
   return (
-    <section className="bg-surface">
+    <section className="section-light bg-[#faf9f6]">
       <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="kicker">Inventario</p>
-            <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+            <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-[#111] sm:text-5xl">
               Catálogo reciente
             </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted">
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-[#404040]">
               Unidades en República Dominicana y en subasta Copart/Manheim, sincronizadas en
               tiempo real desde la tabla vehiculos.
             </p>
@@ -113,6 +124,7 @@ export function LandingInventory({
         ) : vehicles.length === 0 ? (
           <div className="mt-12">
             <InventoryEmptyState
+              tone="light"
               title="Inventario en actualización"
               copy="No hay unidades publicadas en este momento. Escríbenos para importar por encargo desde Copart o Manheim."
             />
@@ -120,7 +132,7 @@ export function LandingInventory({
         ) : (
           <div className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {vehicles.map((vehicle) => (
-              <VehicleCard key={vehicle.id} vehicle={vehicle} />
+              <VehicleCard key={vehicle.id} vehicle={vehicle} tone="light" />
             ))}
           </div>
         )}

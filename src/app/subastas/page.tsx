@@ -51,7 +51,7 @@ export default function SubastasPage() {
             <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-white">
               Buscamos oportunidades en plataformas como Copart, IAAI y Manheim.
             </h2>
-            <p className="mt-5 text-sm leading-relaxed text-white/58">
+            <p className="mt-5 text-sm leading-relaxed text-[#d4d4d4]">
               {SITE.shortName} no opera como socio oficial, partner, representante autorizado ni
               afiliado de estas compañías. Nuestro rol es ayudarte a identificar opciones y
               gestionar el proceso de compra e importación.
@@ -62,24 +62,27 @@ export default function SubastasPage() {
               <article key={item.name} className="gloss-panel p-7">
                 <p className="kicker">Plataforma</p>
                 <h3 className="mt-3 font-display text-2xl font-semibold text-white">{item.name}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-white/55">{item.copy}</p>
+                <p className="mt-3 text-sm leading-relaxed text-[#d4d4d4]">{item.copy}</p>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-surface">
+      <section className="section-light bg-[#faf9f6]">
         <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
           <p className="kicker">Proceso</p>
-          <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-white">
+          <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-[#111]">
             De la búsqueda a la importación
           </h2>
           <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             {STEPS.map((item) => (
-              <article key={item.step} className="gloss-panel p-6">
+              <article
+                key={item.step}
+                className="rounded-[1.15rem] border border-black/10 bg-white p-6 shadow-[0_12px_32px_rgba(0,0,0,0.04)]"
+              >
                 <p className="kicker">{item.step}</p>
-                <h3 className="mt-3 font-display text-xl font-semibold text-white">{item.title}</h3>
+                <h3 className="mt-3 font-display text-xl font-semibold text-[#111]">{item.title}</h3>
               </article>
             ))}
           </div>
@@ -89,7 +92,7 @@ export default function SubastasPage() {
                 "Hola, quiero solicitar una búsqueda de vehículo en subastas de Estados Unidos.",
               )}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="btn-whatsapp"
             >
               <WhatsAppIcon className="h-4 w-4" />

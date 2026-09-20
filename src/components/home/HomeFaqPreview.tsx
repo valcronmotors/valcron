@@ -8,14 +8,14 @@ export function HomeFaqPreview() {
   const [open, setOpen] = useState(0);
 
   return (
-    <section className="bg-[#0a0a0a]" id="preguntas">
-      <div className="mx-auto max-w-4xl px-5 py-24 lg:px-8">
+    <section className="section-light bg-[#ececea]" id="preguntas">
+      <div className="mx-auto max-w-4xl px-5 py-24 lg:px-8 lg:py-32">
         <p className="kicker">FAQ</p>
-        <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
+        <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-[#111] sm:text-5xl">
           Preguntas antes
           <span className="block">de comprar.</span>
         </h2>
-        <div className="mt-12 divide-y divide-white/10 border-y border-white/10">
+        <div className="mt-12 divide-y divide-[#d4d4d4] border-y border-[#d4d4d4]">
           {HOME_FAQS.map((item, index) => {
             const active = open === index;
             return (
@@ -26,11 +26,11 @@ export function HomeFaqPreview() {
                   aria-expanded={active}
                   onClick={() => setOpen(active ? -1 : index)}
                 >
-                  <span className="text-sm font-medium text-white sm:text-base">{item.q}</span>
-                  <span className="text-white/50">{active ? "–" : "+"}</span>
+                  <span className="text-sm font-medium text-[#111] sm:text-base">{item.q}</span>
+                  <span className="text-[#737373]">{active ? "–" : "+"}</span>
                 </button>
                 {active ? (
-                  <p className="pb-5 text-sm leading-relaxed text-white/58">{item.a}</p>
+                  <p className="pb-5 text-sm leading-relaxed text-[#525252]">{item.a}</p>
                 ) : null}
               </div>
             );

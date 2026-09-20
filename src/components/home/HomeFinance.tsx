@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { EditorialImage } from "@/components/shared/EditorialImage";
+import { EDITORIAL } from "@/lib/editorial-media";
 import { formatDop, formatUsd } from "@/lib/money";
 import { financeConfig } from "@/lib/finance-config";
 import { monthlyPayment } from "@/lib/public-filters";
-import { SITE, whatsappHref } from "@/lib/site";
 import { DEFAULT_TASA_USD_DOP } from "@/lib/vehicle-costs";
 
 export function HomeFinance() {
@@ -19,89 +20,86 @@ export function HomeFinance() {
   const cuota = monthlyPayment(financed, term, ratePct / 100);
 
   return (
-    <section className="bg-[#f5f5f5] text-[#111111]">
-      <div className="mx-auto grid max-w-7xl gap-12 px-5 py-24 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+    <section className="section-light bg-[#f5f5f3]">
+      <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-24 lg:grid-cols-2 lg:px-8 lg:py-32">
+        <div className="relative hidden min-h-[32rem] overflow-hidden rounded-[1.5rem] bg-[#111] lg:block">
+          <EditorialImage
+            src={EDITORIAL.pickup.src}
+            alt={EDITORIAL.pickup.alt}
+            sizes="(min-width: 1024px) 42vw, 100vw"
+            className="object-cover"
+          />
+        </div>
         <div>
-          <p className="kicker text-[#737373]">Financiamiento</p>
-          <h2 className="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl">
+          <p className="kicker">Financiamiento</p>
+          <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-[#111] sm:text-5xl">
             Planifica tu compra.
           </h2>
-          <p className="mt-5 max-w-md text-sm leading-relaxed text-[#525252]">
-            Utiliza nuestra calculadora para explorar diferentes escenarios de inicial, plazo y tasa.
+          <p className="mt-5 max-w-md text-base leading-relaxed text-[#525252]">
+            Explora diferentes escenarios de inicial, plazo y tasa antes de solicitar información de
+            financiamiento.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/financiamiento" className="btn-primary">
-              Abrir calculadora completa
-            </Link>
-            <a
-              href={whatsappHref(
-                `Hola, solicito información de financiamiento con ${SITE.shortName}. Precio de referencia: ${formatUsd(price)}.`,
-              )}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-secondary !border-[#d4d4d4] !text-[#111111]"
-            >
-              Solicitar información
-            </a>
+          <div className="mt-8 rounded-[1.35rem] border border-[#ececea] bg-white p-6 shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
+            <label className="block text-sm text-[#737373]">
+              Precio vehículo (USD)
+              <input
+                type="number"
+                min={0}
+                value={price}
+                onChange={(event) => setPrice(Number(event.target.value) || 0)}
+                className="field-input"
+              />
+            </label>
+            <label className="mt-5 block text-sm text-[#737373]">
+              Inicial {downPct}% · {formatUsd(down)}
+              <input
+                type="range"
+                min={0}
+                max={70}
+                value={downPct}
+                onChange={(event) => setDownPct(Number(event.target.value))}
+                className="luxury-range mt-4 w-full"
+              />
+            </label>
+            <label className="mt-5 block text-sm text-[#737373]">
+              Tasa anual {ratePct.toFixed(1)}%
+              <input
+                type="range"
+                min={0}
+                max={30}
+                step={0.1}
+                value={ratePct}
+                onChange={(event) => setRatePct(Number(event.target.value))}
+                className="luxury-range mt-4 w-full"
+              />
+            </label>
+            <label className="mt-5 block text-sm text-[#737373]">
+              Plazo
+              <select
+                value={term}
+                onChange={(event) => setTerm(Number(event.target.value))}
+                className="field-input"
+              >
+                {financeConfig.terms.map((option) => (
+                  <option key={option} value={option}>
+                    {option} meses
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="mt-6 rounded-2xl bg-[#111111] p-5 text-white">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-[#C7A96B]">Cuota mensual estimada</p>
+              <p className="mt-2 font-display text-3xl font-semibold">{formatUsd(cuota)}</p>
+              <p className="mt-1 text-sm text-white/45">{formatDop(cuota * DEFAULT_TASA_USD_DOP)} referencia DOP</p>
+            </div>
+            <p className="mt-4 text-xs leading-relaxed text-[#737373]">
+              Estimación únicamente. Las tasas, comisiones y condiciones pueden variar según la
+              institución financiera y el perfil del solicitante.
+            </p>
           </div>
-        </div>
-
-        <div className="rounded-[1.75rem] border border-[#e5e5e5] bg-white p-6 shadow-[0_20px_50px_rgba(0,0,0,0.06)] md:p-8">
-          <label className="block text-sm text-[#737373]">
-            Precio del vehículo (USD)
-            <input
-              type="number"
-              min={0}
-              value={price}
-              onChange={(event) => setPrice(Number(event.target.value) || 0)}
-              className="field-input !bg-[#fafafa] !text-[#111111]"
-            />
-          </label>
-          <label className="mt-5 block text-sm text-[#737373]">
-            Inicial {downPct}% · {formatUsd(down)}
-            <input
-              type="range"
-              min={0}
-              max={70}
-              value={downPct}
-              onChange={(event) => setDownPct(Number(event.target.value))}
-              className="luxury-range mt-4 w-full"
-            />
-          </label>
-          <label className="mt-5 block text-sm text-[#737373]">
-            Tasa anual {ratePct.toFixed(1)}%
-            <input
-              type="range"
-              min={0}
-              max={30}
-              step={0.1}
-              value={ratePct}
-              onChange={(event) => setRatePct(Number(event.target.value))}
-              className="luxury-range mt-4 w-full"
-            />
-          </label>
-          <label className="mt-5 block text-sm text-[#737373]">
-            Plazo
-            <select
-              value={term}
-              onChange={(event) => setTerm(Number(event.target.value))}
-              className="field-input !bg-[#fafafa] !text-[#111111]"
-            >
-              {financeConfig.terms.map((option) => (
-                <option key={option} value={option}>
-                  {option} meses
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="mt-6 rounded-2xl bg-[#0a0a0a] p-5 text-white">
-            <p className="kicker text-white/45">Cuota estimada</p>
-            <p className="mt-2 font-display text-3xl font-semibold">{formatUsd(cuota)}</p>
-            <p className="mt-1 text-sm text-white/45">{formatDop(cuota * DEFAULT_TASA_USD_DOP)} referencia DOP</p>
-          </div>
-          <p className="mt-4 text-xs leading-relaxed text-[#737373]">
-            Estimación únicamente. {financeConfig.notes}
-          </p>
+          <Link href="/financiamiento" className="btn-primary mt-6">
+            Abrir calculadora completa
+          </Link>
         </div>
       </div>
     </section>

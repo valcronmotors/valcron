@@ -75,7 +75,7 @@ export default function NosotrosPage() {
           </div>
         </section>
 
-        <section className="bg-surface">
+        <section className="section-light bg-[#faf9f6]">
           <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
             <div className="grid gap-6 lg:grid-cols-3">
               <article className="gloss-panel p-8 lg:col-span-1">

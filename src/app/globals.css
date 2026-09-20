@@ -1,6 +1,19 @@
 @import "tailwindcss";
 
 :root {
+  --brand-black: #050608;
+  --brand-black-deep: #030405;
+  --brand-white: #ffffff;
+  --brand-warm-white: #faf9f6;
+  --brand-light: #f5f5f3;
+  --brand-graphite: #262626;
+  --brand-text: #404040;
+  --brand-muted: #737373;
+  --brand-silver: #a3a3a3;
+  --brand-champagne: #c7a96b;
+  --brand-champagne-dark: #9b793f;
+  --header-bg: #050608;
+  --footer-bg: #050608;
   --background: #ffffff;
   --surface: #f8f9fa;
   --surface-2: #f3f4f6;
@@ -17,19 +30,28 @@
 }
 
 .public-site {
-  --background: #050505;
-  --surface: #0a0a0a;
-  --surface-2: #111111;
-  --foreground: #f5f5f5;
+  --background: #050608;
+  --surface: #faf9f6;
+  --surface-2: #f5f5f3;
+  --foreground: #fafafa;
   --ink: #d4d4d4;
-  --muted: #a3a3a3;
-  --accent: #d4d4d4;
-  --accent-gold: #a3a3a3;
+  --muted: #c7c7c7;
+  --accent: #c7a96b;
+  --accent-gold: #b49355;
   --line: rgba(255, 255, 255, 0.1);
   --graphite: #181818;
   --whatsapp: #25d366;
   --whatsapp-hover: #1ebe5d;
-  --footer: #050505;
+  --header-bg: #050608;
+  --header-bg-top: #090a0c;
+  --header-bg-bottom: #030405;
+  --footer-bg: #050608;
+  --footer: #050608;
+  --brand-white: #ffffff;
+  --brand-nav: #ededed;
+  --brand-silver: #a3a3a3;
+  --brand-champagne: #c7a96b;
+  --brand-champagne-dark: #9b793f;
   color-scheme: dark;
   background: var(--background);
   color: var(--foreground);
@@ -93,12 +115,42 @@ h3 {
   color: #737373;
 }
 
+.public-site .kicker {
+  color: #c7a96b;
+}
+
+.public-site :is(.section-light, .bg-surface, .bg-surface-2) {
+  --foreground: #111111;
+  --ink: #404040;
+  --muted: #525252;
+  --line: rgba(0, 0, 0, 0.1);
+  --accent: #9b793f;
+  color: #111111;
+}
+
+.public-site :is(.section-light, .bg-surface, .bg-surface-2) .kicker {
+  color: #9b793f;
+}
+
+.public-site .gloss-panel {
+  --foreground: #fafafa;
+  --ink: #d4d4d4;
+  --muted: #c7c7c7;
+  --line: rgba(255, 255, 255, 0.1);
+  --accent: #c7a96b;
+  color: #fafafa;
+}
+
+.public-site .gloss-panel .kicker {
+  color: #c7a96b;
+}
+
 @utility btn-primary {
   display: inline-flex;
   height: 2.85rem;
   align-items: center;
   justify-content: center;
-  border-radius: 9999px;
+  border-radius: 0.9rem;
   background-color: var(--foreground);
   padding-inline: 1.5rem;
   font-size: 0.875rem;
@@ -124,7 +176,7 @@ h3 {
   height: 2.85rem;
   align-items: center;
   justify-content: center;
-  border-radius: 9999px;
+  border-radius: 0.9rem;
   border: 1px solid var(--accent);
   padding-inline: 1.25rem;
   font-size: 0.875rem;
@@ -152,7 +204,7 @@ h3 {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: 9999px;
+  border-radius: 0.9rem;
   background-color: var(--whatsapp);
   padding-inline: 1.25rem;
   font-size: 0.875rem;
@@ -189,6 +241,116 @@ h3 {
 
 .public-site .field-input:focus {
   border-color: rgba(255, 255, 255, 0.42);
+}
+
+.site-header {
+  isolation: isolate;
+  height: 72px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: #050608;
+  background-image: linear-gradient(180deg, #090a0c 0%, #030405 100%);
+  color: #ededed;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.28);
+}
+
+@media (min-width: 1024px) {
+  .site-header {
+    height: 80px;
+  }
+}
+
+.site-header .brand-logo img {
+  filter: none;
+  mix-blend-mode: normal;
+}
+
+.site-footer {
+  isolation: isolate;
+  background-color: #050608;
+  background-image: linear-gradient(180deg, #090a0d 0%, #030405 100%);
+  color: #a3a3a3;
+}
+
+.site-footer .brand-logo img {
+  filter: none;
+  mix-blend-mode: normal;
+}
+
+.section-light,
+.public-site :is(.bg-surface, .bg-surface-2) {
+  color: #111111;
+}
+
+.section-light .btn-primary,
+.public-site :is(.bg-surface, .bg-surface-2) .btn-primary {
+  background-color: #111111;
+  color: #ffffff;
+}
+
+.section-light .btn-primary:hover,
+.public-site :is(.bg-surface, .bg-surface-2) .btn-primary:hover {
+  background-color: #262626;
+}
+
+.section-light .btn-secondary,
+.public-site :is(.bg-surface, .bg-surface-2) .btn-secondary {
+  border-color: rgba(0, 0, 0, 0.2);
+  color: #111111;
+}
+
+.section-light .btn-secondary:hover,
+.public-site :is(.bg-surface, .bg-surface-2) .btn-secondary:hover {
+  background-color: rgba(17, 17, 17, 0.05);
+}
+
+.section-light .field-input,
+.public-site :is(.bg-surface, .bg-surface-2) .field-input {
+  background-color: #ffffff;
+  border-color: #d4d4d4;
+  color: #111111;
+}
+
+.section-light .field-input:focus,
+.public-site :is(.bg-surface, .bg-surface-2) .field-input:focus {
+  border-color: #111111;
+}
+
+.section-light .field-input::placeholder,
+.public-site :is(.bg-surface, .bg-surface-2) .field-input::placeholder {
+  color: #737373;
+}
+
+.public-site .field-input::placeholder {
+  color: #a3a3a3;
+}
+
+.public-site .gloss-panel .btn-primary {
+  background-color: #ffffff;
+  color: #111111;
+}
+
+.public-site .gloss-panel .btn-secondary {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #f5f5f5;
+}
+
+.public-site .gloss-panel .field-input {
+  background-color: #111111;
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.public-site .gloss-panel .field-input::placeholder {
+  color: #a3a3a3;
+}
+
+.public-site a:focus-visible,
+.public-site button:focus-visible,
+.public-site input:focus-visible,
+.public-site select:focus-visible,
+.public-site textarea:focus-visible {
+  outline: 2px solid #c7a96b;
+  outline-offset: 2px;
 }
 
 @utility badge-status {
@@ -274,4 +436,17 @@ input[type="range"].luxury-range::-moz-range-thumb {
 .public-site input[type="range"].luxury-range::-moz-range-thumb {
   background: #ffffff;
   border: 2px solid #a3a3a3;
+}
+
+.section-light input[type="range"].luxury-range {
+  background: #d4d4d4;
+}
+.section-light input[type="range"].luxury-range::-webkit-slider-thumb {
+  background: #111111;
+  border: 2px solid #c7a96b;
+  box-shadow: 0 0 0 4px rgba(199, 169, 107, 0.16);
+}
+.section-light input[type="range"].luxury-range::-moz-range-thumb {
+  background: #111111;
+  border: 2px solid #c7a96b;
 }

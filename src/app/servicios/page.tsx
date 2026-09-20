@@ -66,10 +66,10 @@ export default function ServiciosPage() {
             {SERVICES.map((service) => {
               const content = (
                 <>
-                  <service.icon className="h-5 w-5 text-white/70" strokeWidth={1.7} />
+                  <service.icon className="h-5 w-5 text-[#f5f5f5]" strokeWidth={1.7} />
                   <p className="mt-6 kicker">{service.step}</p>
                   <h2 className="mt-3 font-display text-2xl font-semibold text-white">{service.title}</h2>
-                  <p className="mt-3 text-sm leading-relaxed text-white/55">{service.copy}</p>
+                  <p className="mt-3 text-sm leading-relaxed text-[#d4d4d4]">{service.copy}</p>
                 </>
               );
 
@@ -98,9 +98,9 @@ export default function ServiciosPage() {
               );
             })}
           </div>
-          <p className="mt-12 text-sm text-white/45">
+          <p className="mt-12 text-sm text-[#d4d4d4]">
             También puedes consultar opciones de{" "}
-            <Link href="/financiamiento" className="text-white underline-offset-4 hover:underline">
+            <Link href="/financiamiento" className="text-white underline underline-offset-4 hover:text-[#C7A96B]">
               financiamiento
             </Link>
             .

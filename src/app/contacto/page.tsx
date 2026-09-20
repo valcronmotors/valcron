@@ -1,20 +1,18 @@
+import { MapPin, Phone } from "lucide-react";
 import { PageHero } from "@/components/public/PageHero";
 import { QuoteForm } from "@/components/public/QuoteForm";
+import { EditorialImage } from "@/components/shared/EditorialImage";
+import { SocialLinks } from "@/components/shared/SocialLinks";
+import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
+import { EDITORIAL } from "@/lib/editorial-media";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
-import { SITE, mailtoHref, officeTelHref, whatsappHref } from "@/lib/site";
+import { SITE, officeTelHref } from "@/lib/site";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Contacto",
-  description: `Visítanos en ${SITE.address.full}. Oficina ${SITE.phoneOffice}, WhatsApp ${SITE.whatsapp}.`,
+  description: `Visítanos en ${SITE.address.full}. Oficina ${SITE.officePhoneDisplay}, WhatsApp ${SITE.whatsappDisplay}.`,
 };
-
-const CONTACTS = [
-  { label: "Dirección", value: SITE.address.full },
-  { label: "Oficina comercial", value: SITE.phoneOffice, href: officeTelHref() },
-  { label: "Asistencia WhatsApp", value: SITE.whatsapp, href: whatsappHref() },
-  { label: "Email", value: SITE.email, href: mailtoHref() },
-];
 
 export default function ContactoPage() {
   return (
@@ -23,49 +21,66 @@ export default function ContactoPage() {
         <PageHero
           kicker="Contacto"
           title="Hablemos de tu próximo vehículo"
-          subtitle="Oficina en Santo Domingo Este, atención comercial en horario extendido y respuesta directa por WhatsApp."
+          subtitle="Oficina en Brisa Oriental, Santo Domingo Este. Atención directa por teléfono y WhatsApp."
           image={PAGE_HERO_IMAGES.contacto}
           imageAlt={PAGE_HERO_ALTS.contacto}
         />
 
-        <section className="bg-background">
-          <div className="mx-auto grid max-w-7xl gap-12 px-5 py-24 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
+        <section className="section-light bg-[#faf9f6]">
+          <div className="mx-auto grid max-w-7xl gap-12 px-5 py-24 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-32">
             <div>
-              <p className="kicker">Ubicación</p>
-              <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-foreground">
+              <p className="kicker">¿En qué podemos ayudarte?</p>
+              <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-[#111]">
                 {SITE.shortName}
               </h2>
-              <dl className="mt-8 grid gap-5">
-                {CONTACTS.map((item) => (
-                  <div key={item.label}>
-                    <dt className="kicker">
-                      {item.label}
-                    </dt>
-                    <dd className="mt-2 text-sm leading-relaxed text-foreground">
-                      {item.href ? (
-                        <a href={item.href} className="hover:text-accent">
-                          {item.value}
-                        </a>
-                      ) : (
-                        item.value
-                      )}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-              <div className="mt-8 gloss-panel p-5">
-                <p className="kicker">
-                  Horarios de atención
+              <p className="mt-4 max-w-md text-sm leading-relaxed text-[#525252]">
+                Cuéntanos si buscas un vehículo disponible, una importación, una oportunidad en
+                subasta o información de financiamiento.
+              </p>
+              <address className="mt-8 not-italic">
+                <p className="flex gap-3 text-sm text-[#262626]">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#C7A96B]" />
+                  <span>
+                    {SITE.address.sector},
+                    <br />
+                    {SITE.address.city},
+                    <br />
+                    {SITE.address.country}
+                  </span>
                 </p>
-                <p className="mt-3 text-sm text-foreground">{SITE.hours.weekdays}</p>
-                <p className="mt-1 text-sm text-foreground">{SITE.hours.saturday}</p>
+                <p className="mt-4 flex items-center gap-3 text-sm">
+                  <Phone className="h-4 w-4 shrink-0 text-[#C7A96B]" />
+                  <a className="text-[#111] hover:underline" href={officeTelHref()}>
+                    Oficina {SITE.officePhoneDisplay}
+                  </a>
+                </p>
+                <p className="mt-3 flex items-center gap-3 text-sm">
+                  <WhatsAppIcon className="h-4 w-4 shrink-0 text-[#25d366]" />
+                  <a
+                    className="text-[#111] hover:underline"
+                    href={SITE.whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    WhatsApp {SITE.whatsappDisplay}
+                  </a>
+                </p>
+              </address>
+              <SocialLinks className="mt-8" tone="light" />
+              <div className="relative mt-10 hidden min-h-[16rem] overflow-hidden rounded-[1.35rem] bg-[#111] lg:block">
+                <EditorialImage
+                  src={EDITORIAL.muscle.src}
+                  alt={EDITORIAL.muscle.alt}
+                  sizes="(min-width: 1024px) 32vw, 100vw"
+                  className="object-cover"
+                />
               </div>
             </div>
-            <QuoteForm showVehicleInterest submitLabel="Enviar mensaje" />
+            <QuoteForm showVehicleInterest showSubject submitLabel="Enviar mensaje" />
           </div>
         </section>
 
-        <section className="bg-surface">
+        <section className="bg-[#111]">
           <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
             <div className="overflow-hidden rounded-2xl border border-white/10">
               <iframe
