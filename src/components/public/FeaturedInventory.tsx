@@ -5,17 +5,9 @@ import { useEffect, useMemo, useState } from "react";
 import { CurrencySwitch } from "@/components/public/CurrencyProvider";
 import { InventoryEmptyState } from "@/components/public/LandingInventory";
 import { VehicleCard } from "@/components/public/VehicleCard";
+import { Reveal } from "@/components/shared/Reveal";
 import type { PublicVehicle } from "@/lib/public-catalog";
-import { isEcoVehicle } from "@/lib/public-filters";
 import { createClient } from "@/utils/supabase/client";
-
-type ShowcaseTab = "arrivals" | "auctions" | "eco";
-
-const TABS: { id: ShowcaseTab; label: string }[] = [
-  { id: "arrivals", label: "Recién Llegados a RD" },
-  { id: "auctions", label: "Próximas Subastas USA" },
-  { id: "eco", label: "Híbridos / Eléctricos (Ley 103-13)" },
-];
 
 export function FeaturedInventory({
   initialVehicles,
@@ -24,14 +16,10 @@ export function FeaturedInventory({
   initialVehicles: PublicVehicle[];
   error: string | null;
 }) {
-  const [vehicles, setVehicles] = useState(initialVehicles);
-  const [loadError, setLoadError] = useState(error);
-  const [tab, setTab] = useState<ShowcaseTab>("arrivals");
-
-  useEffect(() => {
-    setVehicles(initialVehicles);
-    setLoadError(error);
-  }, [error, initialVehicles]);
+  const [liveVehicles, setLiveVehicles] = useState<PublicVehicle[] | null>(null);
+  const [liveError, setLiveError] = useState<string | null>(null);
+  const vehicles = liveVehicles ?? initialVehicles;
+  const loadError = liveError ?? error;
 
   useEffect(() => {
     const supabase = createClient();
@@ -46,10 +34,10 @@ export function FeaturedInventory({
         if (!response.ok) {
           throw new Error(payload.error ?? "No se pudo actualizar el inventario.");
         }
-        setVehicles(payload.data ?? []);
-        setLoadError(null);
+        setLiveVehicles(payload.data ?? []);
+        setLiveError(null);
       } catch (refreshError) {
-        setLoadError(
+        setLiveError(
           refreshError instanceof Error
             ? refreshError.message
             : "No se pudo sincronizar el inventario.",
@@ -73,82 +61,45 @@ export function FeaturedInventory({
     };
   }, []);
 
-  const visible = useMemo(() => {
-    if (tab === "auctions") {
-      return vehicles.filter((vehicle) => vehicle.listingKind === "auction").slice(0, 6);
-    }
-    if (tab === "eco") {
-      return vehicles.filter(isEcoVehicle).slice(0, 6);
-    }
-    const arrivals = vehicles.filter((vehicle) => vehicle.listingKind === "dealer");
-    return (arrivals.length > 0 ? arrivals : vehicles).slice(0, 6);
-  }, [tab, vehicles]);
+  const visible = useMemo(() => vehicles.slice(0, 4), [vehicles]);
 
   return (
-    <section className="bg-white">
+    <section className="bg-background">
       <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="kicker">Inventario vivo</p>
-            <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
-              Vehículos destacados
-            </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted">
-              Sincronizado en tiempo real con la tabla vehiculos. Stock en Santo Domingo y pujas
-              activas en Copart y Manheim.
-            </p>
+        <Reveal>
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="kicker">Inventario</p>
+              <h2 className="mt-3 max-w-xl font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
+                Vehículos que merecen tu atención.
+              </h2>
+              <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/55">
+                Explora una selección de vehículos disponibles y descubre opciones que se adapten a
+                tus necesidades.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <CurrencySwitch />
+              <Link href="/inventario" className="btn-secondary shrink-0">
+                Explorar todo el inventario
+              </Link>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <CurrencySwitch />
-            <Link href="/inventario" className="btn-secondary shrink-0">
-              Ver inventario completo
-            </Link>
-          </div>
-        </div>
-
-        <div className="mt-10 flex flex-wrap gap-2">
-          {TABS.map((item) => {
-            const active = tab === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setTab(item.id)}
-                className={`h-10 rounded-full px-4 text-sm transition ${
-                  active
-                    ? "bg-foreground text-white"
-                    : "border border-line text-muted hover:border-accent hover:text-accent"
-                }`}
-              >
-                {item.label}
-              </button>
-            );
-          })}
-        </div>
+        </Reveal>
 
         {loadError ? (
-          <p className="mt-10 rounded-2xl border border-line bg-surface px-5 py-4 text-sm text-muted">
+          <p className="mt-10 rounded-2xl border border-white/10 bg-surface px-5 py-4 text-sm text-muted">
             {loadError}
           </p>
         ) : visible.length === 0 ? (
           <div className="mt-12">
             <InventoryEmptyState
-              title={
-                tab === "eco"
-                  ? "Sin unidades eco publicadas"
-                  : tab === "auctions"
-                    ? "Sin subastas publicadas"
-                    : "Inventario en actualización"
-              }
-              copy={
-                tab === "eco"
-                  ? "Podemos localizar híbridos y eléctricos con asesoría Ley 103-13 e importarlos por encargo."
-                  : "Escríbenos para importar la unidad que buscas desde Copart o Manheim."
-              }
+              title="Inventario en actualización"
+              copy="Escríbenos para localizar o importar el vehículo que buscas desde Estados Unidos."
             />
           </div>
         ) : (
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
             {visible.map((vehicle) => (
               <VehicleCard key={vehicle.id} vehicle={vehicle} />
             ))}

@@ -3,13 +3,16 @@ import { adminOrigin } from "@/lib/hosts";
 export const SITE = {
   name: "Valcron Motors Group SRL",
   shortName: "Valcron Motors",
+  brand: "valcronMotors",
+  legalName: "Valcron Motors Group, SRL",
   url: "https://valcronmotors.com",
   email: "info@valcronmotors.com",
-  heroTitle: "Dealer · Importación · Financiamiento",
+  heroEyebrow: "Valcron Motors • República Dominicana",
+  heroTitle: "Conectamos tus sueños sin fronteras.",
   heroSubtitle:
-    "La experiencia definitiva en compra e importación de vehículos en República Dominicana.",
+    "Compra, importa y encuentra tu próximo vehículo desde Estados Unidos hasta República Dominicana con una experiencia clara, profesional y personalizada.",
   valueProposition:
-    "Dealer · Importación · Financiamiento | La experiencia definitiva en compra e importación de vehículos en República Dominicana.",
+    "Valcron Motors: dealer en República Dominicana para compra, importación y venta de vehículos desde Estados Unidos, con inventario local y asesoría en todo el proceso.",
   address: {
     street: "Avenida Principal No 20",
     sector: "Sector Brisa Oriental",
@@ -22,10 +25,6 @@ export const SITE = {
   whatsapp: "829-321-1271",
   whatsappDigits: "18293211271",
   whatsappDisplay: "+1 (829) 321-1271",
-  googleReviews: {
-    rating: "5.0",
-    count: "+200",
-  },
   mapEmbedSrc:
     "https://maps.google.com/maps?q=Avenida%20Principal%20No%2020%2C%20Sector%20Brisa%20Oriental%2C%20Santo%20Domingo%20Este%2C%20Rep%C3%BAblica%20Dominicana&z=16&output=embed",
   hours: {
@@ -37,26 +36,63 @@ export const SITE = {
 export const PUBLIC_NAV = [
   { href: "/", label: "Inicio" },
   { href: "/inventario", label: "Inventario" },
+  { href: "/subastas", label: "Subastas" },
   { href: "/importacion", label: "Importación" },
   { href: "/financiamiento", label: "Financiamiento" },
+  { href: "/servicios", label: "Servicios" },
   { href: "/nosotros", label: "Nosotros" },
   { href: "/contacto", label: "Contacto" },
 ] as const;
 
-export const FOOTER_NAV = [
+export const RESOURCE_NAV = [
+  { href: "/blog", label: "Blog" },
+  { href: "/blog", label: "Guías" },
+  { href: "/preguntas-frecuentes", label: "Preguntas Frecuentes" },
+  { href: "/calculadoras", label: "Calculadoras" },
+] as const;
+
+export const FOOTER_INVENTORY = [
+  { href: "/inventario", label: "Vehículos" },
+  { href: "/inventario", label: "Buscar" },
+  { href: "/contacto", label: "Solicitar vehículo" },
+] as const;
+
+export const FOOTER_SERVICES = [
+  { href: "/importacion", label: "Importación" },
+  { href: "/subastas", label: "Subastas" },
+  { href: "/financiamiento", label: "Financiamiento" },
+] as const;
+
+export const FOOTER_RESOURCES = [
+  { href: "/blog", label: "Blog" },
+  { href: "/blog", label: "Guías" },
+  { href: "/calculadoras", label: "Calculadoras" },
+  { href: "/preguntas-frecuentes", label: "FAQ" },
+] as const;
+
+export const FOOTER_COMPANY = [
+  { href: "/nosotros", label: "Nosotros" },
+  { href: "/servicios", label: "Servicios" },
+  { href: "/contacto", label: "Contacto" },
+] as const;
+
+export const FOOTER_EXPLORE = [
   { href: "/", label: "Inicio" },
   { href: "/inventario", label: "Inventario" },
   { href: "/importacion", label: "Importación" },
-  { href: "/financiamiento", label: "Financiamiento" },
+  { href: "/subastas", label: "Subastas" },
+] as const;
+
+export const FOOTER_NAV = [
+  ...FOOTER_EXPLORE,
+  ...FOOTER_COMPANY,
   { href: "/blog", label: "Blog" },
-  { href: "/nosotros", label: "Nosotros" },
-  { href: "/contacto", label: "Contacto" },
 ] as const;
 
 export const LEGAL_NAV = [
-  { href: "/politicas", label: "Políticas de Uso" },
-  { href: "/terminos", label: "Términos y Condiciones" },
   { href: "/privacidad", label: "Privacidad" },
+  { href: "/terminos", label: "Términos" },
+  { href: "/politicas", label: "Cookies" },
 ] as const;
 
 export const PUBLIC_PATHS = [
@@ -65,6 +101,8 @@ export const PUBLIC_PATHS = [
   "/catalogo",
   "/inventario",
   "/importacion",
+  "/subastas",
+  "/servicios",
   "/financiamiento",
   "/contacto",
   "/blog",
@@ -72,6 +110,8 @@ export const PUBLIC_PATHS = [
   "/politicas",
   "/terminos",
   "/privacidad",
+  "/preguntas-frecuentes",
+  "/calculadoras",
   "/api/public",
   "/api/webhooks",
 ] as const;
@@ -139,6 +179,7 @@ export function autoDealerJsonLd() {
     "@context": "https://schema.org",
     "@type": "AutoDealer",
     name: SITE.name,
+    alternateName: SITE.brand,
     url: SITE.url,
     email: SITE.email,
     telephone: [`+${SITE.phoneOfficeDigits}`, `+${SITE.whatsappDigits}`],

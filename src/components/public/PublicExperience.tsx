@@ -1,17 +1,33 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { useEffect, type ReactNode } from "react";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { CurrencyProvider } from "@/components/public/CurrencyProvider";
 import { WhatsAppFab } from "@/components/public/WhatsAppFab";
 import { usesMarketingChrome } from "@/lib/site";
-import type { ReactNode } from "react";
 
 export function PublicExperience({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const publicSite = usesMarketingChrome(pathname);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const body = document.body;
+    if (publicSite) {
+      root.classList.add("public-site");
+      body.classList.add("public-site");
+    } else {
+      root.classList.remove("public-site");
+      body.classList.remove("public-site");
+    }
+
+    return () => {
+      root.classList.remove("public-site");
+      body.classList.remove("public-site");
+    };
+  }, [publicSite]);
 
   if (pathname.startsWith("/admin")) {
     return (
@@ -27,21 +43,12 @@ export function PublicExperience({ children }: { children: ReactNode }) {
 
   return (
     <CurrencyProvider>
-      <Navbar />
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={pathname}
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
-          className="flex min-h-0 flex-1 flex-col"
-        >
-          {children}
-        </motion.div>
-      </AnimatePresence>
-      <Footer />
-      <WhatsAppFab />
+      <div className="public-site flex min-h-full flex-1 flex-col bg-[#050505] text-[#f5f5f5]">
+        <Navbar />
+        <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+        <Footer />
+        <WhatsAppFab />
+      </div>
     </CurrencyProvider>
   );
 }

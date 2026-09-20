@@ -149,7 +149,7 @@ export function LoginForm({ next }: { next: string }) {
         className="inline-flex h-12 w-full items-center justify-center gap-2.5 rounded-lg bg-[#0B0C10] text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-70"
       >
         {pending ? <Spinner /> : null}
-        {pending ? "Verificando acceso..." : "Iniciar Sesión en ERP/CRM"}
+        {pending ? "Verificando acceso..." : "Entrar al website admin"}
       </button>
     </form>
   );

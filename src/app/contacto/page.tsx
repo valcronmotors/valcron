@@ -28,7 +28,7 @@ export default function ContactoPage() {
           imageAlt={PAGE_HERO_ALTS.contacto}
         />
 
-        <section className="bg-white">
+        <section className="bg-background">
           <div className="mx-auto grid max-w-7xl gap-12 px-5 py-24 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
             <div>
               <p className="kicker">Ubicación</p>
@@ -53,7 +53,7 @@ export default function ContactoPage() {
                   </div>
                 ))}
               </dl>
-              <div className="mt-8 rounded-2xl border border-line bg-surface p-5">
+              <div className="mt-8 gloss-panel p-5">
                 <p className="kicker">
                   Horarios de atención
                 </p>
@@ -67,7 +67,7 @@ export default function ContactoPage() {
 
         <section className="bg-surface">
           <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
-            <div className="overflow-hidden rounded-2xl border border-line shadow-[0_12px_40px_rgba(11,12,16,0.06)]">
+            <div className="overflow-hidden rounded-2xl border border-white/10">
               <iframe
                 title="Valcron Motors Group SRL en Santo Domingo Este"
                 src={SITE.mapEmbedSrc}

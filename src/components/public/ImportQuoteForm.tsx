@@ -29,7 +29,7 @@ export function ImportQuoteForm() {
 
   return (
     <form
-      className="grid gap-4 rounded-2xl border border-line bg-white p-6 shadow-[0_12px_40px_rgba(11,12,16,0.06)]"
+      className="grid gap-4 gloss-panel p-6"
       onSubmit={(event) => {
         event.preventDefault();
         window.open(href, "_blank", "noopener,noreferrer");
@@ -84,7 +84,7 @@ export function ImportQuoteForm() {
           value={notas}
           onChange={(event) => setNotas(event.target.value)}
           placeholder="Condición, color, kilometraje máximo o si aplica Ley 103-13"
-          className="mt-2 min-h-24 w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-accent"
+          className="field-input mt-2 h-auto min-h-24 py-2"
         />
       </label>
       <a

@@ -5,7 +5,7 @@ import { getAdminProfile } from "@/lib/auth";
 export const metadata: Metadata = {
   title: {
     default: "Dashboard",
-    template: "%s | Valcron ERP",
+    template: "%s | Valcron Admin",
   },
 };
 

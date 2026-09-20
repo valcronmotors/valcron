@@ -18,19 +18,16 @@ const VALUES = [
   {
     title: "Transparencia",
     icon: Scale,
-    tone: "bg-amber-50 text-amber-600",
     copy: "Cada partida de costo, título y tiempo de entrega se documenta. No hay letras pequeñas en el proceso.",
   },
   {
     title: "Calidad técnica",
     icon: ShieldCheck,
-    tone: "bg-emerald-50 text-emerald-600",
     copy: "Diagnóstico de recepción, revisión de historial y criterio de dealer antes de ofrecer una unidad.",
   },
   {
     title: "Servicio de excelencia",
     icon: BadgeCheck,
-    tone: "bg-blue-50 text-blue-600",
     copy: "Un mismo equipo acompaña desde la primera consulta hasta la entrega en Santo Domingo Este.",
   },
 ];
@@ -47,7 +44,7 @@ export default function NosotrosPage() {
           imageAlt={PAGE_HERO_ALTS.nosotros}
         />
 
-        <section className="bg-white">
+        <section className="bg-background">
           <div className="mx-auto grid max-w-7xl gap-16 px-5 py-24 lg:grid-cols-2 lg:px-8">
             <div>
               <p className="kicker">Historia</p>
@@ -66,7 +63,7 @@ export default function NosotrosPage() {
                 que usamos internamente: unidades que podemos defender en calidad y papeles.
               </p>
             </div>
-            <div className="relative min-h-[320px] overflow-hidden rounded-2xl border border-line">
+            <div className="relative min-h-[320px] overflow-hidden rounded-2xl border border-white/10">
               <Image
                 src={NOSOTROS_GALLERY_IMAGE}
                 alt="Instalaciones y estándar visual de Valcron Motors Group"
@@ -81,7 +78,7 @@ export default function NosotrosPage() {
         <section className="bg-surface">
           <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
             <div className="grid gap-6 lg:grid-cols-3">
-              <article className="rounded-2xl border border-line bg-white p-8 lg:col-span-1">
+              <article className="gloss-panel p-8 lg:col-span-1">
                 <p className="kicker">Misión</p>
                 <p className="mt-4 text-sm leading-relaxed text-foreground">
                   Facilitar la adquisición de vehículos confiables en República Dominicana,
@@ -89,14 +86,14 @@ export default function NosotrosPage() {
                   principio a fin.
                 </p>
               </article>
-              <article className="rounded-2xl border border-line bg-white p-8 lg:col-span-1">
+              <article className="gloss-panel p-8 lg:col-span-1">
                 <p className="kicker">Visión</p>
                 <p className="mt-4 text-sm leading-relaxed text-foreground">
                   Ser el dealer de referencia en Santo Domingo Este para venta, importación y
                   financiamiento, reconocido por rigor, discreción y excelencia operativa.
                 </p>
               </article>
-              <article className="rounded-2xl border border-line bg-white p-8 lg:col-span-1">
+              <article className="gloss-panel p-8 lg:col-span-1">
                 <p className="kicker">Equipo</p>
                 <p className="mt-4 text-sm leading-relaxed text-foreground">
                   Asesores comerciales, gestión de subastas y despacho aduanal en un mismo
@@ -107,8 +104,8 @@ export default function NosotrosPage() {
 
             <div className="mt-6 grid gap-6 md:grid-cols-3">
               {VALUES.map((value) => (
-                <article key={value.title} className="rounded-2xl border border-line bg-white p-8">
-                  <span className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${value.tone}`}>
+                <article key={value.title} className="gloss-panel p-8">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/80">
                     <value.icon className="h-5 w-5" strokeWidth={2.2} />
                   </span>
                   <h3 className="mt-4 font-display text-2xl font-semibold text-foreground">{value.title}</h3>
@@ -119,7 +116,7 @@ export default function NosotrosPage() {
           </div>
         </section>
 
-        <section className="bg-white">
+        <section className="bg-background">
           <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
             <p className="kicker">Garantía</p>
             <h2 className="mt-3 max-w-3xl font-display text-4xl font-semibold tracking-tight text-foreground">

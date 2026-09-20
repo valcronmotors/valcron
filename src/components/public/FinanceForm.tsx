@@ -46,7 +46,7 @@ export function FinanceForm() {
 
   return (
     <form
-      className="grid gap-5 rounded-3xl border border-line bg-white p-6 shadow-[0_18px_50px_rgba(11,12,16,0.07)] md:p-8"
+      className="grid gap-5 gloss-panel p-6 md:p-8"
       onSubmit={(event) => {
         event.preventDefault();
         window.open(href, "_blank", "noopener,noreferrer");
@@ -98,17 +98,17 @@ export function FinanceForm() {
         key={`${simulation.cuota}-${plazo}`}
         initial={{ opacity: 0.4, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
-        className="grid gap-3 rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50/90 via-white to-white p-5 sm:grid-cols-2"
+        className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-5 sm:grid-cols-2"
       >
         <div>
-          <p className="kicker text-emerald-700!">Cuota mensual USD</p>
+          <p className="kicker">Cuota mensual USD</p>
           <p className="mt-1 font-display text-3xl text-foreground">
             {formatUsd(simulation.cuota)}
           </p>
         </div>
         <div>
-          <p className="kicker text-emerald-700!">Cuota mensual DOP</p>
-          <p className="mt-1 font-display text-3xl text-emerald-700">
+          <p className="kicker">Cuota mensual DOP</p>
+          <p className="mt-1 font-display text-3xl text-foreground">
             {formatDop(simulation.cuotaDop)}
           </p>
         </div>

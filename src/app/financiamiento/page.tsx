@@ -46,7 +46,7 @@ export default function FinanciamientoPage() {
           imageAlt={PAGE_HERO_ALTS.financiamiento}
         />
 
-        <section className="bg-white">
+        <section className="bg-background">
           <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
             <div className="max-w-3xl">
               <p className="kicker">Aliados</p>
@@ -63,7 +63,7 @@ export default function FinanciamientoPage() {
               {BANKS.map((bank) => (
                 <article
                   key={bank}
-                  className="rounded-2xl border border-line bg-surface px-5 py-6 text-center"
+                  className="gloss-panel px-5 py-6 text-center"
                 >
                   <p className="text-sm font-medium tracking-wide text-foreground">{bank}</p>
                 </article>
@@ -75,7 +75,7 @@ export default function FinanciamientoPage() {
         <section className="bg-surface">
           <div className="mx-auto grid max-w-7xl gap-12 px-5 py-24 lg:grid-cols-2 lg:px-8">
             {REQUIREMENTS.map((group) => (
-              <article key={group.title} className="rounded-2xl border border-line bg-white p-8">
+              <article key={group.title} className="gloss-panel p-8">
                 <h3 className="font-display text-2xl font-semibold text-foreground">{group.title}</h3>
                 <ul className="mt-6 grid gap-3 text-sm leading-relaxed text-muted">
                   {group.items.map((item) => (
@@ -89,7 +89,7 @@ export default function FinanciamientoPage() {
           </div>
         </section>
 
-        <section className="bg-white">
+        <section className="bg-background">
           <div className="mx-auto grid max-w-7xl gap-12 px-5 py-24 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
             <div>
               <p className="kicker">
@@ -105,7 +105,7 @@ export default function FinanciamientoPage() {
             </div>
             <Suspense
               fallback={
-                <div className="rounded-3xl border border-line bg-white p-8 text-sm text-muted">
+                <div className="gloss-panel p-8 text-sm text-muted">
                   Cargando simulador...
                 </div>
               }

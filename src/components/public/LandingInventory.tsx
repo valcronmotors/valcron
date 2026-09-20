@@ -15,7 +15,7 @@ export function InventoryEmptyState({
   copy?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-line bg-white px-8 py-14 text-center shadow-[0_10px_40px_rgba(11,12,16,0.05)]">
+    <div className="gloss-panel px-8 py-14 text-center">
       <p className="font-display text-2xl text-foreground">{title}</p>
       <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted">{copy}</p>
       <a
@@ -39,13 +39,10 @@ export function LandingInventory({
   initialVehicles: PublicVehicle[];
   error: string | null;
 }) {
-  const [vehicles, setVehicles] = useState(initialVehicles);
-  const [loadError, setLoadError] = useState(error);
-
-  useEffect(() => {
-    setVehicles(initialVehicles);
-    setLoadError(error);
-  }, [error, initialVehicles]);
+  const [liveVehicles, setLiveVehicles] = useState<PublicVehicle[] | null>(null);
+  const [liveError, setLiveError] = useState<string | null>(null);
+  const vehicles = liveVehicles ?? initialVehicles;
+  const loadError = liveError ?? error;
 
   useEffect(() => {
     const supabase = createClient();
@@ -60,10 +57,10 @@ export function LandingInventory({
         if (!response.ok) {
           throw new Error(payload.error ?? "No se pudo actualizar el inventario.");
         }
-        setVehicles((payload.data ?? []).slice(0, 6));
-        setLoadError(null);
+        setLiveVehicles((payload.data ?? []).slice(0, 6));
+        setLiveError(null);
       } catch (refreshError) {
-        setLoadError(
+        setLiveError(
           refreshError instanceof Error
             ? refreshError.message
             : "No se pudo sincronizar el inventario.",
@@ -110,7 +107,7 @@ export function LandingInventory({
         </div>
 
         {loadError ? (
-          <p className="mt-10 rounded-2xl border border-line bg-white px-5 py-4 text-sm text-muted">
+          <p className="mt-10 gloss-panel px-5 py-4 text-sm text-muted">
             {loadError}
           </p>
         ) : vehicles.length === 0 ? (

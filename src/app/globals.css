@@ -16,6 +16,25 @@
   --footer: #0b0c10;
 }
 
+.public-site {
+  --background: #050505;
+  --surface: #0a0a0a;
+  --surface-2: #111111;
+  --foreground: #f5f5f5;
+  --ink: #d4d4d4;
+  --muted: #a3a3a3;
+  --accent: #d4d4d4;
+  --accent-gold: #a3a3a3;
+  --line: rgba(255, 255, 255, 0.1);
+  --graphite: #181818;
+  --whatsapp: #25d366;
+  --whatsapp-hover: #1ebe5d;
+  --footer: #050505;
+  color-scheme: dark;
+  background: var(--background);
+  color: var(--foreground);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
@@ -51,8 +70,8 @@ h1,
 h2,
 h3 {
   font-family: var(--font-jakarta), "Plus Jakarta Sans", sans-serif;
-  font-weight: 600;
-  letter-spacing: -0.025em;
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
 ::selection {
@@ -60,35 +79,49 @@ h3 {
   color: var(--foreground);
 }
 
+.public-site ::selection {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
 @utility kicker {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   line-height: 1rem;
   font-weight: 500;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #6b7280;
+  color: #737373;
 }
 
 @utility btn-primary {
   display: inline-flex;
-  height: 2.75rem;
+  height: 2.85rem;
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
   background-color: var(--foreground);
   padding-inline: 1.5rem;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #ffffff;
-  transition: background-color 150ms ease;
+  transition: background-color 200ms ease, transform 200ms ease;
   &:hover {
     background-color: var(--graphite);
   }
 }
 
+.public-site .btn-primary {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.public-site .btn-primary:hover {
+  background-color: #d4d4d4;
+}
+
 @utility btn-secondary {
   display: inline-flex;
-  height: 2.75rem;
+  height: 2.85rem;
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
@@ -97,24 +130,35 @@ h3 {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--accent);
-  transition: background-color 150ms ease;
+  transition: background-color 200ms ease, border-color 200ms ease;
   &:hover {
     background-color: color-mix(in srgb, var(--accent) 10%, transparent);
   }
 }
 
+.public-site .btn-secondary {
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #f5f5f5;
+}
+
+.public-site .btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
 @utility btn-whatsapp {
   display: inline-flex;
-  height: 2.75rem;
+  height: 2.85rem;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   border-radius: 9999px;
   background-color: var(--whatsapp);
   padding-inline: 1.25rem;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #ffffff;
-  transition: background-color 150ms ease;
+  transition: background-color 200ms ease;
   &:hover {
     background-color: var(--whatsapp-hover);
   }
@@ -137,6 +181,16 @@ h3 {
   }
 }
 
+.public-site .field-input {
+  background-color: #111111;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f5f5f5;
+}
+
+.public-site .field-input:focus {
+  border-color: rgba(255, 255, 255, 0.42);
+}
+
 @utility badge-status {
   border-radius: 9999px;
   border: 1px solid var(--accent);
@@ -149,17 +203,39 @@ h3 {
   color: var(--accent);
 }
 
+@utility gloss-panel {
+  border-radius: 1.15rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055) 0%, rgba(10, 10, 10, 0.88) 58%, #0a0a0a 100%);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+@utility metallic-border {
+  border: 1px solid rgba(212, 212, 212, 0.18);
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
 @keyframes kenburns {
   from {
     transform: scale(1);
   }
   to {
-    transform: scale(1.08);
+    transform: scale(1.04);
   }
 }
 
-.hero-kenburns {
-  animation: kenburns 14s ease-out forwards;
+@media (prefers-reduced-motion: reduce) {
+  .hero-kenburns {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 input[type="range"].luxury-range {
@@ -185,4 +261,17 @@ input[type="range"].luxury-range::-moz-range-thumb {
   background: #0b0c10;
   border: 2px solid #c5a059;
   cursor: pointer;
+}
+
+.public-site input[type="range"].luxury-range {
+  background: rgba(255, 255, 255, 0.18);
+}
+.public-site input[type="range"].luxury-range::-webkit-slider-thumb {
+  background: #ffffff;
+  border: 2px solid #a3a3a3;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
+}
+.public-site input[type="range"].luxury-range::-moz-range-thumb {
+  background: #ffffff;
+  border: 2px solid #a3a3a3;
 }

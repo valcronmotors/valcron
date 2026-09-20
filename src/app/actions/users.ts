@@ -124,7 +124,7 @@ export async function createStaffUser(
   revalidateUsers();
   return {
     error: null,
-    success: `${name} ya puede iniciar sesión en el CRM/ERP.`,
+    success: `${name} ya puede iniciar sesión en el website admin.`,
   };
 }
 
@@ -200,7 +200,7 @@ export async function setStaffAccess(
   return {
     error: null,
     success: revoke
-      ? "Acceso revocado. Esa cuenta ya no puede entrar al CRM/ERP."
+      ? "Acceso revocado. Esa cuenta ya no puede entrar al website admin."
       : "Acceso restaurado.",
   };
 }

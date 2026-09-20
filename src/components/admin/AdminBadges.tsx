@@ -1,6 +1,5 @@
 import {
   AUCTION_BRAND,
-  adminCrmBadgeClass,
   adminStatusBadgeClass,
   type AuctionBrand,
 } from "@/lib/admin-theme";
@@ -15,18 +14,6 @@ export function AdminStatusBadge({
 }) {
   return (
     <span className={`${BADGE_BASE} ${adminStatusBadgeClass(estado)}`}>
-      {estado || "—"}
-    </span>
-  );
-}
-
-export function AdminCrmBadge({
-  estado,
-}: {
-  estado: string | null | undefined;
-}) {
-  return (
-    <span className={`${BADGE_BASE} ${adminCrmBadgeClass(estado)}`}>
       {estado || "—"}
     </span>
   );

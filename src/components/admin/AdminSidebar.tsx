@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { ChevronDown, ChevronsLeft, Globe, LogOut } from "lucide-react";
 import { signOut } from "@/app/actions/auth";
@@ -55,7 +55,7 @@ export function AdminSidebar({
           href="/admin"
           onClick={onNavigate}
           className="min-w-0"
-          aria-label="Valcron ERP"
+          aria-label="Website Admin"
         >
           {collapsed ? (
             <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#0B0C10] text-xs font-semibold tracking-wide text-white">
@@ -65,7 +65,7 @@ export function AdminSidebar({
             <span className="block">
               <BrandLogo size="header" tone="onLight" />
               <span className="mt-1 block text-[10px] font-medium uppercase tracking-[0.22em] text-gray-400">
-                ERP / CRM System
+                Website Admin
               </span>
             </span>
           )}
@@ -156,13 +156,8 @@ function NavSection({
   const Icon = ADMIN_NAV_ICONS[section.icon];
   const tone = ADMIN_NAV_TONE[section.icon];
   const active = sectionHasActiveChild(pathname, section);
-  const [open, setOpen] = useState(active);
-
-  useEffect(() => {
-    if (active) {
-      setOpen(true);
-    }
-  }, [active]);
+  const [userOpen, setUserOpen] = useState<boolean | null>(null);
+  const open = userOpen ?? active;
 
   const iconMark = (
     <span
@@ -214,7 +209,7 @@ function NavSection({
     <li>
       <button
         type="button"
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => setUserOpen((value) => !(value ?? active))}
         aria-expanded={open}
         className={`flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-left text-sm transition-all duration-200 ${
           active ? tone.active : `text-gray-600 ${tone.hover}`

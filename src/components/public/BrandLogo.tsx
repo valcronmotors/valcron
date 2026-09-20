@@ -13,19 +13,19 @@ export function BrandLogo({
   return (
     <span
       className={`relative inline-block overflow-hidden bg-transparent ${
-        isHeader ? "h-11 w-[210px]" : "h-12 w-[232px]"
+        isHeader ? "h-10 w-[196px] sm:h-11 sm:w-[214px]" : "h-12 w-[232px]"
       }`}
     >
       <Image
         src="/logo.png"
-        alt={SITE.name}
+        alt={SITE.brand}
         fill
         priority={isHeader}
-        sizes={isHeader ? "210px" : "232px"}
+        sizes={isHeader ? "214px" : "232px"}
         className={
           tone === "onLight"
             ? "object-cover object-center invert"
-            : "object-cover object-center mix-blend-screen"
+            : "object-cover object-center"
         }
       />
     </span>

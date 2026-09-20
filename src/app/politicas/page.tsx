@@ -15,7 +15,7 @@ export default function PoliticasPage() {
         sistema y pueden cambiar sin previo aviso.
       </p>
       <p>
-        El acceso ERP/CRM está reservado al personal autorizado. El uso indebido de formularios
+        El acceso al website admin está reservado al personal autorizado. El uso indebido de formularios
         o datos de contacto puede ser bloqueado.
       </p>
     </ContentPage>

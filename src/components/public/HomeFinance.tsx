@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { formatDop, formatUsd } from "@/lib/money";
 import type { PublicVehicle } from "@/lib/public-catalog";
 import { publicVehicleTitle } from "@/lib/public-catalog";
@@ -23,21 +23,18 @@ export function HomeFinance({ vehicles }: { vehicles: PublicVehicle[] }) {
   const cuota = monthlyPayment(financed, plazo);
   const cuotaDop = cuota * tasa;
 
-  const href = useMemo(
-    () =>
-      whatsappHref(
-        [
-          `Hola, solicito pre-evaluación bancaria con ${SITE.shortName}.`,
-          selected ? `Vehículo: ${publicVehicleTitle(selected)}` : null,
-          `Monto: ${formatUsd(amount)}`,
-          `Inicial: ${formatUsd(down)} (${Math.max(downPct, 20)}%)`,
-          `Plazo: ${plazo} meses`,
-          `Cuota ilustrativa: ${formatUsd(cuota)} / mes · ${formatDop(cuotaDop)}`,
-        ]
-          .filter(Boolean)
-          .join("\n"),
-      ),
-    [amount, cuota, cuotaDop, down, downPct, plazo, selected],
+  const selectedTitle = selected ? publicVehicleTitle(selected) : null;
+  const href = whatsappHref(
+    [
+      `Hola, solicito pre-evaluación bancaria con ${SITE.shortName}.`,
+      selectedTitle ? `Vehículo: ${selectedTitle}` : null,
+      `Monto: ${formatUsd(amount)}`,
+      `Inicial: ${formatUsd(down)} (${Math.max(downPct, 20)}%)`,
+      `Plazo: ${plazo} meses`,
+      `Cuota ilustrativa: ${formatUsd(cuota)} / mes · ${formatDop(cuotaDop)}`,
+    ]
+      .filter(Boolean)
+      .join("\n"),
   );
 
   return (

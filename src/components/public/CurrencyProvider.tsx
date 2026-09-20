@@ -67,12 +67,15 @@ export function CurrencySwitch({
 
   return (
     <div
-      className={`inline-flex rounded-full border border-line bg-white p-1 ${
+      className={`inline-flex items-center rounded-full border border-white/12 bg-white/5 p-1 ${
         compact ? "" : "shadow-sm"
       }`}
       role="group"
-      aria-label="Moneda de precios"
+      aria-label="País y moneda"
     >
+      <span className="px-2.5 text-[11px] font-semibold tracking-[0.16em] text-white/78">
+        RD
+      </span>
       {(["USD", "DOP"] as const).map((option) => {
         const active = currency === option;
         return (
@@ -80,13 +83,13 @@ export function CurrencySwitch({
             key={option}
             type="button"
             onClick={() => setCurrency(option)}
-            className={`rounded-full px-3 py-1.5 text-[11px] font-semibold tracking-[0.12em] uppercase transition-all duration-200 ${
+            className={`rounded-full px-2.5 py-1.5 text-[11px] font-semibold tracking-[0.12em] uppercase transition-all duration-200 ${
               active
-                ? "bg-foreground text-white shadow-sm"
-                : "text-muted hover:text-foreground"
+                ? "bg-white text-black shadow-sm"
+                : "text-white/55 hover:text-white"
             }`}
           >
-            {option === "USD" ? "USD $" : "DOP RD$"}
+            {option === "USD" ? "USD" : "DOP"}
           </button>
         );
       })}

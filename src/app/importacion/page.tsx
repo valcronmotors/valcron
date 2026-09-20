@@ -5,9 +5,9 @@ import { SITE } from "@/lib/site";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Importación Directa",
+  title: "Importación de vehículos",
   description:
-    "Importación por encargo desde Copart y Manheim: asesoría, puja, transporte marítimo con seguro y despacho aduanal en República Dominicana.",
+    "Importación de vehículos desde Estados Unidos a República Dominicana: búsqueda, transporte, documentación y acompañamiento durante el proceso.",
 };
 
 const PHASES = [
@@ -45,11 +45,11 @@ export default function ImportacionPage() {
           imageAlt={PAGE_HERO_ALTS.importacion}
         />
 
-        <section className="bg-white">
+        <section className="bg-background">
           <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
             <div className="max-w-3xl">
               <p className="kicker">El servicio</p>
-              <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+              <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
                 Importación con control de principio a fin
               </h2>
               <p className="mt-5 text-base leading-relaxed text-muted">
@@ -63,7 +63,7 @@ export default function ImportacionPage() {
               {PHASES.map((phase) => (
                 <article
                   key={phase.step}
-                  className="rounded-2xl border border-line bg-surface p-8"
+                  className="gloss-panel p-8"
                 >
                   <p className="kicker">
                     Fase {phase.step}
@@ -103,7 +103,7 @@ export default function ImportacionPage() {
                 </li>
               </ul>
             </div>
-            <div className="rounded-2xl border border-line bg-white p-8">
+            <div className="gloss-panel p-8">
               <p className="text-sm leading-relaxed text-muted">
                 El incentivo depende de la normativa vigente, el tipo de propulsión y el
                 expediente de la unidad. Te entregamos una lectura clara: qué aplica, qué no, y
@@ -113,7 +113,7 @@ export default function ImportacionPage() {
           </div>
         </section>
 
-        <section className="bg-white">
+        <section className="bg-background">
           <div className="mx-auto grid max-w-7xl gap-12 px-5 py-24 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
             <div>
               <p className="kicker">Calculadora</p>

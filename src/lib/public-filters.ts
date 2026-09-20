@@ -81,6 +81,9 @@ export function monthlyPayment(principal: number, months: number, annualRate = 0
   if (principal <= 0 || months <= 0) {
     return 0;
   }
+  if (annualRate === 0) {
+    return principal / months;
+  }
   const monthlyRate = annualRate / 12;
   return (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months));
 }

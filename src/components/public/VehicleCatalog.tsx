@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { CurrencySwitch } from "@/components/public/CurrencyProvider";
 import { InventoryEmptyState } from "@/components/public/LandingInventory";
 import { VehicleCard } from "@/components/public/VehicleCard";
@@ -11,18 +10,27 @@ import { createClient } from "@/utils/supabase/client";
 
 const fieldClass = "field-input";
 
-export function VehicleCatalog() {
-  const searchParams = useSearchParams();
+export type CatalogFilters = {
+  listing: string;
+  marca: string;
+  modelo: string;
+  ano: string;
+  precioMin: string;
+  precioMax: string;
+  search: string;
+};
+
+export function VehicleCatalog({ initialFilters }: { initialFilters: CatalogFilters }) {
   const [vehicles, setVehicles] = useState<PublicVehicle[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [listing, setListing] = useState(searchParams.get("listing") ?? "");
-  const [marca, setMarca] = useState(searchParams.get("marca") ?? "");
-  const [modelo, setModelo] = useState(searchParams.get("modelo") ?? "");
-  const [ano, setAno] = useState(searchParams.get("ano") ?? "");
-  const [precioMin, setPrecioMin] = useState(searchParams.get("precioMin") ?? "");
-  const [precioMax, setPrecioMax] = useState(searchParams.get("precioMax") ?? "");
-  const [search, setSearch] = useState(searchParams.get("q") ?? "");
+  const [listing, setListing] = useState(initialFilters.listing);
+  const [marca, setMarca] = useState(initialFilters.marca);
+  const [modelo, setModelo] = useState(initialFilters.modelo);
+  const [ano, setAno] = useState(initialFilters.ano);
+  const [precioMin, setPrecioMin] = useState(initialFilters.precioMin);
+  const [precioMax, setPrecioMax] = useState(initialFilters.precioMax);
+  const [search, setSearch] = useState(initialFilters.search);
 
   useEffect(() => {
     let cancelled = false;
@@ -76,16 +84,6 @@ export function VehicleCatalog() {
       void supabase.removeChannel(channel);
     };
   }, []);
-
-  useEffect(() => {
-    setListing(searchParams.get("listing") ?? "");
-    setMarca(searchParams.get("marca") ?? "");
-    setModelo(searchParams.get("modelo") ?? "");
-    setAno(searchParams.get("ano") ?? "");
-    setPrecioMin(searchParams.get("precioMin") ?? "");
-    setPrecioMax(searchParams.get("precioMax") ?? "");
-    setSearch(searchParams.get("q") ?? "");
-  }, [searchParams]);
 
   const marcas = useMemo(() => {
     const values = new Set(vehicles.map((vehicle) => vehicle.marca));
@@ -143,9 +141,7 @@ export function VehicleCatalog() {
   return (
     <div className="grid gap-8">
       {error ? (
-        <p className="rounded-2xl border border-line bg-white px-5 py-4 text-sm text-muted">
-          {error}
-        </p>
+        <p className="gloss-panel px-5 py-4 text-sm text-muted">{error}</p>
       ) : null}
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -157,7 +153,7 @@ export function VehicleCatalog() {
         <CurrencySwitch />
       </div>
 
-      <div className="grid gap-4 rounded-2xl border border-line bg-surface p-5 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-4 gloss-panel p-5 md:grid-cols-2 xl:grid-cols-3">
         <label className="block text-sm text-muted md:col-span-2 xl:col-span-3">
           Búsqueda por palabra clave o VIN
           <input
@@ -168,7 +164,7 @@ export function VehicleCatalog() {
           />
         </label>
         <label className="block text-sm text-muted">
-          Estado
+          Tipo de vehículo
           <select
             value={listing}
             onChange={(event) => setListing(event.target.value)}
@@ -176,7 +172,7 @@ export function VehicleCatalog() {
           >
             <option value="">Todos</option>
             <option value="dealer">Disponible en RD</option>
-            <option value="auction">Importación por Encargo (Copart / IAAI / Manheim)</option>
+            <option value="auction">En subasta / importación</option>
           </select>
         </label>
         <label className="block text-sm text-muted">
@@ -257,7 +253,7 @@ export function VehicleCatalog() {
               setPrecioMax("");
               setSearch("");
             }}
-            className="h-11 w-full rounded-lg border border-line text-sm text-foreground transition hover:border-accent hover:text-accent"
+            className="h-11 w-full rounded-lg border border-white/12 text-sm text-foreground transition hover:border-white/35"
           >
             Limpiar filtros
           </button>
@@ -265,7 +261,7 @@ export function VehicleCatalog() {
       </div>
 
       {loading ? (
-        <p className="rounded-2xl border border-line px-6 py-12 text-center text-sm text-muted">
+        <p className="gloss-panel px-6 py-12 text-center text-sm text-muted">
           Sincronizando inventario...
         </p>
       ) : visible.length === 0 ? (
@@ -274,7 +270,7 @@ export function VehicleCatalog() {
           copy="Ajusta los filtros o escríbenos por WhatsApp para localizar o importar la unidad que buscas."
         />
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {visible.map((vehicle) => (
             <VehicleCard key={vehicle.id} vehicle={vehicle} />
           ))}

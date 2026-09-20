@@ -6,11 +6,9 @@ import { signOut } from "@/app/actions/auth";
 
 const navItems = [
   { href: "/admin", label: "Dashboard" },
-  { href: "/vehiculos", label: "Vehículos" },
-  { href: "/repuestos", label: "Repuestos" },
-  { href: "/crm", label: "CRM" },
-  { href: "/catalogo", label: "Catálogo" },
-  { href: "/admin/usuarios", label: "Usuarios" },
+  { href: "/admin/inventario", label: "Vehículos" },
+  { href: "/inventario", label: "Sitio público" },
+  { href: "/admin/configuracion/usuarios", label: "Usuarios" },
 ];
 
 export function AppShell({

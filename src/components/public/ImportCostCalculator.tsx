@@ -47,7 +47,7 @@ export function ImportCostCalculator() {
 
   return (
     <form
-      className="grid gap-5 rounded-3xl border border-line bg-white p-6 shadow-[0_18px_50px_rgba(11,12,16,0.07)] md:p-8"
+      className="grid gap-5 gloss-panel p-6 md:p-8"
       onSubmit={(event) => {
         event.preventDefault();
         window.open(href, "_blank", "noopener,noreferrer");
@@ -158,19 +158,19 @@ export function ImportCostCalculator() {
       </label>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <SummaryChip icon={Tag} label="Subasta" value={formatUsd(auction)} tone="text-orange-500 bg-orange-50" />
-        <SummaryChip icon={Ship} label="Flete" value={formatUsd(freight)} tone="text-cyan-500 bg-cyan-50" />
-        <SummaryChip icon={Landmark} label="DGA" value={formatUsd(estimate.dgaUsd)} tone="text-amber-500 bg-amber-50" />
-        <SummaryChip icon={Anchor} label="Puerto" value={formatUsd(port)} tone="text-blue-500 bg-blue-50" />
+        <SummaryChip icon={Tag} label="Subasta" value={formatUsd(auction)} />
+        <SummaryChip icon={Ship} label="Flete" value={formatUsd(freight)} />
+        <SummaryChip icon={Landmark} label="DGA" value={formatUsd(estimate.dgaUsd)} />
+        <SummaryChip icon={Anchor} label="Puerto" value={formatUsd(port)} />
       </div>
 
       <motion.div
         key={estimate.totalUsd}
         initial={{ opacity: 0.45, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-cyan-100 bg-gradient-to-br from-cyan-50 via-white to-white p-5"
+        className="rounded-2xl border border-white/10 bg-white/5 p-5"
       >
-        <p className="kicker text-cyan-700!">Costo estimado aterrizado</p>
+        <p className="kicker">Costo estimado aterrizado</p>
         <p className="mt-2 font-display text-3xl text-foreground">{formatUsd(estimate.totalUsd)}</p>
         <p className="mt-1 text-sm text-muted">{formatDop(estimate.totalDop)}</p>
       </motion.div>
@@ -186,17 +186,15 @@ function SummaryChip({
   icon: Icon,
   label,
   value,
-  tone,
 }: {
   icon: typeof Tag;
   label: string;
   value: string;
-  tone: string;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-line px-4 py-3">
-      <span className={`inline-flex h-9 w-9 items-center justify-center rounded-xl ${tone}`}>
-        <Icon className="h-4 w-4" strokeWidth={2.2} />
+    <div className="flex items-center gap-3 rounded-2xl border border-white/10 px-4 py-3">
+      <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/75">
+        <Icon className="h-4 w-4" strokeWidth={1.8} />
       </span>
       <span>
         <span className="block text-[11px] uppercase tracking-[0.14em] text-muted">{label}</span>

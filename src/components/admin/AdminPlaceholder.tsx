@@ -14,15 +14,14 @@ export function AdminPlaceholder({
 }) {
   return (
     <AdminCard className="w-full">
-      <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#C5A059]">
-        Módulo operativo
+      <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
+        Website CMS
       </p>
       <h2 className="mt-2 font-display text-2xl font-semibold text-[#0B0C10]">
         {title}
       </h2>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-500">
-        {description} El flujo queda integrado al ERP de Valcron Motors Group SRL
-        y se irá conectando a documentos, banca y DGII sin salir de este panel.
+        {description} Este módulo forma parte del CMS del website. No es un CRM ni un ERP operativo.
       </p>
       {actionHref && actionLabel ? (
         <div className="mt-6">

@@ -53,7 +53,7 @@ export function QuoteForm({
   return (
     <form
       action={handleSubmit}
-      className="grid gap-4 rounded-2xl border border-line bg-white p-6 shadow-[0_12px_40px_rgba(11,12,16,0.06)]"
+      className="grid gap-4 gloss-panel p-6"
     >
       {error ? (
         <p className="rounded-lg border border-line px-4 py-3 text-sm text-muted">
@@ -105,7 +105,7 @@ export function QuoteForm({
             <textarea
               name="mensaje"
               placeholder="Cuéntanos si buscas venta local, financiamiento o importación por encargo"
-              className="mt-2 min-h-24 w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-accent"
+              className="field-input mt-2 h-auto min-h-24 py-2"
             />
           </label>
           <button

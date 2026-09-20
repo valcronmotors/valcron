@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Acceso Administrativo",
-  description: "Gestión de Inventario, Importaciones y CRM Corporativo.",
+  description: "Acceso al CMS del website de Valcron Motors.",
 };
 
 export default async function LoginPage({
@@ -35,7 +35,7 @@ export default async function LoginPage({
             Acceso Administrativo
           </h1>
           <p className="mt-2 max-w-sm text-sm font-normal leading-relaxed text-gray-500">
-            Gestión de Inventario, Importaciones y CRM Corporativo.
+            Gestión del inventario y contenido del website.
           </p>
         </div>
 
