@@ -4,15 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Gavel, MessageCircle, Ship } from "lucide-react";
-import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
+import { Car, Shield, Wallet } from "lucide-react";
 import { HOME_HERO_SLIDES } from "@/lib/hero-media";
-import { SITE, whatsappHref } from "@/lib/site";
+import { SITE } from "@/lib/site";
 
 const BENEFITS = [
-  { icon: Ship, label: "Importación desde EE.UU." },
-  { icon: Gavel, label: "Compra en subastas" },
-  { icon: MessageCircle, label: "Asesoría personalizada" },
+  { icon: Car, label: "Vehículos disponibles" },
+  { icon: Wallet, label: "Financiamiento con bancos locales" },
+  { icon: Shield, label: "Orientación en seguro y protección" },
 ];
 
 export function HomeHero() {
@@ -44,43 +43,34 @@ export function HomeHero() {
                 fill
                 priority={slideIndex === 0}
                 sizes="100vw"
-                className="hero-kenburns object-cover object-[center_38%]"
+                className="hero-kenburns object-cover object-[center_40%]"
               />
             </motion.div>
           ) : null,
         )}
       </AnimatePresence>
-      <div className="absolute inset-0 bg-black/38" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/42 to-black/12" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-black/18 to-transparent" />
+      <div className="absolute inset-0 bg-black/22" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/72 via-black/28 to-black/8" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-black/12 to-transparent" />
 
       <div className="relative mx-auto flex min-h-[85vh] max-w-7xl flex-col justify-center px-5 pb-32 pt-28 lg:min-h-[92vh] lg:justify-end lg:px-8 lg:pb-32">
         <motion.div initial={false} animate={{ opacity: 1, y: 0 }} className="max-w-3xl">
           <p className="kicker">{SITE.heroEyebrow}</p>
           <div className="mt-4 h-px w-16 bg-[#C7A96B]" />
-          <h1 className="mt-5 max-w-3xl font-display text-[2.65rem] font-bold leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-7xl">
-            Conectamos tus sueños
-            <span className="block">sin fronteras.</span>
+          <h1 className="mt-5 max-w-3xl text-balance font-display text-[2.65rem] font-bold leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-7xl">
+            Tu próximo vehículo{" "}
+            <span className="block">empieza aquí.</span>
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/74 sm:text-lg">
             {SITE.heroSubtitle}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/inventario" className="btn-primary">
-              Explorar Inventario
+              Ver inventario
             </Link>
-            <Link href="/importacion" className="btn-secondary">
-              Importar un Vehículo
+            <Link href="/#buscar" className="btn-secondary">
+              Buscar vehículo
             </Link>
-            <a
-              href={whatsappHref()}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex h-[2.85rem] items-center gap-2 rounded-[0.9rem] border border-white/18 px-5 text-sm font-medium text-white transition hover:border-[#C7A96B]/70 hover:bg-white/6"
-            >
-              <WhatsAppIcon className="h-4 w-4" />
-              Hablar por WhatsApp
-            </a>
           </div>
         </motion.div>
 

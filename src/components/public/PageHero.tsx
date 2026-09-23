@@ -35,7 +35,7 @@ export function PageHero({
           className="max-w-3xl"
         >
           <p className="kicker text-[#C7A96B]">{kicker}</p>
-          <h1 className="mt-4 font-display text-4xl font-bold leading-[1.08] tracking-tight text-white sm:text-6xl">
+          <h1 className="mt-4 text-balance font-display text-4xl font-bold leading-[1.08] tracking-tight text-white sm:text-6xl">
             {title}
           </h1>
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-[#d4d4d4] sm:text-base">

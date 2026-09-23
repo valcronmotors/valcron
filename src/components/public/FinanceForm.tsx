@@ -146,12 +146,12 @@ export function FinanceForm() {
         </label>
       </div>
       <p className="text-sm leading-relaxed text-[#d4d4d4]">
-        Estimación ilustrativa con tasa de referencia. La pre-aprobación definitiva la define cada
-        banco según historial crediticio, capacidad de pago y documentación.
+        Estimación ilustrativa con tasa de referencia. La aprobación y las condiciones las define cada
+        banco local según historial crediticio, capacidad de pago y documentación.
       </p>
-      <a href={href} target="_blank" rel="noreferrer" className="btn-whatsapp">
+      <button type="submit" className="btn-whatsapp">
         Enviar pre-evaluación por WhatsApp
-      </a>
+      </button>
     </form>
   );
 }

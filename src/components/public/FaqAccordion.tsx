@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { HOME_FAQS } from "@/lib/home-content";
+import { PAGE_FAQS } from "@/lib/home-content";
 
 export function FaqAccordion({ tone = "dark" }: { tone?: "dark" | "light" }) {
   const [open, setOpen] = useState(0);
@@ -13,7 +13,7 @@ export function FaqAccordion({ tone = "dark" }: { tone?: "dark" | "light" }) {
         light ? "divide-[#d4d4d4] border-[#d4d4d4]" : "divide-white/10 border-white/10"
       }`}
     >
-      {HOME_FAQS.map((item, index) => {
+      {PAGE_FAQS.map((item, index) => {
         const active = open === index;
         return (
           <div key={item.q}>

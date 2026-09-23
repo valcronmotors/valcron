@@ -32,7 +32,7 @@ export function HomeSearch({ vehicles }: { vehicles: PublicVehicle[] }) {
   }
 
   return (
-    <section className="section-light relative z-10 -mt-20 px-5 pb-6 lg:-mt-24 lg:px-8 lg:pb-8">
+    <section id="buscar" className="section-light relative z-10 -mt-20 scroll-mt-28 px-5 pb-6 lg:-mt-24 lg:px-8 lg:pb-8">
       <div className="mx-auto max-w-7xl">
         <form
           onSubmit={handleSubmit}
@@ -93,7 +93,7 @@ export function HomeSearch({ vehicles }: { vehicles: PublicVehicle[] }) {
             <div className="flex items-end">
               <button type="submit" className="btn-primary w-full gap-2">
                 <Search className="h-4 w-4" />
-                Buscar
+                Buscar vehículos
               </button>
             </div>
           </div>
@@ -101,7 +101,7 @@ export function HomeSearch({ vehicles }: { vehicles: PublicVehicle[] }) {
             href="/inventario"
             className="mt-4 inline-block text-sm text-[#525252] underline-offset-4 hover:text-[#111] hover:underline"
           >
-            Ver inventario completo
+            Ver todo el inventario
           </Link>
         </form>
       </div>

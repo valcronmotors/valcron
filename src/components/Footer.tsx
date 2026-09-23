@@ -34,11 +34,11 @@ export function Footer({ showCompactMap = true }: { showCompactMap?: boolean }) 
             <BrandLogo size="footer" tone="onDark" />
           </Link>
           <p className="mt-6 text-xs font-medium uppercase tracking-[0.28em] text-[#D4D4D4]">
-            Importación • Subastas • Vehículos
+            Vehículos • Inventario • Financiamiento
           </p>
           <p className="mt-5 text-sm leading-relaxed text-[#A3A3A3]">
-            Valcron Motors conecta compradores en República Dominicana con vehículos disponibles,
-            oportunidades de importación y opciones provenientes de Estados Unidos.
+            Dealer en República Dominicana para encontrar, evaluar y adquirir tu próximo vehículo,
+            con inventario, búsqueda personalizada y soluciones de compra.
           </p>
           <FooterSocialIcons className="mt-8" />
         </div>

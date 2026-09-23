@@ -5,43 +5,49 @@ const SERVICES = [
   {
     step: "01",
     title: "Vehículos disponibles",
-    copy: "Explora unidades disponibles actualmente en nuestro inventario.",
+    copy: "Explora nuestro inventario actual y encuentra unidades listas para tu próxima compra.",
     href: "/inventario",
+    cta: "Ver inventario",
     icon: Car,
   },
   {
     step: "02",
-    title: "Importación",
-    copy: "Te orientamos durante el proceso de traer tu vehículo desde Estados Unidos hasta República Dominicana.",
-    href: "/importacion",
-    icon: Ship,
+    title: "Búsqueda personalizada",
+    copy: "Cuéntanos qué marca, modelo, año y presupuesto tienes en mente.",
+    href: "/solicitar-vehiculo",
+    cta: "Solicitar vehículo",
+    icon: Search,
   },
   {
     step: "03",
     title: "Subastas USA",
-    copy: "Explora oportunidades provenientes de plataformas de subastas estadounidenses.",
+    copy: "Explora oportunidades de compra en plataformas de subastas de Estados Unidos.",
     href: "/subastas",
+    cta: "Conocer subastas",
     icon: Gavel,
   },
   {
     step: "04",
-    title: "Búsqueda personalizada",
-    copy: "Si no encuentras lo que buscas, indícanos marca, modelo, año y presupuesto.",
-    href: "/contacto",
-    icon: Search,
+    title: "Financiamiento",
+    copy: "Conoce opciones y calcula escenarios de compra con bancos locales.",
+    href: "/financiamiento",
+    cta: "Calcular financiamiento",
+    icon: Calculator,
   },
   {
     step: "05",
-    title: "Financiamiento",
-    copy: "Explora escenarios de inicial, tasa y plazo antes de tomar una decisión.",
-    href: "/financiamiento",
-    icon: Calculator,
+    title: "Importación",
+    copy: "Conoce el proceso para traer un vehículo desde Estados Unidos.",
+    href: "/importacion",
+    cta: "Conocer importación",
+    icon: Ship,
   },
   {
     step: "06",
     title: "Asesoría",
-    copy: "Obtén información clara sobre las diferentes opciones disponibles.",
+    copy: "Recibe orientación durante tu proceso de compra, de la búsqueda a la entrega.",
     href: "/servicios",
+    cta: "Ver servicios",
     icon: MessageCircle,
   },
 ];
@@ -52,8 +58,8 @@ export function HomeServices() {
       <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8 lg:py-32">
         <p className="kicker">Servicios</p>
         <h2 className="mt-3 max-w-3xl font-display text-4xl font-bold tracking-tight text-[#111] sm:text-5xl">
-          Todo lo que necesitas
-          <span className="block">para tu próximo vehículo.</span>
+          Soluciones para ayudarte
+          <span className="block">a adquirir tu próximo vehículo.</span>
         </h2>
         <div className="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {SERVICES.map((service) => (
@@ -66,7 +72,7 @@ export function HomeServices() {
               <h3 className="mt-3 font-display text-2xl font-semibold text-[#111]">{service.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-[#525252]">{service.copy}</p>
               <Link href={service.href} className="mt-5 inline-block text-sm font-semibold text-[#111]">
-                Conocer más
+                {service.cta}
               </Link>
             </article>
           ))}

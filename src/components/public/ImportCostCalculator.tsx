@@ -175,9 +175,9 @@ export function ImportCostCalculator() {
         <p className="mt-1 text-sm text-muted">{formatDop(estimate.totalDop)}</p>
       </motion.div>
 
-      <a href={href} target="_blank" rel="noreferrer" className="btn-whatsapp">
+      <button type="submit" className="btn-whatsapp">
         Enviar cotización por WhatsApp
-      </a>
+      </button>
     </form>
   );
 }

@@ -78,4 +78,24 @@ export const EDITORIAL = {
     src: unsplash("photo-1593941707882-a5bba14938c7"),
     alt: "Vehículo eléctrico en estación de carga",
   },
+  crossover: {
+    src: unsplash("photo-1632137924251-fcea5ff46035"),
+    alt: "SUV compacto contemporáneo, fotografía ilustrativa",
+  },
+  familySedan: {
+    src: unsplash("photo-1619767886558-efdc259cde1a"),
+    alt: "Sedán familiar contemporáneo, fotografía ilustrativa",
+  },
+  compactSuv: {
+    src: unsplash("photo-1707070182914-fb69f596c98e"),
+    alt: "Crossover compacto contemporáneo, fotografía ilustrativa",
+  },
+  citySuv: {
+    src: unsplash("photo-1704940225548-1420f7fed72f"),
+    alt: "SUV contemporáneo, fotografía ilustrativa",
+  },
+  silverSedan: {
+    src: unsplash("photo-1649921777129-a28a26031a03"),
+    alt: "SUV familiar contemporáneo, fotografía ilustrativa",
+  },
 } as const;

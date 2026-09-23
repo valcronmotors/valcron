@@ -2,17 +2,21 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { CurrencySwitch, useDisplayCurrency } from "@/components/public/CurrencyProvider";
+import { QuoteForm } from "@/components/public/QuoteForm";
 import { VehicleCard } from "@/components/public/VehicleCard";
 import { VehiclePhoto } from "@/components/shared/VehiclePhoto";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import {
   buildVehicleWhatsAppUrl,
+  displayVehiclePrice,
+  formatMileage,
   vehicleDisplayTitle,
   vehicleImageAlt,
-  vehiclePublicPriceBlocks,
   visibleVehicleSpecs,
 } from "@/lib/vehicles/vehicle-formatters";
 import { publicListingBadge, sourceLabel } from "@/lib/vehicles/vehicle-status";
+import { SITE, whatsappHref } from "@/lib/site";
 import type { PublicVehicle } from "@/types/vehicle";
 
 export function PublicVehicleDetail({
@@ -22,6 +26,7 @@ export function PublicVehicleDetail({
   vehicle: PublicVehicle;
   similar?: PublicVehicle[];
 }) {
+  const { currency } = useDisplayCurrency();
   const [photoIndex, setPhotoIndex] = useState(0);
   const photos = vehicle.images.length
     ? vehicle.images.map((image, index) => ({
@@ -35,7 +40,7 @@ export function PublicVehicleDetail({
   const badge = publicListingBadge(vehicle);
   const whatsapp = buildVehicleWhatsAppUrl(vehicle);
   const specs = visibleVehicleSpecs(vehicle);
-  const prices = vehiclePublicPriceBlocks(vehicle);
+  const price = displayVehiclePrice(vehicle, currency);
   const platform =
     vehicle.source === "copart" || vehicle.source === "iaai" || vehicle.source === "manheim"
       ? sourceLabel(vehicle.source)
@@ -43,12 +48,32 @@ export function PublicVehicleDetail({
   const features = (vehicle.features ?? []).map((item) => item.trim()).filter(Boolean);
   const description = vehicle.description?.trim() || null;
   const sold = vehicle.availability === "sold";
+  const year = vehicle.year || vehicle.ano;
+  const make = vehicle.make || vehicle.marca;
+  const model = vehicle.model || vehicle.modelo;
+  const location = vehicle.location || vehicle.ubicacion || null;
+  const mileage = formatMileage(vehicle.mileage, vehicle.mileageUnit);
+  const financeAmount = Math.round(vehicle.pricing.usdPrice || vehicle.precioVentaUsd || 0);
+  const dealer = vehicle.listingKind === "dealer";
+  const canFinance = !sold && financeAmount > 0 && dealer;
+  const facts = [
+    ...new Set(
+      [
+        year ? String(year) : null,
+        vehicle.trim || null,
+        mileage,
+        vehicle.condition || null,
+        location,
+        dealer ? null : platform,
+      ].filter(Boolean),
+    ),
+  ];
 
   return (
     <article className="section-light bg-[#faf9f6] text-[#111]">
       <div className="mx-auto w-full max-w-7xl px-5 py-10 lg:px-8 lg:py-16">
         <nav aria-label="Migas de pan" className="text-sm text-[#737373]">
-          <ol className="flex flex-wrap items-center gap-2">
+          <ol className="flex min-w-0 flex-wrap items-center gap-2">
             <li>
               <Link href="/" className="hover:text-[#111]">
                 Inicio
@@ -61,7 +86,7 @@ export function PublicVehicleDetail({
               </Link>
             </li>
             <li aria-hidden>/</li>
-            <li className="text-[#111]">{title}</li>
+            <li className="min-w-0 break-words text-[#111]">{title}</li>
           </ol>
         </nav>
 
@@ -95,13 +120,17 @@ export function PublicVehicleDetail({
           </div>
 
           <div className="min-w-0">
-            <p className="kicker">{badge.label}</p>
-            <h1 className="mt-3 font-display text-4xl font-bold tracking-tight text-[#111]">
-              {vehicle.make} {vehicle.model}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="kicker">{badge.label}</p>
+              <CurrencySwitch compact tone="light" />
+            </div>
+            <p className="mt-3 text-sm font-medium uppercase tracking-[0.16em] text-[#737373]">{year}</p>
+            <h1 className="mt-1 break-words font-display text-4xl font-bold tracking-tight text-[#111]">
+              {make} {model}
             </h1>
-            <p className="mt-2 text-[#525252]">
-              {[vehicle.year || null, vehicle.trim || null, platform].filter(Boolean).join(" · ")}
-            </p>
+            {facts.length ? (
+              <p className="mt-3 text-sm leading-relaxed text-[#525252]">{facts.join(" · ")}</p>
+            ) : null}
 
             {sold ? (
               <p className="mt-6 rounded-2xl border border-[#ececea] bg-white px-4 py-3 text-sm text-[#525252]">
@@ -110,15 +139,10 @@ export function PublicVehicleDetail({
               </p>
             ) : null}
 
-            <div className="mt-8 grid gap-4">
-              {prices.map((block) => (
-                <div key={`${block.kind}-${block.label}`} className="border-t border-[#ececea] pt-4">
-                  <p className="text-[11px] uppercase tracking-[0.16em] text-[#737373]">{block.label}</p>
-                  <p className="mt-1 font-display text-3xl text-[#111]">{block.primary}</p>
-                  {block.secondary ? <p className="mt-1 text-sm text-[#737373]">{block.secondary}</p> : null}
-                  {block.note ? <p className="mt-2 text-sm leading-relaxed text-[#525252]">{block.note}</p> : null}
-                </div>
-              ))}
+            <div className="mt-8 border-t border-[#ececea] pt-4">
+              <p className="text-[11px] uppercase tracking-[0.16em] text-[#737373]">{price.label}</p>
+              <p className="mt-1 font-display text-3xl text-[#111]">{price.primary}</p>
+              {price.secondary ? <p className="mt-1 text-sm text-[#737373]">{price.secondary}</p> : null}
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -133,13 +157,55 @@ export function PublicVehicleDetail({
                   Buscar uno similar
                 </a>
               )}
+              {canFinance ? (
+                <Link
+                  href={`/financiamiento?monto=${financeAmount}`}
+                  className="inline-flex h-11 items-center justify-center rounded-[0.9rem] border border-[#111] px-5 text-sm font-semibold text-[#111] hover:bg-[#111] hover:text-white"
+                >
+                  Financiamiento
+                </Link>
+              ) : null}
               <Link
                 href="/inventario"
-                className="inline-flex h-11 items-center justify-center rounded-[0.9rem] border border-[#111] px-5 text-sm font-semibold text-[#111] hover:bg-[#111] hover:text-white"
+                className="inline-flex h-11 items-center justify-center rounded-[0.9rem] px-5 text-sm font-semibold text-[#525252] hover:text-[#111]"
               >
                 Volver al inventario
               </Link>
             </div>
+
+            {dealer && !sold ? (
+              <ul className="mt-6 grid gap-2 text-sm text-[#525252]">
+                <li>
+                  <Link href={`/financiamiento?monto=${Math.max(financeAmount, 8000)}`} className="hover:text-[#111] hover:underline">
+                    Explora escenarios de financiamiento
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href={whatsappHref(
+                      `Hola, quiero orientación sobre seguro o cobertura para el ${title} que vi en ${SITE.shortName}.`,
+                    )}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-[#111] hover:underline"
+                  >
+                    Consulta opciones de cobertura
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={whatsappHref(
+                      `Hola, quiero consultar opciones de garantía o protección para el ${title}, si es un vehículo elegible.`,
+                    )}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-[#111] hover:underline"
+                  >
+                    Pregunta por opciones de garantía o protección para vehículos elegibles
+                  </a>
+                </li>
+              </ul>
+            ) : null}
           </div>
         </div>
 
@@ -175,12 +241,29 @@ export function PublicVehicleDetail({
           </section>
         ) : null}
 
+        {!sold ? (
+          <section className="mt-14 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+            <div className="min-w-0">
+              <h2 className="font-display text-2xl font-semibold text-[#111]">Consulta esta unidad</h2>
+              <p className="mt-3 max-w-md text-sm leading-relaxed text-[#525252]">
+                Déjanos tus datos y un asesor te contacta sobre este {title}. También puedes escribirnos
+                por WhatsApp.
+              </p>
+            </div>
+            <QuoteForm
+              submitLabel="Consultar este vehículo"
+              vehicleId={vehicle.id}
+              defaultVehicleInterest={title}
+            />
+          </section>
+        ) : null}
+
         {similar.length ? (
           <section className="mt-16">
             <h2 className="font-display text-2xl font-semibold text-[#111]">Vehículos similares</h2>
-            <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-6 grid min-w-0 gap-6 sm:grid-cols-2 xl:grid-cols-4">
               {similar.map((item) => (
-                <VehicleCard key={item.id} vehicle={item} />
+                <VehicleCard key={item.id} vehicle={item} tone="light" />
               ))}
             </div>
           </section>

@@ -3,41 +3,41 @@ const unsplash = (id: string) =>
 
 export const HOME_HERO_SLIDES = [
   {
-    src: "/hero-luxury.png",
-    alt: "Sedán premium con iluminación cinematográfica",
+    src: unsplash("photo-1632137924251-fcea5ff46035"),
+    alt: "SUV compacto contemporáneo, fotografía ilustrativa de vehículo",
   },
   {
-    src: "/hero-coast.png",
-    alt: "SUV premium en carretera costera al atardecer",
+    src: unsplash("photo-1707070182914-fb69f596c98e"),
+    alt: "Crossover compacto contemporáneo, fotografía ilustrativa de vehículo",
   },
   {
-    src: "/hero-showroom.png",
-    alt: "Showroom automotriz con sedán de alta gama",
+    src: unsplash("photo-1649921777129-a28a26031a03"),
+    alt: "SUV familiar contemporáneo, fotografía ilustrativa de vehículo",
   },
 ] as const;
 
 export const PAGE_HERO_IMAGES = {
-  inventario: "/hero-showroom.png",
-  importacion: "/hero-coast.png",
-  financiamiento: "/hero-luxury.png",
-  nosotros: "/hero-showroom.png",
-  contacto: "/hero-luxury.png",
-  subastas: "/hero-luxury.png",
-  servicios: "/hero-coast.png",
+  inventario: unsplash("photo-1632137924251-fcea5ff46035"),
+  importacion: unsplash("photo-1606016159991-dfe4f2746ad5"),
+  financiamiento: unsplash("photo-1619767886558-efdc259cde1a"),
+  nosotros: unsplash("photo-1707070182914-fb69f596c98e"),
+  contacto: unsplash("photo-1549317661-bd32c8ce0db2"),
+  subastas: unsplash("photo-1619767886558-efdc259cde1a"),
+  servicios: unsplash("photo-1704940225548-1420f7fed72f"),
 } as const;
 
 export const PAGE_HERO_ALTS = {
-  inventario: "Inventario premium de Valcron Motors en showroom",
-  importacion: "SUV listo para importación hacia República Dominicana",
-  financiamiento: "Sedán premium para compra y financiamiento en RD",
-  nosotros: "Imagen ilustrativa de un showroom automotriz contemporáneo",
-  contacto: "Atención comercial con vehículo de alta gama",
-  subastas: "Vehículo premium disponible para búsqueda en subastas",
-  servicios: "Proceso de importación y acompañamiento automotriz",
+  inventario: "Inventario ilustrativo de vehículos para compra en República Dominicana",
+  importacion: "Vehículo contemporáneo, contexto visual del proceso de importación",
+  financiamiento: "Sedán contemporáneo para planificar una compra con bancos locales",
+  nosotros: "Crossover compacto contemporáneo, fotografía ilustrativa",
+  contacto: "Interior automotriz ilustrativo para atención al cliente",
+  subastas: "Sedán contemporáneo, fotografía ilustrativa de opciones de compra",
+  servicios: "SUV contemporáneo, fotografía ilustrativa de servicios de dealer",
 } as const;
 
 export const IMPORT_SCENE_IMAGE = unsplash("photo-1578575437130-527eed3abbec");
 export const IMPORT_SCENE_ALT =
   "Transporte marítimo de carga hacia destino internacional";
 
-export const NOSOTROS_GALLERY_IMAGE = "/hero-showroom.png";
+export const NOSOTROS_GALLERY_IMAGE = unsplash("photo-1632137924251-fcea5ff46035");

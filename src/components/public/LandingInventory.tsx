@@ -9,7 +9,7 @@ import { createClient } from "@/utils/supabase/client";
 
 export function InventoryEmptyState({
   title = "Sin coincidencias en este momento",
-  copy = "No hay unidades que coincidan con tu búsqueda. Un asesor puede localizar o importar el vehículo que buscas.",
+  copy = "No hay unidades que coincidan con tu búsqueda. Un asesor puede ayudarte a encontrar el vehículo que buscas.",
   tone = "dark",
 }: {
   title?: string;
@@ -31,7 +31,7 @@ export function InventoryEmptyState({
       </p>
       <a
         href={whatsappHref(
-          "Hola, no veo coincidencias en el inventario y quiero importar un vehículo por encargo con Valcron Motors.",
+          "Hola, no veo coincidencias en el inventario y quiero que me ayuden a encontrar el vehículo que busco.",
         )}
         target="_blank"
         rel="noreferrer"
@@ -105,8 +105,8 @@ export function LandingInventory({
               Catálogo reciente
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-[#404040]">
-              Unidades en República Dominicana y en subasta Copart/Manheim, sincronizadas en
-              tiempo real desde la tabla vehiculos.
+              Unidades disponibles en República Dominicana y opciones en proceso de subasta o
+              importación.
             </p>
           </div>
           <Link
@@ -126,7 +126,7 @@ export function LandingInventory({
             <InventoryEmptyState
               tone="light"
               title="Inventario en actualización"
-              copy="No hay unidades publicadas en este momento. Escríbenos para importar por encargo desde Copart o Manheim."
+              copy="No hay unidades publicadas en este momento. Escríbenos y te ayudamos a encontrar el vehículo que buscas."
             />
           </div>
         ) : (

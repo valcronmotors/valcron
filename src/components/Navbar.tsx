@@ -6,16 +6,12 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Menu, Search, X } from "lucide-react";
 import { BrandLogo } from "@/components/public/BrandLogo";
 import { CurrencySwitch } from "@/components/public/CurrencyProvider";
-import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import {
   PUBLIC_NAV,
   RESOURCE_NAV,
   SITE,
   usesMarketingChrome,
-  whatsappHref,
 } from "@/lib/site";
-
-const PRIMARY_NAV = PUBLIC_NAV.filter((item) => item.href !== "/");
 
 function isActivePath(pathname: string, href: string) {
   if (href === "/") {
@@ -82,6 +78,8 @@ export function Navbar() {
     return null;
   }
 
+  const resourcesActive = RESOURCE_NAV.some((item) => isActivePath(pathname, item.href));
+
   return (
     <>
       <header className="site-header sticky top-0 z-[80]">
@@ -99,7 +97,7 @@ export function Navbar() {
             className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 min-[1440px]:flex min-[1536px]:gap-1"
             aria-label="Principal"
           >
-            {PRIMARY_NAV.map((item) => {
+            {PUBLIC_NAV.map((item) => {
               const active = isActivePath(pathname, item.href);
               return (
                 <Link
@@ -115,10 +113,11 @@ export function Navbar() {
             <div className="relative shrink-0" ref={resourcesRef}>
               <button
                 type="button"
-                className={`${navLinkClass} inline-flex items-center gap-1`}
+                className={`${navLinkClass} inline-flex items-center gap-1 ${resourcesActive ? navActiveClass : ""}`}
                 aria-expanded={resourcesOpen}
                 aria-haspopup="menu"
                 aria-controls="resources-menu"
+                aria-current={resourcesActive ? "true" : undefined}
                 onClick={() => setResourcesOpen((value) => !value)}
               >
                 Recursos
@@ -135,7 +134,9 @@ export function Navbar() {
                       key={`${item.href}-${item.label}`}
                       href={item.href}
                       role="menuitem"
-                      className="block rounded-xl px-3 py-2.5 text-sm text-[#EDEDED] hover:bg-white/5 hover:text-white"
+                      className={`block rounded-xl px-3 py-2.5 text-sm hover:bg-white/5 hover:text-white ${
+                        isActivePath(pathname, item.href) ? "text-white" : "text-[#EDEDED]"
+                      }`}
                       onClick={() => setResourcesOpen(false)}
                     >
                       {item.label}
@@ -153,24 +154,6 @@ export function Navbar() {
             <div className="hidden sm:block">
               <CurrencySwitch compact />
             </div>
-            <a
-              href={whatsappHref()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${iconButtonClass} min-[1536px]:w-auto min-[1536px]:gap-2 min-[1536px]:px-3`}
-              aria-label="WhatsApp de Valcron Motors"
-            >
-              <WhatsAppIcon className="h-3.5 w-3.5 text-[#25D366]" />
-              <span className="hidden text-xs font-semibold uppercase tracking-[0.12em] min-[1536px]:inline">
-                WhatsApp
-              </span>
-            </a>
-            <Link
-              href="/solicitar-vehiculo"
-              className="hidden h-10 shrink-0 items-center rounded-[0.9rem] bg-[#F5F5F5] px-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#111111] transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white min-[1440px]:inline-flex min-[1536px]:px-4 min-[1536px]:text-xs min-[1536px]:tracking-[0.12em]"
-            >
-              Solicitar vehículo
-            </Link>
             <button
               type="button"
               className={`${iconButtonClass} min-[1440px]:hidden`}
@@ -209,7 +192,10 @@ export function Navbar() {
               <Link
                 key={`${item.href}-${item.label}`}
                 href={item.href}
-                className="border-b border-white/10 py-4 text-xl text-[#EDEDED]"
+                aria-current={isActivePath(pathname, item.href) ? "page" : undefined}
+                className={`border-b border-white/10 py-4 text-xl ${
+                  isActivePath(pathname, item.href) ? "text-white" : "text-[#EDEDED]"
+                }`}
                 onClick={() => setOpen(false)}
               >
                 {item.label}
@@ -221,16 +207,12 @@ export function Navbar() {
               <CurrencySwitch />
             </div>
             <Link
-              href="/solicitar-vehiculo"
+              href="/inventario"
               className="inline-flex h-11 w-full items-center justify-center rounded-[0.9rem] bg-[#F5F5F5] text-sm font-semibold text-[#111111]"
               onClick={() => setOpen(false)}
             >
-              Solicitar vehículo
+              Buscar vehículos
             </Link>
-            <a href={whatsappHref()} target="_blank" rel="noopener noreferrer" className="btn-whatsapp w-full">
-              <WhatsAppIcon className="h-4 w-4" />
-              WhatsApp
-            </a>
           </div>
         </div>
       ) : null}

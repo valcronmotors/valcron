@@ -1,28 +1,29 @@
-export function formatUsd(value: number) {
-  const amount = new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Number(value) || 0);
+/**
+ * Locale-stable grouping for public prices.
+ * Intl.NumberFormat("en-US") can differ between Node ICU and the browser,
+ * which hydrates VehicleCard with a mismatched first paint.
+ */
+export function formatDecimal(value: number, fractionDigits: 0 | 1 | 2) {
+  const numeric = Number(value);
+  const safe = Number.isFinite(numeric) ? numeric : 0;
+  const factor = 10 ** fractionDigits;
+  const rounded = Math.round(safe * factor) / factor;
+  const sign = rounded < 0 ? "-" : "";
+  const [intPart, fracPart] = Math.abs(rounded).toFixed(fractionDigits).split(".");
+  const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return fractionDigits === 0 ? `${sign}${grouped}` : `${sign}${grouped}.${fracPart}`;
+}
 
-  return `$${amount} USD`;
+export function formatUsd(value: number) {
+  return `$${formatDecimal(value, 2)} USD`;
 }
 
 export function formatPercent(value: number) {
-  const amount = new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  }).format(Number(value) || 0);
-
-  return `${amount}%`;
+  return `${formatDecimal(value, 1)}%`;
 }
 
 export function formatDop(value: number) {
-  const amount = new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Number(value) || 0);
-
-  return `DOP$ ${amount}`;
+  return `DOP$ ${formatDecimal(value, 2)}`;
 }
 
 export const USD_MONEY_COLUMNS = new Set([

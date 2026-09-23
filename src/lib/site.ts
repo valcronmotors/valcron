@@ -8,11 +8,11 @@ export const SITE = {
   legalName: "Valcron Motors Group, SRL",
   url: "https://valcronmotors.com",
   heroEyebrow: "Valcron Motors • República Dominicana",
-  heroTitle: "Conectamos tus sueños sin fronteras.",
+  heroTitle: "Tu próximo vehículo empieza aquí.",
   heroSubtitle:
-    "Compra, importa y encuentra tu próximo vehículo desde Estados Unidos hasta República Dominicana con una experiencia clara, profesional y personalizada.",
+    "Explora vehículos disponibles y recibe orientación durante todo el proceso de compra, desde financiamiento hasta seguro y protección para tu vehículo.",
   valueProposition:
-    "Valcron Motors: dealer en República Dominicana para compra, importación y venta de vehículos desde Estados Unidos, con inventario local y asesoría en todo el proceso.",
+    "Valcron Motors es un dealer en República Dominicana. Te ayudamos a encontrar, evaluar y adquirir tu próximo vehículo, con orientación en financiamiento, seguro y opciones de protección.",
   address: {
     street: "Av Principal 20",
     streetAddress: "Av Principal 20",
@@ -78,11 +78,11 @@ export const FOOTER_INVENTORY = [
 ] as const;
 
 export const FOOTER_SERVICES = [
-  { href: "/importacion", label: "Importación" },
-  { href: "/subastas", label: "Subastas USA" },
   { href: "/financiamiento", label: "Financiamiento" },
   { href: "/contacto", label: "Búsqueda personalizada" },
-  { href: "/servicios", label: "Asesoría" },
+  { href: "/servicios", label: "Seguro y protección" },
+  { href: "/subastas", label: "Subastas USA" },
+  { href: "/importacion", label: "Importación" },
 ] as const;
 
 export const FOOTER_RESOURCES = [

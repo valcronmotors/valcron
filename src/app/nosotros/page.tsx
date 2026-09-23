@@ -8,7 +8,7 @@ import { SITE } from "@/lib/site";
 
 export const metadata = publicPageMetadata({
   title: "Nosotros",
-  description: `Conoce a ${SITE.legalName}: dealer en Santo Domingo Este, dedicado a la compra, importación y venta de vehículos en República Dominicana.`,
+  description: `Conoce a ${SITE.legalName}: dealer en Santo Domingo Este para encontrar, evaluar y adquirir vehículos en República Dominicana.`,
   path: "/nosotros",
 });
 
@@ -16,12 +16,12 @@ const PILLARS = [
   {
     title: "Misión",
     icon: Compass,
-    copy: "Ayudar a comprar, importar y entregar vehículos en República Dominicana con información clara, costos documentados y un trato directo.",
+    copy: "Ayudar a encontrar, comprar y entregar vehículos en República Dominicana con información clara y un trato directo.",
   },
   {
     title: "Visión",
     icon: Eye,
-    copy: "Ser un dealer de referencia en Santo Domingo Este por seriedad operativa: inventario entendible, importación ordenada y acompañamiento hasta la entrega.",
+    copy: "Ser un dealer de referencia en Santo Domingo Este por inventario entendible, asesoría clara y acompañamiento hasta la entrega.",
   },
   {
     title: "Equipo",

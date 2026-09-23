@@ -4,8 +4,16 @@ import { useEffect, useMemo, useState } from "react";
 import { CurrencySwitch } from "@/components/public/CurrencyProvider";
 import { InventoryEmptyState } from "@/components/public/LandingInventory";
 import { VehicleCard } from "@/components/public/VehicleCard";
+import {
+  catalogMake,
+  catalogModel,
+  catalogUsdPrice,
+  catalogYear,
+  uniqueAnos,
+  uniqueMarcas,
+  uniqueModelos,
+} from "@/lib/public-filters";
 import type { PublicVehicle } from "@/lib/public-catalog";
-import { uniqueModelos } from "@/lib/public-filters";
 import { createClient } from "@/utils/supabase/client";
 
 const fieldClass = "field-input";
@@ -20,10 +28,18 @@ export type CatalogFilters = {
   search: string;
 };
 
-export function VehicleCatalog({ initialFilters }: { initialFilters: CatalogFilters }) {
-  const [vehicles, setVehicles] = useState<PublicVehicle[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+export function VehicleCatalog({
+  initialFilters,
+  initialVehicles = [],
+  initialError = null,
+}: {
+  initialFilters: CatalogFilters;
+  initialVehicles?: PublicVehicle[];
+  initialError?: string | null;
+}) {
+  const [vehicles, setVehicles] = useState<PublicVehicle[]>(initialVehicles);
+  const [error, setError] = useState<string | null>(initialError);
+  const [loading, setLoading] = useState(initialVehicles.length === 0 && !initialError);
   const [listing, setListing] = useState(initialFilters.listing);
   const [marca, setMarca] = useState(initialFilters.marca);
   const [modelo, setModelo] = useState(initialFilters.modelo);
@@ -35,8 +51,10 @@ export function VehicleCatalog({ initialFilters }: { initialFilters: CatalogFilt
   useEffect(() => {
     let cancelled = false;
 
-    async function load() {
-      setLoading(true);
+    async function load(showSpinner: boolean) {
+      if (showSpinner) {
+        setLoading(true);
+      }
       try {
         const response = await fetch("/api/public/vehicles", { cache: "no-store" });
         const payload = (await response.json()) as {
@@ -65,7 +83,7 @@ export function VehicleCatalog({ initialFilters }: { initialFilters: CatalogFilt
       }
     }
 
-    void load();
+    void load(initialVehicles.length === 0);
 
     const supabase = createClient();
     const channel = supabase
@@ -74,7 +92,7 @@ export function VehicleCatalog({ initialFilters }: { initialFilters: CatalogFilt
         "postgres_changes",
         { event: "*", schema: "public", table: "vehiculos" },
         () => {
-          void load();
+          void load(false);
         },
       )
       .subscribe();
@@ -83,22 +101,19 @@ export function VehicleCatalog({ initialFilters }: { initialFilters: CatalogFilt
       cancelled = true;
       void supabase.removeChannel(channel);
     };
-  }, []);
+  }, [initialVehicles.length]);
 
   const marcas = useMemo(() => {
-    const values = new Set(vehicles.map((vehicle) => vehicle.marca));
-    if (marca) {
-      values.add(marca);
-    }
+    const values = new Set(uniqueMarcas(vehicles));
+    if (marca) values.add(marca);
     return [...values].sort();
   }, [marca, vehicles]);
   const modelos = useMemo(() => uniqueModelos(vehicles, marca || undefined), [marca, vehicles]);
   const anos = useMemo(() => {
-    const values = new Set(vehicles.map((vehicle) => vehicle.ano));
-    if (ano) {
-      values.add(Number(ano));
-    }
-    return [...values].filter((value) => Number.isFinite(value)).sort((a, b) => b - a);
+    const values = new Set(uniqueAnos(vehicles));
+    const selected = Number(ano);
+    if (Number.isFinite(selected) && selected > 0) values.add(selected);
+    return [...values].sort((a, b) => b - a);
   }, [ano, vehicles]);
 
   const visible = useMemo(() => {
@@ -113,25 +128,33 @@ export function VehicleCatalog({ initialFilters }: { initialFilters: CatalogFilt
       if (listing === "auction" && vehicle.listingKind !== "auction") {
         return false;
       }
-      if (marca && vehicle.marca !== marca) {
+      if (marca && catalogMake(vehicle) !== marca) {
         return false;
       }
-      if (modelo && vehicle.modelo !== modelo) {
+      if (modelo && catalogModel(vehicle) !== modelo) {
         return false;
       }
-      if (ano && String(vehicle.ano) !== ano) {
+      if (ano && String(catalogYear(vehicle)) !== ano) {
         return false;
       }
-      if (Number.isFinite(minUsd) && minUsd > 0 && vehicle.precioVentaUsd < minUsd) {
+      const usdPrice = catalogUsdPrice(vehicle);
+      if (Number.isFinite(minUsd) && minUsd > 0 && usdPrice < minUsd) {
         return false;
       }
-      if (Number.isFinite(maxUsd) && maxUsd > 0 && vehicle.precioVentaUsd > maxUsd) {
+      if (Number.isFinite(maxUsd) && maxUsd > 0 && usdPrice > maxUsd) {
         return false;
       }
       if (!needle) {
         return true;
       }
-      return [vehicle.marca, vehicle.modelo, vehicle.trim ?? "", vehicle.vin, String(vehicle.ano)]
+      return [
+        catalogMake(vehicle),
+        catalogModel(vehicle),
+        vehicle.trim ?? "",
+        vehicle.vin ?? "",
+        String(catalogYear(vehicle)),
+        vehicle.location ?? vehicle.ubicacion ?? "",
+      ]
         .join(" ")
         .toLowerCase()
         .includes(needle);
@@ -139,22 +162,22 @@ export function VehicleCatalog({ initialFilters }: { initialFilters: CatalogFilt
   }, [ano, listing, marca, modelo, precioMax, precioMin, search, vehicles]);
 
   return (
-    <div className="grid gap-8">
+    <div className="grid min-w-0 gap-8">
       {error ? (
-        <p className="gloss-panel px-5 py-4 text-sm text-muted">{error}</p>
+        <p className="rounded-2xl border border-[#ececea] bg-white px-5 py-4 text-sm text-[#525252]">{error}</p>
       ) : null}
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-muted">
+        <p className="text-sm text-[#525252]">
           {loading
-            ? "Sincronizando inventario..."
+            ? "Cargando inventario..."
             : `${visible.length} unidad${visible.length === 1 ? "" : "es"}`}
         </p>
-        <CurrencySwitch />
+        <CurrencySwitch tone="light" />
       </div>
 
-      <div className="grid gap-4 gloss-panel p-5 md:grid-cols-2 xl:grid-cols-3">
-        <label className="block text-sm text-muted md:col-span-2 xl:col-span-3">
+      <div className="grid min-w-0 gap-4 rounded-[1.15rem] border border-[#ececea] bg-white p-5 shadow-[0_12px_32px_rgba(0,0,0,0.04)] md:grid-cols-2 xl:grid-cols-3">
+        <label className="block min-w-0 text-sm text-[#525252] md:col-span-2 xl:col-span-3">
           Búsqueda por palabra clave o VIN
           <input
             value={search}
@@ -163,8 +186,8 @@ export function VehicleCatalog({ initialFilters }: { initialFilters: CatalogFilt
             className={fieldClass}
           />
         </label>
-        <label className="block text-sm text-muted">
-          Tipo de vehículo
+        <label className="block min-w-0 text-sm text-[#525252]">
+          Tipo de listado
           <select
             value={listing}
             onChange={(event) => setListing(event.target.value)}
@@ -175,7 +198,7 @@ export function VehicleCatalog({ initialFilters }: { initialFilters: CatalogFilt
             <option value="auction">En subasta / importación</option>
           </select>
         </label>
-        <label className="block text-sm text-muted">
+        <label className="block min-w-0 text-sm text-[#525252]">
           Marca
           <select
             value={marca}
@@ -193,7 +216,7 @@ export function VehicleCatalog({ initialFilters }: { initialFilters: CatalogFilt
             ))}
           </select>
         </label>
-        <label className="block text-sm text-muted">
+        <label className="block min-w-0 text-sm text-[#525252]">
           Modelo
           <select
             value={modelo}
@@ -208,7 +231,7 @@ export function VehicleCatalog({ initialFilters }: { initialFilters: CatalogFilt
             ))}
           </select>
         </label>
-        <label className="block text-sm text-muted">
+        <label className="block min-w-0 text-sm text-[#525252]">
           Año
           <select value={ano} onChange={(event) => setAno(event.target.value)} className={fieldClass}>
             <option value="">Todos</option>
@@ -219,7 +242,7 @@ export function VehicleCatalog({ initialFilters }: { initialFilters: CatalogFilt
             ))}
           </select>
         </label>
-        <label className="block text-sm text-muted">
+        <label className="block min-w-0 text-sm text-[#525252]">
           Precio mínimo (USD)
           <input
             type="number"
@@ -230,7 +253,7 @@ export function VehicleCatalog({ initialFilters }: { initialFilters: CatalogFilt
             className={fieldClass}
           />
         </label>
-        <label className="block text-sm text-muted">
+        <label className="block min-w-0 text-sm text-[#525252]">
           Precio máximo (USD)
           <input
             type="number"
@@ -253,7 +276,7 @@ export function VehicleCatalog({ initialFilters }: { initialFilters: CatalogFilt
               setPrecioMax("");
               setSearch("");
             }}
-            className="h-11 w-full rounded-lg border border-white/12 text-sm text-foreground transition hover:border-white/35"
+            className="h-11 w-full rounded-lg border border-[#ececea] text-sm text-[#111] transition hover:border-[#111]"
           >
             Limpiar filtros
           </button>
@@ -261,18 +284,19 @@ export function VehicleCatalog({ initialFilters }: { initialFilters: CatalogFilt
       </div>
 
       {loading ? (
-        <p className="gloss-panel px-6 py-12 text-center text-sm text-muted">
-          Sincronizando inventario...
+        <p className="rounded-[1.15rem] border border-[#ececea] bg-white px-6 py-12 text-center text-sm text-[#525252]">
+          Cargando inventario...
         </p>
       ) : visible.length === 0 ? (
         <InventoryEmptyState
+          tone="light"
           title="Sin coincidencias"
-          copy="Ajusta los filtros o escríbenos por WhatsApp para localizar o importar la unidad que buscas."
+          copy="Ajusta los filtros o escríbenos por WhatsApp. Te ayudamos a encontrar el vehículo que buscas."
         />
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid min-w-0 gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {visible.map((vehicle) => (
-            <VehicleCard key={vehicle.id} vehicle={vehicle} />
+            <VehicleCard key={vehicle.id} vehicle={vehicle} tone="light" />
           ))}
         </div>
       )}

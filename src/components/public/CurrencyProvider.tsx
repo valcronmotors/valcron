@@ -60,21 +60,28 @@ export function useDisplayCurrency() {
 
 export function CurrencySwitch({
   compact = false,
+  tone = "dark",
 }: {
   compact?: boolean;
+  tone?: "dark" | "light";
 }) {
   const { currency, setCurrency } = useDisplayCurrency();
+  const light = tone === "light";
 
   return (
     <div
-      className={`inline-flex items-center rounded-[0.9rem] border border-white/12 bg-white/5 ${
-        compact ? "p-0.5" : "p-1 shadow-sm"
-      }`}
+      className={`inline-flex items-center rounded-[0.9rem] border ${
+        light ? "border-black/10 bg-white" : "border-white/12 bg-white/5"
+      } ${compact ? "p-0.5" : "p-1 shadow-sm"}`}
       role="group"
-      aria-label="País y moneda"
+      aria-label="Moneda de precios"
     >
       {compact ? null : (
-        <span className="px-2.5 text-[11px] font-semibold tracking-[0.16em] text-[#A3A3A3]">
+        <span
+          className={`px-2.5 text-[11px] font-semibold tracking-[0.16em] ${
+            light ? "text-[#737373]" : "text-[#A3A3A3]"
+          }`}
+        >
           RD
         </span>
       )}
@@ -85,12 +92,16 @@ export function CurrencySwitch({
             key={option}
             type="button"
             onClick={() => setCurrency(option)}
-            className={`rounded-lg font-semibold uppercase tracking-[0.12em] transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
-              compact ? "px-2 py-1.5 text-[10px]" : "px-2.5 py-1.5 text-[11px]"
-            } ${
+            className={`rounded-lg font-semibold uppercase tracking-[0.12em] transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+              light ? "focus-visible:outline-[#111]" : "focus-visible:outline-white"
+            } ${compact ? "px-2 py-1.5 text-[10px]" : "px-2.5 py-1.5 text-[11px]"} ${
               active
-                ? "bg-[#F5F5F5] text-[#111111] shadow-sm"
-                : "text-[#EDEDED] hover:text-white"
+                ? light
+                  ? "bg-[#111111] text-white shadow-sm"
+                  : "bg-[#F5F5F5] text-[#111111] shadow-sm"
+                : light
+                  ? "text-[#525252] hover:text-[#111]"
+                  : "text-[#EDEDED] hover:text-white"
             }`}
           >
             {option}

@@ -1,3 +1,4 @@
+import { formatDecimal } from "@/lib/money";
 import { SITE, whatsappHref } from "@/lib/site";
 import { availabilityLabel, sourceLabel } from "@/lib/vehicles/vehicle-status";
 import type { PublicVehicle, VehicleCurrency, VehiclePriceKind } from "@/types/vehicle";
@@ -29,11 +30,9 @@ export function formatVehiclePrice(amount: number | null | undefined, currency: 
   if (amount == null || !Number.isFinite(amount) || amount <= 0) {
     return null;
   }
-  const rounded = Number.isInteger(amount) ? 0 : 2;
-  const formatted = new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: rounded,
-    maximumFractionDigits: rounded,
-  }).format(amount);
+  const cents = Math.round(amount * 100);
+  const fractionDigits: 0 | 2 = cents % 100 === 0 ? 0 : 2;
+  const formatted = formatDecimal(amount, fractionDigits);
   return currency === "DOP" ? `RD$ ${formatted}` : `US$ ${formatted}`;
 }
 
@@ -68,15 +67,15 @@ export function displayVehiclePrice(
     };
   }
 
-  const usd = pricing.usdPrice ?? 0;
-  const dop = pricing.rdPrice ?? 0;
-  const primary = currency === "DOP" ? formatVehiclePrice(dop, "DOP") : formatVehiclePrice(usd, "USD");
-  const secondary = currency === "DOP" ? formatVehiclePrice(usd, "USD") : formatVehiclePrice(dop, "DOP");
+  const usd = formatVehiclePrice(pricing.usdPrice, "USD");
+  const dop = formatVehiclePrice(pricing.rdPrice, "DOP");
+  const primary = currency === "DOP" ? dop ?? usd : usd ?? dop;
+  const secondary = currency === "DOP" ? (dop && usd ? usd : undefined) : usd && dop ? dop : undefined;
   const auctionListing = vehicle.availability === "auction" || vehicle.listingKind === "auction";
   return {
     label: auctionListing && pricing.kind === "sale" ? "Precio publicado" : priceKindLabel(pricing.kind),
     primary: primary ?? "Consultar precio",
-    secondary: secondary ?? undefined,
+    secondary,
   };
 }
 
@@ -84,8 +83,7 @@ export function formatMileage(mileage: number | null | undefined, unit: "mi" | "
   if (mileage == null || !Number.isFinite(mileage) || mileage < 0) {
     return null;
   }
-  const formatted = new Intl.NumberFormat("en-US").format(mileage);
-  return `${formatted} ${unit}`;
+  return `${formatDecimal(mileage, 0)} ${unit}`;
 }
 
 export function formatRelativeUpdate(value: string | null | undefined) {
@@ -155,15 +153,35 @@ function yesNo(value: boolean | null | undefined) {
   return value ? "Sí" : "No";
 }
 
+const MONTHS_ES = [
+  "enero",
+  "febrero",
+  "marzo",
+  "abril",
+  "mayo",
+  "junio",
+  "julio",
+  "agosto",
+  "septiembre",
+  "octubre",
+  "noviembre",
+  "diciembre",
+] as const;
+
 function formatPublicDate(value: string | null | undefined) {
   if (!value) return null;
+  const isoDate = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (isoDate) {
+    const year = Number(isoDate[1]);
+    const month = Number(isoDate[2]);
+    const day = Number(isoDate[3]);
+    const label = MONTHS_ES[month - 1];
+    if (!label || day < 1 || day > 31) return null;
+    return `${day} de ${label} de ${year}`;
+  }
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return null;
-  return new Intl.DateTimeFormat("es-DO", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(date);
+  return `${date.getUTCDate()} de ${MONTHS_ES[date.getUTCMonth()]} de ${date.getUTCFullYear()}`;
 }
 
 export function vehiclePublicPriceBlocks(vehicle: PublicVehicle) {
@@ -239,9 +257,9 @@ export function visibleVehicleSpecs(vehicle: PublicVehicle) {
         : null;
 
   const rows: { label: string; value: string | null }[] = [
-    { label: "Año", value: vehicle.year ? String(vehicle.year) : null },
-    { label: "Marca", value: presentText(vehicle.make) },
-    { label: "Modelo", value: presentText(vehicle.model) },
+    { label: "Año", value: vehicle.year || vehicle.ano ? String(vehicle.year || vehicle.ano) : null },
+    { label: "Marca", value: presentText(vehicle.make || vehicle.marca) },
+    { label: "Modelo", value: presentText(vehicle.model || vehicle.modelo) },
     { label: "Versión", value: presentText(vehicle.trim) },
     { label: "VIN", value: formatPublicVin(vehicle.vin) },
     { label: "Número de stock", value: presentText(vehicle.stockNumber) },
@@ -266,10 +284,6 @@ export function visibleVehicleSpecs(vehicle: PublicVehicle) {
     { label: "Run and Drive", value: yesNo(vehicle.runAndDrive) },
     { label: "Estado de subasta", value: presentText(vehicle.auction?.saleStatus) },
     { label: "Fecha de subasta", value: formatPublicDate(vehicle.auction?.saleDate) },
-    {
-      label: "Última actualización",
-      value: formatPublicDate(vehicle.updatedAt ?? vehicle.lastSyncedAt ?? vehicle.publishedAt),
-    },
   ];
 
   return rows.filter((row): row is { label: string; value: string } => Boolean(row.value));

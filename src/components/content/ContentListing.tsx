@@ -9,7 +9,6 @@ import {
 } from "@/lib/content";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { EditorialImage } from "@/components/shared/EditorialImage";
-import { BusinessLocation } from "@/components/public/BusinessLocation";
 
 const COPY: Record<
   ContentKind,
@@ -68,7 +67,7 @@ export function ContentListing({ kind }: { kind: ContentKind }) {
               </div>
               <div className="flex min-w-0 flex-col justify-center p-6 sm:p-10">
                 <p className="kicker">{featured.category}</p>
-                <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-[#111] sm:text-4xl">
+                <h2 className="mt-3 text-balance break-words font-display text-3xl font-semibold tracking-tight text-[#111] sm:text-4xl">
                   {featured.title}
                 </h2>
                 <p className="mt-4 text-sm leading-relaxed text-[#525252]">{featured.excerpt}</p>
@@ -99,7 +98,7 @@ export function ContentListing({ kind }: { kind: ContentKind }) {
                   </div>
                   <div className="flex flex-1 flex-col p-6">
                     <p className="kicker">{article.category}</p>
-                    <h2 className="mt-3 font-display text-2xl font-semibold text-[#111]">{article.title}</h2>
+                    <h2 className="mt-3 text-balance break-words font-display text-2xl font-semibold text-[#111]">{article.title}</h2>
                     <p className="mt-3 flex-1 text-sm leading-relaxed text-[#525252]">{article.excerpt}</p>
                     <p className="mt-5 text-xs uppercase tracking-[0.14em] text-[#737373]">
                       {readingTimeMinutes(article)} min de lectura
@@ -111,7 +110,6 @@ export function ContentListing({ kind }: { kind: ContentKind }) {
           ) : null}
         </div>
       </section>
-      <BusinessLocation variant="full" heading="Visítanos en Santo Domingo Este" />
     </main>
   );
 }

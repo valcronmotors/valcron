@@ -1,63 +1,71 @@
 export const HOME_FAQS = [
   {
-    q: "¿Cómo funciona una compra en subasta?",
-    a: "Nos cuentas qué buscas. Localizamos opciones en plataformas como Copart, IAAI o Manheim, revisamos costos estimados y te acompañamos en la decisión, compra e importación cuando aplica.",
+    q: "¿Tienen vehículos disponibles en República Dominicana?",
+    a: "Sí, cuando hay unidades publicadas en inventario como disponibles para compra local. El catálogo indica el estado de cada vehículo. Si no ves la unidad que buscas, podemos explorar otras opciones.",
   },
+  {
+    q: "¿Puedo financiar mi vehículo?",
+    a: "Puedes explorar escenarios de inicial, plazo y cuota estimada. Las opciones, tasas, requisitos y aprobaciones las define cada banco local según el perfil del solicitante. Valcron Motors no es un banco.",
+  },
+  {
+    q: "¿Cómo funciona la inicial?",
+    a: "La inicial es el pago inicial sobre el precio del vehículo. El resto puede evaluarse para financiamiento con bancos locales. El porcentaje y las condiciones dependen de cada institución y del caso.",
+  },
+  {
+    q: "¿Pueden orientarme con el seguro del vehículo?",
+    a: "Sí. Te orientamos para gestionar opciones de cobertura disponibles, incluida full cover cuando corresponda. No somos aseguradora ni intermediario autorizado; la cobertura la define cada aseguradora.",
+  },
+  {
+    q: "¿Los vehículos tienen garantía?",
+    a: "Algunos vehículos elegibles pueden tener opciones de garantía o protección. No todas las unidades incluyen cobertura. Consulta condiciones caso por caso antes de comprar.",
+  },
+  {
+    q: "¿Pueden buscar un vehículo específico para mí?",
+    a: "Sí. Indica marca, modelo, año, presupuesto y preferencias. Exploramos inventario y otras fuentes adecuadas para encontrar el vehículo que buscas.",
+  },
+  {
+    q: "¿Cómo funcionan las subastas?",
+    a: "Las plataformas publican vehículos con fotos, lote, daños y tipo de título. Te ayudamos a evaluar la unidad y el proceso de compra. Copart, IAAI y Manheim son plataformas; no somos socios oficiales de esas compañías.",
+  },
+] as const;
+
+export const PAGE_FAQS = [
+  ...HOME_FAQS,
   {
     q: "¿Cuánto tarda una importación?",
-    a: "El tiempo depende del vehículo, la subasta, el transporte terrestre, el embarque y el despacho en República Dominicana. Te orientamos con un cronograma estimado para cada caso, no con una promesa genérica.",
-  },
-  {
-    q: "¿Qué significa Salvage Title?",
-    a: "Es un título de Estados Unidos que indica que el vehículo tuvo un evento de seguro u otra condición relevante. No todos los salvage son iguales: hay que revisar historial, fotos y uso previsto en RD antes de decidir.",
-  },
-  {
-    q: "¿Qué es el valor CIF?",
-    a: "CIF agrupa el valor del vehículo más flete y seguro hasta el destino. Es una referencia de costo de llegada, no un impuesto por sí solo, y forma parte de la estimación de importación.",
-  },
-  {
-    q: "¿Cómo funciona el financiamiento?",
-    a: "Puedes simular inicial, plazo y tasa en el website. La cuota es una estimación. La aprobación, seguros y condiciones las define cada institución financiera según el perfil del solicitante.",
-  },
-  {
-    q: "¿Puedo pedir un vehículo que no está en inventario?",
-    a: "Sí. Puedes solicitar marca, modelo, año y presupuesto. Buscamos opciones disponibles en RD o provenientes de Estados Unidos.",
-  },
-  {
-    q: "¿Puedo ver un vehículo que ya está en República Dominicana?",
-    a: "Si está publicado como disponible en RD, coordinamos la visita y la orientación de compra o financiamiento según el caso.",
+    a: "El tiempo depende del vehículo, el transporte, el embarque y el proceso en República Dominicana. Te orientamos con un cronograma estimado para cada caso, no con una promesa genérica.",
   },
 ] as const;
 
 export const HOME_ARTICLES = [
   {
-    href: "/guias/importar-vehiculo-estados-unidos-republica-dominicana",
+    href: "/guias/checklist-vehiculo-usado-antes-de-comprar",
     category: "Guías",
-    title: "Guía para importar un vehículo a República Dominicana",
-    excerpt: "Las etapas habituales desde la selección hasta el despacho y la primera placa.",
+    title: "Cómo comprar un vehículo usado",
+    excerpt: "Una lista práctica para revisar unidad, historial y costos antes de decidir.",
     image: {
-      src: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1600&q=75",
-      alt: "Imagen ilustrativa de logística marítima asociada a la importación de vehículos",
+      src: "https://images.unsplash.com/photo-1489824904134-891ab64532f1?auto=format&fit=crop&w=1600&q=75",
+      alt: "Fotografía ilustrativa de un vehículo listo para inspección",
     },
   },
   {
-    href: "/blog/evaluar-vehiculo-subasta-antes-de-ofertar",
-    category: "Blog",
-    title: "Cómo evaluar un vehículo de subasta antes de ofertar",
-    excerpt: "Fotos, título, daños y techo de puja: un orden para decidir con más contexto.",
+    href: "/guias/comprar-vehiculos-subastas-estados-unidos-desde-rd",
+    category: "Guías",
+    title: "Cómo funcionan las subastas",
+    excerpt: "Plataformas, lote, pujas y lo que conviene revisar antes de ofertar.",
     image: {
-      src: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=1600&q=75",
-      alt: "Imagen ilustrativa de un patio de vehículos e inspección",
+      src: "https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?auto=format&fit=crop&w=1600&q=75",
+      alt: "SUV compacto contemporáneo, fotografía ilustrativa",
     },
   },
   {
-    href: "/blog/vehiculos-hibridos-republica-dominicana",
+    href: "/blog/clean-title-salvage-rebuilt-diferencias",
     category: "Blog",
-    title: "Vehículos híbridos en República Dominicana",
-    excerpt: "Uso, batería y cuidado al hablar de incentivos: lo que conviene revisar antes de comprar.",
+    title: "Clean Title vs Salvage",
+    excerpt: "Qué indica cada tipo de título y por qué importa antes de comprar.",
     image: {
-      src: "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=1600&q=75",
-      alt: "Imagen ilustrativa de un vehículo electrificado",
+      src: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1600&q=75",
+      alt: "Interior automotriz ilustrativo",
     },
   },
 ] as const;

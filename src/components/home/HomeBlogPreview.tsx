@@ -10,13 +10,22 @@ export function HomeBlogPreview() {
           <div>
             <p className="kicker">Recursos</p>
             <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-[#111] sm:text-5xl">
-              Aprende antes
-              <span className="block">de comprar.</span>
+              Antes de comprar,
+              <span className="block">conoce lo importante.</span>
             </h2>
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-[#525252]">
+              Guías y artículos para entender inventario, financiamiento, títulos y costos, sin
+              repetir el mismo contenido.
+            </p>
           </div>
-          <Link href="/blog" className="text-sm font-semibold uppercase tracking-[0.16em] text-[#111]">
-            Ver Centro de Recursos
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/blog" className="btn-secondary">
+              Ver blog
+            </Link>
+            <Link href="/guias" className="btn-secondary">
+              Ver guías
+            </Link>
+          </div>
         </div>
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {HOME_ARTICLES.map((article) => (

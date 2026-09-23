@@ -1,6 +1,7 @@
 import { PageHero } from "@/components/public/PageHero";
 import { VehicleCatalog } from "@/components/public/VehicleCatalog";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
+import { loadPublicVehicles } from "@/lib/public-inventory";
 import { SITE } from "@/lib/site";
 import { publicPageMetadata } from "@/lib/seo";
 
@@ -28,6 +29,7 @@ export default async function InventarioPage({
   }>;
 }) {
   const params = await searchParams;
+  const inventory = await loadPublicVehicles();
 
   return (
     <main>
@@ -38,18 +40,22 @@ export default async function InventarioPage({
         image={PAGE_HERO_IMAGES.inventario}
         imageAlt={PAGE_HERO_ALTS.inventario}
       />
-      <section className="mx-auto max-w-7xl px-5 py-16 lg:px-8 lg:py-24">
-        <VehicleCatalog
-          initialFilters={{
-            listing: firstParam(params.listing),
-            marca: firstParam(params.marca),
-            modelo: firstParam(params.modelo),
-            ano: firstParam(params.ano),
-            precioMin: firstParam(params.precioMin),
-            precioMax: firstParam(params.precioMax),
-            search: firstParam(params.q),
-          }}
-        />
+      <section className="section-light bg-[#faf9f6]">
+        <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8 lg:py-24">
+          <VehicleCatalog
+            initialVehicles={inventory.data}
+            initialError={inventory.error}
+            initialFilters={{
+              listing: firstParam(params.listing),
+              marca: firstParam(params.marca),
+              modelo: firstParam(params.modelo),
+              ano: firstParam(params.ano),
+              precioMin: firstParam(params.precioMin),
+              precioMax: firstParam(params.precioMax),
+              search: firstParam(params.q),
+            }}
+          />
+        </div>
       </section>
     </main>
   );

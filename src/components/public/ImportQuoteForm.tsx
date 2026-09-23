@@ -87,14 +87,9 @@ export function ImportQuoteForm() {
           className="field-input mt-2 h-auto min-h-24 py-2"
         />
       </label>
-      <a
-        href={href}
-        target="_blank"
-        rel="noreferrer"
-        className="btn-whatsapp"
-      >
+      <button type="submit" className="btn-whatsapp">
         Enviar cotización por WhatsApp
-      </a>
+      </button>
     </form>
   );
 }

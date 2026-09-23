@@ -41,6 +41,9 @@ export async function POST(request: Request) {
   if (nombre.length > 120) {
     return publicJson(request, { error: "El nombre es demasiado largo." }, 400);
   }
+  if (!telefono && !email) {
+    return publicJson(request, { error: "Indica un teléfono o un correo para contactarte." }, 400);
+  }
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return publicJson(request, { error: "El correo electrónico no es válido." }, 400);
   }

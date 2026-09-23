@@ -8,11 +8,9 @@ import { Suspense } from "react";
 export const metadata = publicPageMetadata({
   title: "Financiamiento de vehículos en RD",
   description:
-    "Orientación de Valcron Motors para financiar un vehículo en República Dominicana. La aprobación y las condiciones las define cada institución financiera.",
+    "Explora escenarios de compra y opciones de financiamiento disponibles a través de bancos locales. La aprobación y las condiciones las define cada institución financiera.",
   path: "/financiamiento",
 });
-
-const BANKS = ["Banreservas", "Banco Popular", "BHD", "Scotiabank", "Banco BDI"];
 
 const REQUIREMENTS = [
   {
@@ -21,7 +19,7 @@ const REQUIREMENTS = [
       "Cédula de identidad y electoral",
       "Carta de trabajo y últimos comprobantes de ingresos",
       "Estados de cuenta o evidencia de capacidad de pago",
-      "Referencias y buró crediticio según política del banco",
+      "Referencias y buró crediticio según política de cada banco",
     ],
   },
   {
@@ -30,7 +28,7 @@ const REQUIREMENTS = [
       "Cédula y RNC o evidencia de actividad económica",
       "Declaraciones o estados financieros recientes",
       "Estados de cuenta de los últimos meses",
-      "Documentación del vehículo a financiar o a importar",
+      "Documentación del vehículo a financiar",
     ],
   },
 ];
@@ -41,8 +39,8 @@ export default function FinanciamientoPage() {
       <main>
         <PageHero
           kicker="Financiamiento"
-          title="Banca local, proceso ordenado"
-          subtitle="Estructuramos pre-evaluaciones con Banreservas, Banco Popular, BHD y otras instituciones para stock en RD o unidades importadas a tu nombre."
+          title="Bancos locales, proceso ordenado"
+          subtitle="Explora escenarios de compra y opciones de financiamiento disponibles a través de bancos locales, sujeto a evaluación y condiciones de cada institución."
           image={PAGE_HERO_IMAGES.financiamiento}
           imageAlt={PAGE_HERO_ALTS.financiamiento}
         />
@@ -50,25 +48,15 @@ export default function FinanciamientoPage() {
         <section className="bg-background">
           <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
             <div className="max-w-3xl">
-              <p className="kicker">Opciones</p>
+              <p className="kicker">Bancos locales</p>
               <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-                Opciones con la banca de República Dominicana
+                Financiamiento con bancos locales
               </h2>
               <p className="mt-5 text-base leading-relaxed text-[#d4d4d4]">
-                {SITE.shortName} prepara el expediente y te acompaña en la pre-evaluación. La
-                aprobación final corresponde a cada banco según historial, inicial y capacidad de
-                pago.
+                {SITE.shortName} te ayuda a organizar la información de tu compra. No somos un
+                banco. Las opciones, tasas, requisitos y aprobaciones dependen de cada institución
+                financiera y del perfil del solicitante.
               </p>
-            </div>
-            <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-              {BANKS.map((bank) => (
-                <article
-                  key={bank}
-                  className="gloss-panel px-5 py-6 text-center"
-                >
-                  <p className="text-sm font-medium tracking-wide text-foreground">{bank}</p>
-                </article>
-              ))}
             </div>
           </div>
         </section>
@@ -93,15 +81,13 @@ export default function FinanciamientoPage() {
         <section className="bg-background">
           <div className="mx-auto grid max-w-7xl gap-12 px-5 py-24 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
             <div>
-              <p className="kicker">
-                Pre-aprobación
-              </p>
+              <p className="kicker">Simulador</p>
               <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-foreground">
-                Simula y envía tu solicitud
+                Calcula escenarios de compra
               </h2>
               <p className="mt-5 text-sm leading-relaxed text-muted">
-                Ingresa monto, inicial y plazo. La cuota es ilustrativa. Enviamos la
-                pre-evaluación al WhatsApp {SITE.whatsapp}.
+                Ingresa precio, inicial, tasa y plazo. La cuota es ilustrativa. La aprobación
+                definitiva la define cada banco local. WhatsApp {SITE.whatsapp}.
               </p>
             </div>
             <Suspense

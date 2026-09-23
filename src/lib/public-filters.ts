@@ -11,27 +11,43 @@ export const PRICE_RANGES = [
 const ECO_PATTERN =
   /\b(hybrid|h[ií]brido|phev|plug-?in|el[eé]ctric[oa]|ev\b|prius|ioniq|bolt|leaf|model [3syx]|id\.?\s?4|mach-?e)\b/i;
 
-export function isEcoVehicle(vehicle: Pick<PublicVehicle, "marca" | "modelo" | "trim">) {
-  return ECO_PATTERN.test(`${vehicle.marca} ${vehicle.modelo} ${vehicle.trim ?? ""}`);
+export function isEcoVehicle(vehicle: Pick<PublicVehicle, "marca" | "modelo" | "trim" | "make" | "model">) {
+  return ECO_PATTERN.test(`${vehicle.make || vehicle.marca} ${vehicle.model || vehicle.modelo} ${vehicle.trim ?? ""}`);
+}
+
+export function catalogMake(vehicle: PublicVehicle) {
+  return (vehicle.make || vehicle.marca || "").trim();
+}
+
+export function catalogModel(vehicle: PublicVehicle) {
+  return (vehicle.model || vehicle.modelo || "").trim();
+}
+
+export function catalogYear(vehicle: PublicVehicle) {
+  return Number(vehicle.year || vehicle.ano || 0);
+}
+
+export function catalogUsdPrice(vehicle: PublicVehicle) {
+  return Number(vehicle.pricing?.usdPrice ?? vehicle.precioVentaUsd ?? 0);
 }
 
 export function uniqueMarcas(vehicles: PublicVehicle[]) {
-  return [...new Set(vehicles.map((vehicle) => vehicle.make || vehicle.marca).filter(Boolean))].sort();
+  return [...new Set(vehicles.map(catalogMake).filter(Boolean))].sort();
 }
 
 export function uniqueModelos(vehicles: PublicVehicle[], marca?: string) {
   return [
     ...new Set(
       vehicles
-        .filter((vehicle) => !marca || vehicle.make === marca || vehicle.marca === marca)
-        .map((vehicle) => vehicle.model || vehicle.modelo)
+        .filter((vehicle) => !marca || catalogMake(vehicle) === marca)
+        .map(catalogModel)
         .filter(Boolean),
     ),
   ].sort();
 }
 
 export function uniqueAnos(vehicles: PublicVehicle[]) {
-  return [...new Set(vehicles.map((vehicle) => vehicle.year || vehicle.ano))].sort((a, b) => b - a);
+  return [...new Set(vehicles.map(catalogYear).filter((year) => year > 0))].sort((a, b) => b - a);
 }
 
 export function parsePriceRange(value: string | null | undefined) {

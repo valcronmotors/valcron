@@ -5,34 +5,35 @@ import { EDITORIAL } from "@/lib/editorial-media";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
 import { publicPageMetadata } from "@/lib/seo";
+import Link from "next/link";
 
 export const metadata = publicPageMetadata({
   title: "Importación de vehículos a República Dominicana",
   description:
-    "Importar un vehículo desde Estados Unidos a República Dominicana: búsqueda, transporte, documentación y acompañamiento con Valcron Motors en Santo Domingo Este.",
+    "Proceso para trasladar y gestionar un vehículo desde Estados Unidos hasta República Dominicana: transporte, documentación, llegada y estimación de costos con Valcron Motors.",
   path: "/importacion",
 });
 
 const PHASES = [
   {
     step: "01",
-    title: "Asesoría y Selección",
-    copy: "Definimos presupuesto, condición, historial y si la unidad puede calificar a Ley 103-13. Te presentamos opciones reales en Copart y Manheim antes de pujar.",
+    title: "Compra",
+    copy: "Cuando ya hay una unidad identificada, organizamos la información de compra, costos asociados y el expediente para mover el vehículo.",
   },
   {
     step: "02",
-    title: "Puja e Inspección",
-    copy: "Operamos con licencia de dealer. Pujamos con techo acordado, revisamos título, daños reportados e inspección cuando aplica, y confirmamos la compra.",
+    title: "Transporte",
+    copy: "Traslado terrestre hasta puerto, booking marítimo y seguimiento de la carga hacia República Dominicana.",
   },
   {
     step: "03",
-    title: "Transporte Marítimo con Seguro",
-    copy: "Inland hasta puerto, booking marítimo y cobertura de seguro de carga. Recibes un expediente con fechas, costos y tracking hasta República Dominicana.",
+    title: "Importación",
+    copy: "Documentación, llegada, contexto aduanal y los componentes de costo que conviene revisar antes de nacionalizar.",
   },
   {
     step: "04",
-    title: "Despacho Aduanal en RD",
-    copy: "Gestión ante DGA, impuestos, exoneraciones aplicables, nacionalización y entrega en Santo Domingo Este con diagnóstico técnico de recepción.",
+    title: "Entrega",
+    copy: "Coordinación de recepción en República Dominicana y los pasos posteriores según el caso, incluida la primera inscripción cuando ya está soportada en el proceso.",
   },
 ];
 
@@ -41,9 +42,9 @@ export default function ImportacionPage() {
     <>
       <main>
         <PageHero
-          kicker="Importación Directa"
-          title="Por encargo desde Copart y Manheim"
-          subtitle="Traemos a tu nombre la unidad que buscas, con un expediente transparente de costos, tiempos y despacho en República Dominicana."
+          kicker="Importación"
+          title="De Estados Unidos a República Dominicana"
+          subtitle="Conoce el proceso para trasladar y gestionar un vehículo desde Estados Unidos hasta República Dominicana, con una lectura clara de etapas y costos."
           image={PAGE_HERO_IMAGES.importacion}
           imageAlt={PAGE_HERO_ALTS.importacion}
         />
@@ -51,14 +52,17 @@ export default function ImportacionPage() {
         <section className="bg-background">
           <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
             <div className="max-w-3xl">
-              <p className="kicker">El servicio</p>
+              <p className="kicker">Logística y proceso</p>
               <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
-                Importación con control de principio a fin
+                Transporte, documentos y llegada
               </h2>
               <p className="mt-5 text-base leading-relaxed text-[#d4d4d4]">
-                {SITE.shortName} selecciona, puja e importa desde subastas de Estados Unidos. No
-                improvisamos costos: cada partida —vehículo, inland, flete, seguro, aduana y
-                honorarios— queda documentada antes de avanzar.
+                Esta página explica el proceso de importación. La búsqueda de unidades en subastas
+                está en{" "}
+                <Link href="/subastas" className="text-white underline underline-offset-4 hover:text-[#C7A96B]">
+                  Subastas USA
+                </Link>
+                . Aquí nos concentramos en mover y gestionar el vehículo hasta República Dominicana.
               </p>
             </div>
 
@@ -79,25 +83,25 @@ export default function ImportacionPage() {
             <div>
               <p className="kicker">Ley 103-13</p>
               <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-[#111] sm:text-5xl">
-                Exoneraciones para híbridos y eléctricos
+                Contexto educativo para híbridos y eléctricos
               </h2>
               <p className="mt-5 text-sm leading-relaxed text-[#404040]">
-                La Ley 103-13 establece incentivos fiscales para vehículos de energías no
-                convencionales. Evaluamos si la unidad califica, preparamos el expediente y
-                coordinamos el tratamiento aduanal antes de pujar, para que el ahorro no sea una
-                sorpresa a destiempo.
+                En República Dominicana existe la Ley 103-13, asociada a incentivos para el uso de
+                energía no convencional. Los detalles de exenciones, porcentajes y vehículos que
+                califican dependen de la norma vigente y de cómo la aplican las autoridades en el
+                momento del despacho. No publicamos aquí un porcentaje ni una lista de marcas
+                “exentas”.
               </p>
-              <ul className="mt-8 grid gap-3 text-sm leading-relaxed text-[#404040]">
-                <li className="border-l-2 border-[#C7A96B] pl-4">
-                  Revisión de idoneidad: híbridos, plug-in y 100% eléctricos.
-                </li>
-                <li className="border-l-2 border-[#C7A96B] pl-4">
-                  Estimación de impuestos e incentivos antes de la puja.
-                </li>
-                <li className="border-l-2 border-[#C7A96B] pl-4">
-                  Documentación para DGA y nacionalización en República Dominicana.
-                </li>
-              </ul>
+              <p className="mt-4 text-sm leading-relaxed text-[#404040]">
+                Si el incentivo forma parte de tu cuenta, confírmalo con la autoridad competente o
+                con un profesional del despacho antes de comprar.
+              </p>
+              <Link
+                href="/blog/vehiculos-hibridos-republica-dominicana"
+                className="mt-8 inline-flex text-sm font-semibold text-[#111] underline-offset-4 hover:underline"
+              >
+                Leer más en el blog
+              </Link>
             </div>
             <div className="relative min-h-[22rem] overflow-hidden rounded-[1.35rem] bg-[#111] lg:min-h-full">
               <EditorialImage
@@ -112,13 +116,10 @@ export default function ImportacionPage() {
                   Ley 103-13
                 </p>
                 <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-white">
-                  Vehículos híbridos
-                </p>
-                <p className="mt-1 text-sm font-semibold uppercase tracking-[0.16em] text-white">
-                  Vehículos eléctricos
+                  Contenido educativo
                 </p>
                 <p className="mt-4 max-w-sm text-sm leading-relaxed text-[#d4d4d4]">
-                  Incentivos según normativa aplicable
+                  La elegibilidad la confirma el proceso oficial, no una estimación del website.
                 </p>
               </div>
             </div>
@@ -130,11 +131,11 @@ export default function ImportacionPage() {
             <div>
               <p className="kicker">Calculadora</p>
               <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-white">
-                Estima el costo de traer tu unidad
+                Estima componentes de costo
               </h2>
               <p className="mt-5 text-sm leading-relaxed text-[#d4d4d4]">
-                Ajusta subasta, flete, DGA y puerto en tiempo real. El resultado es ilustrativo y
-                se envía al WhatsApp {SITE.whatsapp} para abrir el expediente.
+                Organiza partidas como vehículo, flete e impuestos de referencia. El resultado es
+                ilustrativo y no sustituye una cotización oficial. WhatsApp {SITE.whatsapp}.
               </p>
             </div>
             <ImportCostCalculator />

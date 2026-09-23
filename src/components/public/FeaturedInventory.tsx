@@ -60,7 +60,18 @@ export function FeaturedInventory({
     };
   }, []);
 
-  const visible = useMemo(() => vehicles.slice(0, 4), [vehicles]);
+  const dealerStock = useMemo(
+    () =>
+      vehicles.filter(
+        (vehicle) => vehicle.listingKind === "dealer" && vehicle.availability !== "sold" && vehicle.availability !== "auction",
+      ),
+    [vehicles],
+  );
+  const localFirst = dealerStock.length > 0;
+  const visible = useMemo(
+    () => (localFirst ? dealerStock : vehicles).slice(0, 4),
+    [dealerStock, localFirst, vehicles],
+  );
 
   return (
     <section className="section-light bg-white">
@@ -68,9 +79,11 @@ export function FeaturedInventory({
         <Reveal>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="kicker">Vehículos destacados</p>
-              <h2 className="mt-3 max-w-xl font-display text-4xl font-bold tracking-tight text-[#111] sm:text-5xl">
-                Descubre algunas de las unidades disponibles actualmente.
+              <p className="kicker">{localFirst ? "Disponibles en RD" : "Inventario"}</p>
+              <h2 className="mt-3 max-w-xl text-balance font-display text-4xl font-bold tracking-tight text-[#111] sm:text-5xl">
+                {localFirst
+                  ? "Vehículos disponibles para tu próxima compra."
+                  : "Explora las unidades publicadas actualmente."}
               </h2>
             </div>
             <Link href="/inventario" className="btn-secondary shrink-0">
@@ -88,7 +101,7 @@ export function FeaturedInventory({
             <InventoryEmptyState
               tone="light"
               title="Inventario en actualización"
-              copy="Escríbenos para localizar o importar el vehículo que buscas desde Estados Unidos."
+              copy="Escríbenos para localizar el vehículo que buscas."
             />
           </div>
         ) : (

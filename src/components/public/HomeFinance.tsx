@@ -26,7 +26,7 @@ export function HomeFinance({ vehicles }: { vehicles: PublicVehicle[] }) {
   const selectedTitle = selected ? publicVehicleTitle(selected) : null;
   const href = whatsappHref(
     [
-      `Hola, solicito pre-evaluación bancaria con ${SITE.shortName}.`,
+      `Hola, solicito orientación de financiamiento con bancos locales a través de ${SITE.shortName}.`,
       selectedTitle ? `Vehículo: ${selectedTitle}` : null,
       `Monto: ${formatUsd(amount)}`,
       `Inicial: ${formatUsd(down)} (${Math.max(downPct, 20)}%)`,

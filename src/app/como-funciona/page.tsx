@@ -12,12 +12,36 @@ export const metadata = publicPageMetadata({
 });
 
 const STEPS = [
-  { step: "01", title: "Cuéntanos qué buscas" },
-  { step: "02", title: "Exploramos opciones" },
-  { step: "03", title: "Revisamos información y costos" },
-  { step: "04", title: "Tú decides" },
-  { step: "05", title: "Coordinamos el proceso" },
-  { step: "06", title: "Entrega" },
+  {
+    step: "01",
+    title: "Encuentra tu vehículo",
+    copy: "Explora el inventario o indícanos marca, modelo, año y presupuesto.",
+  },
+  {
+    step: "02",
+    title: "Revisa las opciones",
+    copy: "Comparamos estado, precio, kilometraje y lo que realmente encaja contigo.",
+  },
+  {
+    step: "03",
+    title: "Planifica tu compra",
+    copy: "Definimos el escenario de inicial, plazo y cuota estimada con bancos locales.",
+  },
+  {
+    step: "04",
+    title: "Gestiona financiamiento y protección",
+    copy: "Te orientamos con opciones de cobertura y de garantía o protección para vehículos elegibles.",
+  },
+  {
+    step: "05",
+    title: "Completa el proceso",
+    copy: "Coordinamos la documentación y los siguientes pasos de la compra.",
+  },
+  {
+    step: "06",
+    title: "Recibe tu vehículo",
+    copy: "Cierre y entrega en el proceso acordado, con un interlocutor claro.",
+  },
 ];
 
 export default function ComoFuncionaPage() {
@@ -26,7 +50,7 @@ export default function ComoFuncionaPage() {
       <PageHero
         kicker="Proceso"
         title="Cómo funciona Valcron Motors"
-        subtitle="Del primer mensaje a tu próximo vehículo, con información clara en cada etapa."
+        subtitle="Encuentra, evalúa y completa la compra de tu próximo vehículo en República Dominicana."
         image={PAGE_HERO_IMAGES.servicios}
         imageAlt={PAGE_HERO_ALTS.servicios}
       />
@@ -44,6 +68,7 @@ export default function ComoFuncionaPage() {
               >
                 <p className="kicker">{item.step}</p>
                 <h3 className="mt-3 font-display text-xl font-semibold text-[#111]">{item.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-[#525252]">{item.copy}</p>
               </article>
             ))}
           </div>

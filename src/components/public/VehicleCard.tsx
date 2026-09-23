@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { useDisplayCurrency } from "@/components/public/CurrencyProvider";
 import { VehiclePhoto } from "@/components/shared/VehiclePhoto";
@@ -43,6 +45,13 @@ export function VehicleCard({
   const platform = vehicle.source === "stock_rd" ? null : sourceLabel(vehicle.source);
   const light = tone === "light";
   const cover = vehicle.images[0]?.url;
+  const isAuction = vehicle.listingKind === "auction" || vehicle.availability === "auction";
+  const location = !isAuction ? vehicle.location || vehicle.ubicacion || null : null;
+  const meta = [
+    mileage,
+    location,
+    isAuction && vehicle.auction?.lotNumber ? `Lote #${vehicle.auction.lotNumber}` : null,
+  ].filter(Boolean);
 
   return (
     <article
@@ -73,11 +82,11 @@ export function VehicleCard({
       <div className={`flex flex-1 flex-col gap-3 p-5 ${light ? "text-[#111]" : "text-white"}`}>
         <div>
           <p className={`text-xs uppercase tracking-[0.16em] ${light ? "text-[#737373]" : "text-[#a3a3a3]"}`}>
-            {vehicle.year}
+            {vehicle.year ?? vehicle.ano}
           </p>
-          <h3 className="mt-1 font-display text-xl font-semibold tracking-tight">
-            <Link href={href} className="hover:underline">
-              {vehicle.make} {vehicle.model}
+          <h3 className="mt-1 min-w-0 font-display text-xl font-semibold tracking-tight">
+            <Link href={href} className="break-words hover:underline">
+              {vehicle.make || vehicle.marca} {vehicle.model || vehicle.modelo}
             </Link>
           </h3>
           {vehicle.trim ? (
@@ -95,12 +104,8 @@ export function VehicleCard({
           ) : null}
         </div>
 
-        {mileage || vehicle.auction?.lotNumber ? (
-          <p className={`text-sm ${light ? "text-[#404040]" : "text-[#d4d4d4]"}`}>
-            {[mileage, vehicle.auction?.lotNumber ? `Lote #${vehicle.auction.lotNumber}` : null]
-              .filter(Boolean)
-              .join(" · ")}
-          </p>
+        {meta.length ? (
+          <p className={`text-sm ${light ? "text-[#404040]" : "text-[#d4d4d4]"}`}>{meta.join(" · ")}</p>
         ) : null}
 
         <div className="mt-auto grid gap-2 pt-2">

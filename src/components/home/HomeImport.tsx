@@ -2,53 +2,28 @@ import Link from "next/link";
 import { EditorialImage } from "@/components/shared/EditorialImage";
 import { EDITORIAL } from "@/lib/editorial-media";
 
-const STEPS = [
-  { step: "01", title: "Búsqueda" },
-  { step: "02", title: "Evaluación" },
-  { step: "03", title: "Compra" },
-  { step: "04", title: "Transporte terrestre" },
-  { step: "05", title: "Puerto / exportación" },
-  { step: "06", title: "Transporte marítimo" },
-  { step: "07", title: "Proceso en RD" },
-  { step: "08", title: "Entrega" },
-];
-
 export function HomeImport() {
   return (
     <section className="relative isolate overflow-hidden bg-black">
       <EditorialImage
-        src={EDITORIAL.carrier.src}
-        alt={EDITORIAL.carrier.alt}
+        src={EDITORIAL.compactSuv.src}
+        alt={EDITORIAL.compactSuv.alt}
         sizes="100vw"
-        className="object-cover opacity-50"
+        className="object-cover opacity-45"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-black via-black/82 to-black/42" />
-      <div className="relative mx-auto max-w-7xl px-5 py-24 lg:px-8 lg:py-32">
+      <div className="absolute inset-0 bg-gradient-to-r from-black via-black/78 to-black/40" />
+      <div className="relative mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-24">
         <p className="kicker">Importación</p>
-        <h2 className="mt-4 max-w-3xl font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
-          De Estados Unidos
-          <span className="block">a República Dominicana.</span>
+        <h2 className="mt-4 max-w-3xl text-balance font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          Cuando la unidad viene de Estados Unidos.
         </h2>
         <p className="mt-5 max-w-2xl text-base leading-relaxed text-[#d4d4d4]">
-          Importar un vehículo implica mucho más que comprarlo. Nuestro objetivo es ayudarte a
-          comprender y organizar cada etapa del proceso.
+          Transporte, documentos y llegada a República Dominicana se explican en la página de
+          importación. Aquí el foco es completar tu compra; el detalle logístico vive aparte.
         </p>
-        <div className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {STEPS.map((item) => (
-            <article key={item.step} className="rounded-2xl border border-white/12 bg-black/40 p-4 backdrop-blur-md">
-              <p className="kicker">{item.step}</p>
-              <h3 className="mt-3 font-display text-lg font-semibold text-white">{item.title}</h3>
-            </article>
-          ))}
-        </div>
-        <div className="mt-10 flex flex-wrap gap-3">
-          <Link href="/importacion" className="btn-primary">
-            Conocer el proceso
-          </Link>
-          <Link href="/calculadoras" className="btn-secondary">
-            Calcular importación
-          </Link>
-        </div>
+        <Link href="/importacion" className="btn-primary mt-8">
+          Conocer importación
+        </Link>
       </div>
     </section>
   );
