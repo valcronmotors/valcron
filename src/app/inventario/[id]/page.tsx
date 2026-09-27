@@ -3,7 +3,8 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { PublicVehicleDetail } from "@/components/public/PublicVehicleDetail";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { loadPublicVehicleById } from "@/lib/public-inventory";
-import { breadcrumbJsonLd, publicPageMetadata, vehicleJsonLd } from "@/lib/seo";
+import { SITE } from "@/lib/site";
+import { absoluteUrl, breadcrumbJsonLd, publicPageMetadata, vehicleJsonLd } from "@/lib/seo";
 import { getSimilarVehicles } from "@/lib/vehicles/adapter";
 import { vehicleDisplayTitle, vehicleSeoDescription } from "@/lib/vehicles/vehicle-formatters";
 import { isVehicleUuid, vehiclePath } from "@/lib/vehicles/vehicle-slugs";
@@ -19,6 +20,8 @@ export async function generateMetadata({
     return { title: "Vehículo" };
   }
   const title = vehicleDisplayTitle(result.data);
+  const image = result.data.images[0]?.url ?? result.data.fotosUrls[0];
+  const imageUrl = image ? (image.startsWith("http") ? image : absoluteUrl(image)) : undefined;
   return {
     ...publicPageMetadata({
       title,
@@ -26,6 +29,21 @@ export async function generateMetadata({
       path: vehiclePath(result.data.slug),
     }),
     robots: { index: true, follow: true },
+    openGraph: {
+      title: `${title} | ${SITE.shortName}`,
+      description: vehicleSeoDescription(result.data),
+      url: absoluteUrl(vehiclePath(result.data.slug)),
+      locale: "es_DO",
+      siteName: SITE.shortName,
+      type: "website",
+      images: imageUrl ? [{ url: imageUrl, alt: title }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: vehicleSeoDescription(result.data),
+      images: imageUrl ? [imageUrl] : undefined,
+    },
   };
 }
 

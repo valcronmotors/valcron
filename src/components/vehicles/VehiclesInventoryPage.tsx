@@ -8,7 +8,7 @@ import { AddVehicleModal } from "@/components/vehicles/AddVehicleModal";
 import { VehiclesInventoryTable } from "@/components/vehicles/VehiclesInventoryTable";
 import { useInventorySync } from "@/hooks/use-inventory-sync";
 import { COMPANY_NAMES } from "@/lib/companies";
-import type { VehicleRow } from "@/lib/inventory";
+import type { ErpVehicleRow as VehicleRow } from "@/lib/inventory";
 import { filterVehicles } from "@/lib/inventory-filters";
 import type { VehicleState } from "@/lib/vehicle-costs";
 

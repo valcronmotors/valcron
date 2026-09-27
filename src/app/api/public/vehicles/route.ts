@@ -1,8 +1,8 @@
 import { getFeaturedVehicles, getPublicVehicles } from "@/lib/vehicles/adapter";
+import { isUnavailableInventoryError } from "@/lib/public-empty";
 import { publicJson, publicOptions } from "@/lib/public-catalog";
 import type { VehicleAvailability, VehicleSort, VehicleSource } from "@/types/vehicle";
 
-export const dynamic = "force-dynamic";
 
 export function OPTIONS(request: Request) {
   return publicOptions(request);
@@ -18,6 +18,13 @@ export async function GET(request: Request) {
   if (url.searchParams.get("featured") === "1") {
     const featured = await getFeaturedVehicles(4);
     if (featured.error) {
+      if (isUnavailableInventoryError(featured.error)) {
+        return publicJson(
+          request,
+          { data: [], pagination: { page: 1, limit: 4, total: 0, totalPages: 1 }, meta: { generatedAt: new Date().toISOString() } },
+          200,
+        );
+      }
       return publicJson(request, { error: featured.error }, 500);
     }
     return publicJson(
@@ -60,6 +67,18 @@ export async function GET(request: Request) {
   });
 
   if (result.error) {
+    if (isUnavailableInventoryError(result.error)) {
+      return publicJson(
+        request,
+        {
+          data: [],
+          pagination: { page: 1, limit: result.pagination.limit, total: 0, totalPages: 1 },
+          facets: result.facets,
+          meta: { generatedAt: new Date().toISOString() },
+        },
+        200,
+      );
+    }
     return publicJson(request, { error: result.error }, 500);
   }
 

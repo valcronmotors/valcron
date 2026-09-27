@@ -1,77 +1,66 @@
 import Link from "next/link";
-import { Car, Calculator, Gavel, MessageCircle, Search, Ship } from "lucide-react";
+import { Car, Calculator, Gavel, RefreshCcw, Search, Ship } from "lucide-react";
 
 const SERVICES = [
   {
-    step: "01",
-    title: "Vehículos disponibles",
-    copy: "Explora nuestro inventario actual y encuentra unidades listas para tu próxima compra.",
+    title: "Venta de vehículos",
+    copy: "Unidades publicadas en inventario, listas para evaluar y comprar en República Dominicana.",
     href: "/inventario",
     cta: "Ver inventario",
     icon: Car,
   },
   {
-    step: "02",
     title: "Búsqueda personalizada",
-    copy: "Cuéntanos qué marca, modelo, año y presupuesto tienes en mente.",
+    copy: "Dinos marca, modelo, año y presupuesto. Buscamos opciones que encajen.",
     href: "/solicitar-vehiculo",
     cta: "Solicitar vehículo",
     icon: Search,
   },
   {
-    step: "03",
-    title: "Subastas USA",
-    copy: "Explora oportunidades de compra en plataformas de subastas de Estados Unidos.",
+    title: "Subastas en EE.UU.",
+    copy: "Te ayudamos a localizar y gestionar vehículos elegibles en Copart e IAA.",
     href: "/subastas",
-    cta: "Conocer subastas",
+    cta: "Explorar oportunidades",
     icon: Gavel,
   },
   {
-    step: "04",
-    title: "Financiamiento",
-    copy: "Conoce opciones y calcula escenarios de compra con bancos locales.",
-    href: "/financiamiento",
-    cta: "Calcular financiamiento",
-    icon: Calculator,
-  },
-  {
-    step: "05",
     title: "Importación",
-    copy: "Conoce el proceso para traer un vehículo desde Estados Unidos.",
+    copy: "Acompañamos el proceso de transporte, costos y llegada a República Dominicana.",
     href: "/importacion",
-    cta: "Conocer importación",
+    cta: "Ver importación",
     icon: Ship,
   },
   {
-    step: "06",
-    title: "Asesoría",
-    copy: "Recibe orientación durante tu proceso de compra, de la búsqueda a la entrega.",
-    href: "/servicios",
-    cta: "Ver servicios",
-    icon: MessageCircle,
+    title: "Financiamiento",
+    copy: "Orientación para presentar tu caso ante bancos locales. Valcron no es el prestamista.",
+    href: "/financiamiento",
+    cta: "Ver financiamiento",
+    icon: Calculator,
+  },
+  {
+    title: "Trade-in",
+    copy: "Recibimos tu vehículo actual como parte de la compra, sujeto a evaluación.",
+    href: "/solicitar-vehiculo",
+    cta: "Consultar trade-in",
+    icon: RefreshCcw,
   },
 ];
 
 export function HomeServices() {
   return (
-    <section className="section-light bg-[#ececea]">
-      <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8 lg:py-32">
+    <section className="section-light bg-[#f3f1ed]">
+      <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-24">
         <p className="kicker">Servicios</p>
-        <h2 className="mt-3 max-w-3xl font-display text-4xl font-bold tracking-tight text-[#111] sm:text-5xl">
-          Soluciones para ayudarte
-          <span className="block">a adquirir tu próximo vehículo.</span>
+        <h2 className="mt-3 max-w-2xl font-display text-3xl font-bold tracking-tight text-[#141414] sm:text-4xl">
+          Cómo te ayudamos a conseguir tu vehículo.
         </h2>
-        <div className="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {SERVICES.map((service) => (
-            <article
-              key={service.step}
-              className="rounded-[1.25rem] border border-white bg-[#faf9f6] p-6 transition hover:-translate-y-1 hover:border-[#C7A96B]/40"
-            >
-              <service.icon className="h-5 w-5 text-[#C7A96B]" strokeWidth={1.7} />
-              <p className="mt-5 kicker">{service.step}</p>
-              <h3 className="mt-3 font-display text-2xl font-semibold text-[#111]">{service.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-[#525252]">{service.copy}</p>
-              <Link href={service.href} className="mt-5 inline-block text-sm font-semibold text-[#111]">
+            <article key={service.title} className="rounded-2xl border border-[#e6e2db] bg-white p-6">
+              <service.icon className="h-5 w-5 text-[#9b793f]" strokeWidth={1.7} />
+              <h3 className="mt-4 font-display text-xl font-semibold text-[#141414]">{service.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-[#5c5c5c]">{service.copy}</p>
+              <Link href={service.href} className="mt-4 inline-block text-sm font-semibold text-[#141414] underline-offset-4 hover:underline">
                 {service.cta}
               </Link>
             </article>

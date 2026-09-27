@@ -1,0 +1,4 @@
+export const PUBLIC_INVENTORY_CACHE_TAG = "public-inventory";
+export const PUBLIC_INVENTORY_REVALIDATE_SECONDS = 60;
+export const PUBLIC_IMAGE_MAX_AGE_SECONDS = 3600;
+export const PUBLIC_IMAGE_S_MAXAGE_SECONDS = 86400;

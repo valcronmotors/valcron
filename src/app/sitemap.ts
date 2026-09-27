@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { listArticles, contentPath } from "@/lib/content";
 import { SITE } from "@/lib/site";
-import { getPublicDetailVehicles } from "@/lib/vehicles/adapter";
+import { getPublicSitemapVehicles } from "@/lib/vehicles/adapter";
 
 const STATIC_PATHS = [
   "/",
@@ -41,7 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: article.updatedAt,
   }));
 
-  const vehicles = await getPublicDetailVehicles();
+  const vehicles = await getPublicSitemapVehicles();
   const vehicleEntries: MetadataRoute.Sitemap = (vehicles.data ?? []).map((vehicle) => ({
     url: `${SITE.url}/inventario/${vehicle.slug}`,
     lastModified: vehicle.updatedAt ?? vehicle.publishedAt ?? undefined,

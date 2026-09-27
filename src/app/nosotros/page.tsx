@@ -61,7 +61,7 @@ export default function NosotrosPage() {
         <PageHero
           kicker={SITE.name}
           title="Sobre Valcron Motors Group"
-          subtitle="Dealer en República Dominicana para vender, importar y orientar la compra de vehículos con un estándar sobrio: claridad, criterio técnico y trato directo."
+          subtitle="Dealer en República Dominicana para vender, orientar y ayudar a adquirir vehículos con un estándar sobrio: claridad, criterio y trato directo."
           image={PAGE_HERO_IMAGES.nosotros}
           imageAlt={PAGE_HERO_ALTS.nosotros}
         />
@@ -75,10 +75,10 @@ export default function NosotrosPage() {
               </h2>
               <p className="mt-5 max-w-prose text-sm leading-relaxed text-[#404040] sm:text-base">
                 {SITE.name} opera desde Santo Domingo Este para profesionalizar la compra de
-                vehículos: inventario local, búsqueda en plataformas de subasta de Estados Unidos e
-                importación a República Dominicana. Trabajamos como sociedad de responsabilidad
-                limitada. El cliente debe entender cada decisión —unidad, papeles y costos— antes de
-                comprometerse.
+                vehículos: inventario local, orientación de financiamiento, trade-in y, cuando hace
+                falta, búsqueda en plataformas de subasta de Estados Unidos. Trabajamos como
+                sociedad de responsabilidad limitada. El cliente debe entender cada decisión —unidad,
+                papeles y costos— antes de comprometerse.
               </p>
               <p className="mt-4 max-w-prose text-sm leading-relaxed text-[#404040] sm:text-base">
                 Nuestra oficina comercial está en {SITE.address.full}. Desde ahí coordinamos asesoría,
@@ -87,9 +87,9 @@ export default function NosotrosPage() {
                 no existan.
               </p>
               <p className="mt-4 max-w-prose text-sm leading-relaxed text-[#404040] sm:text-base">
-                Copart, IAA/IAAI y Manheim son fuentes o plataformas de mercado. No las presentamos
-                como socias de Valcron Motors. El financiamiento, cuando aplica, lo evalúa cada
-                institución; nosotros orientamos el expediente, no aprobamos crédito.
+                Copart e IAA son plataformas o fuentes de mercado. No las presentamos como socias de
+                Valcron Motors. El financiamiento, cuando aplica, lo evalúa cada banco local;
+                nosotros orientamos el expediente, no aprobamos crédito.
               </p>
             </div>
             <div className="relative min-h-[280px] w-full min-w-0 overflow-hidden rounded-2xl border border-[#ececea] sm:min-h-[360px] lg:min-h-[440px]">

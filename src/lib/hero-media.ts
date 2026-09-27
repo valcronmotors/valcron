@@ -1,5 +1,5 @@
 const unsplash = (id: string) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1920&q=80`;
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1400&q=70`;
 
 export const HOME_HERO_SLIDES = [
   {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { shouldEmitStructuredOfferPrice } from "@/lib/public-price-mode";
 import { SITE } from "@/lib/site";
 import type { ContentArticle } from "@/lib/content/types";
 import {
@@ -143,14 +144,15 @@ export function vehicleJsonLd(vehicle: PublicVehicle) {
 
   const image = vehicle.images[0]?.url ?? vehicle.fotosUrls[0];
   if (image) {
-    data.image = image;
+    data.image = image.startsWith("http") ? image : absoluteUrl(image);
   }
 
+  const mode = vehicle.pricing.publicPriceMode;
   const sale =
-    vehicle.availability !== "auction" &&
+    shouldEmitStructuredOfferPrice(mode ?? "fixed") &&
     vehicle.pricing.priceVisible &&
     vehicle.pricing.kind === "sale" &&
-    (vehicle.pricing.usdPrice || vehicle.pricing.rdPrice);
+    Boolean(vehicle.pricing.usdPrice || vehicle.pricing.rdPrice);
 
   if (sale) {
     const price = vehicle.pricing.usdPrice

@@ -1,4 +1,10 @@
-export type AdminNavIcon = "dashboard" | "inventory" | "requests" | "settings";
+export type AdminNavIcon =
+  | "dashboard"
+  | "inventory"
+  | "auctions"
+  | "requests"
+  | "website"
+  | "settings";
 
 export type AdminNavChild = {
   href: string;
@@ -11,6 +17,7 @@ export type AdminNavSection = {
   label: string;
   icon: AdminNavIcon;
   href?: string;
+  description?: string;
   children?: AdminNavChild[];
 };
 
@@ -20,48 +27,35 @@ export const ADMIN_NAV: AdminNavSection[] = [
     label: "Dashboard",
     icon: "dashboard",
     href: "/admin",
+    description: "Resumen del inventario, solicitudes y oportunidades.",
   },
   {
     id: "inventario",
-    label: "Vehículos",
+    label: "Inventario",
     icon: "inventory",
-    children: [
-      {
-        href: "/admin/inventario",
-        label: "Inventario público",
-        description: "Unidades publicadas o listas para el website de Valcron Motors.",
-      },
-      {
-        href: "/admin/inventario/nuevo",
-        label: "Agregar vehículo",
-        description: "Alta de una unidad para el inventario del website.",
-      },
-    ],
+    href: "/admin/inventario",
+    description: "Vehículos del catálogo público: borradores, publicados, reservados y vendidos.",
+  },
+  {
+    id: "subastas",
+    label: "Oportunidades",
+    icon: "auctions",
+    href: "/admin/subastas",
+    description: "Seguimiento interno de lotes. No aparecen en el inventario hasta prepararlos y publicarlos.",
   },
   {
     id: "solicitudes",
-    label: "Solicitudes web",
+    label: "Solicitudes",
     icon: "requests",
-    children: [
-      {
-        href: "/admin/solicitudes",
-        label: "Bandeja de solicitudes",
-        description:
-          "Contacto, búsqueda de vehículo, importación, subasta y financiamiento capturados desde el website. Sin pipeline comercial.",
-      },
-    ],
+    href: "/admin/solicitudes",
+    description: "Mensajes y cotizaciones recibidos desde el website.",
   },
   {
-    id: "configuracion",
-    label: "Configuración",
-    icon: "settings",
-    children: [
-      {
-        href: "/admin/configuracion/usuarios",
-        label: "Usuarios del website",
-        description: "Acceso al CMS del website. No es gestión de equipo comercial.",
-      },
-    ],
+    id: "website",
+    label: "Website",
+    icon: "website",
+    href: "/admin/website",
+    description: "Estado de publicación y accesos del sitio.",
   },
 ];
 
@@ -85,13 +79,22 @@ export function isAdminNavChildActive(
 
 export function findAdminNavItem(pathname: string) {
   for (const section of ADMIN_NAV) {
-    if (section.href && pathname === section.href) {
+    if (section.href && isAdminPathActive(pathname, section.href)) {
+      const nestedLabel = pathname.endsWith("/nuevo")
+        ? section.id === "inventario"
+          ? "Agregar vehículo"
+          : section.id === "subastas"
+            ? "Agregar oportunidad"
+            : section.label
+        : pathname.startsWith("/admin/subastas/copart")
+          ? "Inventario Copart"
+          : section.label;
       return {
         section,
         item: {
           href: section.href,
-          label: section.label,
-          description: "Vista del inventario y contenido del website.",
+          label: nestedLabel,
+          description: section.description ?? "",
         },
       };
     }
@@ -109,12 +112,24 @@ export function findAdminNavItem(pathname: string) {
     }
   }
 
+  if (pathname.startsWith("/admin/configuracion/usuarios") || pathname.startsWith("/admin/usuarios")) {
+    const website = ADMIN_NAV.find((section) => section.id === "website");
+    return {
+      section: website ?? ADMIN_NAV[0],
+      item: {
+        href: "/admin/configuracion/usuarios",
+        label: "Usuarios",
+        description: "Quién puede entrar al panel del website.",
+      },
+    };
+  }
+
   return null;
 }
 
 export function sectionHasActiveChild(pathname: string, section: AdminNavSection) {
   if (section.href) {
-    return pathname === section.href;
+    return isAdminPathActive(pathname, section.href);
   }
   return Boolean(
     section.children?.some(
@@ -123,9 +138,15 @@ export function sectionHasActiveChild(pathname: string, section: AdminNavSection
   );
 }
 
-export const ADMIN_MODULE_HREFS = new Set(
-  ADMIN_NAV.flatMap((section) => [
+export const ADMIN_MODULE_HREFS = new Set([
+  ...ADMIN_NAV.flatMap((section) => [
     ...(section.href ? [section.href] : []),
     ...(section.children?.map((child) => child.href) ?? []),
   ]),
-);
+  "/admin/inventario/nuevo",
+  "/admin/subastas/nuevo",
+  "/admin/subastas/copart",
+  "/admin/configuracion/usuarios",
+  "/admin/usuarios",
+  "/admin/website",
+]);

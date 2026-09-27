@@ -1,4 +1,4 @@
-import type { PartRow, VehicleRow } from "@/lib/inventory";
+import type { ErpVehicleRow, PartRow } from "@/lib/inventory";
 import type { VehicleState } from "@/lib/vehicle-costs";
 
 export type VehicleStatusFilter = "todos" | VehicleState;
@@ -7,7 +7,7 @@ export function normalizeSearch(value: string) {
   return value.trim().toLowerCase();
 }
 
-export function matchesVehicleSearch(row: VehicleRow, query: string) {
+export function matchesVehicleSearch(row: ErpVehicleRow, query: string) {
   const needle = normalizeSearch(query);
   if (!needle) {
     return true;
@@ -30,7 +30,7 @@ export function matchesPartSearch(row: PartRow, query: string) {
 }
 
 export function filterVehicles(
-  rows: VehicleRow[],
+  rows: ErpVehicleRow[],
   query: string,
   estado: VehicleStatusFilter,
 ) {

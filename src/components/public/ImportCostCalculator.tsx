@@ -83,7 +83,6 @@ export function ImportCostCalculator() {
           >
             <option>Copart</option>
             <option>IAAI</option>
-            <option>Manheim</option>
           </select>
         </label>
         <label className="block text-sm text-muted md:col-span-2">

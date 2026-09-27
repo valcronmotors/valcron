@@ -7,12 +7,12 @@ export const SITE = {
   brand: "valcronMotors",
   legalName: "Valcron Motors Group, SRL",
   url: "https://valcronmotors.com",
-  heroEyebrow: "Valcron Motors • República Dominicana",
-  heroTitle: "Tu próximo vehículo empieza aquí.",
+  heroEyebrow: "Valcron Motors • Santo Domingo Este",
+  heroTitle: "Encuentra el vehículo ideal para ti.",
   heroSubtitle:
-    "Explora vehículos disponibles y recibe orientación durante todo el proceso de compra, desde financiamiento hasta seguro y protección para tu vehículo.",
+    "Inventario local, financiamiento con bancos, trade-in y búsqueda en subastas de Estados Unidos cuando necesites más opciones.",
   valueProposition:
-    "Valcron Motors es un dealer en República Dominicana. Te ayudamos a encontrar, evaluar y adquirir tu próximo vehículo, con orientación en financiamiento, seguro y opciones de protección.",
+    "Valcron Motors es un dealer en República Dominicana. Te ayudamos a encontrar, evaluar y adquirir tu próximo vehículo, con inventario, financiamiento y opciones de subasta e importación.",
   address: {
     street: "Av Principal 20",
     streetAddress: "Av Principal 20",
@@ -53,21 +53,22 @@ export const SITE = {
 
 export const companyConfig = SITE;
 
-export const PUBLIC_NAV = [
+export const PUBLIC_NAV_PRIMARY = [
   { href: "/", label: "Inicio" },
   { href: "/inventario", label: "Inventario" },
-  { href: "/subastas", label: "Subastas" },
-  { href: "/importacion", label: "Importación" },
-  { href: "/financiamiento", label: "Financiamiento" },
   { href: "/servicios", label: "Servicios" },
+  { href: "/financiamiento", label: "Financiamiento" },
+  { href: "/subastas", label: "Subastas" },
   { href: "/nosotros", label: "Nosotros" },
-  { href: "/contacto", label: "Contacto" },
 ] as const;
+
+export const PUBLIC_NAV_CONTACT = { href: "/contacto", label: "Contacto" } as const;
+
+export const PUBLIC_NAV = [...PUBLIC_NAV_PRIMARY, PUBLIC_NAV_CONTACT] as const;
 
 export const RESOURCE_NAV = [
   { href: "/blog", label: "Blog" },
   { href: "/guias", label: "Guías" },
-  { href: "/preguntas-frecuentes", label: "Preguntas Frecuentes" },
   { href: "/calculadoras", label: "Calculadoras" },
 ] as const;
 
@@ -78,11 +79,18 @@ export const FOOTER_INVENTORY = [
 ] as const;
 
 export const FOOTER_SERVICES = [
-  { href: "/financiamiento", label: "Financiamiento" },
-  { href: "/contacto", label: "Búsqueda personalizada" },
-  { href: "/servicios", label: "Seguro y protección" },
-  { href: "/subastas", label: "Subastas USA" },
+  { href: "/inventario", label: "Venta de vehículos" },
+  { href: "/solicitar-vehiculo", label: "Búsqueda personalizada" },
+  { href: "/subastas", label: "Subastas en EE.UU." },
   { href: "/importacion", label: "Importación" },
+  { href: "/financiamiento", label: "Financiamiento" },
+  { href: "/solicitar-vehiculo", label: "Trade-in" },
+] as const;
+
+export const FOOTER_CONTACT = [
+  { href: "/contacto", label: "Visítanos" },
+  { href: SITE.whatsappUrl, label: "WhatsApp" },
+  { href: "/solicitar-vehiculo", label: "Solicitar vehículo" },
 ] as const;
 
 export const FOOTER_RESOURCES = [
@@ -141,10 +149,12 @@ export const PUBLIC_PATHS = [
   "/calculadoras",
   "/mapa-del-sitio",
   "/api/public",
-  "/api/webhooks",
+  "/vehiculos",
+  "/repuestos",
+  "/crm",
 ] as const;
 
-const ADMIN_UNAUTH_PATHS = ["/login", "/api/public", "/api/webhooks"] as const;
+const ADMIN_UNAUTH_PATHS = ["/login", "/api/public"] as const;
 
 export function isPublicPath(pathname: string) {
   if (pathname === "/" || pathname.startsWith("/_next")) {
@@ -171,7 +181,14 @@ export function isAdminPublicPath(pathname: string) {
 }
 
 export function safeNextPath(value: string | null | undefined) {
-  if (!value || !value.startsWith("/") || value.startsWith("//") || value.startsWith("/login")) {
+  if (
+    !value ||
+    !value.startsWith("/") ||
+    value.startsWith("//") ||
+    value.startsWith("/login") ||
+    value.includes("://") ||
+    value.includes("\\")
+  ) {
     return "/admin";
   }
 

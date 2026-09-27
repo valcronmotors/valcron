@@ -28,6 +28,9 @@ export function catalogYear(vehicle: PublicVehicle) {
 }
 
 export function catalogUsdPrice(vehicle: PublicVehicle) {
+  if (!vehicle.pricing?.priceVisible || vehicle.pricing.publicPriceMode === "contact") {
+    return 0;
+  }
   return Number(vehicle.pricing?.usdPrice ?? vehicle.precioVentaUsd ?? 0);
 }
 
@@ -102,4 +105,59 @@ export function monthlyPayment(principal: number, months: number, annualRate = 0
   }
   const monthlyRate = annualRate / 12;
   return (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months));
+}
+
+export type CatalogFilterState = {
+  listing: string;
+  marca: string;
+  modelo: string;
+  ano: string;
+  precioMin: string;
+  precioMax: string;
+  search: string;
+};
+
+export function catalogQueryString(filters: CatalogFilterState) {
+  const params = new URLSearchParams();
+  if (filters.search) params.set("q", filters.search);
+  if (filters.listing) params.set("listing", filters.listing);
+  if (filters.marca) params.set("marca", filters.marca);
+  if (filters.modelo) params.set("modelo", filters.modelo);
+  if (filters.ano) params.set("ano", filters.ano);
+  if (filters.precioMin) params.set("precioMin", filters.precioMin);
+  if (filters.precioMax) params.set("precioMax", filters.precioMax);
+  return params.toString();
+}
+
+export function filterCatalogVehicles(
+  vehicles: PublicVehicle[],
+  filters: CatalogFilterState,
+  sort = "recent",
+) {
+  const needle = filters.search.trim().toLowerCase();
+  const minUsd = Number(filters.precioMin);
+  const maxUsd = Number(filters.precioMax);
+
+  const rows = vehicles.filter((vehicle) => {
+    if (filters.listing === "dealer" && vehicle.listingKind !== "dealer") return false;
+    if (filters.listing === "auction" && vehicle.listingKind !== "auction") return false;
+    if (filters.marca && catalogMake(vehicle) !== filters.marca) return false;
+    if (filters.modelo && catalogModel(vehicle) !== filters.modelo) return false;
+    if (filters.ano && String(catalogYear(vehicle)) !== filters.ano) return false;
+    const usdPrice = catalogUsdPrice(vehicle);
+    if (Number.isFinite(minUsd) && minUsd > 0 && usdPrice < minUsd) return false;
+    if (Number.isFinite(maxUsd) && maxUsd > 0 && usdPrice > maxUsd) return false;
+    if (!needle) return true;
+    return [catalogMake(vehicle), catalogModel(vehicle), vehicle.trim ?? "", vehicle.vin ?? "", String(catalogYear(vehicle))]
+      .join(" ")
+      .toLowerCase()
+      .includes(needle);
+  });
+
+  return [...rows].sort((a, b) => {
+    if (sort === "price-asc") return catalogUsdPrice(a) - catalogUsdPrice(b);
+    if (sort === "price-desc") return catalogUsdPrice(b) - catalogUsdPrice(a);
+    if (sort === "year") return catalogYear(b) - catalogYear(a);
+    return 0;
+  });
 }

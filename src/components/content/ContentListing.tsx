@@ -18,7 +18,7 @@ const COPY: Record<
     kicker: "Blog",
     title: "Artículos para decidir con más contexto",
     subtitle:
-      "Explicaciones, comparaciones y actualizaciones sobre importación, subastas y compra de vehículos en República Dominicana.",
+      "Noticias, análisis y contexto para comprar un vehículo con más información.",
     empty: "Todavía no hay artículos publicados.",
     image: PAGE_HERO_IMAGES.servicios,
     imageAlt: PAGE_HERO_ALTS.servicios,
@@ -27,7 +27,7 @@ const COPY: Record<
     kicker: "Guías",
     title: "Recursos paso a paso para comprar e importar",
     subtitle:
-      "Guías evergreen: importación a República Dominicana, subastas de Estados Unidos, costos aproximados, VIN y revisión de usados.",
+      "Guías prácticas y permanentes: inventario, financiamiento, subastas e importación.",
     empty: "Todavía no hay guías publicadas.",
     image: PAGE_HERO_IMAGES.importacion,
     imageAlt: PAGE_HERO_ALTS.importacion,
@@ -55,7 +55,7 @@ export function ContentListing({ kind }: { kind: ContentKind }) {
           {featured ? (
             <Link
               href={contentPath(featured)}
-              className="mt-8 grid min-w-0 overflow-hidden rounded-[1.5rem] border border-[#ececea] bg-white lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]"
+              className="mt-8 grid min-w-0 overflow-hidden rounded-2xl border border-[#e6e2db] bg-white lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]"
             >
               <div className="relative aspect-[16/10] min-h-[13rem] lg:aspect-auto lg:min-h-[22rem]">
                 <EditorialImage
@@ -86,7 +86,7 @@ export function ContentListing({ kind }: { kind: ContentKind }) {
                 <Link
                   key={article.slug}
                   href={contentPath(article)}
-                  className="flex min-w-0 flex-col overflow-hidden rounded-[1.25rem] border border-[#ececea] bg-white transition hover:-translate-y-1 hover:border-[#C7A96B]/40"
+                  className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-[#e6e2db] bg-white transition hover:border-[#C7A96B]/40"
                 >
                   <div className="relative aspect-[16/10]">
                     <EditorialImage

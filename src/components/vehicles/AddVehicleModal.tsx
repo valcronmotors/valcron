@@ -12,7 +12,7 @@ import { Modal } from "@/components/ui/modal";
 import { VehicleFinancialSummary } from "@/components/vehicles/VehicleFinancialSummary";
 import { VehicleGallery } from "@/components/vehicles/VehicleGallery";
 import { COMPANY_NAMES } from "@/lib/companies";
-import type { VehicleRow } from "@/lib/inventory";
+import type { ErpVehicleRow as VehicleRow } from "@/lib/inventory";
 import type { AuctionListing } from "@/lib/auction";
 import { usableVin } from "@/lib/auction";
 import {
@@ -239,7 +239,7 @@ export function AddVehicleModal({
         return;
       }
       if (result.record) {
-        onCreated(result.record);
+        onCreated(result.record as VehicleRow);
       }
       handleClose();
     });

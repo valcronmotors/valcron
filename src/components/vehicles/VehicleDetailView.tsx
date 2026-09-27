@@ -9,7 +9,7 @@ import {
 import { VehicleFinancialSummary } from "@/components/vehicles/VehicleFinancialSummary";
 import { VehicleGallery } from "@/components/vehicles/VehicleGallery";
 import { VehicleStatusBadge } from "@/components/status-badges";
-import type { VehicleRow } from "@/lib/inventory";
+import type { ErpVehicleRow as VehicleRow } from "@/lib/inventory";
 import { formatDop, formatUsd } from "@/lib/money";
 import {
   DEFAULT_TASA_USD_DOP,

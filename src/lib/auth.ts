@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { isWebsiteAdminClaims } from "@/lib/auth-role";
 import { createClient } from "@/utils/supabase/server";
 
 export async function getAdminClaims() {
@@ -14,7 +15,7 @@ export async function getAdminClaims() {
 
 export async function requireAdmin() {
   const claims = await getAdminClaims();
-  if (!claims) {
+  if (!claims || !isWebsiteAdminClaims(claims)) {
     redirect("/login");
   }
 
@@ -23,19 +24,19 @@ export async function requireAdmin() {
 
 export async function getAdminProfile() {
   const claims = await requireAdmin();
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
-  const user = data.user;
-  const metadata = user?.user_metadata ?? {};
+  const metadata =
+    claims.user_metadata && typeof claims.user_metadata === "object"
+      ? (claims.user_metadata as Record<string, unknown>)
+      : {};
   const name =
     (typeof metadata.full_name === "string" && metadata.full_name.trim()) ||
     (typeof metadata.name === "string" && metadata.name.trim()) ||
-    user?.email ||
+    (typeof claims.email === "string" && claims.email) ||
     "Administrador";
 
   return {
-    id: user?.id ?? (typeof claims.sub === "string" ? claims.sub : ""),
-    email: user?.email ?? "",
+    id: typeof claims.sub === "string" ? claims.sub : "",
+    email: typeof claims.email === "string" ? claims.email : "",
     name,
   };
 }

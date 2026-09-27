@@ -1,5 +1,5 @@
 import { AdminDashboardView } from "@/components/admin/AdminDashboardView";
-import { getValcronVehicles } from "@/lib/admin-data";
+import { getAdminDashboardSnapshot } from "@/lib/admin-data";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -7,11 +7,16 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminPage() {
-  const { vehicles, error } = await getValcronVehicles();
+  const snapshot = await getAdminDashboardSnapshot();
 
   return (
     <div className="flex h-full min-h-full w-full flex-col">
-      <AdminDashboardView vehicles={vehicles} error={error} />
+      <AdminDashboardView
+        vehicles={snapshot.vehicles}
+        inquiries={snapshot.inquiries}
+        auctionCount={snapshot.auctionCount}
+        error={snapshot.error}
+      />
     </div>
   );
 }

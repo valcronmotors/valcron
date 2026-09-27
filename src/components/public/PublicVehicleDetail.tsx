@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { CurrencySwitch, useDisplayCurrency } from "@/components/public/CurrencyProvider";
 import { QuoteForm } from "@/components/public/QuoteForm";
 import { VehicleCard } from "@/components/public/VehicleCard";
-import { VehiclePhoto } from "@/components/shared/VehiclePhoto";
+import { VehicleGallery } from "@/components/public/VehicleGallery";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import {
   buildVehicleWhatsAppUrl,
@@ -15,8 +14,12 @@ import {
   vehicleImageAlt,
   visibleVehicleSpecs,
 } from "@/lib/vehicles/vehicle-formatters";
-import { publicListingBadge, sourceLabel } from "@/lib/vehicles/vehicle-status";
-import { SITE, whatsappHref } from "@/lib/site";
+import { publicListingBadge, publicVehicleInquiryLabel } from "@/lib/vehicles/vehicle-status";
+import {
+  AUCTION_QUOTE_PREFILL,
+  AUCTION_SERVICE_COPY,
+  auctionPublicPriceDisclaimer,
+} from "@/lib/public-price-mode";
 import type { PublicVehicle } from "@/types/vehicle";
 
 export function PublicVehicleDetail({
@@ -27,196 +30,116 @@ export function PublicVehicleDetail({
   similar?: PublicVehicle[];
 }) {
   const { currency } = useDisplayCurrency();
-  const [photoIndex, setPhotoIndex] = useState(0);
   const photos = vehicle.images.length
     ? vehicle.images.map((image, index) => ({
         url: image.url,
         alt: image.alt || vehicleImageAlt(vehicle, index),
       }))
     : vehicle.fotosUrls.map((url, index) => ({ url, alt: vehicleImageAlt(vehicle, index) }));
-  const safeIndex = photos.length ? Math.min(photoIndex, photos.length - 1) : 0;
-  const cover = photos[safeIndex];
   const title = vehicleDisplayTitle(vehicle);
   const badge = publicListingBadge(vehicle);
   const whatsapp = buildVehicleWhatsAppUrl(vehicle);
   const specs = visibleVehicleSpecs(vehicle);
   const price = displayVehiclePrice(vehicle, currency);
-  const platform =
-    vehicle.source === "copart" || vehicle.source === "iaai" || vehicle.source === "manheim"
-      ? sourceLabel(vehicle.source)
-      : null;
   const features = (vehicle.features ?? []).map((item) => item.trim()).filter(Boolean);
   const description = vehicle.description?.trim() || null;
   const sold = vehicle.availability === "sold";
   const year = vehicle.year || vehicle.ano;
   const make = vehicle.make || vehicle.marca;
   const model = vehicle.model || vehicle.modelo;
-  const location = vehicle.location || vehicle.ubicacion || null;
   const mileage = formatMileage(vehicle.mileage, vehicle.mileageUnit);
   const financeAmount = Math.round(vehicle.pricing.usdPrice || vehicle.precioVentaUsd || 0);
   const dealer = vehicle.listingKind === "dealer";
+  const auctionListing = vehicle.listingKind === "auction" || vehicle.availability === "auction";
+  const priceMode = vehicle.pricing.publicPriceMode ?? (auctionListing ? "contact" : "fixed");
+  const priceNote = auctionListing ? auctionPublicPriceDisclaimer(priceMode) : null;
   const canFinance = !sold && financeAmount > 0 && dealer;
-  const facts = [
-    ...new Set(
-      [
-        year ? String(year) : null,
-        vehicle.trim || null,
-        mileage,
-        vehicle.condition || null,
-        location,
-        dealer ? null : platform,
-      ].filter(Boolean),
-    ),
-  ];
+  const primaryCta = publicVehicleInquiryLabel(vehicle);
+  const facts = [mileage, vehicle.transmission, vehicle.drivetrain, vehicle.fuelType, vehicle.engine]
+    .map((value) => (typeof value === "string" ? value.trim() : value))
+    .filter(Boolean);
 
   return (
-    <article className="section-light bg-[#faf9f6] text-[#111]">
+    <article className="section-light bg-[#f7f5f1] pb-28 text-[#141414] lg:pb-16">
       <div className="mx-auto w-full max-w-7xl px-5 py-10 lg:px-8 lg:py-16">
-        <nav aria-label="Migas de pan" className="text-sm text-[#737373]">
+        <nav aria-label="Migas de pan" className="text-sm text-[#6b6b6b]">
           <ol className="flex min-w-0 flex-wrap items-center gap-2">
             <li>
-              <Link href="/" className="hover:text-[#111]">
+              <Link href="/" className="hover:text-[#141414]">
                 Inicio
               </Link>
             </li>
             <li aria-hidden>/</li>
             <li>
-              <Link href="/inventario" className="hover:text-[#111]">
+              <Link href="/inventario" className="hover:text-[#141414]">
                 Inventario
               </Link>
             </li>
             <li aria-hidden>/</li>
-            <li className="min-w-0 break-words text-[#111]">{title}</li>
+            <li className="min-w-0 break-words text-[#141414]">{title}</li>
           </ol>
         </nav>
 
         <div className="mt-8 grid min-w-0 gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-          <div className="min-w-0">
-            <div className="relative aspect-[16/10] min-h-[13rem] overflow-hidden rounded-2xl border border-[#ececea] bg-[#111]">
-              <VehiclePhoto
-                src={cover?.url}
-                alt={cover?.alt ?? title}
-                priority
-                sizes="(min-width: 1024px) 55vw, 100vw"
-                className="object-cover"
-              />
-            </div>
-            {photos.length > 1 ? (
-              <div className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-6">
-                {photos.map((photo, index) => (
-                  <button
-                    key={`${photo.url}-${index}`}
-                    type="button"
-                    onClick={() => setPhotoIndex(index)}
-                    className={`relative aspect-[4/3] min-h-[4.5rem] cursor-pointer overflow-hidden rounded-lg border ${
-                      safeIndex === index ? "border-[#111]" : "border-[#ececea]"
-                    }`}
-                  >
-                    <VehiclePhoto src={photo.url} alt="" className="object-cover" sizes="120px" />
-                  </button>
-                ))}
-              </div>
-            ) : null}
-          </div>
+          <VehicleGallery photos={photos} title={title} />
 
           <div className="min-w-0">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="kicker">{badge.label}</p>
+              <p className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${badge.className}`}>
+                {badge.label}
+              </p>
               <CurrencySwitch compact tone="light" />
             </div>
-            <p className="mt-3 text-sm font-medium uppercase tracking-[0.16em] text-[#737373]">{year}</p>
-            <h1 className="mt-1 break-words font-display text-4xl font-bold tracking-tight text-[#111]">
-              {make} {model}
+            <h1 className="mt-4 break-words font-display text-3xl font-bold tracking-tight text-[#141414] sm:text-4xl">
+              {year} {make} {model}
             </h1>
-            {facts.length ? (
-              <p className="mt-3 text-sm leading-relaxed text-[#525252]">{facts.join(" · ")}</p>
-            ) : null}
+            {vehicle.trim ? <p className="mt-2 text-base text-[#5c5c5c]">{vehicle.trim}</p> : null}
+            {facts.length ? <p className="mt-3 text-sm leading-relaxed text-[#5c5c5c]">{facts.join(" · ")}</p> : null}
 
             {sold ? (
-              <p className="mt-6 rounded-2xl border border-[#ececea] bg-white px-4 py-3 text-sm text-[#525252]">
+              <p className="mt-6 rounded-2xl border border-[#e6e2db] bg-white px-4 py-3 text-sm text-[#5c5c5c]">
                 Esta unidad figura como vendida. Conservamos la ficha para consulta. Si buscas algo similar,
                 revisa el inventario o escríbenos por WhatsApp.
               </p>
             ) : null}
 
-            <div className="mt-8 border-t border-[#ececea] pt-4">
-              <p className="text-[11px] uppercase tracking-[0.16em] text-[#737373]">{price.label}</p>
-              <p className="mt-1 font-display text-3xl text-[#111]">{price.primary}</p>
-              {price.secondary ? <p className="mt-1 text-sm text-[#737373]">{price.secondary}</p> : null}
+            <div className="mt-8 border-t border-[#e6e2db] pt-4">
+              <p className="text-[11px] uppercase tracking-[0.16em] text-[#6b6b6b]">{price.label}</p>
+              <p className="mt-1 font-display text-3xl text-[#141414]">{price.primary}</p>
+              {price.secondary ? <p className="mt-1 text-sm text-[#6b6b6b]">{price.secondary}</p> : null}
+              {priceNote ? <p className="mt-3 max-w-md text-sm leading-relaxed text-[#5c5c5c]">{priceNote}</p> : null}
+              {auctionListing ? (
+                <p className="mt-3 max-w-md text-sm leading-relaxed text-[#5c5c5c]">{AUCTION_SERVICE_COPY}</p>
+              ) : null}
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-8 hidden flex-wrap gap-3 lg:flex">
               {!sold ? (
-                <a href={whatsapp} target="_blank" rel="noreferrer" className="btn-whatsapp">
-                  <WhatsAppIcon className="h-4 w-4" />
-                  Consultar este vehículo
+                <a href="#consulta" className="btn-primary">
+                  {primaryCta}
                 </a>
-              ) : (
-                <a href={whatsapp} target="_blank" rel="noreferrer" className="btn-whatsapp">
-                  <WhatsAppIcon className="h-4 w-4" />
-                  Buscar uno similar
-                </a>
-              )}
+              ) : null}
+              <a href={whatsapp} target="_blank" rel="noreferrer" className="btn-whatsapp">
+                <WhatsAppIcon className="h-4 w-4" />
+                WhatsApp
+              </a>
               {canFinance ? (
-                <Link
-                  href={`/financiamiento?monto=${financeAmount}`}
-                  className="inline-flex h-11 items-center justify-center rounded-[0.9rem] border border-[#111] px-5 text-sm font-semibold text-[#111] hover:bg-[#111] hover:text-white"
-                >
+                <Link href={`/financiamiento?monto=${financeAmount}`} className="btn-secondary">
                   Financiamiento
                 </Link>
               ) : null}
-              <Link
-                href="/inventario"
-                className="inline-flex h-11 items-center justify-center rounded-[0.9rem] px-5 text-sm font-semibold text-[#525252] hover:text-[#111]"
-              >
-                Volver al inventario
-              </Link>
             </div>
-
-            {dealer && !sold ? (
-              <ul className="mt-6 grid gap-2 text-sm text-[#525252]">
-                <li>
-                  <Link href={`/financiamiento?monto=${Math.max(financeAmount, 8000)}`} className="hover:text-[#111] hover:underline">
-                    Explora escenarios de financiamiento
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href={whatsappHref(
-                      `Hola, quiero orientación sobre seguro o cobertura para el ${title} que vi en ${SITE.shortName}.`,
-                    )}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-[#111] hover:underline"
-                  >
-                    Consulta opciones de cobertura
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href={whatsappHref(
-                      `Hola, quiero consultar opciones de garantía o protección para el ${title}, si es un vehículo elegible.`,
-                    )}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-[#111] hover:underline"
-                  >
-                    Pregunta por opciones de garantía o protección para vehículos elegibles
-                  </a>
-                </li>
-              </ul>
-            ) : null}
           </div>
         </div>
 
         {specs.length ? (
           <section className="mt-14">
-            <h2 className="font-display text-2xl font-semibold text-[#111]">Ficha del vehículo</h2>
+            <h2 className="font-display text-2xl font-semibold text-[#141414]">Ficha del vehículo</h2>
             <dl className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {specs.map((item) => (
-                <div key={item.label} className="rounded-2xl border border-[#ececea] bg-white p-4">
-                  <dt className="text-[11px] uppercase tracking-[0.16em] text-[#737373]">{item.label}</dt>
-                  <dd className="mt-1 break-words text-sm text-[#111]">{item.value}</dd>
+                <div key={item.label} className="rounded-2xl border border-[#e6e2db] bg-white p-4">
+                  <dt className="text-[11px] uppercase tracking-[0.16em] text-[#6b6b6b]">{item.label}</dt>
+                  <dd className="mt-1 break-words text-sm text-[#141414]">{item.value}</dd>
                 </div>
               ))}
             </dl>
@@ -225,15 +148,15 @@ export function PublicVehicleDetail({
 
         {description ? (
           <section className="mt-12 max-w-3xl">
-            <h2 className="font-display text-2xl font-semibold text-[#111]">Descripción</h2>
-            <p className="mt-4 text-sm leading-relaxed text-[#404040]">{description}</p>
+            <h2 className="font-display text-2xl font-semibold text-[#141414]">Descripción</h2>
+            <p className="mt-4 text-sm leading-relaxed text-[#3f3f3f]">{description}</p>
           </section>
         ) : null}
 
         {features.length ? (
           <section className="mt-12 max-w-3xl">
-            <h2 className="font-display text-2xl font-semibold text-[#111]">Características</h2>
-            <ul className="mt-4 grid gap-2 text-sm text-[#404040]">
+            <h2 className="font-display text-2xl font-semibold text-[#141414]">Características</h2>
+            <ul className="mt-4 grid gap-2 text-sm text-[#3f3f3f]">
               {features.map((feature) => (
                 <li key={feature}>{feature}</li>
               ))}
@@ -242,25 +165,26 @@ export function PublicVehicleDetail({
         ) : null}
 
         {!sold ? (
-          <section className="mt-14 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+          <section id="consulta" className="mt-14 scroll-mt-28 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
             <div className="min-w-0">
-              <h2 className="font-display text-2xl font-semibold text-[#111]">Consulta esta unidad</h2>
-              <p className="mt-3 max-w-md text-sm leading-relaxed text-[#525252]">
+              <h2 className="font-display text-2xl font-semibold text-[#141414]">{primaryCta}</h2>
+              <p className="mt-3 max-w-md text-sm leading-relaxed text-[#5c5c5c]">
                 Déjanos tus datos y un asesor te contacta sobre este {title}. También puedes escribirnos
                 por WhatsApp.
               </p>
             </div>
             <QuoteForm
-              submitLabel="Consultar este vehículo"
+              submitLabel={primaryCta}
               vehicleId={vehicle.id}
               defaultVehicleInterest={title}
+              defaultMessage={auctionListing ? AUCTION_QUOTE_PREFILL : undefined}
             />
           </section>
         ) : null}
 
         {similar.length ? (
           <section className="mt-16">
-            <h2 className="font-display text-2xl font-semibold text-[#111]">Vehículos similares</h2>
+            <h2 className="font-display text-2xl font-semibold text-[#141414]">Vehículos similares</h2>
             <div className="mt-6 grid min-w-0 gap-6 sm:grid-cols-2 xl:grid-cols-4">
               {similar.map((item) => (
                 <VehicleCard key={item.id} vehicle={item} tone="light" />
@@ -269,6 +193,23 @@ export function PublicVehicleDetail({
           </section>
         ) : null}
       </div>
+
+      {!sold ? (
+        <div
+          data-sticky-cta
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-[#e6e2db] bg-white/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm lg:hidden"
+        >
+          <div className="mx-auto grid max-w-7xl grid-cols-2 gap-2">
+            <a href={whatsapp} target="_blank" rel="noreferrer" className="btn-whatsapp h-11">
+              <WhatsAppIcon className="h-4 w-4" />
+              WhatsApp
+            </a>
+            <a href="#consulta" className="btn-primary h-11">
+              {primaryCta}
+            </a>
+          </div>
+        </div>
+      ) : null}
     </article>
   );
 }

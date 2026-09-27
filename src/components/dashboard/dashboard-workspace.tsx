@@ -18,7 +18,7 @@ import {
   type Company,
   type CompanySlug,
 } from "@/lib/companies";
-import type { PartRow, VehicleRow } from "@/lib/inventory";
+import type { ErpVehicleRow as VehicleRow, PartRow } from "@/lib/inventory";
 import { filterParts, filterVehicles } from "@/lib/inventory-filters";
 import type { VehicleState } from "@/lib/vehicle-costs";
 

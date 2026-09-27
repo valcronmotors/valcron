@@ -6,6 +6,7 @@ import { FooterSocialIcons } from "@/components/shared/SocialLinks";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import {
   FOOTER_COMPANY,
+  FOOTER_CONTACT,
   FOOTER_INVENTORY,
   FOOTER_RESOURCES,
   FOOTER_SERVICES,
@@ -20,7 +21,7 @@ const headingClass =
 const linkClass =
   "text-[#D4D4D4] transition duration-200 hover:translate-x-0.5 hover:text-white hover:underline motion-reduce:transform-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
 
-export function Footer({ showCompactMap = true }: { showCompactMap?: boolean }) {
+export function Footer({ showCompactMap = false }: { showCompactMap?: boolean }) {
   const year = new Date().getFullYear();
 
   return (
@@ -51,7 +52,7 @@ export function Footer({ showCompactMap = true }: { showCompactMap?: boolean }) 
           <FooterColumn title="Servicios" items={FOOTER_SERVICES} />
           <FooterColumn title="Recursos" items={FOOTER_RESOURCES} />
           <FooterColumn title="Empresa" items={FOOTER_COMPANY} />
-          <FooterColumn title="Legal" items={LEGAL_NAV} />
+          <FooterColumn title="Contacto" items={FOOTER_CONTACT} />
         </nav>
 
         <section
@@ -124,10 +125,17 @@ export function Footer({ showCompactMap = true }: { showCompactMap?: boolean }) 
           <p>
             © {year} {SITE.legalName}. Todos los derechos reservados.
           </p>
-          <p className="inline-flex items-center gap-2 uppercase tracking-[0.16em] text-[#D4D4D4]">
-            <DominicanFlag />
-            República Dominicana
-          </p>
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            {LEGAL_NAV.map((item) => (
+              <Link key={item.href} href={item.href} className="hover:text-white hover:underline">
+                {item.label}
+              </Link>
+            ))}
+            <p className="inline-flex items-center gap-2 uppercase tracking-[0.16em] text-[#D4D4D4]">
+              <DominicanFlag />
+              República Dominicana
+            </p>
+          </div>
         </div>
       </div>
     </footer>
@@ -147,9 +155,15 @@ function FooterColumn({
       <ul className="grid gap-3 text-sm">
         {items.map((item) => (
           <li key={`${item.href}-${item.label}`}>
-            <Link href={item.href} className={linkClass}>
-              {item.label}
-            </Link>
+            {item.href.startsWith("http") ? (
+              <a href={item.href} className={linkClass} target="_blank" rel="noopener noreferrer">
+                {item.label}
+              </a>
+            ) : (
+              <Link href={item.href} className={linkClass}>
+                {item.label}
+              </Link>
+            )}
           </li>
         ))}
       </ul>

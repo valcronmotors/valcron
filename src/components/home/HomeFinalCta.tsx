@@ -13,7 +13,7 @@ export function HomeFinalCta() {
       />
       <div className="absolute inset-0 bg-black/62" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/20" />
-      <div className="relative mx-auto flex min-h-[64vh] max-w-7xl items-end px-5 py-24 lg:px-8">
+      <div className="hero-on-dark relative mx-auto flex min-h-[64vh] max-w-7xl items-end px-5 py-24 lg:px-8">
         <div className="max-w-2xl">
           <div className="mb-5 h-px w-16 bg-[#C7A96B]" />
           <h2 className="text-balance font-display text-4xl font-bold tracking-tight text-white sm:text-6xl">
@@ -28,7 +28,7 @@ export function HomeFinalCta() {
               Ver inventario
             </Link>
             <Link href="/solicitar-vehiculo" className="btn-secondary">
-              Buscar vehículo
+              Solicitar vehículo
             </Link>
           </div>
         </div>

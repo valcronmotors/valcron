@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import {
@@ -18,12 +17,10 @@ export function AdminShell({
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const pathname = usePathname();
-  const compact = pathname.startsWith("/admin/mensajeria");
 
   return (
-    <div className="flex h-screen w-full min-h-screen overflow-hidden bg-[#F8F9FA] text-[#0B0C10]">
-      <div className="hidden h-screen shrink-0 lg:block">
+    <div className="admin-console flex h-screen w-full min-h-screen overflow-hidden bg-[var(--admin-bg)] text-[var(--admin-text)]">
+      <div className={`hidden h-screen shrink-0 lg:block ${collapsed ? "w-[72px]" : "w-[264px]"}`}>
         <AdminSidebar
           user={user}
           collapsed={collapsed}
@@ -36,14 +33,14 @@ export function AdminShell({
           <button
             type="button"
             aria-label="Cerrar menú"
-            className="absolute inset-0 bg-[#0B0C10]/40"
+            className="absolute inset-0 bg-[var(--admin-nav)]/50"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="relative flex h-full w-64 flex-col bg-white shadow-2xl">
+          <div className="relative flex h-full w-[264px] flex-col bg-[var(--admin-nav)] shadow-2xl">
             <button
               type="button"
               onClick={() => setMobileOpen(false)}
-              className="absolute right-3 top-3 z-10 inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-50"
+              className="absolute right-3 top-3 z-10 inline-flex h-10 w-10 items-center justify-center rounded-lg text-[var(--admin-nav-muted)] transition hover:bg-white/5 hover:text-white"
               aria-label="Cerrar"
             >
               <X className="h-4 w-4" />
@@ -59,15 +56,9 @@ export function AdminShell({
       ) : null}
 
       <div className="flex h-screen min-h-0 min-w-0 flex-1 flex-col">
-        <AdminHeader onMenu={() => setMobileOpen(true)} />
-        <main
-          className={
-            compact
-              ? "h-full min-h-0 w-full flex-1 overflow-hidden"
-              : "h-full min-h-0 w-full flex-1 overflow-y-auto p-4 md:p-6 lg:p-8"
-          }
-        >
-          <div className="h-full min-h-full w-full">{children}</div>
+        <AdminHeader user={user} onMenu={() => setMobileOpen(true)} />
+        <main className="h-full min-h-0 w-full flex-1 overflow-y-auto px-4 py-5 md:px-6 md:py-6 lg:px-8 lg:py-7">
+          <div className="mx-auto h-full min-h-full w-full max-w-[1280px]">{children}</div>
         </main>
       </div>
     </div>

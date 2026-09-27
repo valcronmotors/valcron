@@ -23,18 +23,21 @@ export function QuoteForm({
   showSubject = false,
   vehicleId,
   defaultVehicleInterest,
+  defaultMessage,
 }: {
   submitLabel?: string;
   showVehicleInterest?: boolean;
   showSubject?: boolean;
   vehicleId?: string;
   defaultVehicleInterest?: string;
+  defaultMessage?: string;
 }) {
   const [pending, setPending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(formData: FormData) {
+    if (pending || sent) return;
     setPending(true);
     setError(null);
     try {
@@ -45,8 +48,8 @@ export function QuoteForm({
         setError("El nombre es obligatorio.");
         return;
       }
-      if (!telefono && !email) {
-        setError("Indica un teléfono o un correo para contactarte.");
+      if (!telefono) {
+        setError("El teléfono es obligatorio.");
         return;
       }
 
@@ -71,6 +74,7 @@ export function QuoteForm({
           vin: formData.get("vin"),
           vehiculoId: vehicleId,
           mensaje,
+          empresa: formData.get("empresa"),
         }),
       });
       const payload = (await response.json()) as { error?: string };
@@ -87,31 +91,39 @@ export function QuoteForm({
   }
 
   return (
-    <form action={handleSubmit} className="grid min-w-0 gap-4 rounded-[1.35rem] border border-[#ececea] bg-white p-6 shadow-[0_18px_40px_rgba(0,0,0,0.05)]">
+    <form action={handleSubmit} className="relative grid min-w-0 gap-4 rounded-2xl border border-[#e6e2db] bg-white p-6 shadow-[0_10px_28px_rgba(20,20,20,0.06)]">
       {error ? (
-        <p role="alert" className="rounded-lg border border-[#ececea] px-4 py-3 text-sm text-[#525252]">
+        <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
           {error}
         </p>
       ) : null}
       {sent ? (
-        <p role="status" className="rounded-lg border border-[#C7A96B]/40 px-4 py-3 text-sm text-[#111]">
-          Recibimos tu solicitud. Un asesor de {SITE.shortName} te contactará en breve.
+        <p role="status" className="rounded-lg border border-[#e6e2db] bg-[#f7f5f1] px-4 py-3 text-sm leading-relaxed text-[#141414]">
+          Recibimos tu mensaje. Un asesor de {SITE.shortName} te contactará pronto para continuar.
         </p>
       ) : (
         <>
+          <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+            <label>
+              Empresa
+              <input name="empresa" tabIndex={-1} autoComplete="off" />
+            </label>
+          </div>
           <div className="grid min-w-0 gap-4 md:grid-cols-2">
             <label className="block min-w-0 text-sm text-[#525252]">
               Nombre
-              <input name="nombre" required autoComplete="name" placeholder="Tu nombre" className={fieldClass} />
+              <input name="nombre" required maxLength={120} autoComplete="name" placeholder="Tu nombre" className={fieldClass} />
             </label>
             <label className="block min-w-0 text-sm text-[#525252]">
               Teléfono
               <input
                 name="telefono"
                 type="tel"
+                required
                 autoComplete="tel"
                 inputMode="tel"
-                placeholder={SITE.officePhoneDisplay}
+                maxLength={40}
+                placeholder={SITE.whatsappDisplay}
                 className={fieldClass}
               />
             </label>
@@ -131,16 +143,16 @@ export function QuoteForm({
               </label>
             ) : null}
             <label className="block min-w-0 text-sm text-[#525252] md:col-span-2">
-              Correo
+              Correo (opcional)
               <input
                 name="email"
                 type="email"
                 autoComplete="email"
                 placeholder="Tu correo electrónico"
+                maxLength={160}
                 className={fieldClass}
               />
             </label>
-            <p className="text-xs text-[#737373] md:col-span-2">Indica al menos un teléfono o un correo.</p>
             {showVehicleInterest || defaultVehicleInterest ? (
               <label className="block min-w-0 text-sm text-[#525252] md:col-span-2">
                 Vehículo de interés
@@ -162,11 +174,13 @@ export function QuoteForm({
             Mensaje
             <textarea
               name="mensaje"
+              maxLength={4000}
+              defaultValue={defaultMessage}
               placeholder="Cuéntanos marca, modelo, año o el tipo de proceso que te interesa"
               className="field-input mt-2 h-auto min-h-24 py-2"
             />
           </label>
-          <button type="submit" disabled={pending} className="btn-primary disabled:opacity-60">
+          <button type="submit" disabled={pending || sent} className="btn-primary disabled:opacity-60">
             {pending ? "Enviando..." : submitLabel}
           </button>
         </>

@@ -1,6 +1,11 @@
-import { COMPANIES } from "@/lib/companies";
-import { getEmpresaIdByCompany } from "@/lib/empresas";
-import { PUBLIC_VEHICLE_SELECT, normalizeVehicle } from "@/lib/vehicles/normalizeVehicle";
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
+import {
+  PUBLIC_COVER_PHOTO_SELECT,
+  PUBLIC_VEHICLE_LIST_SELECT,
+  PUBLIC_VEHICLE_SELECT,
+  normalizeVehicle,
+} from "@/lib/vehicles/normalizeVehicle";
 import {
   availabilityCounts,
   DEFAULT_PAGE_SIZE,
@@ -10,62 +15,99 @@ import {
   similarVehicles,
   sortVehicles,
 } from "@/lib/vehicles/filters";
-import { isPublicCatalogListing, isPublicDetailListing } from "@/lib/vehicles/vehicle-status";
-import { isVehicleUuid, matchesVehicleSlug } from "@/lib/vehicles/vehicle-slugs";
-import type { PublicVehicle, PublicVehicleRow, VehicleListResult, VehicleQuery } from "@/types/vehicle";
-import { createClient } from "@/utils/supabase/server";
+import { PUBLIC_INVENTORY_CACHE_TAG, PUBLIC_INVENTORY_REVALIDATE_SECONDS } from "@/lib/public-cache";
+import { isMissingPublicPriceModeColumn, vehicleSelectWithoutPublicPriceMode } from "@/lib/public-price-mode";
+import { isPublicCatalogListing, isPublicDetailListing } from "@/lib/website-schema";
+import { buildVehicleSlug, isVehicleUuid, matchesVehicleSlug } from "@/lib/vehicles/vehicle-slugs";
+import type { PublicVehicle, VehicleListResult, VehicleQuery } from "@/types/vehicle";
+import type { VehiclePhotoRow, VehicleRow } from "@/lib/website-schema";
+import { createAnonClient } from "@/utils/supabase/anon";
 
-async function valcronEmpresaId() {
-  const valcron = COMPANIES.find((company) => company.inventario === "vehiculos");
-  if (!valcron) {
-    return { id: null as string | null, error: "No se encontró Valcron Motors Group SRL." };
-  }
-  const empresa = await getEmpresaIdByCompany(valcron);
-  if (!empresa.id) {
-    return { id: null as string | null, error: empresa.error ?? "No se encontró la empresa pública." };
-  }
-  return { id: empresa.id, error: null as string | null };
+const CATALOG_STATUSES = ["available", "reserved"] as const;
+const DETAIL_STATUSES = ["available", "reserved", "sold"] as const;
+
+function asVehicleRows(data: unknown) {
+  return (data ?? []) as unknown as VehicleRow[];
 }
 
-async function loadNormalized(options?: { includeSold?: boolean }): Promise<{
-  data: PublicVehicle[];
-  error: string | null;
-}> {
-  const empresa = await valcronEmpresaId();
-  if (!empresa.id) {
-    return { data: [], error: empresa.error };
+async function attachCoverPhotos(rows: VehicleRow[]): Promise<VehicleRow[]> {
+  if (rows.length === 0) {
+    return rows;
   }
 
-  const states = options?.includeSold
-    ? ["Disponible", "En Subasta", "En Tránsito", "Vendido"]
-    : ["Disponible", "En Subasta", "En Tránsito"];
-
-  const supabase = await createClient();
+  const supabase = createAnonClient();
   const { data, error } = await supabase
-    .from("vehiculos")
-    .select(PUBLIC_VEHICLE_SELECT)
-    .eq("empresa_id", empresa.id)
-    .in("estado", states)
-    .order("ano", { ascending: false });
+    .from("vehicle_photos")
+    .select(PUBLIC_COVER_PHOTO_SELECT)
+    .in(
+      "vehicle_id",
+      rows.map((row) => row.id),
+    )
+    .eq("is_cover", true);
 
   if (error) {
+    console.error("public cover photo load failed", error.message);
+    return rows.map((row) => ({ ...row, vehicle_photos: row.vehicle_photos ?? [] }));
+  }
+
+  const covers = new Map<string, VehiclePhotoRow[]>();
+  for (const photo of (data ?? []) as VehiclePhotoRow[]) {
+    const current = covers.get(photo.vehicle_id) ?? [];
+    current.push(photo);
+    covers.set(photo.vehicle_id, current);
+  }
+
+  return rows.map((row) => ({
+    ...row,
+    vehicle_photos: covers.get(row.id) ?? [],
+  }));
+}
+
+async function loadCatalogRows(): Promise<{ data: PublicVehicle[]; error: string | null }> {
+  const supabase = createAnonClient();
+  let { data, error } = await supabase
+    .from("vehicles")
+    .select(PUBLIC_VEHICLE_LIST_SELECT)
+    .eq("published", true)
+    .in("status", [...CATALOG_STATUSES])
+    .order("updated_at", { ascending: false });
+  if (error && isMissingPublicPriceModeColumn(error)) {
+    ({ data, error } = await supabase
+      .from("vehicles")
+      .select(vehicleSelectWithoutPublicPriceMode(PUBLIC_VEHICLE_LIST_SELECT))
+      .eq("published", true)
+      .in("status", [...CATALOG_STATUSES])
+      .order("updated_at", { ascending: false }));
+  }
+
+  if (error) {
+    console.error("public inventory load failed", error.message);
     return { data: [], error: "No pudimos cargar el inventario en este momento." };
   }
 
-  const rows = (data ?? []) as PublicVehicleRow[];
-  const vehicles = rows
-    .filter((row) => (options?.includeSold ? isPublicDetailListing(row) : isPublicCatalogListing(row)))
-    .map(normalizeVehicle);
-
-  return { data: vehicles, error: null };
+  const withCovers = await attachCoverPhotos(asVehicleRows(data));
+  return {
+    data: withCovers.filter(isPublicCatalogListing).map(normalizeVehicle),
+    error: null,
+  };
 }
+
+const getCachedCatalogVehicles = unstable_cache(
+  loadCatalogRows,
+  ["public-catalog-vehicles"],
+  { revalidate: PUBLIC_INVENTORY_REVALIDATE_SECONDS, tags: [PUBLIC_INVENTORY_CACHE_TAG] },
+);
+
+export const getAllPublicVehicles = cache(async () => getCachedCatalogVehicles());
 
 function emptyFacets(): VehicleListResult["facets"] {
   return { makes: [], models: [], years: [], sources: [], availability: {} };
 }
 
 export async function getPublicVehicles(query: VehicleQuery = {}): Promise<VehicleListResult> {
-  const loaded = await loadNormalized({ includeSold: query.includeSold });
+  const loaded = query.includeSold
+    ? await loadDetailIndex()
+    : await getAllPublicVehicles();
   if (loaded.error) {
     return {
       data: [],
@@ -105,10 +147,59 @@ export async function getPublicVehicles(query: VehicleQuery = {}): Promise<Vehic
 }
 
 export async function getFeaturedVehicles(limit = 4) {
-  const loaded = await loadNormalized();
+  const loaded = await getAllPublicVehicles();
   return {
     data: selectFeaturedVehicles(loaded.data, limit),
     error: loaded.error,
+  };
+}
+
+async function loadVehicleRowById(id: string) {
+  const supabase = createAnonClient();
+  let { data, error } = await supabase
+    .from("vehicles")
+    .select(PUBLIC_VEHICLE_SELECT)
+    .eq("id", id)
+    .maybeSingle();
+  if (error && isMissingPublicPriceModeColumn(error)) {
+    ({ data, error } = await supabase
+      .from("vehicles")
+      .select(vehicleSelectWithoutPublicPriceMode(PUBLIC_VEHICLE_SELECT))
+      .eq("id", id)
+      .maybeSingle());
+  }
+
+  if (error) {
+    console.error("public vehicle detail load failed", error.message);
+    return { data: null, error: "No pudimos cargar el inventario en este momento." };
+  }
+
+  const row = (data ?? null) as unknown as VehicleRow | null;
+  if (!row || !isPublicDetailListing(row)) {
+    return { data: null, error: null };
+  }
+
+  return { data: normalizeVehicle(row), error: null };
+}
+
+async function loadDetailIndex(): Promise<{ data: PublicVehicle[]; error: string | null }> {
+  const supabase = createAnonClient();
+  const { data, error } = await supabase
+    .from("vehicles")
+    .select("id, year, make, model, trim, status, published, published_at, updated_at")
+    .eq("published", true)
+    .in("status", [...DETAIL_STATUSES]);
+
+  if (error) {
+    console.error("public vehicle index load failed", error.message);
+    return { data: [], error: "No pudimos cargar el inventario en este momento." };
+  }
+
+  return {
+    data: asVehicleRows(data)
+      .filter(isPublicDetailListing)
+      .map(normalizeVehicle),
+    error: null,
   };
 }
 
@@ -116,27 +207,96 @@ export async function getPublicVehicleBySlug(slug: string): Promise<{
   data: PublicVehicle | null;
   error: string | null;
 }> {
-  const loaded = await loadNormalized({ includeSold: true });
-  if (loaded.error) {
-    return { data: null, error: loaded.error };
-  }
   const value = slug.trim();
-  const match = loaded.data.find((vehicle) =>
-    isVehicleUuid(value) ? vehicle.id === value : vehicle.slug === value || matchesVehicleSlug(value, vehicle.id),
+  if (!value) {
+    return { data: null, error: null };
+  }
+
+  if (isVehicleUuid(value)) {
+    return loadVehicleRowById(value);
+  }
+
+  const index = await loadDetailIndex();
+  if (index.error) {
+    return { data: null, error: index.error };
+  }
+
+  const match = index.data.find(
+    (vehicle) => vehicle.slug === value || matchesVehicleSlug(value, vehicle.id),
   );
-  return { data: match ?? null, error: null };
+  if (!match) {
+    return { data: null, error: null };
+  }
+
+  return loadVehicleRowById(match.id);
 }
 
 export async function getSimilarVehicles(vehicle: PublicVehicle, limit = 4) {
-  const loaded = await loadNormalized();
-  if (loaded.error) {
-    return { data: [], error: loaded.error };
+  const supabase = createAnonClient();
+  let { data, error } = await supabase
+    .from("vehicles")
+    .select(PUBLIC_VEHICLE_LIST_SELECT)
+    .eq("published", true)
+    .in("status", [...CATALOG_STATUSES])
+    .neq("id", vehicle.id)
+    .order("updated_at", { ascending: false })
+    .limit(24);
+  if (error && isMissingPublicPriceModeColumn(error)) {
+    ({ data, error } = await supabase
+      .from("vehicles")
+      .select(vehicleSelectWithoutPublicPriceMode(PUBLIC_VEHICLE_LIST_SELECT))
+      .eq("published", true)
+      .in("status", [...CATALOG_STATUSES])
+      .neq("id", vehicle.id)
+      .order("updated_at", { ascending: false })
+      .limit(24));
   }
-  return { data: similarVehicles(vehicle, loaded.data, limit), error: null };
+
+  if (error) {
+    console.error("public similar vehicles load failed", error.message);
+    return { data: [], error: "No pudimos cargar el inventario en este momento." };
+  }
+
+  const withCovers = await attachCoverPhotos(
+    asVehicleRows(data).filter((row) => isPublicCatalogListing(row)),
+  );
+  return {
+    data: similarVehicles(vehicle, withCovers.map(normalizeVehicle), limit),
+    error: null,
+  };
 }
 
-export async function getPublicDetailVehicles() {
-  return loadNormalized({ includeSold: true });
+export async function getPublicSitemapVehicles() {
+  const supabase = createAnonClient();
+  const { data, error } = await supabase
+    .from("vehicles")
+    .select("id, year, make, model, trim, status, published, published_at, updated_at")
+    .eq("published", true)
+    .in("status", [...DETAIL_STATUSES]);
+
+  if (error) {
+    console.error("public sitemap load failed", error.message);
+    return { data: [] as PublicVehicle[], error: "No pudimos cargar el inventario en este momento." };
+  }
+
+  return {
+    data: asVehicleRows(data)
+      .filter(isPublicDetailListing)
+      .map((row) => {
+        const vehicle = normalizeVehicle(row);
+        return {
+          ...vehicle,
+          slug: buildVehicleSlug({
+            id: row.id,
+            year: row.year,
+            make: row.make,
+            model: row.model,
+            trim: row.trim,
+          }),
+        };
+      }),
+    error: null,
+  };
 }
 
-export { loadNormalized as getAllPublicVehicles };
+export { getPublicSitemapVehicles as getPublicDetailVehicles };

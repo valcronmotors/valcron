@@ -13,7 +13,7 @@ export default function PrivacidadPage() {
     <ContentPage kicker="Legal" title="Privacidad">
       <p>
         Los datos del formulario de contacto (nombre, teléfono, correo y VIN) se usan para
-        atender tu solicitud comercial y entran al CRM interno de {SITE.name}.
+        atender tu solicitud comercial y quedan en los registros internos de {SITE.name}.
       </p>
       <p>
         No vendemos tu información. Puedes pedir actualización o eliminación por WhatsApp al{" "}

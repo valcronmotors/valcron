@@ -1,9 +1,36 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isWebsiteAdminClaims } from "@/lib/auth-role";
 import { isAdminHostname } from "@/lib/hosts";
+import { hasSupabaseSessionCookie } from "@/lib/session-cookie";
 import { isAdminPublicPath, isPublicPath, safeNextPath } from "@/lib/site";
 
 export async function updateSession(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  const adminHost = isAdminHostname(request.headers.get("host"));
+  const effectivePath = adminHost && pathname === "/" ? "/admin" : pathname;
+  const allowedWithoutAuth = adminHost
+    ? isAdminPublicPath(effectivePath)
+    : isPublicPath(pathname);
+  const adminSurface = effectivePath.startsWith("/admin");
+  const hasSession = hasSupabaseSessionCookie(request.cookies.getAll());
+
+  if (!hasSession) {
+    if (allowedWithoutAuth) {
+      return NextResponse.next({ request });
+    }
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "No autorizado." }, { status: 401 });
+    }
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    url.search = "";
+    if (effectivePath !== "/login") {
+      url.searchParams.set("next", `${effectivePath}${request.nextUrl.search}`);
+    }
+    return NextResponse.redirect(url);
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -36,14 +63,9 @@ export async function updateSession(request: NextRequest) {
 
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
-  const pathname = request.nextUrl.pathname;
-  const adminHost = isAdminHostname(request.headers.get("host"));
-  const effectivePath = adminHost && pathname === "/" ? "/admin" : pathname;
-  const allowedWithoutAuth = adminHost
-    ? isAdminPublicPath(effectivePath)
-    : isPublicPath(pathname);
+  const isAdmin = isWebsiteAdminClaims(claims);
 
-  if (!claims && !allowedWithoutAuth) {
+  if ((!claims || (adminSurface && !isAdmin)) && !allowedWithoutAuth) {
     if (pathname.startsWith("/api/")) {
       return copyCookies(
         NextResponse.json({ error: "No autorizado." }, { status: 401 }),
@@ -61,6 +83,9 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (claims && pathname === "/login") {
+    if (!isAdmin) {
+      return supabaseResponse;
+    }
     const url = request.nextUrl.clone();
     const next = safeNextPath(request.nextUrl.searchParams.get("next"));
     url.pathname = next;

@@ -1,20 +1,20 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { SlidersHorizontal, X } from "lucide-react";
 import { CurrencySwitch } from "@/components/public/CurrencyProvider";
 import { InventoryEmptyState } from "@/components/public/LandingInventory";
 import { VehicleCard } from "@/components/public/VehicleCard";
 import {
-  catalogMake,
-  catalogModel,
-  catalogUsdPrice,
-  catalogYear,
+  catalogQueryString,
+  filterCatalogVehicles,
   uniqueAnos,
   uniqueMarcas,
   uniqueModelos,
 } from "@/lib/public-filters";
+import { PUBLIC_INVENTORY_EMPTY, PUBLIC_INVENTORY_FILTER_EMPTY } from "@/lib/admin-copy";
 import type { PublicVehicle } from "@/lib/public-catalog";
-import { createClient } from "@/utils/supabase/client";
 
 const fieldClass = "field-input";
 
@@ -37,9 +37,9 @@ export function VehicleCatalog({
   initialVehicles?: PublicVehicle[];
   initialError?: string | null;
 }) {
-  const [vehicles, setVehicles] = useState<PublicVehicle[]>(initialVehicles);
-  const [error, setError] = useState<string | null>(initialError);
-  const [loading, setLoading] = useState(initialVehicles.length === 0 && !initialError);
+  const router = useRouter();
+  const vehicles = initialVehicles;
+  const error = initialError;
   const [listing, setListing] = useState(initialFilters.listing);
   const [marca, setMarca] = useState(initialFilters.marca);
   const [modelo, setModelo] = useState(initialFilters.modelo);
@@ -47,61 +47,8 @@ export function VehicleCatalog({
   const [precioMin, setPrecioMin] = useState(initialFilters.precioMin);
   const [precioMax, setPrecioMax] = useState(initialFilters.precioMax);
   const [search, setSearch] = useState(initialFilters.search);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load(showSpinner: boolean) {
-      if (showSpinner) {
-        setLoading(true);
-      }
-      try {
-        const response = await fetch("/api/public/vehicles", { cache: "no-store" });
-        const payload = (await response.json()) as {
-          data?: PublicVehicle[];
-          error?: string;
-        };
-        if (!response.ok) {
-          throw new Error(payload.error ?? "No se pudo cargar el inventario.");
-        }
-        if (!cancelled) {
-          setVehicles(payload.data ?? []);
-          setError(null);
-        }
-      } catch (loadError) {
-        if (!cancelled) {
-          setError(
-            loadError instanceof Error
-              ? loadError.message
-              : "No se pudo sincronizar el catálogo.",
-          );
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    }
-
-    void load(initialVehicles.length === 0);
-
-    const supabase = createClient();
-    const channel = supabase
-      .channel("inventario-vehiculos")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "vehiculos" },
-        () => {
-          void load(false);
-        },
-      )
-      .subscribe();
-
-    return () => {
-      cancelled = true;
-      void supabase.removeChannel(channel);
-    };
-  }, [initialVehicles.length]);
+  const [sort, setSort] = useState("recent");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const marcas = useMemo(() => {
     const values = new Set(uniqueMarcas(vehicles));
@@ -116,185 +63,201 @@ export function VehicleCatalog({
     return [...values].sort((a, b) => b - a);
   }, [ano, vehicles]);
 
-  const visible = useMemo(() => {
-    const needle = search.trim().toLowerCase();
-    const minUsd = Number(precioMin);
-    const maxUsd = Number(precioMax);
+  const visible = useMemo(
+    () =>
+      filterCatalogVehicles(
+        vehicles,
+        { listing, marca, modelo, ano, precioMin, precioMax, search },
+        sort,
+      ),
+    [ano, listing, marca, modelo, precioMax, precioMin, search, sort, vehicles],
+  );
 
-    return vehicles.filter((vehicle) => {
-      if (listing === "dealer" && vehicle.listingKind !== "dealer") {
-        return false;
-      }
-      if (listing === "auction" && vehicle.listingKind !== "auction") {
-        return false;
-      }
-      if (marca && catalogMake(vehicle) !== marca) {
-        return false;
-      }
-      if (modelo && catalogModel(vehicle) !== modelo) {
-        return false;
-      }
-      if (ano && String(catalogYear(vehicle)) !== ano) {
-        return false;
-      }
-      const usdPrice = catalogUsdPrice(vehicle);
-      if (Number.isFinite(minUsd) && minUsd > 0 && usdPrice < minUsd) {
-        return false;
-      }
-      if (Number.isFinite(maxUsd) && maxUsd > 0 && usdPrice > maxUsd) {
-        return false;
-      }
-      if (!needle) {
-        return true;
-      }
-      return [
-        catalogMake(vehicle),
-        catalogModel(vehicle),
-        vehicle.trim ?? "",
-        vehicle.vin ?? "",
-        String(catalogYear(vehicle)),
-        vehicle.location ?? vehicle.ubicacion ?? "",
-      ]
-        .join(" ")
-        .toLowerCase()
-        .includes(needle);
-    });
-  }, [ano, listing, marca, modelo, precioMax, precioMin, search, vehicles]);
+  useEffect(() => {
+    const qs = catalogQueryString({ listing, marca, modelo, ano, precioMin, precioMax, search });
+    router.replace(qs ? `/inventario?${qs}` : "/inventario", { scroll: false });
+  }, [ano, listing, marca, modelo, precioMax, precioMin, router, search]);
+
+  function clearFilters() {
+    setListing("");
+    setMarca("");
+    setModelo("");
+    setAno("");
+    setPrecioMin("");
+    setPrecioMax("");
+    setSearch("");
+  }
+
+  const chips = [
+    listing === "dealer" ? { key: "listing", label: "Disponible en Valcron" } : null,
+    listing === "auction" ? { key: "listing", label: "Mediante subasta" } : null,
+    marca ? { key: "marca", label: marca } : null,
+    modelo ? { key: "modelo", label: modelo } : null,
+    ano ? { key: "ano", label: ano } : null,
+    search ? { key: "search", label: search } : null,
+  ].filter(Boolean) as { key: string; label: string }[];
+
+  const filters = (
+    <div className="grid min-w-0 gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <label className="block min-w-0 text-sm text-[#5c5c5c] md:col-span-2 xl:col-span-4">
+        Buscar
+        <input
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Marca, modelo o VIN"
+          className={fieldClass}
+        />
+      </label>
+      <label className="block min-w-0 text-sm text-[#5c5c5c]">
+        Disponibilidad
+        <select value={listing} onChange={(event) => setListing(event.target.value)} className={fieldClass}>
+          <option value="">Todas</option>
+          <option value="dealer">Disponible en Valcron</option>
+          <option value="auction">Disponible mediante subasta</option>
+        </select>
+      </label>
+      <label className="block min-w-0 text-sm text-[#5c5c5c]">
+        Marca
+        <select
+          value={marca}
+          onChange={(event) => {
+            setMarca(event.target.value);
+            setModelo("");
+          }}
+          className={fieldClass}
+        >
+          <option value="">Todas</option>
+          {marcas.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="block min-w-0 text-sm text-[#5c5c5c]">
+        Modelo
+        <select value={modelo} onChange={(event) => setModelo(event.target.value)} className={fieldClass}>
+          <option value="">Todos</option>
+          {modelos.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="block min-w-0 text-sm text-[#5c5c5c]">
+        Año
+        <select value={ano} onChange={(event) => setAno(event.target.value)} className={fieldClass}>
+          <option value="">Todos</option>
+          {anos.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="block min-w-0 text-sm text-[#5c5c5c]">
+        Precio mínimo (USD)
+        <input type="number" min={0} value={precioMin} onChange={(event) => setPrecioMin(event.target.value)} className={fieldClass} />
+      </label>
+      <label className="block min-w-0 text-sm text-[#5c5c5c]">
+        Precio máximo (USD)
+        <input type="number" min={0} value={precioMax} onChange={(event) => setPrecioMax(event.target.value)} className={fieldClass} />
+      </label>
+      <div className="flex items-end">
+        <button type="button" onClick={clearFilters} className="h-11 w-full rounded-lg border border-[#e6e2db] text-sm text-[#141414]">
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+  );
+
+  const emptyCatalog = vehicles.length === 0 || Boolean(error);
 
   return (
-    <div className="grid min-w-0 gap-8">
-      {error ? (
-        <p className="rounded-2xl border border-[#ececea] bg-white px-5 py-4 text-sm text-[#525252]">{error}</p>
-      ) : null}
-
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-[#525252]">
-          {loading
-            ? "Cargando inventario..."
-            : `${visible.length} unidad${visible.length === 1 ? "" : "es"}`}
+    <div className="grid min-w-0 gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-[#5c5c5c]">
+          {visible.length === 1 ? "1 vehículo" : `${visible.length} vehículos`}
         </p>
-        <CurrencySwitch tone="light" />
-      </div>
-
-      <div className="grid min-w-0 gap-4 rounded-[1.15rem] border border-[#ececea] bg-white p-5 shadow-[0_12px_32px_rgba(0,0,0,0.04)] md:grid-cols-2 xl:grid-cols-3">
-        <label className="block min-w-0 text-sm text-[#525252] md:col-span-2 xl:col-span-3">
-          Búsqueda por palabra clave o VIN
-          <input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Marca, modelo o VIN de 17 caracteres"
-            className={fieldClass}
-          />
-        </label>
-        <label className="block min-w-0 text-sm text-[#525252]">
-          Tipo de listado
+        <div className="flex flex-wrap items-center gap-2">
           <select
-            value={listing}
-            onChange={(event) => setListing(event.target.value)}
-            className={fieldClass}
+            value={sort}
+            onChange={(event) => setSort(event.target.value)}
+            className="h-11 rounded-lg border border-[#e6e2db] bg-white px-3 text-sm"
+            aria-label="Ordenar"
           >
-            <option value="">Todos</option>
-            <option value="dealer">Disponible en RD</option>
-            <option value="auction">En subasta / importación</option>
+            <option value="recent">Más recientes</option>
+            <option value="year">Año</option>
+            <option value="price-asc">Precio: menor a mayor</option>
+            <option value="price-desc">Precio: mayor a menor</option>
           </select>
-        </label>
-        <label className="block min-w-0 text-sm text-[#525252]">
-          Marca
-          <select
-            value={marca}
-            onChange={(event) => {
-              setMarca(event.target.value);
-              setModelo("");
-            }}
-            className={fieldClass}
-          >
-            <option value="">Todas</option>
-            {marcas.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="block min-w-0 text-sm text-[#525252]">
-          Modelo
-          <select
-            value={modelo}
-            onChange={(event) => setModelo(event.target.value)}
-            className={fieldClass}
-          >
-            <option value="">Todos</option>
-            {modelos.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="block min-w-0 text-sm text-[#525252]">
-          Año
-          <select value={ano} onChange={(event) => setAno(event.target.value)} className={fieldClass}>
-            <option value="">Todos</option>
-            {anos.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="block min-w-0 text-sm text-[#525252]">
-          Precio mínimo (USD)
-          <input
-            type="number"
-            min={0}
-            value={precioMin}
-            onChange={(event) => setPrecioMin(event.target.value)}
-            placeholder="0"
-            className={fieldClass}
-          />
-        </label>
-        <label className="block min-w-0 text-sm text-[#525252]">
-          Precio máximo (USD)
-          <input
-            type="number"
-            min={0}
-            value={precioMax}
-            onChange={(event) => setPrecioMax(event.target.value)}
-            placeholder="Sin límite"
-            className={fieldClass}
-          />
-        </label>
-        <div className="flex items-end">
+          <CurrencySwitch tone="light" />
           <button
             type="button"
-            onClick={() => {
-              setListing("");
-              setMarca("");
-              setModelo("");
-              setAno("");
-              setPrecioMin("");
-              setPrecioMax("");
-              setSearch("");
-            }}
-            className="h-11 w-full rounded-lg border border-[#ececea] text-sm text-[#111] transition hover:border-[#111]"
+            className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#e6e2db] px-3 text-sm lg:hidden"
+            onClick={() => setFiltersOpen(true)}
           >
-            Limpiar filtros
+            <SlidersHorizontal className="h-4 w-4" />
+            Filtros
           </button>
         </div>
       </div>
 
-      {loading ? (
-        <p className="rounded-[1.15rem] border border-[#ececea] bg-white px-6 py-12 text-center text-sm text-[#525252]">
-          Cargando inventario...
-        </p>
-      ) : visible.length === 0 ? (
+      {chips.length ? (
+        <div className="flex flex-wrap gap-2">
+          {chips.map((chip) => (
+            <button
+              type="button"
+              key={`${chip.key}-${chip.label}`}
+              className="rounded-full border border-[#e6e2db] px-3 py-1 text-xs text-[#141414]"
+              onClick={() => {
+                if (chip.key === "listing") setListing("");
+                if (chip.key === "marca") {
+                  setMarca("");
+                  setModelo("");
+                }
+                if (chip.key === "modelo") setModelo("");
+                if (chip.key === "ano") setAno("");
+                if (chip.key === "search") setSearch("");
+              }}
+            >
+              {chip.label} ×
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      <div className="hidden rounded-2xl border border-[#e6e2db] bg-white p-5 lg:block">{filters}</div>
+
+      {filtersOpen ? (
+        <div className="fixed inset-0 z-[90] lg:hidden">
+          <button type="button" className="absolute inset-0 bg-black/40" aria-label="Cerrar filtros" onClick={() => setFiltersOpen(false)} />
+          <div className="absolute inset-x-0 bottom-0 max-h-[88vh] overflow-y-auto rounded-t-2xl bg-white p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="font-display text-lg font-semibold">Filtros</h2>
+              <button type="button" onClick={() => setFiltersOpen(false)} aria-label="Cerrar" className="inline-flex h-10 w-10 items-center justify-center">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            {filters}
+            <button type="button" className="btn-primary mt-4 w-full" onClick={() => setFiltersOpen(false)}>
+              {visible.length === 1 ? "Ver 1 vehículo" : `Ver ${visible.length} vehículos`}
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {visible.length === 0 ? (
         <InventoryEmptyState
           tone="light"
-          title="Sin coincidencias"
-          copy="Ajusta los filtros o escríbenos por WhatsApp. Te ayudamos a encontrar el vehículo que buscas."
+          title={emptyCatalog ? PUBLIC_INVENTORY_EMPTY.title : PUBLIC_INVENTORY_FILTER_EMPTY.title}
+          copy={emptyCatalog ? PUBLIC_INVENTORY_EMPTY.copy : PUBLIC_INVENTORY_FILTER_EMPTY.copy}
+          showRequest={emptyCatalog}
+          onClear={emptyCatalog ? undefined : clearFilters}
         />
       ) : (
-        <div className="grid min-w-0 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid min-w-0 gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {visible.map((vehicle) => (
             <VehicleCard key={vehicle.id} vehicle={vehicle} tone="light" />
           ))}

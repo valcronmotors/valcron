@@ -22,7 +22,6 @@ export function VehicleGallery({
   compact?: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const draftId = useRef(crypto.randomUUID());
   const [index, setIndex] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +54,6 @@ export function VehicleGallery({
     setUploading(true);
     const result = await uploadVehiclePhotos(Array.from(fileList), {
       vehicleId,
-      draftId: draftId.current,
       currentCount: photos.length,
     });
     setUploading(false);

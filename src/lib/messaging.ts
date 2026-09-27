@@ -1,5 +1,4 @@
-import type { VehicleMetrics } from "@/lib/admin-metrics";
-import { formatUsdPlain, vehicleSaleUsd } from "@/lib/admin-metrics";
+import { formatMoneyPlain, vehicleLabel, type VehicleMetrics } from "@/lib/admin-metrics";
 import { SITE } from "@/lib/site";
 
 export const MESSAGE_CHANNELS = ["whatsapp", "instagram", "facebook"] as const;
@@ -60,7 +59,7 @@ export const DEFAULT_IA_PROMPT = `Eres el Asesor Comercial IA de Valcron Motors 
 
 Reglas:
 1. Consulta únicamente inventario real en Supabase (tabla vehiculos). Prioriza estados Disponible y En Subasta. Nunca inventes VIN, precios, lotes ni unidades.
-2. Si preguntan por importación, explica el proceso Copart, IAAI y Manheim, landing cost, flete, DGA y tiempos. No prometas un lote que no esté en el sistema.
+2. Si preguntan por importación o subasta, explica el proceso usando Copart e IAA como plataformas de mercado, landing cost, flete, DGA y tiempos. No prometas un lote que no esté en el sistema. No presentes esas plataformas como socias.
 3. Sobre la Ley 103-13, da orientación general de incentivos a vehículos energéticamente eficientes e indica que la elegibilidad la confirma un asesor humano.
 4. Tono ejecutivo, claro y en español. Si no tienes el dato, ofrece pasar con un vendedor.
 5. No reveles costos internos, márgenes, tokens ni datos fiscales de la empresa.`;
@@ -114,17 +113,12 @@ export function maskSecret(value: string | null | undefined) {
 }
 
 export function vehicleFichaText(vehicle: VehicleMetrics) {
-  const trim = vehicle.trim ? ` ${vehicle.trim}` : "";
-  const precio = formatUsdPlain(vehicleSaleUsd(vehicle));
-  const fuente = vehicle.fuente_subasta
-    ? `Fuente: ${vehicle.fuente_subasta}`
-    : "Stock Valcron Motors";
+  const precio = formatMoneyPlain(Number(vehicle.price ?? 0), vehicle.currency);
   return [
-    `Ficha de vehículo — ${vehicle.marca} ${vehicle.modelo}${trim} ${vehicle.ano}`,
-    `VIN: ${vehicle.vin}`,
-    `Estado: ${vehicle.estado ?? "—"}`,
+    `Ficha de vehículo — ${vehicleLabel(vehicle)}`,
+    `VIN: ${vehicle.vin ?? "—"}`,
+    `Estado: ${vehicle.status}`,
     `Precio: ${precio}`,
-    fuente,
   ].join("\n");
 }
 
@@ -134,15 +128,13 @@ export function draftIaReply(input: {
   vehiculo?: string | null;
   stock: VehicleMetrics[];
 }) {
-  const available = input.stock.filter(
-    (row) => row.estado === "Disponible" || row.estado === "En Subasta",
-  );
+  const available = input.stock.filter((row) => row.published && row.status === "available");
   const first = available[0];
   const stockLine = first
-    ? `En inventario actual tenemos ${first.marca} ${first.modelo} ${first.ano} (${first.estado}, ${formatUsdPlain(vehicleSaleUsd(first))}).`
+    ? `En inventario actual tenemos ${vehicleLabel(first)} (${first.status}, ${formatMoneyPlain(Number(first.price ?? 0), first.currency)}).`
     : "En este momento estoy confirmando unidades exactas con el equipo de piso.";
   const interest = input.vehiculo
     ? `Vi tu interés en ${input.vehiculo}. `
     : "";
-  return `Hola ${input.nombre.split(" ")[0]}, soy el Asesor IA de Valcron Motors. ${interest}${stockLine} También importamos por encargo desde Copart, IAAI y Manheim. Si aplica Ley 103-13, un asesor humano valida la elegibilidad. ¿Te paso con un vendedor o agendamos visita en ${SITE.address.street}?`;
+  return `Hola ${input.nombre.split(" ")[0]}, soy el Asesor IA de Valcron Motors. ${interest}${stockLine} También podemos buscar unidades en plataformas de subasta como Copart e IAA. Si aplica Ley 103-13, un asesor humano valida la elegibilidad. ¿Te paso con un vendedor o agendamos visita en ${SITE.address.street}?`;
 }

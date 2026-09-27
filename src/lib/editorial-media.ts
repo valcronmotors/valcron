@@ -1,5 +1,5 @@
-const unsplash = (id: string, width = 1920) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=75`;
+const unsplash = (id: string, width = 1200) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=70`;
 
 export const EDITORIAL = {
   suvNight: {

@@ -1,11 +1,13 @@
 import { SITE } from "@/lib/site";
-import { normalizeVehicle } from "@/lib/vehicles/normalizeVehicle";
+import { PUBLIC_VEHICLE_SELECT, normalizeVehicle } from "@/lib/vehicles/normalizeVehicle";
 import { buildVehicleWhatsAppUrl, vehicleDisplayTitle } from "@/lib/vehicles/vehicle-formatters";
-import { isAuctionSource, isPublicCatalogListing, listingKindFromAvailability, vehicleAvailabilityFromRow } from "@/lib/vehicles/vehicle-status";
-import type { PublicVehicle, PublicVehicleRow } from "@/types/vehicle";
+import { isAuctionSource, listingKindFromAvailability, vehicleAvailabilityFromRow } from "@/lib/vehicles/vehicle-status";
+import { isPublicCatalogListing } from "@/lib/website-schema";
+import type { PublicVehicle } from "@/types/vehicle";
+import type { VehicleRow } from "@/lib/website-schema";
 
-export const PUBLIC_VEHICLE_SELECT =
-  "id, vin, marca, modelo, trim, trim_version, ano, precio_venta_dop, tasa_usd_dop, fotos_urls, estado, fuente_subasta, ubicacion_lote, lote_numero";
+export { PUBLIC_VEHICLE_SELECT };
+export type PublicVehicleRow = VehicleRow;
 
 export const PUBLIC_CATALOG_ORIGIN = "https://valcronmotors.com";
 
@@ -17,7 +19,7 @@ const ALLOWED_ORIGINS = new Set([
   "http://127.0.0.1:3000",
 ]);
 
-export type { PublicVehicle, PublicVehicleRow };
+export type { PublicVehicle };
 
 export function isVinQuery(value: string) {
   return /^[A-HJ-NPR-Z0-9]{17}$/i.test(value.trim());
@@ -36,15 +38,15 @@ export function isCopartOrManheim(value: string | null | undefined) {
   return isAuctionSource(value);
 }
 
-export function isPublicVehicleListing(row: Pick<PublicVehicleRow, "estado" | "fuente_subasta">) {
+export function isPublicVehicleListing(row: Pick<VehicleRow, "published" | "status">) {
   return isPublicCatalogListing(row);
 }
 
-export function listingKindFromRow(row: Pick<PublicVehicleRow, "estado" | "fuente_subasta">): "dealer" | "auction" {
+export function listingKindFromRow(row: Pick<VehicleRow, "status" | "source_type">): "dealer" | "auction" {
   return listingKindFromAvailability(vehicleAvailabilityFromRow(row));
 }
 
-export function publicVehicleLocation(row: PublicVehicleRow) {
+export function publicVehicleLocation(row: VehicleRow) {
   return normalizeVehicle(row).location ?? "";
 }
 
@@ -80,7 +82,7 @@ export function dealerWhatsappHref(message?: string) {
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
 
-export function toPublicVehicle(row: PublicVehicleRow): PublicVehicle {
+export function toPublicVehicle(row: VehicleRow): PublicVehicle {
   return normalizeVehicle(row);
 }
 

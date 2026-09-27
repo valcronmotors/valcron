@@ -24,7 +24,7 @@ export function matchesVehicleQuery(vehicle: PublicVehicle, query: VehicleQuery)
   if (query.yearMax && vehicle.year > query.yearMax) {
     return false;
   }
-  const usd = vehicle.pricing.usdPrice ?? 0;
+  const usd = vehicle.pricing.priceVisible ? (vehicle.pricing.usdPrice ?? 0) : 0;
   if (query.priceMinUsd && query.priceMinUsd > 0 && (usd <= 0 || usd < query.priceMinUsd)) {
     return false;
   }
@@ -53,8 +53,10 @@ export function sortVehicles(vehicles: PublicVehicle[], sort: VehicleSort = "rec
   const copy = [...vehicles];
   copy.sort((a, b) => {
     if (sort === "price_asc" || sort === "price_desc") {
-      const aPrice = a.pricing.priceVisible ? (a.pricing.usdPrice ?? 0) : Number.POSITIVE_INFINITY;
-      const bPrice = b.pricing.priceVisible ? (b.pricing.usdPrice ?? 0) : Number.POSITIVE_INFINITY;
+      const aContact = a.pricing.publicPriceMode === "contact" || !a.pricing.priceVisible;
+      const bContact = b.pricing.publicPriceMode === "contact" || !b.pricing.priceVisible;
+      const aPrice = aContact ? Number.POSITIVE_INFINITY : (a.pricing.usdPrice ?? Number.POSITIVE_INFINITY);
+      const bPrice = bContact ? Number.POSITIVE_INFINITY : (b.pricing.usdPrice ?? Number.POSITIVE_INFINITY);
       if (aPrice === bPrice) {
         return b.year - a.year;
       }

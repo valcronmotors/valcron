@@ -1,20 +1,17 @@
-import { COMPANIES } from "@/lib/companies";
-import { DEFAULT_CRM_STATE } from "@/lib/crm";
-import { getEmpresaIdByCompany } from "@/lib/empresas";
+import { publicActionError } from "@/lib/action-errors";
 import {
-  PUBLIC_VEHICLE_SELECT,
-  publicJson,
-  publicOptions,
-  vehicleInterestMessage,
-  type PublicVehicleRow,
-  isVinQuery,
-} from "@/lib/public-catalog";
+  clientIpFromRequest,
+  inquiryAbuseGuard,
+  inquiryFingerprint,
+  inquiryIpGuard,
+  isInquiryHoneypot,
+} from "@/lib/inquiry-abuse";
+import { validatePublicInquiry } from "@/lib/inquiries";
+import { publicJson, publicOptions } from "@/lib/public-catalog";
+import { isPubliclyVisible, type VehicleRow } from "@/lib/website-schema";
 import { createClient } from "@/utils/supabase/server";
 
 export const dynamic = "force-dynamic";
-
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export function OPTIONS(request: Request) {
   return publicOptions(request);
@@ -28,99 +25,88 @@ export async function POST(request: Request) {
     return publicJson(request, { error: "No se pudo leer la solicitud." }, 400);
   }
 
-  const nombre = String(body.nombre ?? "").trim();
-  const telefono = String(body.telefono ?? "").trim() || null;
-  const email = String(body.email ?? "").trim() || null;
-  const mensaje = String(body.mensaje ?? "").trim() || null;
-  const vehiculoId = String(body.vehiculoId ?? body.vehiculo_id ?? "").trim();
-  const vin = String(body.vin ?? "").trim().toUpperCase();
-
-  if (!nombre) {
-    return publicJson(request, { error: "El nombre es obligatorio." }, 400);
-  }
-  if (nombre.length > 120) {
-    return publicJson(request, { error: "El nombre es demasiado largo." }, 400);
-  }
-  if (!telefono && !email) {
-    return publicJson(request, { error: "Indica un teléfono o un correo para contactarte." }, 400);
-  }
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return publicJson(request, { error: "El correo electrónico no es válido." }, 400);
+  if (isInquiryHoneypot(body.empresa ?? body.company ?? body.website)) {
+    return publicJson(request, { data: { received: true } }, 201);
   }
 
-  const valcron = COMPANIES.find((company) => company.inventario === "vehiculos");
-  if (!valcron) {
-    return publicJson(request, { error: "No se encontró Valcron Motors Group SRL." }, 500);
+  const parsed = validatePublicInquiry({
+    name: body.nombre ?? body.name,
+    phone: body.telefono ?? body.phone,
+    email: body.email,
+    message: body.mensaje ?? body.message,
+    vehicleId: body.vehiculoId ?? body.vehiculo_id ?? body.vehicleId,
+    auctionOpportunityId: body.auctionOpportunityId ?? body.auction_opportunity_id,
+    source: body.source ?? "web",
+  });
+
+  if (!parsed.data) {
+    return publicJson(request, { error: parsed.error }, 400);
   }
 
-  const valcronEmpresa = await getEmpresaIdByCompany(valcron);
-  if (!valcronEmpresa.id) {
-    return publicJson(
-      request,
-      { error: valcronEmpresa.error ?? "No se encontró la empresa pública." },
-      500,
-    );
+  const fingerprint = inquiryFingerprint({
+    name: parsed.data.name,
+    phone: parsed.data.phone,
+    email: parsed.data.email,
+    vehicleId: parsed.data.vehicle_id,
+  });
+  const ip = clientIpFromRequest(request);
+  const ipLimit = inquiryIpGuard(ip);
+  if (!ipLimit.ok) {
+    return publicJson(request, { error: ipLimit.error }, 429);
+  }
+  const abuse = inquiryAbuseGuard(fingerprint);
+  if (!abuse.ok) {
+    return publicJson(request, { error: abuse.error }, 429);
   }
 
   const supabase = await createClient();
-  let vehicle: (PublicVehicleRow & { empresa_id: string; estado: string }) | null = null;
 
-  if (UUID_PATTERN.test(vehiculoId) || isVinQuery(vin)) {
-    let vehicleQuery = supabase
-      .from("vehiculos")
-      .select(`${PUBLIC_VEHICLE_SELECT}, empresa_id, estado`)
-      .eq("empresa_id", valcronEmpresa.id)
-      .in("estado", ["Disponible", "En Subasta"]);
-
-    if (UUID_PATTERN.test(vehiculoId)) {
-      vehicleQuery = vehicleQuery.eq("id", vehiculoId);
-    } else {
-      vehicleQuery = vehicleQuery.eq("vin", vin);
-    }
-
-    const { data, error } = await vehicleQuery.maybeSingle();
-    if (error) {
-      return publicJson(request, { error: error.message }, 500);
-    }
-    if (data) {
-      vehicle = data as PublicVehicleRow & { empresa_id: string; estado: string };
+  if (parsed.data.vehicle_id) {
+    const { data: vehicle } = await supabase
+      .from("vehicles")
+      .select("id, published, status")
+      .eq("id", parsed.data.vehicle_id)
+      .maybeSingle();
+    const row = vehicle as Pick<VehicleRow, "id" | "published" | "status"> | null;
+    if (!row || !isPubliclyVisible(row)) {
+      parsed.data.vehicle_id = null;
     }
   }
 
-  const notas = [
-    mensaje,
-    vehicle
-      ? vehicleInterestMessage({
-          marca: vehicle.marca ?? undefined,
-          modelo: vehicle.modelo ?? undefined,
-          ano: vehicle.ano ?? undefined,
-          vin: vehicle.vin ?? undefined,
-        })
-      : vin
-        ? `VIN consultado: ${vin}`
-        : null,
-  ]
+  const since = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+  let duplicateQuery = supabase
+    .from("inquiries")
+    .select("id")
+    .eq("name", parsed.data.name)
+    .gte("created_at", since)
+    .limit(1);
+  if (parsed.data.email) {
+    duplicateQuery = duplicateQuery.eq("email", parsed.data.email);
+  } else if (parsed.data.phone) {
+    duplicateQuery = duplicateQuery.eq("phone", parsed.data.phone);
+  }
+  if (parsed.data.vehicle_id) {
+    duplicateQuery = duplicateQuery.eq("vehicle_id", parsed.data.vehicle_id);
+  }
+  const { data: recent } = await duplicateQuery;
+  if (recent && recent.length > 0) {
+    return publicJson(request, { error: "Ya recibimos una solicitud similar. Te contactaremos pronto." }, 429);
+  }
+
+  const vin = String(body.vin ?? "").trim().toUpperCase();
+  const message = [parsed.data.message, vin ? `VIN consultado: ${vin}` : null]
     .filter(Boolean)
     .join("\n");
 
-  const { data, error } = await supabase
-    .from("prospectos")
-    .insert({
-      empresa_id: valcronEmpresa.id,
-      nombre,
-      telefono,
-      email,
-      vehiculo_interes_id: vehicle?.id ?? null,
-      origen_lead: "Web",
-      estado_crm: DEFAULT_CRM_STATE,
-      notas: notas || null,
-    })
-    .select("id")
-    .single();
+  const { error } = await supabase.from("inquiries").insert({
+    ...parsed.data,
+    message: message || null,
+  });
 
   if (error) {
-    return publicJson(request, { error: error.message }, 500);
+    console.error("public inquiry insert failed", error.code ?? "unknown");
+    return publicJson(request, { error: publicActionError(error, "No se pudo enviar la solicitud.") }, 500);
   }
 
-  return publicJson(request, { data: { id: data.id } }, 201);
+  return publicJson(request, { data: { received: true } }, 201);
 }

@@ -1,3 +1,7 @@
+import {
+  formatCustomerFacingPrice,
+  resolvePublicPriceMode,
+} from "@/lib/public-price-mode";
 import { formatDecimal } from "@/lib/money";
 import { SITE, whatsappHref } from "@/lib/site";
 import { availabilityLabel, sourceLabel } from "@/lib/vehicles/vehicle-status";
@@ -42,6 +46,8 @@ export function priceKindLabel(kind: VehiclePriceKind | null | undefined) {
       return "Oferta actual";
     case "buy_now":
       return "Comprar ahora";
+    case "from":
+      return "Desde";
     case "estimated":
       return "Precio estimado";
     case "consult":
@@ -55,26 +61,39 @@ export function displayVehiclePrice(
   vehicle: PublicVehicle,
   currency: VehicleCurrency,
 ): { label: string; primary: string; secondary?: string } {
-  const pricing = vehicle.pricing;
-  if (!pricing.priceVisible) {
-    return { label: priceKindLabel("consult"), primary: "Consultar precio" };
-  }
+  const mode =
+    vehicle.pricing.publicPriceMode ??
+    resolvePublicPriceMode(
+      vehicle.listingKind === "auction" ? "other" : "valcron_stock",
+      vehicle.pricing.kind === "consult"
+        ? "contact"
+        : vehicle.pricing.kind === "from"
+          ? "from"
+          : vehicle.pricing.kind === "estimated"
+            ? "estimated"
+            : "fixed",
+    );
+  const preferredAmount =
+    currency === "DOP"
+      ? vehicle.pricing.rdPrice ?? vehicle.pricing.usdPrice
+      : vehicle.pricing.usdPrice ?? vehicle.pricing.rdPrice;
+  const preferredCurrency: VehicleCurrency =
+    currency === "DOP" && vehicle.pricing.rdPrice
+      ? "DOP"
+      : vehicle.pricing.usdPrice
+        ? "USD"
+        : currency;
+  const primary = formatCustomerFacingPrice(mode, preferredAmount, preferredCurrency);
+  const otherAmount = preferredCurrency === "USD" ? vehicle.pricing.rdPrice : vehicle.pricing.usdPrice;
+  const otherCurrency: VehicleCurrency = preferredCurrency === "USD" ? "DOP" : "USD";
+  const secondary =
+    mode !== "contact" && vehicle.pricing.priceVisible
+      ? formatVehiclePrice(otherAmount, otherCurrency) ?? undefined
+      : undefined;
 
-  if (pricing.kind === "current_bid" && pricing.currentBid) {
-    return {
-      label: priceKindLabel("current_bid"),
-      primary: formatVehiclePrice(pricing.currentBid, "USD") ?? "Consultar precio",
-    };
-  }
-
-  const usd = formatVehiclePrice(pricing.usdPrice, "USD");
-  const dop = formatVehiclePrice(pricing.rdPrice, "DOP");
-  const primary = currency === "DOP" ? dop ?? usd : usd ?? dop;
-  const secondary = currency === "DOP" ? (dop && usd ? usd : undefined) : usd && dop ? dop : undefined;
-  const auctionListing = vehicle.availability === "auction" || vehicle.listingKind === "auction";
   return {
-    label: auctionListing && pricing.kind === "sale" ? "Precio publicado" : priceKindLabel(pricing.kind),
-    primary: primary ?? "Consultar precio",
+    label: mode === "fixed" ? "Precio de venta" : "Precio",
+    primary,
     secondary,
   };
 }
@@ -148,113 +167,20 @@ function presentText(value: string | number | null | undefined) {
   return text;
 }
 
-function yesNo(value: boolean | null | undefined) {
-  if (value == null) return null;
-  return value ? "Sí" : "No";
-}
-
-const MONTHS_ES = [
-  "enero",
-  "febrero",
-  "marzo",
-  "abril",
-  "mayo",
-  "junio",
-  "julio",
-  "agosto",
-  "septiembre",
-  "octubre",
-  "noviembre",
-  "diciembre",
-] as const;
-
-function formatPublicDate(value: string | null | undefined) {
-  if (!value) return null;
-  const isoDate = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (isoDate) {
-    const year = Number(isoDate[1]);
-    const month = Number(isoDate[2]);
-    const day = Number(isoDate[3]);
-    const label = MONTHS_ES[month - 1];
-    if (!label || day < 1 || day > 31) return null;
-    return `${day} de ${label} de ${year}`;
-  }
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-  return `${date.getUTCDate()} de ${MONTHS_ES[date.getUTCMonth()]} de ${date.getUTCFullYear()}`;
-}
-
 export function vehiclePublicPriceBlocks(vehicle: PublicVehicle) {
-  const pricing = vehicle.pricing;
-  const bid = pricing.currentBid ?? vehicle.auction?.currentBid;
-  const buyNow = pricing.buyNowPrice ?? vehicle.auction?.buyNowPrice;
-  const estimated = pricing.estimatedPrice;
-  const saleUsd = pricing.usdPrice;
-  const saleDop = pricing.rdPrice;
-  const blocks: { kind: VehiclePriceKind; label: string; primary: string; secondary?: string; note?: string }[] = [];
-
-  if (bid) {
-    const amount = formatVehiclePrice(bid, "USD");
-    if (amount) {
-      blocks.push({
-        kind: "current_bid",
-        label: "Oferta actual",
-        primary: amount,
-        note: "Es una puja o referencia de subasta, no el costo final de entrega en República Dominicana.",
-      });
-    }
-  }
-  if (buyNow) {
-    const amount = formatVehiclePrice(buyNow, "USD");
-    if (amount) {
-      blocks.push({
-        kind: "buy_now",
-        label: "Compra ahora",
-        primary: amount,
-        note: "Precio de compra inmediata en la plataforma, cuando está publicado. No incluye importación ni entrega en RD.",
-      });
-    }
-  }
-  if (estimated) {
-    const amount = formatVehiclePrice(estimated, "USD");
-    if (amount) {
-      blocks.push({
-        kind: "estimated",
-        label: "Estimado",
-        primary: amount,
-      });
-    }
-  }
-
-  const usd = formatVehiclePrice(saleUsd, "USD");
-  const dop = formatVehiclePrice(saleDop, "DOP");
-  if ((usd || dop) && pricing.priceVisible) {
-    const isAuction = vehicle.availability === "auction" || vehicle.listingKind === "auction";
-    blocks.push({
-      kind: isAuction ? "estimated" : "sale",
-      label: isAuction ? "Precio publicado" : "Precio de venta",
-      primary: (usd ?? dop) as string,
-      secondary: usd && dop ? dop : undefined,
-      note: isAuction
-        ? "No representa el costo final de importación, impuestos ni entrega en República Dominicana."
-        : undefined,
-    });
-  }
-
-  if (!blocks.length) {
-    blocks.push({ kind: "consult", label: "Consultar precio", primary: "Consultar precio" });
-  }
-
-  return blocks;
+  const displayed = displayVehiclePrice(vehicle, vehicle.pricing.currency ?? "USD");
+  return [
+    {
+      kind: vehicle.pricing.kind ?? "sale",
+      label: displayed.label,
+      primary: displayed.primary,
+      secondary: displayed.secondary,
+    },
+  ];
 }
 
 export function visibleVehicleSpecs(vehicle: PublicVehicle) {
-  const platform =
-    vehicle.source === "copart" || vehicle.source === "iaai" || vehicle.source === "manheim"
-      ? sourceLabel(vehicle.source)
-      : vehicle.fuenteSubasta
-        ? sourceLabel(vehicle.source)
-        : null;
+  const platform = vehicle.source === "copart" || vehicle.source === "iaai" ? sourceLabel(vehicle.source) : null;
 
   const rows: { label: string; value: string | null }[] = [
     { label: "Año", value: vehicle.year || vehicle.ano ? String(vehicle.year || vehicle.ano) : null },
@@ -264,9 +190,8 @@ export function visibleVehicleSpecs(vehicle: PublicVehicle) {
     { label: "VIN", value: formatPublicVin(vehicle.vin) },
     { label: "Número de stock", value: presentText(vehicle.stockNumber) },
     { label: "Número de lote", value: presentText(vehicle.auction?.lotNumber) },
-    { label: "Fuente / plataforma", value: platform },
+    { label: "Plataforma de origen", value: platform },
     { label: "Estado", value: availabilityLabel(vehicle.availability) },
-    { label: "Ubicación", value: presentText(vehicle.location ?? vehicle.ubicacion) },
     { label: "Kilometraje", value: formatMileage(vehicle.mileage, vehicle.mileageUnit) },
     { label: "Motor", value: presentText(vehicle.engine) },
     { label: "Cilindros", value: vehicle.cylinders ? String(vehicle.cylinders) : null },
@@ -276,14 +201,7 @@ export function visibleVehicleSpecs(vehicle: PublicVehicle) {
     { label: "Color exterior", value: presentText(vehicle.exteriorColor) },
     { label: "Color interior", value: presentText(vehicle.interiorColor) },
     { label: "Tipo de carrocería", value: presentText(vehicle.bodyType) },
-    { label: "Tipo de título", value: presentText(vehicle.titleType) },
     { label: "Condición", value: presentText(vehicle.condition) },
-    { label: "Daño primario", value: presentText(vehicle.primaryDamage) },
-    { label: "Daño secundario", value: presentText(vehicle.secondaryDamage) },
-    { label: "Llaves", value: yesNo(vehicle.keysAvailable) },
-    { label: "Run and Drive", value: yesNo(vehicle.runAndDrive) },
-    { label: "Estado de subasta", value: presentText(vehicle.auction?.saleStatus) },
-    { label: "Fecha de subasta", value: formatPublicDate(vehicle.auction?.saleDate) },
   ];
 
   return rows.filter((row): row is { label: string; value: string } => Boolean(row.value));
@@ -294,7 +212,6 @@ export function vehicleSeoDescription(vehicle: PublicVehicle) {
   const parts = [title, availabilityLabel(vehicle.availability)];
   const mileage = formatMileage(vehicle.mileage, vehicle.mileageUnit);
   if (mileage) parts.push(mileage);
-  if (vehicle.location) parts.push(vehicle.location);
   if (vehicle.source === "copart" || vehicle.source === "iaai" || vehicle.source === "manheim") {
     const platform = sourceLabel(vehicle.source);
     if (platform) parts.push(`Fuente: ${platform}`);

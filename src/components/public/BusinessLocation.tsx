@@ -1,5 +1,6 @@
 import { mapsDirectionsUrl, officeTelHref, SITE, whatsappHref } from "@/lib/site";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
+import { LazyMapEmbed } from "@/components/public/LazyMapEmbed";
 
 type LocationVariant = "full" | "compact" | "cta";
 type LocationTone = "light" | "dark";
@@ -77,12 +78,8 @@ function GoogleBusinessMap({
         tone === "dark" ? "border-white/10 bg-[#0D0E10]" : "border-[#ececea] bg-[#111]"
       } ${frame}`}
     >
-      <iframe
-        title={SITE.maps.embedTitle}
-        src={SITE.maps.embedSrc}
-        className={`h-full w-full border-0 ${tone === "dark" ? "grayscale contrast-125" : ""}`}
-        loading="lazy"
-        referrerPolicy="strict-origin-when-cross-origin"
+      <LazyMapEmbed
+        className={`h-full w-full ${tone === "dark" ? "grayscale contrast-125" : ""}`}
       />
     </div>
   );

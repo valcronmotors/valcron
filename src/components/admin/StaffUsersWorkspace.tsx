@@ -119,9 +119,8 @@ export function StaffUsersWorkspace({
             />
           </AdminField>
           <AdminField label="Rol">
-            <AdminSelect name="role" defaultValue="vendedor">
-              <option value="vendedor">Vendedor</option>
-              <option value="administrador">Administrador</option>
+            <AdminSelect name="role" defaultValue="admin">
+              <option value="admin">Administrador</option>
             </AdminSelect>
           </AdminField>
           <div className="sm:col-span-2">

@@ -25,7 +25,7 @@ export const HOME_FAQS = [
   },
   {
     q: "¿Cómo funcionan las subastas?",
-    a: "Las plataformas publican vehículos con fotos, lote, daños y tipo de título. Te ayudamos a evaluar la unidad y el proceso de compra. Copart, IAAI y Manheim son plataformas; no somos socios oficiales de esas compañías.",
+    a: "Las plataformas publican vehículos con fotos, lote, daños y tipo de título. Te ayudamos a evaluar la unidad y el proceso de compra. Copart e IAA son plataformas; no somos socios oficiales de esas compañías.",
   },
 ] as const;
 

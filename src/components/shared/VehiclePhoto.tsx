@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { shouldUseNextImageOptimizer } from "@/lib/vehicle-image-delivery";
 
 export function VehiclePhoto({
   src,
@@ -24,6 +25,7 @@ export function VehiclePhoto({
   }
 
   const local = src.startsWith("/");
+  const optimize = shouldUseNextImageOptimizer(src);
 
   return (
     <Image
@@ -32,7 +34,8 @@ export function VehiclePhoto({
       fill
       priority={priority}
       sizes={sizes}
-      unoptimized={!local}
+      quality={70}
+      unoptimized={!local || !optimize}
       className={className}
     />
   );

@@ -21,7 +21,7 @@ const fieldClass = "field-input mt-1.5 bg-white/90";
 const LISTING_TABS = [
   { value: "", label: "Todos" },
   { value: "dealer", label: "Stock en Santo Domingo" },
-  { value: "auction", label: "Importación por Encargo (Copart / IAAI / Manheim)" },
+  { value: "auction", label: "Oportunidades de subasta (Copart / IAA)" },
 ] as const;
 
 export function HeroShowcase({ vehicles }: { vehicles: PublicVehicle[] }) {

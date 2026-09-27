@@ -22,6 +22,7 @@ export type AuctionPlatform = "copart" | "iaai" | "manheim" | "other";
 
 export type VehiclePriceKind =
   | "sale"
+  | "from"
   | "current_bid"
   | "buy_now"
   | "estimated"
@@ -47,6 +48,7 @@ export interface VehiclePricing {
   priceVisible?: boolean;
   priceLabel?: string | null;
   kind?: VehiclePriceKind;
+  publicPriceMode?: "contact" | "from" | "estimated" | "fixed";
   exchangeRate?: number | null;
 }
 
@@ -123,24 +125,7 @@ export interface PublicVehicle {
   };
 }
 
-export type PublicVehicleRow = {
-  id: string;
-  vin: string | null;
-  marca: string | null;
-  modelo: string | null;
-  trim: string | null;
-  trim_version?: string | null;
-  ano: number | null;
-  precio_venta_dop: number | null;
-  tasa_usd_dop?: number | null;
-  fotos_urls: string[] | null;
-  estado?: string | null;
-  fuente_subasta?: string | null;
-  ubicacion_lote?: string | null;
-  lote_numero?: string | null;
-  created_at?: string | null;
-  updated_at?: string | null;
-};
+export type { VehicleRow as PublicVehicleRow } from "@/lib/website-schema";
 
 export type VehicleSort =
   | "recent"

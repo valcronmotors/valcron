@@ -1,4 +1,21 @@
-export type VehicleRow = {
+import type { VehicleRow as WebsiteVehicleRow } from "@/lib/website-schema";
+
+export type VehicleRow = WebsiteVehicleRow;
+
+export type PartRow = {
+  id: string;
+  codigo_pieza: string;
+  nombre: string;
+  cantidad: number | null;
+  precio_costo: number | null;
+  envio_usd: number | null;
+  comisiones_usd: number | null;
+  precio_venta: number | null;
+  canales_venta: string[] | null;
+};
+
+/** Legacy ERP vehicle shape kept only so unused historical UI still typechecks. */
+export type ErpVehicleRow = {
   id: string;
   vin: string;
   marca: string;
@@ -24,20 +41,17 @@ export type VehicleRow = {
   fuente_subasta: string | null;
 };
 
-export type PartRow = {
-  id: string;
-  codigo_pieza: string;
-  nombre: string;
-  cantidad: number | null;
-  precio_costo: number | null;
-  envio_usd: number | null;
-  comisiones_usd: number | null;
-  precio_venta: number | null;
-  canales_venta: string[] | null;
-};
+export const VEHICLE_INVENTORY_SELECT = `
+  id, stock_number, vin, year, make, model, trim, mileage, mileage_unit,
+  exterior_color, interior_color, engine, transmission, drivetrain, fuel,
+  condition, title_status, description, price, currency, public_price_mode, location, source_type,
+  status, featured, published, published_at, created_at, updated_at
+`.replace(/\s+/g, " ").trim();
 
-export const VEHICLE_INVENTORY_SELECT =
-  "id, vin, marca, modelo, trim, ano, costo_subasta_usd, gastos_taller_usa_usd, gastos_grua_usd, gastos_titulacion_usd, fees_adicionales_usd, flete_usd, costo_total_usd, tasa_usd_dop, costo_taller_dop, impuestos_dga_dop, costo_total_dop, precio_venta_dop, estado, fotos_urls, ubicacion_lote, lote_numero, fuente_subasta";
+export const VEHICLE_ADMIN_SELECT = `
+  ${VEHICLE_INVENTORY_SELECT},
+  vehicle_photos ( id, vehicle_id, storage_path, sort_order, is_cover, alt_text, created_at )
+`.replace(/\s+/g, " ").trim();
 
 export const PART_INVENTORY_SELECT =
   "id, codigo_pieza, nombre, cantidad, precio_costo, envio_usd, comisiones_usd, precio_venta, canales_venta";

@@ -1,36 +1,15 @@
 import type { NextConfig } from "next";
 
-function supabaseHostname() {
-  const value = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!value) {
-    return null;
-  }
-  try {
-    return new URL(value).hostname;
-  } catch {
-    return null;
-  }
-}
-
-const supabaseHost = supabaseHostname();
-
 const nextConfig: NextConfig = {
   images: {
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 3600,
     remotePatterns: [
       {
         protocol: "https",
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
-      ...(supabaseHost
-        ? [
-            {
-              protocol: "https" as const,
-              hostname: supabaseHost,
-              pathname: "/storage/v1/object/public/**",
-            },
-          ]
-        : []),
     ],
   },
   async rewrites() {

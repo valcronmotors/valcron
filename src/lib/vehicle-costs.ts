@@ -1,4 +1,4 @@
-export const DEFAULT_TASA_USD_DOP = 62;
+export { DEFAULT_TASA_USD_DOP } from "@/lib/fx";
 export const MARGEN_PRECIO_ESTIMADO = 0.2;
 
 export const VEHICLE_STATES = [

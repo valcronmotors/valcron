@@ -15,7 +15,7 @@ import type { PublicVehicle } from "@/lib/public-catalog";
 
 const fieldClass = "field-input mt-1.5";
 
-export function HomeSearch({ vehicles }: { vehicles: PublicVehicle[] }) {
+export function HomeSearch({ vehicles = [] }: { vehicles?: PublicVehicle[] }) {
   const router = useRouter();
   const [marca, setMarca] = useState("");
   const [modelo, setModelo] = useState("");

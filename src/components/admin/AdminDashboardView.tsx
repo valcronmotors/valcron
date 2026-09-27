@@ -1,159 +1,307 @@
 import Link from "next/link";
-import { ArrowUpRight, Car, Globe, PackagePlus, Ship } from "lucide-react";
 import {
-  AdminStatusBadge,
-  AuctionBadgeRow,
-} from "@/components/admin/AdminBadges";
-import { AdminCard } from "@/components/admin/ui";
-import {
-  formatUsdPlain,
-  vehicleLabel,
-  vehicleSaleUsd,
-  type VehicleMetrics,
-} from "@/lib/admin-metrics";
+  ArrowUpRight,
+  Car,
+  Gavel,
+  Globe,
+  Inbox,
+  PackagePlus,
+} from "lucide-react";
+import { AdminPublishBadge, AdminStatusBadge } from "@/components/admin/AdminBadges";
+import { AdminCard, AdminEmptyState, AdminNotice, AdminPrimaryButton, AdminSecondaryButton } from "@/components/admin/ui";
+import { adminGreeting, formatAdminDate } from "@/lib/admin-copy";
+import { formatMoneyPlain, vehicleLabel } from "@/lib/admin-metrics";
+import type { DashboardInquiry, DashboardVehicle } from "@/lib/admin-data";
+
+function DistributionBar({
+  items,
+}: {
+  items: { label: string; value: number; tone: string }[];
+}) {
+  const total = items.reduce((sum, item) => sum + item.value, 0);
+  if (total === 0) {
+    return (
+      <p className="mt-4 text-sm text-[var(--admin-text-muted)]">Todavía no hay unidades para mostrar.</p>
+    );
+  }
+
+  return (
+    <div className="mt-4 grid gap-3">
+      <div className="flex h-2 overflow-hidden rounded-full bg-[var(--admin-surface-muted)]">
+        {items.map((item) =>
+          item.value > 0 ? (
+            <span
+              key={item.label}
+              className={`h-full ${item.tone}`}
+              style={{ width: `${(item.value / total) * 100}%` }}
+            />
+          ) : null,
+        )}
+      </div>
+      <ul className="grid gap-2 text-sm sm:grid-cols-2">
+        {items.map((item) => (
+          <li key={item.label} className="flex items-center justify-between text-[var(--admin-text-secondary)]">
+            <span className="inline-flex items-center gap-2">
+              <span className={`h-2 w-2 rounded-full ${item.tone}`} />
+              {item.label}
+            </span>
+            <span className="tabular-nums font-medium text-[var(--admin-text)]">{item.value}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 export function AdminDashboardView({
   vehicles,
+  inquiries,
+  auctionCount,
   error,
 }: {
-  vehicles: VehicleMetrics[];
+  vehicles: DashboardVehicle[];
+  inquiries: DashboardInquiry[];
+  auctionCount: number;
   error: string | null;
 }) {
-  const available = vehicles.filter((row) => row.estado === "Disponible");
-  const auction = vehicles.filter((row) => row.estado === "En Subasta");
-  const published = vehicles.filter(
-    (row) => row.estado === "Disponible" || row.estado === "En Subasta",
-  );
-  const sourceCount = {
-    Copart: auction.filter((row) => row.fuente_subasta === "Copart").length,
-    IAAI: auction.filter((row) => row.fuente_subasta === "IAAI").length,
-    Manheim: auction.filter((row) => row.fuente_subasta === "Manheim").length,
-  };
-  const recent = vehicles.slice(0, 8);
+  const published = vehicles.filter((row) => row.published);
+  const available = vehicles.filter((row) => row.status === "available");
+  const reserved = vehicles.filter((row) => row.status === "reserved");
+  const sold = vehicles.filter((row) => row.status === "sold");
+  const drafts = vehicles.filter((row) => row.status === "draft" || !row.published);
+  const hidden = vehicles.filter((row) => row.status === "hidden");
+  const featured = vehicles.filter((row) => row.featured && row.published);
+  const newInquiries = inquiries.filter((row) => row.status === "new");
+  const recentVehicles = vehicles.slice(0, 6);
+  const recentInquiries = inquiries.slice(0, 4);
 
-  const kpis = [
-    {
-      href: "/admin/inventario",
-      label: "Unidades en website",
-      value: String(published.length),
-      hint: "Disponibles en RD o en proceso de subasta/importación",
-      icon: Car,
-    },
-    {
-      href: "/admin/inventario",
-      label: "Stock en RD",
-      value: String(available.length),
-      hint: `${formatUsdPlain(available.reduce((sum, row) => sum + vehicleSaleUsd(row), 0))} valor estimado`,
-      icon: Car,
-    },
-    {
-      href: "/admin/inventario",
-      label: "En subasta / importación",
-      value: String(auction.length),
-      hint: "Listados públicos con origen de subasta",
-      icon: Ship,
-      auctions: true,
-    },
+  const compact = [
+    { href: "/admin/inventario?estado=reserved", label: "Reservados", value: reserved.length },
+    { href: "/admin/inventario?estado=sold", label: "Vendidos", value: sold.length },
+    { href: "/admin/inventario?publicado=no", label: "Borradores", value: drafts.length },
+    { href: "/admin/subastas", label: "Oportunidades", value: auctionCount },
+    { href: "/admin/inventario", label: "Destacados", value: featured.length },
   ];
 
   return (
-    <div className="grid h-full w-full min-h-full gap-6">
+    <div className="grid gap-7">
       {error ? (
-        <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          {error}
-        </p>
+        <AdminNotice tone="warning">
+          No pudimos cargar parte de la información. Revisa la conexión e inténtalo de nuevo.
+        </AdminNotice>
       ) : null}
 
-      <section className="grid w-full gap-4 sm:grid-cols-3">
-        {kpis.map((kpi) => (
-          <Link
-            key={kpi.label}
-            href={kpi.href}
-            className="group relative overflow-hidden rounded-2xl border border-gray-200 border-l-4 border-l-slate-800 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-gray-400">
-                {kpi.label}
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="font-display text-2xl font-semibold tracking-tight text-[var(--admin-text)] sm:text-[1.85rem]">
+            {adminGreeting()}
+          </h1>
+          <p className="mt-1 max-w-xl text-sm leading-6 text-[var(--admin-text-secondary)]">
+            Administra el inventario y la presencia digital de Valcron Motors.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/admin/inventario/nuevo">
+            <AdminPrimaryButton>Agregar vehículo</AdminPrimaryButton>
+          </Link>
+          <Link href="/admin/subastas/nuevo">
+            <AdminSecondaryButton>Agregar oportunidad</AdminSecondaryButton>
+          </Link>
+        </div>
+      </header>
+
+      <section className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+        <Link
+          href="/admin/inventario?publicado=si"
+          className="group rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-6 shadow-[var(--admin-shadow)] transition duration-200 hover:border-[var(--admin-border-strong)]"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+                Vehículos publicados
               </p>
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-                <kpi.icon className="h-4 w-4" strokeWidth={2.25} />
-              </span>
+              <p className="mt-3 font-display text-4xl font-semibold tabular-nums tracking-tight text-[var(--admin-text)]">
+                {published.length}
+              </p>
+              <p className="mt-2 text-sm text-[var(--admin-text-secondary)]">
+                {featured.length} destacados en portada
+              </p>
             </div>
-            <p className="mt-4 font-display text-3xl font-semibold tracking-tight text-[#0B0C10]">
-              {kpi.value}
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--admin-nav)] text-[var(--admin-brand)]">
+              <Car className="h-4 w-4" strokeWidth={1.9} />
+            </span>
+          </div>
+        </Link>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Link
+            href="/admin/inventario?estado=available"
+            className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-[var(--admin-shadow)] transition duration-200 hover:border-[var(--admin-border-strong)]"
+          >
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+              Disponibles
             </p>
-            <p className="mt-2 text-xs leading-5 text-gray-500">{kpi.hint}</p>
-            {"auctions" in kpi && kpi.auctions ? (
-              <AuctionBadgeRow counts={sourceCount} />
-            ) : null}
+            <p className="mt-3 font-display text-3xl font-semibold tabular-nums text-[var(--admin-text)]">
+              {available.length}
+            </p>
+          </Link>
+          <Link
+            href="/admin/solicitudes?estado=new"
+            className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-[var(--admin-shadow)] transition duration-200 hover:border-[var(--admin-border-strong)]"
+          >
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+              Solicitudes nuevas
+            </p>
+            <p className="mt-3 font-display text-3xl font-semibold tabular-nums text-[var(--admin-text)]">
+              {newInquiries.length}
+            </p>
+            <p className="mt-2 text-xs text-[var(--admin-text-muted)]">{inquiries.length} en total</p>
+          </Link>
+        </div>
+      </section>
+
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {compact.map((item) => (
+          <Link
+            key={item.label}
+            href={item.href}
+            className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] px-4 py-4 transition duration-200 hover:border-[var(--admin-border-strong)]"
+          >
+            <p className="text-xs text-[var(--admin-text-muted)]">{item.label}</p>
+            <p className="mt-2 font-display text-2xl font-semibold tabular-nums text-[var(--admin-text)]">
+              {item.value}
+            </p>
           </Link>
         ))}
       </section>
 
-      <section className="grid w-full gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+      <section className="grid gap-4 xl:grid-cols-2">
         <AdminCard>
-          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-gray-400">
-            Inventario reciente
+          <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Salud de publicación</h2>
+          <p className="mt-1 text-sm text-[var(--admin-text-secondary)]">
+            Solo las unidades publicadas aparecen en el website.
           </p>
-          <h2 className="mt-1 font-display text-lg font-semibold text-[#0B0C10]">
-            Unidades del website
-          </h2>
-          {recent.length === 0 ? (
-            <p className="mt-8 text-sm text-gray-500">Aún no hay vehículos cargados.</p>
-          ) : (
-            <div className="mt-6 space-y-3">
-              {recent.map((row) => (
-                <div
-                  key={row.id}
-                  className="flex items-center justify-between gap-3 border-b border-gray-100 pb-3 last:border-0"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-[#0B0C10]">
-                      {vehicleLabel(row)}
-                    </p>
-                    <p className="text-xs text-gray-400">{formatUsdPlain(vehicleSaleUsd(row))}</p>
-                  </div>
-                  <AdminStatusBadge estado={row.estado} />
-                </div>
-              ))}
+          <DistributionBar
+            items={[
+              { label: "Publicados", value: published.length, tone: "bg-[var(--admin-success)]" },
+              { label: "Sin publicar", value: vehicles.length - published.length, tone: "bg-[var(--admin-border-strong)]" },
+            ]}
+          />
+        </AdminCard>
+        <AdminCard>
+          <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Estado del inventario</h2>
+          <p className="mt-1 text-sm text-[var(--admin-text-secondary)]">Distribución actual de las unidades.</p>
+          <DistributionBar
+            items={[
+              { label: "Disponibles", value: available.length, tone: "bg-[var(--admin-success)]" },
+              { label: "Reservados", value: reserved.length, tone: "bg-[var(--admin-warning)]" },
+              { label: "Vendidos", value: sold.length, tone: "bg-[var(--admin-text-muted)]" },
+              { label: "Borradores", value: vehicles.filter((row) => row.status === "draft").length, tone: "bg-[var(--admin-border-strong)]" },
+              { label: "Ocultos", value: hidden.length, tone: "bg-[#c5c8cc]" },
+            ]}
+          />
+        </AdminCard>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+        <AdminCard>
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Unidades recientes</h2>
+            <Link href="/admin/inventario" className="text-sm text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
+              Ver inventario
+            </Link>
+          </div>
+          {recentVehicles.length === 0 ? (
+            <div className="mt-6">
+              <AdminEmptyState
+                icon={Car}
+                title="Todavía no hay vehículos"
+                copy="Agrega la primera unidad para comenzar el catálogo."
+                action={
+                  <Link href="/admin/inventario/nuevo">
+                    <AdminPrimaryButton>Agregar vehículo</AdminPrimaryButton>
+                  </Link>
+                }
+              />
             </div>
+          ) : (
+            <ul className="mt-5 divide-y divide-[var(--admin-border)]">
+              {recentVehicles.map((row) => (
+                <li key={row.id}>
+                  <Link
+                    href={`/admin/inventario/${row.id}`}
+                    className="flex items-center justify-between gap-3 py-3"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-[var(--admin-text)]">
+                        {vehicleLabel(row)}
+                      </p>
+                      <p className="mt-0.5 text-xs text-[var(--admin-text-muted)]">
+                        {formatMoneyPlain(Number(row.price ?? 0), row.currency)} · {formatAdminDate(row.updated_at)}
+                      </p>
+                    </div>
+                    <span className="flex shrink-0 items-center gap-2">
+                      <AdminStatusBadge estado={row.status} />
+                      <AdminPublishBadge published={row.published} />
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           )}
         </AdminCard>
 
-        <div className="grid gap-3">
-          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-gray-400">
-            Acceso rápido
-          </p>
-          <Link
-            href="/admin/inventario/nuevo"
-            className="group flex items-center justify-between rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-          >
-            <span className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-                <PackagePlus className="h-4 w-4" strokeWidth={2.25} />
-              </span>
-              <span>
-                <span className="block text-sm font-medium text-[#0B0C10]">Agregar vehículo</span>
-                <span className="block text-xs text-gray-400">Publicar en el website</span>
-              </span>
-            </span>
-            <ArrowUpRight className="h-4 w-4 text-gray-300" />
-          </Link>
-          <Link
-            href="/"
-            className="group flex items-center justify-between rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-          >
-            <span className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-                <Globe className="h-4 w-4" strokeWidth={2.25} />
-              </span>
-              <span>
-                <span className="block text-sm font-medium text-[#0B0C10]">Sitio público</span>
-                <span className="block text-xs text-gray-400">valcronMotors</span>
-              </span>
-            </span>
-            <ArrowUpRight className="h-4 w-4 text-gray-300" />
-          </Link>
+        <div className="grid content-start gap-4">
+          <AdminCard>
+            <h2 className="font-display text-base font-semibold text-[var(--admin-text)]">Acciones rápidas</h2>
+            <div className="mt-3 grid gap-2">
+              {[
+                { href: "/admin/inventario/nuevo", label: "Agregar vehículo", hint: "Nueva unidad al catálogo", icon: PackagePlus },
+                { href: "/admin/subastas/nuevo", label: "Agregar oportunidad", hint: "Registro interno de subasta", icon: Gavel },
+                { href: "/admin/solicitudes", label: "Revisar solicitudes", hint: "Mensajes del website", icon: Inbox },
+                { href: "/", label: "Ver website", hint: "Sitio público de Valcron", icon: Globe },
+              ].map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="group flex items-center justify-between rounded-lg px-2 py-2.5 transition duration-200 hover:bg-[var(--admin-surface-muted)]"
+                >
+                  <span className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--admin-surface-muted)] text-[var(--admin-text-secondary)]">
+                      <item.icon className="h-4 w-4" strokeWidth={1.9} />
+                    </span>
+                    <span>
+                      <span className="block text-sm font-medium text-[var(--admin-text)]">{item.label}</span>
+                      <span className="block text-xs text-[var(--admin-text-muted)]">{item.hint}</span>
+                    </span>
+                  </span>
+                  <ArrowUpRight className="h-4 w-4 text-[var(--admin-text-muted)] transition group-hover:text-[var(--admin-text)]" />
+                </Link>
+              ))}
+            </div>
+          </AdminCard>
+
+          <AdminCard>
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="font-display text-base font-semibold text-[var(--admin-text)]">Solicitudes recientes</h2>
+              <Link href="/admin/solicitudes" className="text-sm text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
+                Ver todas
+              </Link>
+            </div>
+            {recentInquiries.length === 0 ? (
+              <p className="mt-4 text-sm text-[var(--admin-text-muted)]">Todavía no hay solicitudes.</p>
+            ) : (
+              <ul className="mt-3 divide-y divide-[var(--admin-border)]">
+                {recentInquiries.map((inquiry) => (
+                  <li key={inquiry.id} className="py-3">
+                    <p className="text-sm font-medium text-[var(--admin-text)]">{inquiry.name}</p>
+                    <p className="mt-0.5 line-clamp-2 text-xs leading-5 text-[var(--admin-text-muted)]">
+                      {inquiry.message || "Sin mensaje."}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </AdminCard>
         </div>
       </section>
     </div>

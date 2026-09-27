@@ -123,11 +123,11 @@ export function HomeFinance() {
             </p>
           </div>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/calculadoras/financiamiento" className="btn-primary">
-              Calcular financiamiento
+            <Link href="/contacto" className="btn-primary">
+              Solicitar orientación
             </Link>
             <Link href="/financiamiento" className="btn-secondary">
-              Conocer financiamiento
+              Ver financiamiento
             </Link>
           </div>
         </div>

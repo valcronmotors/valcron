@@ -1,6 +1,7 @@
 import type { User } from "@supabase/supabase-js";
+import { WEBSITE_ADMIN_ROLE } from "@/lib/auth-role";
 
-export const STAFF_ROLES = ["administrador", "vendedor"] as const;
+export const STAFF_ROLES = [WEBSITE_ADMIN_ROLE] as const;
 
 export type StaffRole = (typeof STAFF_ROLES)[number];
 
@@ -8,17 +9,17 @@ export type StaffUser = {
   id: string;
   email: string;
   name: string;
-  role: StaffRole;
+  role: StaffRole | "none";
   banned: boolean;
   createdAt: string | null;
 };
 
 export function isStaffRole(value: unknown): value is StaffRole {
-  return value === "administrador" || value === "vendedor";
+  return value === WEBSITE_ADMIN_ROLE;
 }
 
-export function staffRoleLabel(role: StaffRole) {
-  return role === "vendedor" ? "Vendedor" : "Administrador";
+export function staffRoleLabel(role: StaffUser["role"]) {
+  return role === WEBSITE_ADMIN_ROLE ? "Administrador" : "Sin acceso";
 }
 
 function metaText(value: unknown) {
@@ -41,9 +42,7 @@ export function mapAuthUser(user: User): StaffUser {
     id: user.id,
     email: user.email ?? "",
     name,
-    role: isStaffRole(user.app_metadata?.role)
-      ? user.app_metadata.role
-      : "administrador",
+    role: isStaffRole(user.app_metadata?.role) ? user.app_metadata.role : "none",
     banned: Number.isFinite(bannedUntil) && bannedUntil > Date.now(),
     createdAt: user.created_at ?? null,
   };

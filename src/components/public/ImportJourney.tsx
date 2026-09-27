@@ -17,7 +17,7 @@ const STEPS = [
     title: "Selección e Inspección",
     icon: ShieldCheck,
     tone: "bg-emerald-50 text-emerald-600",
-    copy: "Definimos presupuesto y condición. Inspeccionamos opciones reales en Copart y Manheim, incluyendo historial CARFAX y daños reportados, antes de pujar.",
+    copy: "Definimos presupuesto y condición. Revisamos opciones reales en plataformas como Copart e IAA, incluyendo historial y daños reportados, antes de pujar.",
   },
   {
     step: "02",

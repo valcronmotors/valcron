@@ -1,45 +1,50 @@
-import Link from "next/link";
+const LOCAL = [
+  { step: "01", title: "Explora", copy: "Revisa el inventario publicado." },
+  { step: "02", title: "Consulta", copy: "Escríbenos o visítanos con tus dudas." },
+  { step: "03", title: "Evalúa", copy: "Compara unidad, precio y financiamiento." },
+  { step: "04", title: "Compra", copy: "Completa el proceso con acompañamiento." },
+];
 
-const STEPS = [
-  { step: "01", title: "Encuentra tu vehículo" },
-  { step: "02", title: "Revisa las opciones" },
-  { step: "03", title: "Planifica tu compra" },
-  { step: "04", title: "Gestiona financiamiento y protección" },
-  { step: "05", title: "Completa el proceso" },
-  { step: "06", title: "Recibe tu vehículo" },
+const SOURCING = [
+  { step: "01", title: "Dinos qué buscas" },
+  { step: "02", title: "Seleccionamos opciones" },
+  { step: "03", title: "Revisas y cotizas" },
+  { step: "04", title: "Valcron gestiona el proceso" },
 ];
 
 export function HomeProcess() {
   return (
-    <section id="proceso" className="bg-[#181818]">
-      <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8 lg:py-32">
-        <p className="kicker">Cómo funciona</p>
-        <h2 className="mt-3 max-w-3xl text-balance font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
-          Del primer mensaje a tu próximo vehículo.
+    <section id="proceso" className="bg-[#141414]">
+      <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-24">
+        <p className="kicker text-[#C7A96B]">Cómo comprar</p>
+        <h2 className="mt-3 max-w-2xl font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          Un proceso corto, sin rodeos.
         </h2>
-        <div className="mt-14 grid gap-0 md:grid-cols-2 xl:grid-cols-6">
-          {STEPS.map((item, index) => (
-            <article
-              key={item.step}
-              className={`relative px-1 py-6 ${
-                index < STEPS.length - 1
-                  ? "xl:after:absolute xl:after:right-0 xl:after:top-10 xl:after:h-px xl:after:w-full xl:after:bg-gradient-to-r xl:after:from-[#C7A96B]/70 xl:after:to-transparent"
-                  : ""
-              }`}
-            >
-              <p className="kicker">{item.step}</p>
-              <h3 className="relative z-10 mt-4 max-w-[12rem] font-display text-xl font-semibold text-white">
-                {item.title}
-              </h3>
-            </article>
-          ))}
+        <div className="mt-10 grid gap-8 lg:grid-cols-2">
+          <div>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-white/60">Inventario local</h3>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              {LOCAL.map((item) => (
+                <article key={item.step} className="rounded-xl border border-white/10 p-4">
+                  <p className="text-[11px] uppercase tracking-[0.16em] text-[#C7A96B]">{item.step}</p>
+                  <h4 className="mt-2 font-display text-lg font-semibold text-white">{item.title}</h4>
+                  <p className="mt-1 text-sm text-white/70">{item.copy}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-white/60">Búsqueda y subasta</h3>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              {SOURCING.map((item) => (
+                <article key={item.step} className="rounded-xl border border-white/10 p-4">
+                  <p className="text-[11px] uppercase tracking-[0.16em] text-[#C7A96B]">{item.step}</p>
+                  <h4 className="mt-2 font-display text-lg font-semibold text-white">{item.title}</h4>
+                </article>
+              ))}
+            </div>
+          </div>
         </div>
-        <Link
-          href="/como-funciona"
-          className="mt-10 inline-flex text-sm font-semibold text-white/80 underline-offset-4 hover:text-white hover:underline"
-        >
-          Ver el proceso completo
-        </Link>
       </div>
     </section>
   );

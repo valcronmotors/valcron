@@ -71,7 +71,7 @@ export function AddPartModal({
         return;
       }
       if (result.record) {
-        onCreated(result.record);
+        onCreated(result.record as PartRow);
       }
       handleClose();
     });

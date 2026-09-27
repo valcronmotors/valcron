@@ -30,8 +30,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# Copart official Sales Data (never commit the full feed)
+salesdata.csv
+**/salesdata.csv
+*.copart.csv
+/data/copart/
 
 # vercel
 .vercel
@@ -39,3 +42,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.env.local
+
+.env*.local
+
+supabase/.temp/

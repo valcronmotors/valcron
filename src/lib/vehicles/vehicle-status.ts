@@ -1,10 +1,10 @@
 import type {
   AuctionPlatform,
   PublicVehicle,
-  PublicVehicleRow,
   VehicleAvailability,
   VehicleSource,
 } from "@/types/vehicle";
+import type { VehicleRow, VehicleSourceType, VehicleStatus } from "@/lib/website-schema";
 
 export function normalizeAuctionPlatform(value: string | null | undefined): AuctionPlatform | null {
   const fuente = (value ?? "").trim().toLowerCase();
@@ -20,37 +20,39 @@ export function isAuctionSource(value: string | null | undefined) {
   return platform === "copart" || platform === "iaai" || platform === "manheim";
 }
 
-export function vehicleSourceFromRow(row: Pick<PublicVehicleRow, "estado" | "fuente_subasta">): VehicleSource {
-  const platform = normalizeAuctionPlatform(row.fuente_subasta);
-  if (platform === "copart" || platform === "iaai" || platform === "manheim") {
-    return platform;
+export function vehicleSourceFromType(sourceType: VehicleSourceType | null | undefined): VehicleSource {
+  if (sourceType === "valcron_stock") {
+    return "stock_rd";
   }
-  if (row.estado === "En Subasta") {
-    return "other";
-  }
-  return "stock_rd";
+  return "manual";
 }
 
-export function vehicleAvailabilityFromRow(
-  row: Pick<PublicVehicleRow, "estado" | "fuente_subasta">,
-): VehicleAvailability {
-  const estado = row.estado ?? "";
-  if (estado === "Vendido") return "sold";
-  if (estado === "En Tránsito") return "in_transit";
-  if (estado === "En Subasta" || isAuctionSource(row.fuente_subasta)) return "auction";
+export function isAuctionOpportunitySource(sourceType: VehicleSourceType | null | undefined) {
+  return sourceType === "other";
+}
+
+export function vehicleAvailabilityFromStatus(status: VehicleStatus | null | undefined): VehicleAvailability {
+  if (status === "sold") return "sold";
+  if (status === "reserved") return "reserved";
+  if (status === "hidden" || status === "draft") return "coming_soon";
   return "available_rd";
 }
 
-export function isPublicCatalogListing(row: Pick<PublicVehicleRow, "estado" | "fuente_subasta">) {
-  const estado = row.estado ?? "";
-  if (estado === "Disponible" || estado === "En Tránsito") {
-    return true;
-  }
-  return estado === "En Subasta" && (isAuctionSource(row.fuente_subasta) || !row.fuente_subasta);
+export function vehicleSourceFromRow(row: Pick<VehicleRow, "source_type">): VehicleSource {
+  return vehicleSourceFromType(row.source_type);
 }
 
-export function isPublicDetailListing(row: Pick<PublicVehicleRow, "estado" | "fuente_subasta">) {
-  return isPublicCatalogListing(row) || row.estado === "Vendido";
+export function vehicleAvailabilityFromRow(
+  row: Pick<VehicleRow, "status" | "source_type">,
+): VehicleAvailability {
+  const statusAvailability = vehicleAvailabilityFromStatus(row.status);
+  if (statusAvailability !== "available_rd") {
+    return statusAvailability;
+  }
+  if (isAuctionOpportunitySource(row.source_type)) {
+    return "auction";
+  }
+  return "available_rd";
 }
 
 export function listingKindFromAvailability(availability: VehicleAvailability): "dealer" | "auction" {
@@ -60,9 +62,9 @@ export function listingKindFromAvailability(availability: VehicleAvailability): 
 export function availabilityLabel(availability: VehicleAvailability) {
   switch (availability) {
     case "available_rd":
-      return "Disponible en RD";
+      return "Disponible en Valcron";
     case "auction":
-      return "Subasta USA";
+      return "Disponible mediante subasta";
     case "in_transit":
       return "En tránsito";
     case "reserved":
@@ -85,7 +87,7 @@ export function sourceLabel(source: VehicleSource) {
     case "stock_rd":
       return "Valcron Motors";
     case "manual":
-      return "Valcron Motors";
+      return null;
     default:
       return null;
   }
@@ -108,17 +110,53 @@ export function statusBadgeClass(availability: VehicleAvailability) {
   }
 }
 
-export function publicListingBadge(vehicle: Pick<PublicVehicle, "availability" | "estado" | "listingKind">) {
+export function publicListingBadge(
+  vehicle: Pick<PublicVehicle, "availability" | "estado" | "listingKind" | "source">,
+) {
   const availability =
     vehicle.availability ??
-    (vehicle.estado === "En Tránsito"
-      ? "in_transit"
-      : vehicle.listingKind === "auction" || vehicle.estado === "En Subasta"
-        ? "auction"
-        : "available_rd");
+    (vehicle.estado === "Reservado"
+      ? "reserved"
+      : vehicle.estado === "Vendido"
+        ? "sold"
+        : vehicle.listingKind === "auction"
+          ? "auction"
+          : "available_rd");
+
+  const label = availabilityLabel(availability);
+
   return {
-    label: availabilityLabel(availability),
+    label,
     className: statusBadgeClass(availability),
     availability,
   };
+}
+
+export function isAuctionListing(
+  vehicle: Pick<PublicVehicle, "listingKind" | "availability">,
+) {
+  return vehicle.listingKind === "auction" || vehicle.availability === "auction";
+}
+
+export function publicVehicleInquiryLabel(vehicle: Pick<PublicVehicle, "listingKind" | "availability">) {
+  return isAuctionListing(vehicle) ? "Solicitar cotización" : "Solicitar información";
+}
+
+export function publicVehicleCardActionLabel(vehicle: Pick<PublicVehicle, "listingKind" | "availability">) {
+  return isAuctionListing(vehicle) ? "Cotizar" : "WhatsApp";
+}
+
+export function vehicleStatusLabel(status: VehicleStatus) {
+  switch (status) {
+    case "draft":
+      return "Borrador";
+    case "available":
+      return "Disponible";
+    case "reserved":
+      return "Reservado";
+    case "sold":
+      return "Vendido";
+    case "hidden":
+      return "Oculto";
+  }
 }

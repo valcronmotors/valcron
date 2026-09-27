@@ -1,19 +1,17 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { FeaturedInventory } from "@/components/public/FeaturedInventory";
+import { InventorySectionSkeleton } from "@/components/public/InventorySkeleton";
 import { HomeAuctions } from "@/components/home/HomeAuctions";
 import { HomeBlogPreview } from "@/components/home/HomeBlogPreview";
-import { HomeEditorial } from "@/components/home/HomeEditorial";
 import { HomeFaqPreview } from "@/components/home/HomeFaqPreview";
 import { HomeFinalCta } from "@/components/home/HomeFinalCta";
 import { HomeFinance } from "@/components/home/HomeFinance";
 import { HomeHero } from "@/components/home/HomeHero";
-import { HomeImport } from "@/components/home/HomeImport";
-import { HomeLocation } from "@/components/home/HomeLocation";
 import { HomeProcess } from "@/components/home/HomeProcess";
-import { HomeProtection } from "@/components/home/HomeProtection";
-import { HomePurchase } from "@/components/home/HomePurchase";
 import { HomeSearch } from "@/components/home/HomeSearch";
-import { HomeShopBy } from "@/components/home/HomeShopBy";
+import { HomeServices } from "@/components/home/HomeServices";
+import { HomeTrust } from "@/components/home/HomeTrust";
 import { loadPublicVehicles } from "@/lib/public-inventory";
 import { SITE, autoDealerJsonLd } from "@/lib/site";
 
@@ -29,7 +27,6 @@ export const metadata: Metadata = {
     "comprar vehículo RD",
     "inventario de vehículos Santo Domingo",
     "financiamiento de vehículos RD",
-    "seguro de vehículos RD",
   ],
   openGraph: {
     locale: "es_DO",
@@ -42,9 +39,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function Home() {
+async function HomeInventoryBand() {
   const inventory = await loadPublicVehicles();
+  return (
+    <>
+      <HomeSearch vehicles={inventory.data} />
+      <FeaturedInventory vehicles={inventory.data} error={inventory.error} />
+    </>
+  );
+}
 
+export default function Home() {
   return (
     <>
       <script
@@ -53,19 +58,16 @@ export default async function Home() {
       />
       <main>
         <HomeHero />
-        <HomeSearch vehicles={inventory.data} />
-        <FeaturedInventory initialVehicles={inventory.data} error={inventory.error} />
-        <HomeShopBy />
-        <HomeEditorial />
-        <HomePurchase />
+        <Suspense fallback={<InventorySectionSkeleton />}>
+          <HomeInventoryBand />
+        </Suspense>
+        <HomeTrust />
+        <HomeServices />
         <HomeFinance />
-        <HomeProtection />
-        <HomeProcess />
         <HomeAuctions />
-        <HomeImport />
+        <HomeProcess />
         <HomeBlogPreview />
         <HomeFaqPreview />
-        <HomeLocation />
         <HomeFinalCta />
       </main>
     </>

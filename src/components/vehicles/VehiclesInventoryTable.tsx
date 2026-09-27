@@ -3,7 +3,7 @@ import {
   VehicleLink,
   VehicleStatusBadge,
 } from "@/components/status-badges";
-import type { VehicleRow } from "@/lib/inventory";
+import type { ErpVehicleRow as VehicleRow } from "@/lib/inventory";
 import { formatDop, formatUsd } from "@/lib/money";
 
 function moneyUsd(value: number | null | undefined) {

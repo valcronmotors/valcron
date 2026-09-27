@@ -1,0 +1,184 @@
+import Link from "next/link";
+import { Globe, Star } from "lucide-react";
+import { AdminCard, AdminEmptyState, AdminPageHeader, AdminPrimaryButton, AdminSecondaryButton } from "@/components/admin/ui";
+import { formatAdminDate } from "@/lib/admin-copy";
+import { vehicleLabel } from "@/lib/admin-metrics";
+import { SITE } from "@/lib/site";
+import { canPublishVehicleListing, vehiclePublicationChecks } from "@/lib/publication-readiness";
+import type { InquiryRow, VehicleRow } from "@/lib/website-schema";
+
+export function AdminWebsiteView({
+  vehicles,
+  inquiries,
+}: {
+  vehicles: VehicleRow[];
+  inquiries: InquiryRow[];
+}) {
+  const published = vehicles.filter((row) => row.published);
+  const featured = vehicles.filter((row) => row.featured && row.published);
+  const ready = vehicles.filter((row) =>
+    canPublishVehicleListing(
+      vehiclePublicationChecks({
+        year: row.year,
+        make: row.make,
+        model: row.model,
+        description: row.description,
+        price: row.price,
+        status: row.status,
+        photos: row.vehicle_photos,
+      }),
+    ),
+  );
+  const unpublishedReady = ready.filter((row) => !row.published);
+
+  return (
+    <div className="grid gap-6">
+      <AdminPageHeader
+        title="Website"
+        subtitle="Control de publicación, destacados y accesos públicos. El contenido editorial del sitio no se edita aquí."
+        actions={
+          <>
+            <Link href="/" target="_blank">
+              <AdminPrimaryButton>Ver Home</AdminPrimaryButton>
+            </Link>
+            <Link href="/inventario" target="_blank">
+              <AdminSecondaryButton>Ver Inventario</AdminSecondaryButton>
+            </Link>
+          </>
+        }
+      />
+
+      <section className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+        <AdminCard>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+            Estado del website
+          </p>
+          <p className="mt-2 font-display text-2xl font-semibold text-[var(--admin-text)]">
+            {published.length > 0 ? "Inventario público activo" : "Sin unidades publicadas"}
+          </p>
+          <p className="mt-2 text-sm text-[var(--admin-text-secondary)]">{SITE.url}</p>
+          <dl className="mt-6 grid gap-3 sm:grid-cols-3">
+            <div>
+              <dt className="text-xs text-[var(--admin-text-muted)]">Publicados</dt>
+              <dd className="mt-1 font-display text-3xl font-semibold tabular-nums">{published.length}</dd>
+            </div>
+            <div>
+              <dt className="text-xs text-[var(--admin-text-muted)]">Destacados</dt>
+              <dd className="mt-1 font-display text-3xl font-semibold tabular-nums">{featured.length}</dd>
+            </div>
+            <div>
+              <dt className="text-xs text-[var(--admin-text-muted)]">Listos sin publicar</dt>
+              <dd className="mt-1 font-display text-3xl font-semibold tabular-nums">{unpublishedReady.length}</dd>
+            </div>
+          </dl>
+        </AdminCard>
+        <AdminCard>
+          <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Enlaces públicos</h2>
+          <ul className="mt-4 grid gap-2 text-sm">
+            <li>
+              <Link href="/" className="inline-flex items-center gap-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
+                <Globe className="h-4 w-4" /> Home
+              </Link>
+            </li>
+            <li>
+              <Link href="/inventario" className="inline-flex items-center gap-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
+                <Globe className="h-4 w-4" /> Inventario
+              </Link>
+            </li>
+            <li>
+              <Link href="/contacto" className="inline-flex items-center gap-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
+                <Globe className="h-4 w-4" /> Contacto
+              </Link>
+            </li>
+          </ul>
+          <p className="mt-6 text-xs text-[var(--admin-text-muted)]">
+            Última solicitud: {inquiries[0] ? `${inquiries[0].name} · ${formatAdminDate(inquiries[0].created_at)}` : "todavía no hay mensajes"}
+          </p>
+        </AdminCard>
+      </section>
+
+      <AdminCard>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Destacados</h2>
+            <p className="mt-1 text-sm text-[var(--admin-text-secondary)]">
+              Estas unidades aparecen primero en la portada cuando están publicadas.
+            </p>
+          </div>
+          <Link href="/admin/inventario">
+            <AdminSecondaryButton>Administrar destacados</AdminSecondaryButton>
+          </Link>
+        </div>
+        {featured.length === 0 ? (
+          <div className="mt-6">
+            <AdminEmptyState
+              icon={Star}
+              title="No hay destacados"
+              copy="Marca una unidad como destacada desde su ficha, después de publicarla."
+            />
+          </div>
+        ) : (
+          <ul className="mt-4 divide-y divide-[var(--admin-border)]">
+            {featured.map((vehicle) => (
+              <li key={vehicle.id} className="flex items-center justify-between py-3">
+                <Link href={`/admin/inventario/${vehicle.id}`} className="font-medium text-[var(--admin-text)]">
+                  {vehicleLabel(vehicle)}
+                </Link>
+                <span className="text-xs text-[var(--admin-text-muted)]">{formatAdminDate(vehicle.updated_at)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </AdminCard>
+
+      <section className="grid gap-4 lg:grid-cols-2">
+        <AdminCard>
+          <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Publicados</h2>
+          <p className="mt-1 text-sm text-[var(--admin-text-secondary)]">
+            Unidades visibles en el website ahora mismo.
+          </p>
+          {published.length === 0 ? (
+            <p className="mt-4 text-sm text-[var(--admin-text-muted)]">Todavía no hay unidades publicadas.</p>
+          ) : (
+            <ul className="mt-4 divide-y divide-[var(--admin-border)]">
+              {published.slice(0, 12).map((vehicle) => (
+                <li key={vehicle.id} className="flex items-center justify-between gap-3 py-3">
+                  <Link href={`/admin/inventario/${vehicle.id}`} className="font-medium text-[var(--admin-text)]">
+                    {vehicleLabel(vehicle)}
+                  </Link>
+                  <Link
+                    href={`/inventario/${vehicle.id}`}
+                    target="_blank"
+                    className="text-xs text-[var(--admin-text-muted)] underline-offset-2 hover:underline"
+                  >
+                    Ver ficha
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </AdminCard>
+        <AdminCard>
+          <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Listos sin publicar</h2>
+          <p className="mt-1 text-sm text-[var(--admin-text-secondary)]">
+            Cumplen lo obligatorio y aún no están en el website.
+          </p>
+          {unpublishedReady.length === 0 ? (
+            <p className="mt-4 text-sm text-[var(--admin-text-muted)]">No hay borradores listos para publicar.</p>
+          ) : (
+            <ul className="mt-4 divide-y divide-[var(--admin-border)]">
+              {unpublishedReady.map((vehicle) => (
+                <li key={vehicle.id} className="flex items-center justify-between gap-3 py-3">
+                  <Link href={`/admin/inventario/${vehicle.id}`} className="font-medium text-[var(--admin-text)]">
+                    {vehicleLabel(vehicle)}
+                  </Link>
+                  <span className="text-xs text-[var(--admin-text-muted)]">Listo</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </AdminCard>
+      </section>
+    </div>
+  );
+}

@@ -9,7 +9,7 @@ export function ImportQuoteForm() {
   const [nombre, setNombre] = useState("");
   const [vehiculo, setVehiculo] = useState("");
   const [presupuesto, setPresupuesto] = useState("");
-  const [fuente, setFuente] = useState("Copart / Manheim");
+  const [fuente, setFuente] = useState("Copart / IAA");
   const [notas, setNotas] = useState("");
 
   const href = useMemo(() => {
@@ -72,9 +72,9 @@ export function ImportQuoteForm() {
             onChange={(event) => setFuente(event.target.value)}
             className={fieldClass}
           >
-            <option>Copart / Manheim</option>
+            <option>Copart / IAA</option>
             <option>Copart</option>
-            <option>Manheim</option>
+            <option>IAA</option>
           </select>
         </label>
       </div>

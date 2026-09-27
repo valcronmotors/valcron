@@ -1,93 +1,115 @@
-import { DEFAULT_TASA_USD_DOP } from "@/lib/vehicle-costs";
-import { SITE } from "@/lib/site";
+import {
+  formatCustomerFacingPrice,
+  publicPriceKind,
+  resolvePublicPriceMode,
+} from "@/lib/public-price-mode";
+import { DEFAULT_TASA_USD_DOP } from "@/lib/fx";
+import { sortVehiclePhotos, vehicleImageAdminPath, vehicleImagePublicPath } from "@/lib/storage";
 import { buildVehicleSlug } from "@/lib/vehicles/vehicle-slugs";
 import {
   listingKindFromAvailability,
-  normalizeAuctionPlatform,
   vehicleAvailabilityFromRow,
-  vehicleSourceFromRow,
+  vehicleSourceFromType,
 } from "@/lib/vehicles/vehicle-status";
-import type { PublicVehicle, PublicVehicleRow, VehicleImage } from "@/types/vehicle";
+import type { PublicVehicle, VehicleImage } from "@/types/vehicle";
+import type { VehiclePhotoRow, VehicleRow } from "@/lib/website-schema";
 
 function cleanText(value: string | null | undefined) {
   const trimmed = (value ?? "").trim();
   return trimmed || null;
 }
 
-function normalizeImages(urls: string[] | null | undefined, title: string): VehicleImage[] {
-  return (urls ?? [])
-    .filter((url) => /^https?:\/\//i.test(url) || url.startsWith("/"))
-    .map((url, index) => ({
-      url,
-      thumbnailUrl: url,
-      alt: index === 0 ? `${title} — vista principal` : `${title} — imagen ${index + 1}`,
-      order: index,
-      category: "other" as const,
-    }));
+function numberOrNull(value: number | string | null | undefined) {
+  if (value == null || value === "") {
+    return null;
+  }
+  const amount = Number(value);
+  return Number.isFinite(amount) ? amount : null;
 }
 
-export function normalizeVehicle(row: PublicVehicleRow): PublicVehicle {
-  const make = cleanText(row.marca) ?? "";
-  const model = cleanText(row.modelo) ?? "";
-  const year = Number(row.ano) || 0;
-  const trim = cleanText(row.trim) || cleanText(row.trim_version);
+export function photosToImages(
+  photos: VehiclePhotoRow[] | null | undefined,
+  title: string,
+): VehicleImage[] {
+  return sortVehiclePhotos(photos ?? []).map((photo, index) => {
+    const url = vehicleImagePublicPath(photo.storage_path);
+    return {
+      id: photo.id,
+      url,
+      thumbnailUrl: url,
+      alt: photo.alt_text || (photo.is_cover ? `${title} — vista principal` : `${title} — imagen ${index + 1}`),
+      order: photo.sort_order,
+      category: "other" as const,
+    };
+  });
+}
+
+export function toPublicVehicle(row: VehicleRow): PublicVehicle {
+  const make = cleanText(row.make) ?? "";
+  const model = cleanText(row.model) ?? "";
+  const year = Number(row.year) || 0;
+  const trim = cleanText(row.trim);
   const vin = cleanText(row.vin)?.toUpperCase() ?? "";
   const title = `${year} ${make} ${model}${trim ? ` ${trim}` : ""}`.replace(/\s+/g, " ").trim();
   const availability = vehicleAvailabilityFromRow(row);
-  const source = vehicleSourceFromRow(row);
-  const platform = normalizeAuctionPlatform(row.fuente_subasta);
-  const tasaUsdDop = Number(row.tasa_usd_dop ?? 0) > 0 ? Number(row.tasa_usd_dop) : DEFAULT_TASA_USD_DOP;
-  const rdPrice = Number(row.precio_venta_dop ?? 0);
-  const usdPrice = rdPrice > 0 ? Math.round((rdPrice / tasaUsdDop) * 100) / 100 : 0;
-  const priceVisible = rdPrice > 0;
-  const images = normalizeImages(row.fotos_urls, title);
-  const lotNumber = cleanText(row.lote_numero);
+  const source = vehicleSourceFromType(row.source_type);
   const listingKind = listingKindFromAvailability(availability);
-  const location =
-    availability === "auction"
-      ? [platform ? `Subasta ${platform === "iaai" ? "IAA" : platform}` : "Subasta USA", cleanText(row.ubicacion_lote)]
-          .filter(Boolean)
-          .join(" · ")
-      : availability === "in_transit"
-        ? "En tránsito hacia República Dominicana"
-        : SITE.address.full;
-
-  const auction =
-    availability === "auction" || lotNumber || platform
-      ? {
-          platform: platform ?? undefined,
-          lotNumber,
-          sourceUrl: null,
-          currentBid: null,
-          buyNowPrice: null,
-          lastSyncedAt: null,
-        }
-      : null;
+  const images = photosToImages(row.vehicle_photos, title);
+  const price = numberOrNull(row.price);
+  const currency = row.currency === "DOP" ? "DOP" : "USD";
+  const mode = resolvePublicPriceMode(row.source_type, row.public_price_mode);
+  const tasaUsdDop = DEFAULT_TASA_USD_DOP;
+  const usdPrice =
+    price == null
+      ? 0
+      : currency === "USD"
+        ? price
+        : Math.round((price / tasaUsdDop) * 100) / 100;
+  const rdPrice =
+    price == null
+      ? 0
+      : currency === "DOP"
+        ? price
+        : Math.round(price * tasaUsdDop * 100) / 100;
+  const priceVisible = mode !== "contact" && Boolean(price && price > 0);
+  const numericUsd = priceVisible && usdPrice > 0 ? usdPrice : null;
+  const numericRd = priceVisible && rdPrice > 0 ? rdPrice : null;
+  const location = cleanText(row.location);
+  const estado =
+    row.status === "sold"
+      ? "Vendido"
+      : row.status === "reserved"
+        ? "Reservado"
+        : row.status === "hidden"
+          ? "Oculto"
+          : row.status === "draft"
+            ? "Borrador"
+            : "Disponible";
 
   return {
     id: row.id,
     slug: buildVehicleSlug({ id: row.id, year, make, model, trim }),
     source,
-    sourceVehicleId: lotNumber,
+    sourceVehicleId: cleanText(row.stock_number),
     sourceUrl: null,
     year,
     make,
     model,
     trim,
     vin: vin || null,
-    stockNumber: null,
+    stockNumber: cleanText(row.stock_number),
     bodyType: null,
-    mileage: null,
-    mileageUnit: "km",
-    engine: null,
+    mileage: numberOrNull(row.mileage),
+    mileageUnit: row.mileage_unit === "km" ? "km" : "mi",
+    engine: cleanText(row.engine),
     cylinders: null,
-    fuelType: null,
-    transmission: null,
-    drivetrain: null,
-    exteriorColor: null,
-    interiorColor: null,
-    titleType: null,
-    condition: null,
+    fuelType: cleanText(row.fuel),
+    transmission: cleanText(row.transmission),
+    drivetrain: cleanText(row.drivetrain),
+    exteriorColor: cleanText(row.exterior_color),
+    interiorColor: cleanText(row.interior_color),
+    titleType: cleanText(row.title_status),
+    condition: cleanText(row.condition),
     primaryDamage: null,
     secondaryDamage: null,
     keysAvailable: null,
@@ -96,37 +118,38 @@ export function normalizeVehicle(row: PublicVehicleRow): PublicVehicle {
     availability,
     images,
     pricing: {
-      currency: "DOP",
-      publicPrice: rdPrice > 0 ? rdPrice : null,
-      rdPrice: rdPrice > 0 ? rdPrice : null,
-      usdPrice: usdPrice > 0 ? usdPrice : null,
+      currency,
+      publicPrice: priceVisible ? price : null,
+      rdPrice: numericRd,
+      usdPrice: numericUsd,
       currentBid: null,
       buyNowPrice: null,
-      estimatedPrice: null,
+      estimatedPrice: mode === "estimated" && priceVisible ? price : null,
       priceVisible,
-      priceLabel: priceVisible ? "Precio de venta" : "Consultar precio",
-      kind: priceVisible ? "sale" : "consult",
+      priceLabel: formatCustomerFacingPrice(mode, price, currency),
+      kind: publicPriceKind(mode),
+      publicPriceMode: mode,
       exchangeRate: tasaUsdDop,
     },
-    auction,
-    description: null,
+    auction: null,
+    description: cleanText(row.description),
     features: [],
-    published: true,
-    featured: false,
-    publishedAt: row.updated_at ?? row.created_at ?? null,
-    createdAt: row.created_at ?? null,
-    updatedAt: row.updated_at ?? null,
+    published: row.published,
+    featured: Boolean(row.featured),
+    publishedAt: row.published_at,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
     lastSyncedAt: null,
     marca: make,
     modelo: model,
     ano: year,
     fotosUrls: images.map((image) => image.url),
-    estado: row.estado || "Disponible",
-    fuenteSubasta: cleanText(row.fuente_subasta),
-    ubicacion: location,
+    estado,
+    fuenteSubasta: null,
+    ubicacion: location ?? "",
     listingKind,
-    precioVentaDop: rdPrice,
-    precioVentaUsd: usdPrice,
+    precioVentaDop: numericRd ?? 0,
+    precioVentaUsd: numericUsd ?? 0,
     tasaUsdDop,
     especificaciones: {
       marca: make,
@@ -138,5 +161,43 @@ export function normalizeVehicle(row: PublicVehicleRow): PublicVehicle {
   };
 }
 
-export const PUBLIC_VEHICLE_SELECT =
-  "id, vin, marca, modelo, trim, trim_version, ano, precio_venta_dop, tasa_usd_dop, fotos_urls, estado, fuente_subasta, ubicacion_lote, lote_numero";
+export function normalizeVehicle(row: VehicleRow): PublicVehicle {
+  return toPublicVehicle(row);
+}
+
+export function toAdminPreviewVehicle(row: VehicleRow): PublicVehicle {
+  const vehicle = toPublicVehicle(row);
+  const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`.trim();
+  const images = sortVehiclePhotos(row.vehicle_photos ?? []).map((photo, index) => {
+    const url = vehicleImageAdminPath(photo.storage_path);
+    return {
+      id: photo.id,
+      url,
+      thumbnailUrl: url,
+      alt: photo.alt_text || (photo.is_cover ? `${title} — vista principal` : `${title} — imagen ${index + 1}`),
+      order: photo.sort_order,
+      category: "other" as const,
+    };
+  });
+  return {
+    ...vehicle,
+    images,
+    fotosUrls: images.map((image) => image.url),
+  };
+}
+
+export const PUBLIC_VEHICLE_LIST_SELECT = `
+  id, stock_number, vin, year, make, model, trim, mileage, mileage_unit,
+  price, currency, public_price_mode, location, source_type, status, featured, published,
+  published_at, created_at, updated_at
+`.replace(/\s+/g, " ").trim();
+
+export const PUBLIC_VEHICLE_SELECT = `
+  ${PUBLIC_VEHICLE_LIST_SELECT},
+  exterior_color, interior_color, engine, transmission, drivetrain, fuel,
+  condition, title_status, description,
+  vehicle_photos ( id, vehicle_id, storage_path, sort_order, is_cover, alt_text, created_at )
+`.replace(/\s+/g, " ").trim();
+
+export const PUBLIC_COVER_PHOTO_SELECT =
+  "id, vehicle_id, storage_path, sort_order, is_cover, alt_text, created_at";

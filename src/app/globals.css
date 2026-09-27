@@ -30,29 +30,32 @@
 }
 
 .public-site {
-  --background: #050608;
-  --surface: #faf9f6;
-  --surface-2: #f5f5f3;
-  --foreground: #fafafa;
-  --ink: #d4d4d4;
-  --muted: #c7c7c7;
-  --accent: #c7a96b;
-  --accent-gold: #b49355;
-  --line: rgba(255, 255, 255, 0.1);
-  --graphite: #181818;
-  --whatsapp: #25d366;
-  --whatsapp-hover: #1ebe5d;
+  --background: #f7f5f1;
+  --surface: #ffffff;
+  --surface-2: #f3f1ed;
+  --foreground: #141414;
+  --ink: #3f3f3f;
+  --muted: #6b6b6b;
+  --accent: #9b793f;
+  --accent-gold: #c7a96b;
+  --line: #e6e2db;
+  --graphite: #1c1c1c;
+  --whatsapp: #128c4b;
+  --whatsapp-hover: #0f7a41;
   --header-bg: #050608;
-  --header-bg-top: #090a0c;
-  --header-bg-bottom: #030405;
-  --footer-bg: #050608;
-  --footer: #050608;
+  --header-bg-top: #0c0d10;
+  --header-bg-bottom: #050608;
+  --footer-bg: #0b0c0e;
+  --footer: #0b0c0e;
   --brand-white: #ffffff;
   --brand-nav: #ededed;
   --brand-silver: #a3a3a3;
   --brand-champagne: #c7a96b;
   --brand-champagne-dark: #9b793f;
-  color-scheme: dark;
+  --public-card-radius: 1rem;
+  --public-control-height: 2.75rem;
+  --public-shadow: 0 10px 28px rgba(20, 20, 20, 0.06);
+  color-scheme: light;
   background: var(--background);
   color: var(--foreground);
 }
@@ -73,7 +76,7 @@
   --color-footer: var(--footer);
   --font-sans: var(--font-inter);
   --font-display: var(--font-jakarta);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 html {
@@ -102,8 +105,8 @@ h3 {
 }
 
 .public-site ::selection {
-  background: rgba(255, 255, 255, 0.16);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--foreground);
 }
 
 @utility kicker {
@@ -116,7 +119,7 @@ h3 {
 }
 
 .public-site .kicker {
-  color: #c7a96b;
+  color: #9b793f;
 }
 
 .public-site :is(.section-light, .bg-surface, .bg-surface-2) {
@@ -163,12 +166,12 @@ h3 {
 }
 
 .public-site .btn-primary {
-  background-color: #ffffff;
-  color: #000000;
+  background-color: #141414;
+  color: #ffffff;
 }
 
 .public-site .btn-primary:hover {
-  background-color: #d4d4d4;
+  background-color: #2a2a2a;
 }
 
 @utility btn-secondary {
@@ -189,13 +192,13 @@ h3 {
 }
 
 .public-site .btn-secondary {
-  border-color: rgba(255, 255, 255, 0.28);
-  color: #f5f5f5;
+  border-color: #141414;
+  color: #141414;
 }
 
 .public-site .btn-secondary:hover {
-  background-color: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(20, 20, 20, 0.05);
+  border-color: #141414;
 }
 
 @utility btn-whatsapp {
@@ -234,28 +237,37 @@ h3 {
 }
 
 .public-site .field-input {
-  background-color: #111111;
-  border-color: rgba(255, 255, 255, 0.12);
-  color: #f5f5f5;
+  background-color: #ffffff;
+  border-color: #d8d4cc;
+  color: #141414;
 }
 
 .public-site .field-input:focus {
-  border-color: rgba(255, 255, 255, 0.42);
+  border-color: #9b793f;
 }
 
 .site-header {
   isolation: isolate;
-  height: 72px;
+  height: 68px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   background-color: #050608;
-  background-image: linear-gradient(180deg, #090a0c 0%, #030405 100%);
+  background-image: linear-gradient(180deg, #121317 0%, #07080a 100%);
   color: #ededed;
-  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+  transition: height 180ms ease, box-shadow 180ms ease;
+}
+
+.site-header.is-compact {
+  height: 60px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
 }
 
 @media (min-width: 1024px) {
   .site-header {
-    height: 80px;
+    height: 76px;
+  }
+  .site-header.is-compact {
+    height: 64px;
   }
 }
 
@@ -266,8 +278,8 @@ h3 {
 
 .site-footer {
   isolation: isolate;
-  background-color: #050608;
-  background-image: linear-gradient(180deg, #090a0d 0%, #030405 100%);
+  background-color: #0b0c0e;
+  background-image: linear-gradient(180deg, #121317 0%, #07080a 100%);
   color: #a3a3a3;
 }
 
@@ -321,7 +333,17 @@ h3 {
 }
 
 .public-site .field-input::placeholder {
-  color: #a3a3a3;
+  color: #737373;
+}
+
+.public-site:has([data-sticky-cta]) .whatsapp-fab {
+  bottom: 6.75rem;
+}
+
+@media (min-width: 1024px) {
+  .public-site:has([data-sticky-cta]) .whatsapp-fab {
+    bottom: 2rem;
+  }
 }
 
 .public-site .gloss-panel .btn-primary {
@@ -342,6 +364,29 @@ h3 {
 
 .public-site .gloss-panel .field-input::placeholder {
   color: #a3a3a3;
+}
+
+.hero-on-dark .btn-primary,
+.public-site .hero-on-dark .btn-primary {
+  background-color: #ffffff;
+  color: #111111;
+}
+
+.hero-on-dark .btn-primary:hover,
+.public-site .hero-on-dark .btn-primary:hover {
+  background-color: #ececec;
+}
+
+.hero-on-dark .btn-secondary,
+.public-site .hero-on-dark .btn-secondary {
+  border-color: rgba(255, 255, 255, 0.55);
+  color: #ffffff;
+}
+
+.hero-on-dark .btn-secondary:hover,
+.public-site .hero-on-dark .btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: #ffffff;
 }
 
 .public-site a:focus-visible,
@@ -449,4 +494,48 @@ input[type="range"].luxury-range::-moz-range-thumb {
 .section-light input[type="range"].luxury-range::-moz-range-thumb {
   background: #111111;
   border: 2px solid #c7a96b;
+}
+
+.admin-console {
+  --admin-bg: #f6f7f8;
+  --admin-surface: #ffffff;
+  --admin-surface-elevated: #ffffff;
+  --admin-surface-muted: #f1f2f4;
+  --admin-border: #e6e8eb;
+  --admin-border-strong: #cfd3d8;
+  --admin-text: #121417;
+  --admin-text-secondary: #4a4f57;
+  --admin-text-muted: #6b717a;
+  --admin-brand: #c7a96b;
+  --admin-brand-hover: #b49355;
+  --admin-nav: #0b0d10;
+  --admin-nav-hover: #15181d;
+  --admin-nav-text: #ececec;
+  --admin-nav-muted: #9aa0a8;
+  --admin-success: #1f7a4d;
+  --admin-success-bg: #e8f5ee;
+  --admin-warning: #8a6414;
+  --admin-warning-bg: #f7f1e3;
+  --admin-danger: #9b2c2c;
+  --admin-danger-bg: #f8eaea;
+  --admin-info: #2c5282;
+  --admin-focus: #c7a96b;
+  --admin-shadow: 0 1px 2px rgba(18, 20, 23, 0.04), 0 10px 28px rgba(18, 20, 23, 0.05);
+  color: var(--admin-text);
+  background: var(--admin-bg);
+}
+
+.admin-console :focus-visible {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-console *,
+  .admin-console *::before,
+  .admin-console *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

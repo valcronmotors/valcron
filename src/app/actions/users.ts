@@ -110,7 +110,7 @@ export async function createStaffUser(
     password,
     email_confirm: true,
     user_metadata: { full_name: name, name },
-    app_metadata: { role, staff: true },
+    app_metadata: { role: "admin" },
   });
 
   if (error) {

@@ -6,7 +6,7 @@ import { login, type AuthActionState } from "@/app/actions/auth";
 const initialState: AuthActionState = { error: null };
 
 const fieldClass =
-  "h-12 w-full rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] pr-4 text-sm text-[#0B0C10] outline-none transition placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-[#C5A059]";
+  "h-12 w-full rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)] pr-4 text-sm text-[var(--admin-text)] outline-none transition placeholder:text-[var(--admin-text-muted)] focus:border-[var(--admin-brand)] focus:ring-2 focus:ring-[var(--admin-focus)]/25";
 
 function MailIcon() {
   return (
@@ -68,7 +68,7 @@ function EyeIcon({ open }: { open: boolean }) {
       className="h-4 w-4"
       aria-hidden="true"
     >
-      <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z" />
+      <path d="M2 12s4-7 10-7 10 7 10 7-4 7 10 7-10-7-10-7Z" />
       <circle cx="12" cy="12" r="3" />
     </svg>
   );
@@ -93,16 +93,16 @@ export function LoginForm({ next }: { next: string }) {
       {state.error ? (
         <p
           role="alert"
-          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-normal leading-relaxed text-red-800"
+          className="rounded-lg border border-[var(--admin-danger)]/20 bg-[var(--admin-danger-bg)] px-4 py-3 text-sm leading-relaxed text-[var(--admin-danger)]"
         >
           {state.error}
         </p>
       ) : null}
 
-      <label className="block text-xs font-medium uppercase tracking-widest text-gray-500">
+      <label className="block text-[13px] font-medium text-[var(--admin-text-secondary)]">
         Correo electrónico
-        <span className="relative mt-2 block">
-          <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+        <span className="relative mt-1.5 block">
+          <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[var(--admin-text-muted)]">
             <MailIcon />
           </span>
           <input
@@ -117,10 +117,10 @@ export function LoginForm({ next }: { next: string }) {
         </span>
       </label>
 
-      <label className="block text-xs font-medium uppercase tracking-widest text-gray-500">
+      <label className="block text-[13px] font-medium text-[var(--admin-text-secondary)]">
         Contraseña
-        <span className="relative mt-2 block">
-          <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+        <span className="relative mt-1.5 block">
+          <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[var(--admin-text-muted)]">
             <LockIcon />
           </span>
           <input
@@ -135,7 +135,7 @@ export function LoginForm({ next }: { next: string }) {
           <button
             type="button"
             onClick={() => setShowPassword((value) => !value)}
-            className="absolute inset-y-0 right-0 flex items-center px-3.5 text-gray-400 transition hover:text-[#0B0C10]"
+            className="absolute inset-y-0 right-0 flex items-center px-3.5 text-[var(--admin-text-muted)] transition hover:text-[var(--admin-text)]"
             aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
           >
             <EyeIcon open={showPassword} />
@@ -146,10 +146,10 @@ export function LoginForm({ next }: { next: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex h-12 w-full items-center justify-center gap-2.5 rounded-lg bg-[#0B0C10] text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-70"
+        className="inline-flex h-12 w-full items-center justify-center gap-2.5 rounded-lg bg-[var(--admin-text)] text-sm font-medium text-white transition hover:bg-[#1c1f24] disabled:cursor-not-allowed disabled:opacity-70"
       >
         {pending ? <Spinner /> : null}
-        {pending ? "Verificando acceso..." : "Entrar al website admin"}
+        {pending ? "Verificando acceso..." : "Entrar"}
       </button>
     </form>
   );

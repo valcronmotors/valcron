@@ -19,24 +19,15 @@ export default async function LoginPage({
   const next = safeNextPath(params.next);
 
   return (
-    <main className="relative isolate flex flex-1 flex-col items-center justify-center overflow-hidden bg-[#F8F9FA] px-5 py-16">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(11,12,16,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(11,12,16,0.035)_1px,transparent_1px)] bg-[size:44px_44px]"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.95)_0%,rgba(248,249,250,0.72)_48%,rgba(243,244,246,0.9)_100%)]"
-      />
-
-      <div className="relative w-full max-w-[440px] rounded-2xl border border-[#E5E7EB] bg-white px-8 py-10 shadow-2xl sm:px-10">
+    <main className="admin-console relative isolate flex flex-1 flex-col items-center justify-center overflow-hidden bg-[var(--admin-bg)] px-5 py-16">
+      <div className="relative w-full max-w-[420px] rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] px-8 py-10 shadow-[var(--admin-shadow)] sm:px-10">
         <div className="flex flex-col items-center text-center">
           <BrandLogo size="header" tone="onLight" />
-          <h1 className="mt-8 font-display text-2xl font-semibold tracking-tight text-[#0B0C10] sm:text-[1.7rem]">
-            Acceso Administrativo
+          <h1 className="mt-8 font-display text-2xl font-semibold tracking-tight text-[var(--admin-text)]">
+            Website Admin
           </h1>
-          <p className="mt-2 max-w-sm text-sm font-normal leading-relaxed text-gray-500">
-            Gestión del inventario y contenido del website.
+          <p className="mt-2 max-w-sm text-sm leading-relaxed text-[var(--admin-text-secondary)]">
+            Gestión del inventario y la presencia digital de Valcron Motors.
           </p>
         </div>
 
@@ -44,17 +35,16 @@ export default async function LoginPage({
           <LoginForm next={next} />
         </div>
 
-        <p className="mt-8 text-center text-[11px] font-normal leading-relaxed tracking-wide text-gray-400">
-          Acceso restringido únicamente para personal autorizado de {SITE.name}.
-          Conexión cifrada de extremo a extremo.
+        <p className="mt-8 text-center text-xs leading-relaxed text-[var(--admin-text-muted)]">
+          Acceso restringido para personal autorizado de {SITE.name}.
         </p>
       </div>
 
       <Link
         href="/"
-        className="relative mt-8 text-sm font-medium text-gray-500 transition hover:text-[#0B0C10]"
+        className="relative mt-8 text-sm font-medium text-[var(--admin-text-secondary)] transition hover:text-[var(--admin-text)]"
       >
-        ← Volver al sitio web principal
+        ← Volver al sitio web
       </Link>
     </main>
   );
