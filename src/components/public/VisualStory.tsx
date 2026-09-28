@@ -64,17 +64,21 @@ export function VisualStepSequence({
   const dark = tone === "dark";
 
   return (
-    <ol className="mt-10 grid gap-8">
-      {steps.map((item, index) => (
-        <li key={item.step} className="grid gap-4 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:items-center md:gap-8">
-          <div className={index % 2 === 1 ? "md:order-2" : undefined}>
-            <VisualMedia
-              asset={item.image}
-              aspect="16/10"
-              sizes="(max-width: 768px) 92vw, 44vw"
-            />
-          </div>
-          <div className={index % 2 === 1 ? "md:order-1" : undefined}>
+    <ol className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      {steps.map((item) => (
+        <li
+          key={item.step}
+          className={`overflow-hidden border ${
+            dark ? "border-white/10 bg-white/[0.04]" : "border-[#e4e6ea] bg-white"
+          }`}
+          style={{ borderRadius: "var(--radius-card)" }}
+        >
+          <VisualMedia
+            asset={item.image}
+            aspect="2/1"
+            sizes="(max-width: 768px) 92vw, 30vw"
+          />
+          <div className="p-4 sm:p-5">
             <p
               className={`text-[11px] font-semibold uppercase tracking-[0.16em] ${
                 dark ? "text-[#2b6cff]" : "text-[#676a70]"
@@ -83,23 +87,18 @@ export function VisualStepSequence({
               {item.step}
             </p>
             <h3
-              className={`mt-2 font-display text-2xl font-bold tracking-tight md:text-3xl ${
+              className={`mt-1.5 font-display text-lg font-bold tracking-tight ${
                 dark ? "text-white" : "text-[#08090b]"
               }`}
             >
               {item.title}
             </h3>
             {item.copy ? (
-              <p className={`mt-3 max-w-[28rem] text-base leading-relaxed ${dark ? "text-white/70" : "text-[#676a70]"}`}>
+              <p className={`mt-1.5 text-sm leading-relaxed ${dark ? "text-white/70" : "text-[#676a70]"}`}>
                 {item.copy}
               </p>
             ) : null}
           </div>
-          {index < steps.length - 1 ? (
-            <div className="flex justify-center md:col-span-2" aria-hidden="true">
-              <ArrowDown className={`h-5 w-5 ${dark ? "text-white/35" : "text-[#a3a3a3]"}`} />
-            </div>
-          ) : null}
         </li>
       ))}
     </ol>

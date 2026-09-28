@@ -10,7 +10,7 @@ export const SITE = {
   tagline: "Más opciones. Más cerca de ti.",
   heroEyebrow: "Tu próximo vehículo",
   heroTitle: "Más opciones. Más cerca de ti.",
-  heroSubtitle: "Explora nuestras unidades o solicita el vehículo que buscas.",
+  heroSubtitle: "Encuentra vehículos disponibles y nuevas opciones con Valcron Motors.",
   valueProposition:
     "Valcron Motors en Santo Domingo Este: vehículos disponibles, búsqueda personalizada, financiamiento con bancos locales y opciones de subasta e importación cuando aplica.",
   address: {

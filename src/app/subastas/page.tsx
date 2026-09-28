@@ -4,7 +4,6 @@ import { PageHero } from "@/components/public/PageHero";
 import { VisualStepSequence } from "@/components/public/VisualStory";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import { EDITORIAL } from "@/lib/editorial-media";
-import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE, whatsappHref } from "@/lib/site";
 import { publicPageMetadata } from "@/lib/seo";
 
@@ -86,11 +85,9 @@ export default function SubastasPage() {
         kicker="Subastas"
         title="Más opciones fuera del inventario"
         subtitle="Te asistimos con vehículos publicados en subastas de Estados Unidos."
-        image={PAGE_HERO_IMAGES.subastas}
-        imageAlt={PAGE_HERO_ALTS.subastas}
       />
 
-      <Section className="section-light bg-white">
+      <Section className="section-light bg-white" tight>
         <PageContainer>
           <SectionHeader
             kicker="Proceso visual"
@@ -98,7 +95,7 @@ export default function SubastasPage() {
             subtitle="Así te acompañamos, paso a paso."
           />
           <VisualStepSequence steps={STEPS} tone="light" />
-          <div className="mt-10 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/solicitar-vehiculo" className="btn-primary">
               Solicitar vehículo
             </Link>

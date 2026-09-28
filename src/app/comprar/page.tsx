@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
 import { PageHero } from "@/components/public/PageHero";
-import { VisualPathCard } from "@/components/public/VisualStory";
+import { CompactFeatureCard, CompactPathTile } from "@/components/public/CompactFeature";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import { EDITORIAL } from "@/lib/editorial-media";
-import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { publicPageMetadata } from "@/lib/seo";
 import { SITE, whatsappHref } from "@/lib/site";
 
@@ -15,53 +14,6 @@ export const metadata = publicPageMetadata({
   path: "/comprar",
 });
 
-const PATHS = [
-  {
-    title: "Vehículo en Valcron",
-    copy: "Revisa unidades publicadas y avanza directo.",
-    href: "/inventario",
-    cta: "Ver inventario",
-    image: {
-      src: EDITORIAL.compactSuv.src,
-      alt: EDITORIAL.compactSuv.alt,
-      caption: "Inventario publicado",
-    },
-  },
-  {
-    title: "Búsqueda personalizada",
-    copy: "Dinos marca, modelo, año y presupuesto.",
-    href: "/solicitar-vehiculo",
-    cta: "Solicitar vehículo",
-    image: {
-      src: EDITORIAL.processSearch.src,
-      alt: EDITORIAL.processSearch.alt,
-      caption: EDITORIAL.processSearch.caption,
-    },
-  },
-  {
-    title: "Financiamiento",
-    copy: "Orientación con bancos locales. No somos banco.",
-    href: "/financiamiento",
-    cta: "Ver financiamiento",
-    image: {
-      src: EDITORIAL.processFinance.src,
-      alt: EDITORIAL.processFinance.alt,
-      caption: EDITORIAL.processFinance.caption,
-    },
-  },
-  {
-    title: "Subasta",
-    copy: "Más opciones mediante plataformas de mercado.",
-    href: "/subastas",
-    cta: "Ver subastas",
-    image: {
-      src: EDITORIAL.processBrowse.src,
-      alt: EDITORIAL.processBrowse.alt,
-      caption: EDITORIAL.processBrowse.caption,
-    },
-  },
-] as const;
-
 export default function ComprarPage() {
   return (
     <main>
@@ -69,23 +21,53 @@ export default function ComprarPage() {
         kicker="Comprar"
         title="Elige tu camino"
         subtitle={`Inventario, búsqueda o subasta — ${SITE.shortName} te orienta sin rodeos.`}
-        image={PAGE_HERO_IMAGES.servicios}
-        imageAlt={PAGE_HERO_ALTS.servicios}
       />
 
-      <Section className="section-light bg-[#f7f8fa]">
+      <Section className="section-light bg-[#f7f8fa]" tight>
         <PageContainer>
-          <SectionHeader
-            kicker="Opciones"
-            title="Entiéndelo de un vistazo"
-            subtitle="Elige el camino que mejor se ajusta a lo que buscas."
-          />
-          <div className="mt-10 grid gap-4 md:grid-cols-2">
-            {PATHS.map((path) => (
-              <VisualPathCard key={path.title} {...path} />
-            ))}
+          <SectionHeader kicker="Opciones" title="Entiéndelo de un vistazo" />
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
+            <CompactPathTile
+              title="Comprar una unidad disponible"
+              copy="Revisa el inventario publicado."
+              href="/inventario"
+              cta="Ver inventario"
+              image={{ src: EDITORIAL.compactSuv.src, alt: EDITORIAL.compactSuv.alt }}
+            />
+            <CompactPathTile
+              title="Solicitar un vehículo"
+              copy="Dinos marca, modelo y presupuesto."
+              href="/solicitar-vehiculo"
+              cta="Solicitar vehículo"
+              image={{ src: EDITORIAL.processSearch.src, alt: EDITORIAL.processSearch.alt }}
+            />
+            <CompactPathTile
+              title="Financiamiento"
+              copy="Orientación con bancos locales."
+              href="/financiamiento"
+              cta="Conocer opciones"
+              image={{ src: EDITORIAL.processFinance.src, alt: EDITORIAL.processFinance.alt }}
+            />
+            <CompactPathTile
+              title="Subasta"
+              copy="Más opciones mediante Copart e IAA."
+              href="/subastas"
+              cta="Conocer el proceso"
+              image={{ src: EDITORIAL.processBrowse.src, alt: EDITORIAL.processBrowse.alt }}
+            />
           </div>
-          <div className="mt-10 flex flex-wrap gap-3">
+
+          <div className="mt-6">
+            <CompactFeatureCard
+              tone="blue"
+              title="¿Tienes un vehículo para entregar?"
+              copy="Evaluamos tu unidad como parte del proceso de compra. Sin valuación garantizada."
+              href="/solicitar-vehiculo"
+              cta="Solicitar evaluación"
+            />
+          </div>
+
+          <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/solicitar-vehiculo" className="btn-primary">
               Solicitar vehículo
             </Link>

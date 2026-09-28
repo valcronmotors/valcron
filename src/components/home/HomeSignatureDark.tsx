@@ -1,70 +1,54 @@
-import Image from "next/image";
-import Link from "next/link";
 import { PageContainer, Section } from "@/components/public/layout";
+import { CompactFeatureCard, CompactPathTile } from "@/components/public/CompactFeature";
 import { EDITORIAL } from "@/lib/editorial-media";
 
-const PATHS = [
-  {
-    title: "Inventario",
-    href: "/inventario",
-    image: EDITORIAL.compactSuv,
-    caption: "Unidades publicadas",
-  },
-  {
-    title: "Subastas",
-    href: "/subastas",
-    image: EDITORIAL.processBrowse,
-    caption: EDITORIAL.processBrowse.caption,
-  },
-  {
-    title: "Importación",
-    href: "/importacion",
-    image: EDITORIAL.processImport,
-    caption: EDITORIAL.processImport.caption,
-  },
-  {
-    title: "Financiamiento",
-    href: "/financiamiento",
-    image: EDITORIAL.processFinance,
-    caption: EDITORIAL.processFinance.caption,
-  },
-] as const;
-
+/**
+ * Compact editorial paths — replaces giant full-viewport dark cards.
+ */
 export function HomeSignatureDark() {
   return (
-    <Section className="section-dark" tight>
+    <Section className="section-light bg-[#f7f8fa]" tight>
       <PageContainer>
-        <div className="mx-auto max-w-[36rem] text-center">
-          <h2 className="display-lg text-balance text-white">
+        <div className="mx-auto max-w-[34rem] text-center">
+          <h2 className="display-lg text-balance text-[#08090b]">
             Más formas de
             <span className="block">encontrar tu vehículo.</span>
           </h2>
         </div>
-        <div className="mt-10 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {PATHS.map((path) => (
-            <Link
-              key={path.href}
-              href={path.href}
-              className="group overflow-hidden border border-white/12 bg-white/[0.03] transition-colors hover:bg-white/[0.06]"
-              style={{ borderRadius: "var(--radius-card)" }}
-            >
-              <div className="relative aspect-[16/11] overflow-hidden bg-[#12141a]">
-                <Image
-                  src={path.image.src}
-                  alt={path.image.alt}
-                  fill
-                  sizes="(max-width: 768px) 92vw, 25vw"
-                  className="object-cover object-center transition-transform duration-300 group-hover:scale-[1.03]"
-                />
-              </div>
-              <div className="px-4 py-4">
-                <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-white/45">
-                  {path.caption}
-                </p>
-                <p className="mt-1 font-display text-lg font-semibold text-white">{path.title}</p>
-              </div>
-            </Link>
-          ))}
+
+        <div className="mt-8 grid gap-3 sm:mt-10 sm:grid-cols-2 xl:grid-cols-3">
+          <CompactPathTile
+            title="Inventario"
+            copy="Vehículos publicados por Valcron."
+            href="/inventario"
+            cta="Ver inventario"
+            image={{ src: EDITORIAL.compactSuv.src, alt: EDITORIAL.compactSuv.alt }}
+          />
+          <CompactPathTile
+            title="Financiamiento"
+            copy="Orientación con bancos locales."
+            href="/financiamiento"
+            cta="Conocer opciones"
+            image={{ src: EDITORIAL.processFinance.src, alt: EDITORIAL.processFinance.alt }}
+          />
+          <CompactPathTile
+            title="Subastas"
+            copy="Opciones mediante Copart e IAA."
+            href="/subastas"
+            cta="Conocer el proceso"
+            image={{ src: EDITORIAL.processBrowse.src, alt: EDITORIAL.processBrowse.alt }}
+          />
+          <div className="sm:col-span-2 xl:col-span-3">
+            <CompactFeatureCard
+              tone="light"
+              kicker="Importación"
+              title="Coordinación del proceso contratado."
+              copy="Desde la compra en EE.UU. hasta la llegada a República Dominicana."
+              href="/importacion"
+              cta="Ver cómo funciona"
+              image={{ src: EDITORIAL.processImport.src, alt: EDITORIAL.processImport.alt }}
+            />
+          </div>
         </div>
       </PageContainer>
     </Section>

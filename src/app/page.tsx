@@ -48,10 +48,10 @@ export default function Home() {
         <Suspense fallback={<InventorySectionSkeleton />}>
           <HomeInventoryBand />
         </Suspense>
-        <HomeSignatureBlue />
         <HomeSignatureDark />
-        <HomeStories />
+        <HomeSignatureBlue />
         <HomeActionMedia />
+        <HomeStories />
         <HomeFaqPreview />
         <HomeFinalCta />
       </main>

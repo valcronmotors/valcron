@@ -2,9 +2,8 @@ import Link from "next/link";
 import { ImportCostCalculator } from "@/components/public/ImportCostCalculator";
 import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
 import { PageHero } from "@/components/public/PageHero";
-import { VisualFlowDiagram, VisualMedia, VisualStepSequence } from "@/components/public/VisualStory";
+import { VisualFlowDiagram, VisualStepSequence } from "@/components/public/VisualStory";
 import { EDITORIAL } from "@/lib/editorial-media";
-import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
 import { publicPageMetadata } from "@/lib/seo";
 
@@ -65,11 +64,9 @@ export default function ImportacionPage() {
         kicker="Importación"
         title="Del origen a República Dominicana"
         subtitle="Selección, compra y coordinación de llegada — sin cifras fijas."
-        image={PAGE_HERO_IMAGES.importacion}
-        imageAlt={PAGE_HERO_ALTS.importacion}
       />
 
-      <Section className="section-light bg-white">
+      <Section className="section-light bg-white" tight>
         <PageContainer>
           <SectionHeader
             kicker="Mapa del proceso"
@@ -87,30 +84,19 @@ export default function ImportacionPage() {
               </>
             }
           />
-          <div className="mt-10">
+          <div className="mt-8">
             <VisualFlowDiagram
               label="Flujo de importación"
-              nodes={["Vehículo", "Compra", "Transporte", "República Dominicana", "Entrega"]}
+              nodes={["EE.UU.", "Compra", "Transporte", "República Dominicana", "Coordinación"]}
             />
           </div>
         </PageContainer>
       </Section>
 
-      <Section className="section-light bg-[#f7f8fa]">
+      <Section className="section-light bg-[#f7f8fa]" tight>
         <PageContainer>
           <SectionHeader kicker="Detalle" title="Qué ocurre en cada etapa" />
           <VisualStepSequence steps={PHASES} tone="light" />
-          <div className="mt-10 max-w-xl">
-            <VisualMedia
-              asset={{
-                src: EDITORIAL.processLogistics.src,
-                alt: EDITORIAL.processLogistics.alt,
-                caption: "Coordinación logística · sin costos aduanales garantizados",
-              }}
-              aspect="21/9"
-              sizes="(max-width: 768px) 92vw, 70vw"
-            />
-          </div>
         </PageContainer>
       </Section>
 

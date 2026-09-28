@@ -38,14 +38,14 @@ export function FeaturedInventory({
 
         {empty ? (
           <div
-            className="border border-[#e4e6ea] bg-[#f7f8fa] px-5 py-6 text-center sm:py-7"
+            className="border border-[#e4e6ea] bg-[#f7f8fa] px-4 py-4 text-center sm:px-5 sm:py-5"
             style={{ borderRadius: "var(--radius-card)" }}
           >
-            <p className="font-display text-base font-semibold text-[#08090b] sm:text-lg">
+            <p className="font-display text-sm font-semibold text-[#08090b] sm:text-base">
               {PUBLIC_INVENTORY_EMPTY.title}
             </p>
-            <p className="mt-1.5 text-sm text-[#676a70]">¿Buscas algo específico?</p>
-            <Link href="/solicitar-vehiculo" className="btn-primary mt-4">
+            <p className="mt-1 text-sm text-[#676a70]">¿Buscas algo específico?</p>
+            <Link href="/solicitar-vehiculo" className="btn-primary mt-3 h-10 px-4 text-sm">
               Solicitar vehículo
             </Link>
           </div>

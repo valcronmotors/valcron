@@ -97,66 +97,106 @@ export function AdminDashboardView({
             {adminGreeting()}
           </h1>
           <p className="mt-1 max-w-xl text-sm leading-6 text-[var(--admin-text-secondary)]">
-            Administra el inventario y la presencia digital de Valcron Motors.
+            Agregar → datos → fotos → precio → vista previa → publicar → website.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link href="/admin/inventario/nuevo">
-            <AdminPrimaryButton>Agregar vehículo</AdminPrimaryButton>
+            <AdminPrimaryButton>+ Agregar vehículo</AdminPrimaryButton>
           </Link>
-          <Link href="/admin/subastas/nuevo">
-            <AdminSecondaryButton>Agregar oportunidad</AdminSecondaryButton>
+          <Link href="/admin/subastas/copart">
+            <AdminSecondaryButton>Buscar en Copart</AdminSecondaryButton>
           </Link>
         </div>
       </header>
 
-      <section className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
-        <Link
-          href="/admin/inventario?publicado=si"
-          className="group rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-6 shadow-[var(--admin-shadow)] transition duration-200 hover:border-[var(--admin-border-strong)]"
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
-                Vehículos publicados
-              </p>
-              <p className="mt-3 font-display text-4xl font-semibold tabular-nums tracking-tight text-[var(--admin-text)]">
-                {published.length}
-              </p>
-              <p className="mt-2 text-sm text-[var(--admin-text-secondary)]">
-                {featured.length} destacados en portada
-              </p>
-            </div>
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--admin-nav)] text-[var(--admin-brand)]">
-              <Car className="h-4 w-4" strokeWidth={1.9} />
-            </span>
-          </div>
-        </Link>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Link
-            href="/admin/inventario?estado=available"
-            className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-[var(--admin-shadow)] transition duration-200 hover:border-[var(--admin-border-strong)]"
-          >
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
-              Disponibles
-            </p>
-            <p className="mt-3 font-display text-3xl font-semibold tabular-nums text-[var(--admin-text)]">
-              {available.length}
-            </p>
+      <AdminCard>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+          Flujo principal
+        </p>
+        <ol className="mt-3 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.06em] text-[var(--admin-text-secondary)]">
+          {[
+            "Agregar vehículo",
+            "Completar datos",
+            "Subir fotos",
+            "Definir precio",
+            "Vista previa",
+            "Publicar",
+            "Aparece en website",
+          ].map((step, index) => (
+            <li
+              key={step}
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--admin-surface-muted)] px-3 py-2"
+            >
+              <span className="tabular-nums text-[var(--admin-brand)]">{String(index + 1).padStart(2, "0")}</span>
+              {step}
+            </li>
+          ))}
+        </ol>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link href="/admin/inventario/nuevo">
+            <AdminPrimaryButton>+ Agregar vehículo</AdminPrimaryButton>
           </Link>
-          <Link
-            href="/admin/solicitudes?estado=new"
-            className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-[var(--admin-shadow)] transition duration-200 hover:border-[var(--admin-border-strong)]"
-          >
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
-              Solicitudes nuevas
-            </p>
-            <p className="mt-3 font-display text-3xl font-semibold tabular-nums text-[var(--admin-text)]">
-              {newInquiries.length}
-            </p>
-            <p className="mt-2 text-xs text-[var(--admin-text-muted)]">{inquiries.length} en total</p>
+          <Link href="/admin/subastas/copart">
+            <AdminSecondaryButton>Buscar en Copart</AdminSecondaryButton>
+          </Link>
+          <Link href="/admin/subastas/nuevo">
+            <AdminSecondaryButton>Agregar oportunidad IAA</AdminSecondaryButton>
+          </Link>
+          <Link href="/admin/solicitudes">
+            <AdminSecondaryButton>Ver solicitudes</AdminSecondaryButton>
+          </Link>
+          <Link href="/" target="_blank" rel="noopener noreferrer">
+            <AdminSecondaryButton>Ver website</AdminSecondaryButton>
           </Link>
         </div>
+      </AdminCard>
+
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Link
+          href="/admin/inventario"
+          className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-[var(--admin-shadow)]"
+        >
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+            Total vehículos
+          </p>
+          <p className="mt-3 font-display text-3xl font-semibold tabular-nums text-[var(--admin-text)]">
+            {vehicles.length}
+          </p>
+        </Link>
+        <Link
+          href="/admin/inventario?publicado=si"
+          className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-[var(--admin-shadow)]"
+        >
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+            Publicados
+          </p>
+          <p className="mt-3 font-display text-3xl font-semibold tabular-nums text-[var(--admin-text)]">
+            {published.length}
+          </p>
+        </Link>
+        <Link
+          href="/admin/inventario?estado=available"
+          className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-[var(--admin-shadow)]"
+        >
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+            Disponibles
+          </p>
+          <p className="mt-3 font-display text-3xl font-semibold tabular-nums text-[var(--admin-text)]">
+            {available.length}
+          </p>
+        </Link>
+        <Link
+          href="/admin/solicitudes?estado=new"
+          className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-[var(--admin-shadow)]"
+        >
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+            Solicitudes nuevas
+          </p>
+          <p className="mt-3 font-display text-3xl font-semibold tabular-nums text-[var(--admin-text)]">
+            {newInquiries.length}
+          </p>
+        </Link>
       </section>
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">

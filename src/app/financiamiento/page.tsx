@@ -6,7 +6,6 @@ import { PageContainer, Section, SectionHeader } from "@/components/public/layou
 import { PageHero } from "@/components/public/PageHero";
 import { VisualCaption } from "@/components/public/VisualStory";
 import { EDITORIAL } from "@/lib/editorial-media";
-import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
 import { publicPageMetadata } from "@/lib/seo";
 
@@ -62,25 +61,23 @@ export default function FinanciamientoPage() {
         kicker="Financiamiento"
         title="Orientación con bancos locales"
         subtitle="Te ayudamos a ordenar tu caso. No prometemos aprobación ni somos prestamista."
-        image={PAGE_HERO_IMAGES.financiamiento}
-        imageAlt={PAGE_HERO_ALTS.financiamiento}
       />
 
-      <Section className="section-light bg-white">
+      <Section className="section-light bg-white" tight>
         <PageContainer>
           <SectionHeader
             kicker="Cómo funciona"
             title="Cuatro pasos visuales"
-            subtitle={`${SITE.shortName} prepara tu compra ante bancos locales. Inicial, plazo, tasa y aprobación dependen de cada institución.`}
+            subtitle={`${SITE.shortName} prepara tu compra ante bancos locales.`}
           />
-          <ol className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <ol className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {FINANCE_STEPS.map((item) => (
               <li
                 key={item.step}
                 className="overflow-hidden border border-[#e4e6ea] bg-[#f7f8fa]"
                 style={{ borderRadius: "var(--radius-card)" }}
               >
-                <div className="relative aspect-[16/11] bg-[#eef0f3]">
+                <div className="relative aspect-[2/1] bg-[#eef0f3]">
                   <Image
                     src={item.image.src}
                     alt={item.image.alt}
@@ -89,12 +86,12 @@ export default function FinanciamientoPage() {
                     className="object-cover object-center"
                   />
                 </div>
-                <div className="p-5">
+                <div className="p-4 sm:p-5">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2b6cff]">
                     {item.step}
                   </p>
-                  <h3 className="mt-2 font-display text-lg font-bold text-[#08090b]">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-[#676a70]">{item.copy}</p>
+                  <h3 className="mt-1.5 font-display text-lg font-bold text-[#08090b]">{item.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-[#676a70]">{item.copy}</p>
                 </div>
               </li>
             ))}

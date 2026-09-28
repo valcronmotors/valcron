@@ -5,7 +5,6 @@ import { PageHero } from "@/components/public/PageHero";
 import { QuoteForm } from "@/components/public/QuoteForm";
 import { SocialLinks } from "@/components/shared/SocialLinks";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
-import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { mapsDirectionsUrl, officeTelHref, SITE, whatsappHref } from "@/lib/site";
 import { publicPageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -25,8 +24,6 @@ export default function ContactoPage() {
         kicker="Contacto"
         title="Hablemos de tu vehículo"
         subtitle="Av Principal 20, Santo Domingo Este. Teléfono y WhatsApp con respuesta directa."
-        image={PAGE_HERO_IMAGES.contacto}
-        imageAlt={PAGE_HERO_ALTS.contacto}
       />
 
       <Section className="section-light bg-[#f7f8fa]" tight>

@@ -67,6 +67,7 @@ import {
   type VehicleRow,
   type VehicleStatus,
 } from "@/lib/website-schema";
+import { buildVehicleSlug, vehiclePath } from "@/lib/vehicles/vehicle-slugs";
 import { vehicleStatusLabel } from "@/lib/vehicles/vehicle-status";
 
 function statusActionLabel(status: VehicleStatus) {
@@ -467,7 +468,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
           setError(result.error);
           setPublished(!next);
         } else {
-          setNotice(next ? "Unidad publicada." : "Publicación retirada.");
+          setNotice(next ? "Publicado correctamente." : "Publicación retirada.");
           router.refresh();
         }
       });
@@ -580,36 +581,58 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
 
       <AdminError message={error} />
       {notice ? (
-        <p
+        <div
           role="status"
-          className="rounded-lg border border-[var(--admin-success)]/15 bg-[var(--admin-success-bg)] px-4 py-3 text-sm text-[var(--admin-success)]"
+          className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--admin-success)]/15 bg-[var(--admin-success-bg)] px-4 py-3 text-sm text-[var(--admin-success)]"
         >
-          {notice}
-        </p>
+          <p>{notice}</p>
+          {published && vehicle?.id ? (
+            <a
+              href={vehiclePath(
+                buildVehicleSlug({
+                  id: vehicle.id,
+                  year: vehicle.year ?? (Number(values.year) || 0),
+                  make: vehicle.make ?? values.make,
+                  model: vehicle.model ?? values.model,
+                  trim: vehicle.trim,
+                }),
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-10 items-center rounded-full bg-[var(--admin-text)] px-4 text-xs font-semibold text-white"
+            >
+              Ver en website
+            </a>
+          ) : null}
+        </div>
       ) : null}
 
-      <div className="grid gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-4 sm:grid-cols-3 lg:grid-cols-6">
+      <nav
+        aria-label="Flujo del vehículo"
+        className="grid gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-4 sm:grid-cols-3 lg:grid-cols-5"
+      >
         {[
-          "01 Datos básicos",
-          "02 Especificaciones",
-          "03 Fotos",
-          "04 Precio",
-          "05 Vista previa",
-          "06 Publicar",
+          { href: "#step-vehiculo", label: "01 Vehículo" },
+          { href: "#step-especificaciones", label: "02 Especificaciones" },
+          { href: "#step-fotos", label: "03 Fotos" },
+          { href: "#step-precio", label: "04 Precio" },
+          { href: "#step-publicacion", label: "05 Publicación" },
         ].map((step) => (
-          <p
-            key={step}
-            className="rounded-lg bg-[var(--admin-surface-muted)] px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--admin-text-secondary)]"
+          <a
+            key={step.href}
+            href={step.href}
+            className="rounded-lg bg-[var(--admin-surface-muted)] px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--admin-text-secondary)] transition hover:bg-[var(--admin-nav)] hover:text-[var(--admin-brand)]"
           >
-            {step}
-          </p>
+            {step.label}
+          </a>
         ))}
-      </div>
+      </nav>
 
       <FormSection
+        id="step-vehiculo"
         index="01"
-        title="Identificación"
-        hint="Estos datos aparecen en el catálogo. Año, marca y modelo son obligatorios."
+        title="Vehículo"
+        hint="Marca, modelo, año, trim y VIN. Año, marca y modelo son obligatorios."
       >
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <AdminField label="Año" required error={fieldErrors.year}>
@@ -702,9 +725,10 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
       </FormSection>
 
       <FormSection
+        id="step-especificaciones"
         index="02"
         title="Especificaciones"
-        hint="Completa lo que conozcas. Ayuda al cliente a comparar unidades."
+        hint="Kilometraje, transmisión, motor, tracción, exterior e interior."
       >
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <div className="sm:col-span-2 xl:col-span-1">
@@ -810,29 +834,33 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
       </FormSection>
 
       <FormSection
-        id="fotos"
+        id="step-fotos"
         index="03"
         title="Fotos"
-        hint="JPG, PNG o WebP · máximo 8 MB por imagen. La portada es la imagen principal del catálogo."
+        hint="JPG, PNG o WebP · máximo 8 MB. Principal, exterior, interior y detalles."
       >
-        <div className="mb-4 grid gap-3 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] p-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+        <div className="mb-4 grid gap-3 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] p-4 sm:grid-cols-2">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--admin-text-muted)]">
-              Guía rápida
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--admin-success)]">
+              Buenas fotos
             </p>
             <ul className="mt-2 grid gap-1.5 text-sm text-[var(--admin-text-secondary)]">
-              <li>1. Foto principal — vehículo completo</li>
-              <li>2. Exterior — 3/4 frontal y lateral</li>
-              <li>3. Interior — tablero y asientos</li>
-              <li>4. Detalles — llantas, daños, extras</li>
+              <li>Vehículo completo visible</li>
+              <li>Buena iluminación</li>
+              <li>Encuadre limpio horizontal</li>
+              <li>Imagen nítida</li>
             </ul>
           </div>
-          <div className="rounded-lg border border-dashed border-[var(--admin-border-strong)] bg-[var(--admin-surface)] px-3 py-3 text-sm text-[var(--admin-text-secondary)]">
-            <p className="font-medium text-[var(--admin-text)]">Buen ejemplo (referencia)</p>
-            <p className="mt-1 leading-5">
-              Vehículo completo visible, buena luz, horizontal, entorno limpio. Esto es una guía
-              general — no uses fotos de clientes ajenos como si fueran de Valcron.
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--admin-warning)]">
+              Evitar
             </p>
+            <ul className="mt-2 grid gap-1.5 text-sm text-[var(--admin-text-secondary)]">
+              <li>Vehículo recortado</li>
+              <li>Foto oscura</li>
+              <li>Captura de pantalla / marca de agua</li>
+              <li>Recorte vertical extremo</li>
+            </ul>
           </div>
         </div>
         <p className="mb-4 text-sm text-[var(--admin-text-secondary)]">
@@ -996,9 +1024,10 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
       </FormSection>
 
       <FormSection
+        id="step-precio"
         index="04"
-        title="Información pública"
-        hint="El precio y la descripción aparecen en la ficha del website."
+        title="Precio"
+        hint="Fijo, desde, estimado o consultar. El precio público aparece en la ficha."
       >
         <div className="grid gap-4 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
           <div>
@@ -1093,12 +1122,13 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
       </FormSection>
 
       <FormSection
+        id="step-publicacion"
         index="05"
         title="Publicación"
         hint={
           saved
-            ? "Disponible = estado del vehículo. Publicado = visible en el website. Destacado = prioridad en home/catálogo."
-            : "Se guarda como borrador y no se publica. Después: disponible → vista previa → publicar."
+            ? "Descripción, destacado, vista previa y publicar. Publicado = visible en el website."
+            : "Guarda como borrador, completa fotos y precio, vista previa, luego publica."
         }
       >
         <PublicationPanel
