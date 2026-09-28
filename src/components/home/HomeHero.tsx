@@ -39,7 +39,7 @@ export function HomeHero() {
       <div className="relative mx-auto w-full max-w-[var(--content-max)] px-[var(--page-gutter)] pb-8 md:pb-10">
         <div
           className="relative overflow-hidden bg-gradient-to-b from-[#eef0f3] to-[#f7f8fa]"
-          style={{ borderRadius: "var(--radius-card)", aspectRatio: "5 / 4" }}
+          style={{ borderRadius: "var(--radius-card)", aspectRatio: "4 / 3" }}
         >
           <Image
             src={slide.src}
