@@ -24,12 +24,12 @@ export function BrandLogo({
         fill
         priority={isHeader}
         sizes={isHeader ? "210px" : "232px"}
-        className={
+        className="object-contain object-left"
+        style={
           tone === "onLight"
-            ? "object-contain object-left invert"
-            : "object-contain object-left"
+            ? { filter: "brightness(0)", mixBlendMode: "normal" }
+            : { filter: "none", mixBlendMode: "normal" }
         }
-        style={tone === "onDark" ? { filter: "none", mixBlendMode: "normal" } : undefined}
       />
     </span>
   );
