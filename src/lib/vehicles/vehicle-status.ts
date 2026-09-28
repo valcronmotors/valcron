@@ -64,7 +64,7 @@ export function availabilityLabel(availability: VehicleAvailability) {
     case "available_rd":
       return "Disponible en Valcron";
     case "auction":
-      return "Disponible mediante subasta";
+      return "Oportunidad de subasta";
     case "in_transit":
       return "En tránsito";
     case "reserved":

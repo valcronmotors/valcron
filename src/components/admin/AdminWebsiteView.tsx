@@ -9,9 +9,11 @@ import type { InquiryRow, VehicleRow } from "@/lib/website-schema";
 
 export function AdminWebsiteView({
   vehicles,
+  auctionVehicles = [],
   inquiries,
 }: {
   vehicles: VehicleRow[];
+  auctionVehicles?: VehicleRow[];
   inquiries: InquiryRow[];
 }) {
   const published = vehicles.filter((row) => row.published);
@@ -30,12 +32,28 @@ export function AdminWebsiteView({
     ),
   );
   const unpublishedReady = ready.filter((row) => !row.published);
+  const publishedAuctions = auctionVehicles.filter((row) => row.published);
+  const readyAuctions = auctionVehicles.filter((row) =>
+    canPublishVehicleListing(
+      vehiclePublicationChecks({
+        year: row.year,
+        make: row.make,
+        model: row.model,
+        description: row.description,
+        price: row.price,
+        status: row.status,
+        photos: row.vehicle_photos,
+        source_type: row.source_type,
+        public_price_mode: row.public_price_mode,
+      }),
+    ),
+  );
 
   return (
     <div className="grid gap-6">
       <AdminPageHeader
         title="Website"
-        subtitle="Control de publicación, destacados y accesos públicos. El contenido editorial del sitio no se edita aquí."
+        subtitle="Control de publicación de Inventario Valcron y Oportunidades de Subasta."
         actions={
           <>
             <Link href="/" target="_blank">
@@ -44,20 +62,19 @@ export function AdminWebsiteView({
             <Link href="/inventario" target="_blank">
               <AdminSecondaryButton>Ver Inventario</AdminSecondaryButton>
             </Link>
+            <Link href="/subastas" target="_blank">
+              <AdminSecondaryButton>Ver Subastas</AdminSecondaryButton>
+            </Link>
           </>
         }
       />
 
-      <section className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+      <section className="grid gap-4 lg:grid-cols-2">
         <AdminCard>
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
-            Estado del website
+            Inventario Valcron
           </p>
-          <p className="mt-2 font-display text-2xl font-semibold text-[var(--admin-text)]">
-            {published.length > 0 ? "Inventario público activo" : "Sin unidades publicadas"}
-          </p>
-          <p className="mt-2 text-sm text-[var(--admin-text-secondary)]">{SITE.url}</p>
-          <dl className="mt-6 grid gap-3 sm:grid-cols-3">
+          <dl className="mt-4 grid gap-3 sm:grid-cols-3">
             <div>
               <dt className="text-xs text-[var(--admin-text-muted)]">Publicados</dt>
               <dd className="mt-1 font-display text-3xl font-semibold tabular-nums">{published.length}</dd>
@@ -67,42 +84,68 @@ export function AdminWebsiteView({
               <dd className="mt-1 font-display text-3xl font-semibold tabular-nums">{featured.length}</dd>
             </div>
             <div>
-              <dt className="text-xs text-[var(--admin-text-muted)]">Listos sin publicar</dt>
+              <dt className="text-xs text-[var(--admin-text-muted)]">Listos</dt>
               <dd className="mt-1 font-display text-3xl font-semibold tabular-nums">{unpublishedReady.length}</dd>
             </div>
           </dl>
         </AdminCard>
         <AdminCard>
-          <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Enlaces públicos</h2>
-          <ul className="mt-4 grid gap-2 text-sm">
-            <li>
-              <Link href="/" className="inline-flex items-center gap-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
-                <Globe className="h-4 w-4" /> Home
-              </Link>
-            </li>
-            <li>
-              <Link href="/inventario" className="inline-flex items-center gap-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
-                <Globe className="h-4 w-4" /> Inventario
-              </Link>
-            </li>
-            <li>
-              <Link href="/contacto" className="inline-flex items-center gap-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
-                <Globe className="h-4 w-4" /> Contacto
-              </Link>
-            </li>
-          </ul>
-          <p className="mt-6 text-xs text-[var(--admin-text-muted)]">
-            Última solicitud: {inquiries[0] ? `${inquiries[0].name} · ${formatAdminDate(inquiries[0].created_at)}` : "todavía no hay mensajes"}
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+            Oportunidades de subasta
           </p>
+          <dl className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div>
+              <dt className="text-xs text-[var(--admin-text-muted)]">Publicadas</dt>
+              <dd className="mt-1 font-display text-3xl font-semibold tabular-nums">{publishedAuctions.length}</dd>
+            </div>
+            <div>
+              <dt className="text-xs text-[var(--admin-text-muted)]">Listas</dt>
+              <dd className="mt-1 font-display text-3xl font-semibold tabular-nums">
+                {readyAuctions.filter((row) => !row.published).length}
+              </dd>
+            </div>
+          </dl>
         </AdminCard>
       </section>
 
       <AdminCard>
+        <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Enlaces públicos</h2>
+        <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
+          <li>
+            <Link href="/" className="inline-flex items-center gap-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
+              <Globe className="h-4 w-4" /> Home
+            </Link>
+          </li>
+          <li>
+            <Link href="/inventario" className="inline-flex items-center gap-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
+              <Globe className="h-4 w-4" /> Inventario Valcron
+            </Link>
+          </li>
+          <li>
+            <Link href="/subastas" className="inline-flex items-center gap-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
+              <Globe className="h-4 w-4" /> Oportunidades de subasta
+            </Link>
+          </li>
+          <li>
+            <Link href="/contacto" className="inline-flex items-center gap-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
+              <Globe className="h-4 w-4" /> Contacto
+            </Link>
+          </li>
+        </ul>
+        <p className="mt-6 text-xs text-[var(--admin-text-muted)]">
+          {SITE.url} · Última solicitud:{" "}
+          {inquiries[0] ? `${inquiries[0].name} · ${formatAdminDate(inquiries[0].created_at)}` : "todavía no hay mensajes"}
+        </p>
+      </AdminCard>
+
+      <AdminCard>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Destacados</h2>
+            <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">
+              Destacados · Inventario Valcron
+            </h2>
             <p className="mt-1 text-sm text-[var(--admin-text-secondary)]">
-              Estas unidades aparecen primero en la portada cuando están publicadas.
+              Aparecen primero en el carrusel local de la Home.
             </p>
           </div>
           <Link href="/admin/inventario">

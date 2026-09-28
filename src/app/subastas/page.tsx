@@ -1,16 +1,20 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
 import { PageHero } from "@/components/public/PageHero";
+import { CatalogSkeleton } from "@/components/public/InventorySkeleton";
+import { VehicleCatalog, type CatalogFilters } from "@/components/public/VehicleCatalog";
 import { VisualStepSequence } from "@/components/public/VisualStory";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import { EDITORIAL } from "@/lib/editorial-media";
+import { loadAuctionCatalogVehicles } from "@/lib/public-inventory";
 import { SITE, whatsappHref } from "@/lib/site";
 import { publicPageMetadata } from "@/lib/seo";
 
 export const metadata = publicPageMetadata({
-  title: "Vehículos de subasta desde Estados Unidos",
+  title: "Oportunidades de subasta desde Estados Unidos",
   description:
-    "Asistencia con unidades en plataformas como Copart e IAA. Cotización clara. Santo Domingo Este.",
+    "Vehículos seleccionados por Valcron en plataformas de subasta de EE.UU. (Copart e IAA). Cotización clara. Santo Domingo Este.",
   path: "/subastas",
 });
 
@@ -78,14 +82,79 @@ const PLATFORMS = [
   },
 ];
 
-export default function SubastasPage() {
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
+}
+
+async function AuctionMarketplace({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    marca?: string;
+    modelo?: string;
+    ano?: string;
+    precioMin?: string;
+    precioMax?: string;
+    q?: string;
+  }>;
+}) {
+  const params = await searchParams;
+  const inventory = await loadAuctionCatalogVehicles();
+  const filters: CatalogFilters = {
+    listing: "auction",
+    marca: firstParam(params.marca),
+    modelo: firstParam(params.modelo),
+    ano: firstParam(params.ano),
+    precioMin: firstParam(params.precioMin),
+    precioMax: firstParam(params.precioMax),
+    search: firstParam(params.q),
+  };
+
+  return (
+    <VehicleCatalog
+      catalogKind="auction"
+      basePath="/subastas"
+      initialVehicles={inventory.data}
+      initialError={inventory.error}
+      initialFilters={filters}
+    />
+  );
+}
+
+export default function SubastasPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    marca?: string;
+    modelo?: string;
+    ano?: string;
+    precioMin?: string;
+    precioMax?: string;
+    q?: string;
+  }>;
+}) {
   return (
     <main>
       <PageHero
-        kicker="Subastas"
-        title="Más opciones fuera del inventario"
-        subtitle="Te asistimos con vehículos publicados en subastas de Estados Unidos."
+        kicker="Oportunidades de subasta"
+        title="Más opciones seleccionadas por Valcron"
+        subtitle="Vehículos seleccionados por Valcron en plataformas de subasta de Estados Unidos."
       />
+
+      <Section className="section-light bg-[#f7f8fa]" tight>
+        <PageContainer>
+          <SectionHeader
+            kicker="Marketplace"
+            title="Oportunidades publicadas"
+            subtitle="Solo unidades revisadas y publicadas por Valcron. No es el catálogo completo de Copart."
+          />
+          <div className="mt-6">
+            <Suspense fallback={<CatalogSkeleton />}>
+              <AuctionMarketplace searchParams={searchParams} />
+            </Suspense>
+          </div>
+        </PageContainer>
+      </Section>
 
       <Section className="section-light bg-white" tight>
         <PageContainer>
@@ -99,11 +168,8 @@ export default function SubastasPage() {
             <Link href="/solicitar-vehiculo" className="btn-primary">
               Solicitar vehículo
             </Link>
-            <Link href="/inventario?listing=auction" className="btn-secondary">
-              Ver oportunidades
-            </Link>
             <a
-              href={whatsappHref("Hola, quiero información sobre subastas en Estados Unidos.")}
+              href={whatsappHref("Hola, quiero información sobre oportunidades de subasta.")}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-whatsapp"
@@ -122,16 +188,16 @@ export default function SubastasPage() {
             title="Copart e IAA como referencia"
             subtitle={`${SITE.shortName} no es socio, partner ni afiliado de esas compañías.`}
           />
-          <div className="mt-10 grid gap-4 md:grid-cols-2">
+          <div className="mt-8 grid gap-3 md:grid-cols-2">
             {PLATFORMS.map((item) => (
               <article
                 key={item.name}
-                className="border border-[#e4e6ea] bg-white p-6 md:p-8"
+                className="border border-[#e4e6ea] bg-white p-5 md:p-6"
                 style={{ borderRadius: "var(--radius-card)" }}
               >
                 <p className="kicker !text-[#676a70]">Plataforma</p>
-                <h3 className="mt-3 font-display text-2xl font-semibold text-[#08090b]">{item.name}</h3>
-                <p className="mt-3 text-base leading-relaxed text-[#676a70]">{item.copy}</p>
+                <h3 className="mt-2 font-display text-xl font-semibold text-[#08090b]">{item.name}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[#676a70]">{item.copy}</p>
               </article>
             ))}
           </div>

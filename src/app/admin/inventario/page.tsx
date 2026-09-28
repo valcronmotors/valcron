@@ -3,7 +3,7 @@ import { getValcronVehicles } from "@/lib/admin-data";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Inventario",
+  title: "Inventario Valcron",
 };
 
 export default async function AdminInventarioPage({

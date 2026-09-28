@@ -728,6 +728,65 @@ h3 {
   animation-play-state: paused;
 }
 
+/* Vehicle inventory carousels — same compositor-friendly loop pattern */
+@keyframes vehicle-carousel-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.public-site .vehicle-carousel-viewport {
+  width: 100%;
+  overflow: hidden;
+}
+
+.public-site .vehicle-carousel-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation-name: vehicle-carousel-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.public-site .vehicle-carousel-group {
+  display: flex;
+  align-items: stretch;
+  gap: 0.75rem;
+  padding-inline: 0.25rem;
+}
+
+.public-site .vehicle-carousel-item {
+  width: min(78vw, 19rem);
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .public-site .vehicle-carousel-group {
+    gap: 1rem;
+  }
+  .public-site .vehicle-carousel-item {
+    width: min(46vw, 20.5rem);
+  }
+}
+
+@media (min-width: 1280px) {
+  .public-site .vehicle-carousel-item {
+    width: 21.5rem;
+  }
+}
+
+.public-site .vehicle-carousel-static {
+  display: none;
+}
+
+.public-site .vehicle-carousel-viewport:hover .vehicle-carousel-track {
+  animation-play-state: paused;
+}
+
 .public-site .motion-fade-up {
   animation: fade-up 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -742,6 +801,13 @@ h3 {
     animation: none !important;
   }
   .public-site .brand-marquee-static {
+    display: block;
+  }
+  .public-site .vehicle-carousel-track {
+    display: none;
+    animation: none !important;
+  }
+  .public-site .vehicle-carousel-static {
     display: block;
   }
   .public-site .vehicle-card-media img,

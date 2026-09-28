@@ -11,6 +11,10 @@ import { AdminPublishBadge, AdminStatusBadge } from "@/components/admin/AdminBad
 import { AdminCard, AdminEmptyState, AdminNotice, AdminPrimaryButton, AdminSecondaryButton } from "@/components/admin/ui";
 import { adminGreeting, formatAdminDate } from "@/lib/admin-copy";
 import { formatMoneyPlain, vehicleLabel } from "@/lib/admin-metrics";
+import {
+  filterAuctionCatalogRows,
+  filterLocalStockRows,
+} from "@/lib/catalogs";
 import type { DashboardInquiry, DashboardVehicle } from "@/lib/admin-data";
 
 function DistributionBar({
@@ -64,23 +68,26 @@ export function AdminDashboardView({
   auctionCount: number;
   error: string | null;
 }) {
-  const published = vehicles.filter((row) => row.published);
-  const available = vehicles.filter((row) => row.status === "available");
-  const reserved = vehicles.filter((row) => row.status === "reserved");
-  const sold = vehicles.filter((row) => row.status === "sold");
-  const drafts = vehicles.filter((row) => row.status === "draft" || !row.published);
-  const hidden = vehicles.filter((row) => row.status === "hidden");
-  const featured = vehicles.filter((row) => row.featured && row.published);
+  const localVehicles = filterLocalStockRows(vehicles);
+  const auctionVehicles = filterAuctionCatalogRows(vehicles);
+  const published = localVehicles.filter((row) => row.published);
+  const available = localVehicles.filter((row) => row.status === "available");
+  const reserved = localVehicles.filter((row) => row.status === "reserved");
+  const sold = localVehicles.filter((row) => row.status === "sold");
+  const drafts = localVehicles.filter((row) => row.status === "draft" || !row.published);
+  const hidden = localVehicles.filter((row) => row.status === "hidden");
+  const featured = localVehicles.filter((row) => row.featured && row.published);
+  const publishedAuctions = auctionVehicles.filter((row) => row.published);
   const newInquiries = inquiries.filter((row) => row.status === "new");
-  const recentVehicles = vehicles.slice(0, 6);
+  const recentVehicles = localVehicles.slice(0, 6);
   const recentInquiries = inquiries.slice(0, 4);
 
   const compact = [
-    { href: "/admin/inventario?estado=reserved", label: "Reservados", value: reserved.length },
-    { href: "/admin/inventario?estado=sold", label: "Vendidos", value: sold.length },
-    { href: "/admin/inventario?publicado=no", label: "Borradores", value: drafts.length },
+    { href: "/admin/inventario?estado=reserved", label: "Reservados Valcron", value: reserved.length },
+    { href: "/admin/inventario?estado=sold", label: "Vendidos Valcron", value: sold.length },
+    { href: "/admin/inventario?publicado=no", label: "Borradores Valcron", value: drafts.length },
     { href: "/admin/subastas", label: "Oportunidades", value: auctionCount },
-    { href: "/admin/inventario", label: "Destacados", value: featured.length },
+    { href: "/admin/website", label: "Subastas publicadas", value: publishedAuctions.length },
   ];
 
   return (
@@ -152,38 +159,33 @@ export function AdminDashboardView({
         </div>
       </AdminCard>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <Link
           href="/admin/inventario"
           className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-[var(--admin-shadow)]"
         >
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
-            Total vehículos
+            Vehículos Valcron
           </p>
           <p className="mt-3 font-display text-3xl font-semibold tabular-nums text-[var(--admin-text)]">
-            {vehicles.length}
+            {localVehicles.length}
+          </p>
+          <p className="mt-1 text-xs text-[var(--admin-text-muted)]">
+            {published.length} publicados · {available.length} disponibles
           </p>
         </Link>
         <Link
-          href="/admin/inventario?publicado=si"
+          href="/admin/subastas"
           className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-[var(--admin-shadow)]"
         >
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
-            Publicados
+            Oportunidades
           </p>
           <p className="mt-3 font-display text-3xl font-semibold tabular-nums text-[var(--admin-text)]">
-            {published.length}
+            {auctionCount}
           </p>
-        </Link>
-        <Link
-          href="/admin/inventario?estado=available"
-          className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-[var(--admin-shadow)]"
-        >
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
-            Disponibles
-          </p>
-          <p className="mt-3 font-display text-3xl font-semibold tabular-nums text-[var(--admin-text)]">
-            {available.length}
+          <p className="mt-1 text-xs text-[var(--admin-text-muted)]">
+            {publishedAuctions.length} publicadas en website
           </p>
         </Link>
         <Link
@@ -222,20 +224,30 @@ export function AdminDashboardView({
           </p>
           <DistributionBar
             items={[
-              { label: "Publicados", value: published.length, tone: "bg-[var(--admin-success)]" },
-              { label: "Sin publicar", value: vehicles.length - published.length, tone: "bg-[var(--admin-border-strong)]" },
+              { label: "Publicados Valcron", value: published.length, tone: "bg-[var(--admin-success)]" },
+              {
+                label: "Sin publicar Valcron",
+                value: localVehicles.length - published.length,
+                tone: "bg-[var(--admin-border-strong)]",
+              },
             ]}
           />
         </AdminCard>
         <AdminCard>
-          <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Estado del inventario</h2>
-          <p className="mt-1 text-sm text-[var(--admin-text-secondary)]">Distribución actual de las unidades.</p>
+          <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">
+            Estado Inventario Valcron
+          </h2>
+          <p className="mt-1 text-sm text-[var(--admin-text-secondary)]">Distribución del stock local.</p>
           <DistributionBar
             items={[
               { label: "Disponibles", value: available.length, tone: "bg-[var(--admin-success)]" },
               { label: "Reservados", value: reserved.length, tone: "bg-[var(--admin-warning)]" },
               { label: "Vendidos", value: sold.length, tone: "bg-[var(--admin-text-muted)]" },
-              { label: "Borradores", value: vehicles.filter((row) => row.status === "draft").length, tone: "bg-[var(--admin-border-strong)]" },
+              {
+                label: "Borradores",
+                value: localVehicles.filter((row) => row.status === "draft").length,
+                tone: "bg-[var(--admin-border-strong)]",
+              },
               { label: "Ocultos", value: hidden.length, tone: "bg-[#c5c8cc]" },
             ]}
           />

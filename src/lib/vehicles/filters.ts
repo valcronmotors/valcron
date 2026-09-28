@@ -1,8 +1,18 @@
+import {
+  isAuctionCatalogVehicle,
+  isLocalStockVehicle,
+} from "@/lib/catalogs";
 import type { PublicVehicle, VehicleAvailability, VehicleQuery, VehicleSort } from "@/types/vehicle";
 
 export const DEFAULT_PAGE_SIZE = 12;
 
 export function matchesVehicleQuery(vehicle: PublicVehicle, query: VehicleQuery) {
+  if (query.catalog === "local" && !isLocalStockVehicle(vehicle)) {
+    return false;
+  }
+  if (query.catalog === "auction" && !isAuctionCatalogVehicle(vehicle)) {
+    return false;
+  }
   if (query.availability && query.availability !== "all" && vehicle.availability !== query.availability) {
     return false;
   }
@@ -102,19 +112,26 @@ export function availabilityCounts(vehicles: PublicVehicle[]) {
   }, {});
 }
 
+/** Featured slots for Home Inventario Valcron — local stock only. */
 export function selectFeaturedVehicles(vehicles: PublicVehicle[], limit = 4) {
-  const flagged = vehicles.filter((vehicle) => vehicle.featured && vehicle.availability !== "sold");
+  const local = vehicles.filter(
+    (vehicle) => isLocalStockVehicle(vehicle) && vehicle.availability !== "sold",
+  );
+  const flagged = local.filter((vehicle) => vehicle.featured);
   if (flagged.length >= limit) {
     return flagged.slice(0, limit);
   }
-  const available = vehicles.filter((vehicle) => vehicle.availability === "available_rd");
-  const rest = vehicles.filter((vehicle) => vehicle.availability !== "available_rd" && vehicle.availability !== "sold");
-  return [...flagged, ...available.filter((vehicle) => !flagged.includes(vehicle)), ...rest].slice(0, limit);
+  const available = local.filter((vehicle) => vehicle.availability === "available_rd");
+  return [...flagged, ...available.filter((vehicle) => !flagged.includes(vehicle))].slice(0, limit);
 }
 
 export function similarVehicles(vehicle: PublicVehicle, pool: PublicVehicle[], limit = 4) {
-  const scored = pool
-    .filter((item) => item.id !== vehicle.id && item.availability !== "sold")
+  const sameCatalog = pool.filter((item) => {
+    if (item.id === vehicle.id || item.availability === "sold") return false;
+    if (isAuctionCatalogVehicle(vehicle)) return isAuctionCatalogVehicle(item);
+    return isLocalStockVehicle(item);
+  });
+  const scored = sameCatalog
     .map((item) => {
       let score = 0;
       if (item.make === vehicle.make) score += 4;
@@ -132,6 +149,6 @@ export function similarVehicles(vehicle: PublicVehicle, pool: PublicVehicle[], l
   if (picked.length >= limit) {
     return picked;
   }
-  const fallback = pool.filter((item) => item.id !== vehicle.id && item.availability !== "sold" && !picked.includes(item));
+  const fallback = sameCatalog.filter((item) => !picked.includes(item));
   return [...picked, ...fallback].slice(0, limit);
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SlidersHorizontal, X } from "lucide-react";
 import { CurrencySwitch } from "@/components/public/CurrencyProvider";
@@ -32,15 +33,20 @@ export function VehicleCatalog({
   initialFilters,
   initialVehicles = [],
   initialError = null,
+  catalogKind = "local",
+  basePath = "/inventario",
 }: {
   initialFilters: CatalogFilters;
   initialVehicles?: PublicVehicle[];
   initialError?: string | null;
+  /** Locks catalog boundary — never mixes local stock with auction opportunities. */
+  catalogKind?: "local" | "auction";
+  basePath?: "/inventario" | "/subastas";
 }) {
   const router = useRouter();
   const vehicles = initialVehicles;
   const error = initialError;
-  const [listing, setListing] = useState(initialFilters.listing);
+  const listing = catalogKind === "auction" ? "auction" : "dealer";
   const [marca, setMarca] = useState(initialFilters.marca);
   const [modelo, setModelo] = useState(initialFilters.modelo);
   const [ano, setAno] = useState(initialFilters.ano);
@@ -74,12 +80,19 @@ export function VehicleCatalog({
   );
 
   useEffect(() => {
-    const qs = catalogQueryString({ listing, marca, modelo, ano, precioMin, precioMax, search });
-    router.replace(qs ? `/inventario?${qs}` : "/inventario", { scroll: false });
-  }, [ano, listing, marca, modelo, precioMax, precioMin, router, search]);
+    const qs = catalogQueryString({
+      listing: "",
+      marca,
+      modelo,
+      ano,
+      precioMin,
+      precioMax,
+      search,
+    });
+    router.replace(qs ? `${basePath}?${qs}` : basePath, { scroll: false });
+  }, [ano, basePath, marca, modelo, precioMax, precioMin, router, search]);
 
   function clearFilters() {
-    setListing("");
     setMarca("");
     setModelo("");
     setAno("");
@@ -89,8 +102,6 @@ export function VehicleCatalog({
   }
 
   const chips = [
-    listing === "dealer" ? { key: "listing", label: "Disponible en Valcron" } : null,
-    listing === "auction" ? { key: "listing", label: "Mediante subasta" } : null,
     marca ? { key: "marca", label: marca } : null,
     modelo ? { key: "modelo", label: modelo } : null,
     ano ? { key: "ano", label: ano } : null,
@@ -110,14 +121,6 @@ export function VehicleCatalog({
           className={fieldClass}
           inputMode="search"
         />
-      </label>
-      <label className="block min-w-0 text-sm text-[#5c5c5c]">
-        Disponibilidad
-        <select value={listing} onChange={(event) => setListing(event.target.value)} className={fieldClass}>
-          <option value="">Todas</option>
-          <option value="dealer">Disponible en Valcron</option>
-          <option value="auction">Disponible mediante subasta</option>
-        </select>
       </label>
       <label className="block min-w-0 text-sm text-[#5c5c5c]">
         Marca
@@ -261,7 +264,6 @@ export function VehicleCatalog({
               key={`${chip.key}-${chip.label}`}
               className="inline-flex min-h-11 items-center rounded-full border border-[#e4e6ea] px-3 text-xs text-[#0b0c0e]"
               onClick={() => {
-                if (chip.key === "listing") setListing("");
                 if (chip.key === "marca") {
                   setMarca("");
                   setModelo("");
@@ -321,9 +323,29 @@ export function VehicleCatalog({
       ) : (
         <div className="grid min-w-0 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {visible.map((vehicle) => (
-            <VehicleCard key={vehicle.id} vehicle={vehicle} tone="light" />
+            <VehicleCard
+              key={vehicle.id}
+              vehicle={vehicle}
+              tone="light"
+              actionLabel={catalogKind === "auction" ? "Ver oportunidad" : "Ver detalles"}
+            />
           ))}
         </div>
+      )}
+      {catalogKind === "local" ? (
+        <p className="text-center text-sm text-[#676a70]">
+          ¿Buscas opciones en subasta?{" "}
+          <Link href="/subastas" className="font-semibold text-[#2b6cff]">
+            Explorar oportunidades
+          </Link>
+        </p>
+      ) : (
+        <p className="text-center text-sm text-[#676a70]">
+          ¿Prefieres inventario local?{" "}
+          <Link href="/inventario" className="font-semibold text-[#2b6cff]">
+            Ver Inventario Valcron
+          </Link>
+        </p>
       )}
     </div>
   );

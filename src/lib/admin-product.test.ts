@@ -187,10 +187,19 @@ describe("legacy isolation", () => {
     expect(hrefs).not.toContain("/crm");
     expect(ADMIN_NAV.map((item) => item.label)).toEqual([
       "Dashboard",
-      "Inventario",
-      "Oportunidades",
+      "Inventario Valcron",
+      "Subastas",
       "Solicitudes",
       "Website",
+    ]);
+    expect(ADMIN_NAV.find((item) => item.id === "inventario")?.children?.map((c) => c.label)).toEqual([
+      "Vehículos",
+      "Agregar vehículo",
+    ]);
+    expect(ADMIN_NAV.find((item) => item.id === "subastas")?.children?.map((c) => c.label)).toEqual([
+      "Oportunidades",
+      "Buscar en Copart",
+      "IAA / Agregar manualmente",
     ]);
   });
 });

@@ -164,7 +164,7 @@ export function AdminInventoryWorkspace({
   return (
     <div className="grid gap-6">
       <AdminPageHeader
-        title="Inventario"
+        title="Inventario Valcron"
         subtitle="Una unidad solo aparece en el website si está publicada y en estado disponible, reservado o vendido."
         count={`${filtered.length} de ${vehicles.length} unidades`}
         actions={

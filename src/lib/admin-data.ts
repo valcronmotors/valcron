@@ -1,11 +1,12 @@
 import { publicActionError } from "@/lib/action-errors";
+import { filterLocalStockRows, LOCAL_STOCK_SOURCE_TYPES } from "@/lib/catalogs";
 import { VEHICLE_ADMIN_SELECT } from "@/lib/inventory";
 import { isMissingPublicPriceModeColumn, vehicleSelectWithoutPublicPriceMode } from "@/lib/public-price-mode";
 import { createClient } from "@/utils/supabase/server";
 import type { InquiryRow, VehicleRow } from "@/lib/website-schema";
 
 export const DASHBOARD_VEHICLE_SELECT =
-  "id, year, make, model, trim, status, published, featured, price, currency, updated_at";
+  "id, year, make, model, trim, status, published, featured, price, currency, source_type, updated_at";
 
 export type DashboardVehicle = Pick<
   VehicleRow,
@@ -19,6 +20,7 @@ export type DashboardVehicle = Pick<
   | "featured"
   | "price"
   | "currency"
+  | "source_type"
   | "updated_at"
 >;
 
@@ -27,22 +29,48 @@ export type DashboardInquiry = Pick<
   "id" | "status" | "name" | "message" | "created_at" | "vehicle_id"
 >;
 
+/** Local Inventario Valcron only — excludes auction-origin (source_type = other). */
 export async function getValcronVehicles() {
   const supabase = await createClient();
   let { data, error } = await supabase
     .from("vehicles")
     .select(VEHICLE_ADMIN_SELECT)
+    .in("source_type", [...LOCAL_STOCK_SOURCE_TYPES])
     .order("updated_at", { ascending: false });
   if (error && isMissingPublicPriceModeColumn(error)) {
     ({ data, error } = await supabase
       .from("vehicles")
       .select(vehicleSelectWithoutPublicPriceMode(VEHICLE_ADMIN_SELECT))
+      .in("source_type", [...LOCAL_STOCK_SOURCE_TYPES])
+      .order("updated_at", { ascending: false }));
+  }
+
+  const rows = (data ?? []) as unknown as VehicleRow[];
+  return {
+    vehicles: filterLocalStockRows(rows),
+    error: error ? publicActionError(error, "No pudimos cargar el inventario.") : null,
+  };
+}
+
+/** Published auction-origin vehicles linked for website (source_type = other). */
+export async function getAuctionCatalogVehiclesAdmin() {
+  const supabase = await createClient();
+  let { data, error } = await supabase
+    .from("vehicles")
+    .select(VEHICLE_ADMIN_SELECT)
+    .eq("source_type", "other")
+    .order("updated_at", { ascending: false });
+  if (error && isMissingPublicPriceModeColumn(error)) {
+    ({ data, error } = await supabase
+      .from("vehicles")
+      .select(vehicleSelectWithoutPublicPriceMode(VEHICLE_ADMIN_SELECT))
+      .eq("source_type", "other")
       .order("updated_at", { ascending: false }));
   }
 
   return {
     vehicles: (data ?? []) as unknown as VehicleRow[],
-    error: error ? publicActionError(error, "No pudimos cargar el inventario.") : null,
+    error: error ? publicActionError(error, "No pudimos cargar las oportunidades publicadas.") : null,
   };
 }
 

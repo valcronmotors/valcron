@@ -27,21 +27,48 @@ export const ADMIN_NAV: AdminNavSection[] = [
     label: "Dashboard",
     icon: "dashboard",
     href: "/admin",
-    description: "Resumen del inventario, solicitudes y oportunidades.",
+    description: "Resumen de Inventario Valcron, subastas y solicitudes.",
   },
   {
     id: "inventario",
-    label: "Inventario",
+    label: "Inventario Valcron",
     icon: "inventory",
-    href: "/admin/inventario",
-    description: "Vehículos del catálogo público: borradores, publicados, reservados y vendidos.",
+    description: "Stock local controlado por Valcron. No incluye oportunidades de subasta.",
+    children: [
+      {
+        href: "/admin/inventario",
+        label: "Vehículos",
+        description: "Borradores, publicados, reservados y vendidos.",
+      },
+      {
+        href: "/admin/inventario/nuevo",
+        label: "Agregar vehículo",
+        description: "Nueva unidad al inventario local.",
+      },
+    ],
   },
   {
     id: "subastas",
-    label: "Oportunidades",
+    label: "Subastas",
     icon: "auctions",
-    href: "/admin/subastas",
-    description: "Seguimiento interno de lotes. No aparecen en el inventario hasta prepararlos y publicarlos.",
+    description: "Oportunidades Copart/IAA. No publican el CSV completo.",
+    children: [
+      {
+        href: "/admin/subastas",
+        label: "Oportunidades",
+        description: "Seguimiento interno y preparación para website.",
+      },
+      {
+        href: "/admin/subastas/copart",
+        label: "Buscar en Copart",
+        description: "Cache interno — no publica automáticamente.",
+      },
+      {
+        href: "/admin/subastas/nuevo",
+        label: "IAA / Agregar manualmente",
+        description: "Oportunidad manual (IAA u otra).",
+      },
+    ],
   },
   {
     id: "solicitudes",
@@ -55,7 +82,7 @@ export const ADMIN_NAV: AdminNavSection[] = [
     label: "Website",
     icon: "website",
     href: "/admin/website",
-    description: "Estado de publicación y accesos del sitio.",
+    description: "Estado de publicación de ambos catálogos públicos.",
   },
 ];
 
@@ -79,26 +106,6 @@ export function isAdminNavChildActive(
 
 export function findAdminNavItem(pathname: string) {
   for (const section of ADMIN_NAV) {
-    if (section.href && isAdminPathActive(pathname, section.href)) {
-      const nestedLabel = pathname.endsWith("/nuevo")
-        ? section.id === "inventario"
-          ? "Agregar vehículo"
-          : section.id === "subastas"
-            ? "Agregar oportunidad"
-            : section.label
-        : pathname.startsWith("/admin/subastas/copart")
-          ? "Inventario Copart"
-          : section.label;
-      return {
-        section,
-        item: {
-          href: section.href,
-          label: nestedLabel,
-          description: section.description ?? "",
-        },
-      };
-    }
-
     const exact = section.children?.find((entry) => pathname === entry.href);
     if (exact) {
       return { section, item: exact };
@@ -109,6 +116,29 @@ export function findAdminNavItem(pathname: string) {
       .sort((a, b) => b.href.length - a.href.length)[0];
     if (nested) {
       return { section, item: nested };
+    }
+
+    if (section.href && isAdminPathActive(pathname, section.href)) {
+      return {
+        section,
+        item: {
+          href: section.href,
+          label: section.label,
+          description: section.description ?? "",
+        },
+      };
+    }
+
+    if (
+      !section.href &&
+      section.children?.some((child) => isAdminPathActive(pathname, child.href))
+    ) {
+      const activeChild = section.children
+        .filter((child) => isAdminPathActive(pathname, child.href))
+        .sort((a, b) => b.href.length - a.href.length)[0];
+      if (activeChild) {
+        return { section, item: activeChild };
+      }
     }
   }
 

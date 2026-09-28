@@ -35,6 +35,15 @@ export async function GET(request: Request) {
   }
 
   const listing = url.searchParams.get("listing")?.trim() ?? "";
+  const catalogParam = url.searchParams.get("catalog")?.trim() ?? "";
+  const catalog =
+    catalogParam === "local" || catalogParam === "auction"
+      ? catalogParam
+      : listing === "dealer"
+        ? "local"
+        : listing === "auction" || listing === "subasta"
+          ? "auction"
+          : "all";
   const availabilityParam = url.searchParams.get("availability")?.trim() ?? "";
   const availability: VehicleAvailability | "all" | undefined =
     availabilityParam === "available_rd" ||
@@ -42,19 +51,16 @@ export async function GET(request: Request) {
     availabilityParam === "in_transit" ||
     availabilityParam === "sold"
       ? availabilityParam
-      : listing === "dealer"
-        ? "available_rd"
-        : listing === "auction" || listing === "subasta"
-          ? "auction"
-          : listing === "transit"
-            ? "in_transit"
-            : "all";
+      : listing === "transit"
+        ? "in_transit"
+        : "all";
 
   const result = await getPublicVehicles({
     q: (url.searchParams.get("q") ?? url.searchParams.get("vin") ?? "").trim() || undefined,
     make: url.searchParams.get("marca")?.trim() || undefined,
     model: url.searchParams.get("modelo")?.trim() || undefined,
     source: (url.searchParams.get("fuente")?.trim() || undefined) as VehicleSource | undefined,
+    catalog,
     availability,
     year: numberParam(url.searchParams.get("ano")),
     yearMin: numberParam(url.searchParams.get("anoMin") ?? url.searchParams.get("anoDesde")),

@@ -17,10 +17,12 @@ export function VehicleCard({
   vehicle,
   tone = "light",
   compact = false,
+  actionLabel,
 }: {
   vehicle: PublicVehicle;
   tone?: "dark" | "light";
   compact?: boolean;
+  actionLabel?: string;
 }) {
   const { currency } = useDisplayCurrency();
   const badge = publicListingBadge(vehicle);
@@ -105,7 +107,7 @@ export function VehicleCard({
               : "mt-2 inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-white px-3 text-xs font-semibold text-[#08090b] transition-colors duration-180 hover:bg-[#ececec] sm:mt-3 sm:h-11 sm:text-sm"
           }
         >
-          Ver detalles
+          {actionLabel ?? "Ver detalles"}
           <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
         </Link>
       </div>

@@ -137,6 +137,8 @@ export type VehicleSort =
 export type VehicleQuery = {
   q?: string;
   availability?: VehicleAvailability | "all";
+  /** Catalog boundary: local Valcron stock vs published auction opportunities. */
+  catalog?: "local" | "auction" | "all";
   source?: VehicleSource | "";
   make?: string;
   model?: string;

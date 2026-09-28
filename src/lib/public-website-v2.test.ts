@@ -151,10 +151,10 @@ describe("auction vs Valcron labels and CTAs", () => {
     const auction = toPublicVehicle(row({ source_type: "other", status: "available", public_price_mode: "contact", price: null }));
     const reserved = toPublicVehicle(row({ status: "reserved" }));
     expect(publicListingBadge(stock).label).toBe("Disponible en Valcron");
-    expect(publicListingBadge(auction).label).toBe("Disponible mediante subasta");
+    expect(publicListingBadge(auction).label).toBe("Oportunidad de subasta");
     expect(publicListingBadge(reserved).label).toBe("Reservado");
     expect(availabilityLabel("available_rd")).toBe("Disponible en Valcron");
-    expect(availabilityLabel("auction")).toBe("Disponible mediante subasta");
+    expect(availabilityLabel("auction")).toBe("Oportunidad de subasta");
   });
 
   it("uses different public CTAs for dealer stock and auction vehicles", () => {
@@ -235,6 +235,6 @@ describe("public copy constraints", () => {
     const auction = toPublicVehicle(row({ source_type: "other", public_price_mode: "contact", price: null }));
     expect(buildVehicleWhatsAppMessage(stock)).toMatch(/^Hola, me interesa este vehículo disponible en Valcron: 2023 Toyota RAV4/);
     expect(buildVehicleWhatsAppMessage(stock)).toContain("https://valcronmotors.com/inventario/");
-    expect(buildVehicleWhatsAppMessage(auction)).toMatch(/cotización de este vehículo disponible mediante subasta/);
+    expect(buildVehicleWhatsAppMessage(auction)).toMatch(/cotización para esta oportunidad de subasta/);
   });
 });

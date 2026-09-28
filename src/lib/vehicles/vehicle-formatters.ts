@@ -128,7 +128,7 @@ export function buildVehicleWhatsAppMessage(vehicle: PublicVehicle) {
   const title = vehicleDisplayTitle(vehicle);
   const url = canonicalVehicleUrl(vehicle);
   if (vehicle.availability === "auction" || vehicle.listingKind === "auction") {
-    return `Hola, me interesa recibir una cotización de este vehículo disponible mediante subasta: ${title}. ${url}`;
+    return `Hola, me interesa recibir una cotización para esta oportunidad de subasta: ${title}. ${url}`;
   }
   if (vehicle.availability === "sold") {
     return `Hola, me interesa un vehículo similar a este: ${title}. ${url}`;

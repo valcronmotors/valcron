@@ -2,13 +2,13 @@ import { Suspense } from "react";
 import { PageContainer } from "@/components/public/layout";
 import { CatalogSkeleton } from "@/components/public/InventorySkeleton";
 import { VehicleCatalog, type CatalogFilters } from "@/components/public/VehicleCatalog";
-import { loadPublicVehicles } from "@/lib/public-inventory";
+import { loadLocalStockVehicles } from "@/lib/public-inventory";
 import { publicPageMetadata } from "@/lib/seo";
 
 export const metadata = publicPageMetadata({
-  title: "Inventario de Vehículos",
+  title: "Inventario Valcron — vehículos disponibles",
   description:
-    "Vehículos disponibles en Valcron Motors, Santo Domingo Este. Filtra por marca, modelo y año.",
+    "Vehículos disponibles directamente a través de Valcron Motors en Santo Domingo Este. Filtra por marca, modelo y año.",
   path: "/inventario",
 });
 
@@ -20,7 +20,6 @@ async function InventarioCatalog({
   searchParams,
 }: {
   searchParams: Promise<{
-    listing?: string;
     marca?: string;
     modelo?: string;
     ano?: string;
@@ -30,9 +29,9 @@ async function InventarioCatalog({
   }>;
 }) {
   const params = await searchParams;
-  const inventory = await loadPublicVehicles();
+  const inventory = await loadLocalStockVehicles();
   const filters: CatalogFilters = {
-    listing: firstParam(params.listing),
+    listing: "dealer",
     marca: firstParam(params.marca),
     modelo: firstParam(params.modelo),
     ano: firstParam(params.ano),
@@ -43,6 +42,8 @@ async function InventarioCatalog({
 
   return (
     <VehicleCatalog
+      catalogKind="local"
+      basePath="/inventario"
       initialVehicles={inventory.data}
       initialError={inventory.error}
       initialFilters={filters}
@@ -54,7 +55,6 @@ export default function InventarioPage({
   searchParams,
 }: {
   searchParams: Promise<{
-    listing?: string;
     marca?: string;
     modelo?: string;
     ano?: string;
@@ -66,9 +66,9 @@ export default function InventarioPage({
   return (
     <main className="section-light bg-[#f7f8fa]">
       <PageContainer className="pb-14 pt-8 md:pb-16 md:pt-10">
-        <p className="kicker !text-[#676a70]">Inventario</p>
+        <p className="kicker !text-[#676a70]">Inventario Valcron</p>
         <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-[#08090b] md:text-4xl">
-          Vehículos
+          Vehículos disponibles
         </h1>
         <div className="mt-6 md:mt-8">
           <Suspense fallback={<CatalogSkeleton />}>

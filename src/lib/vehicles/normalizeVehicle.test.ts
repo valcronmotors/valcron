@@ -89,7 +89,7 @@ describe("vehicle normalization", () => {
     expect(vehicle.listingKind).toBe("auction");
     expect(vehicle.availability).toBe("auction");
     expect(vehicle.source).toBe("manual");
-    expect(publicListingBadge(vehicle).label).toBe("Disponible mediante subasta");
+    expect(publicListingBadge(vehicle).label).toBe("Oportunidad de subasta");
     expect(publicListingBadge(toPublicVehicle(row())).label).toBe("Disponible en Valcron");
   });
 
