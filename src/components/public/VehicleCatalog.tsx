@@ -168,7 +168,7 @@ export function VehicleCatalog({
         <input type="number" min={0} inputMode="numeric" value={precioMax} onChange={(event) => setPrecioMax(event.target.value)} className={fieldClass} />
       </label>
       <div className="flex items-end">
-        <button type="button" onClick={clearFilters} className="h-11 w-full rounded-lg border border-[#e4e6ea] text-sm text-[#0b0c0e]">
+        <button type="button" onClick={clearFilters} className="h-12 w-full rounded-full border border-[#e4e6ea] text-sm font-medium text-[#08090b]">
           Limpiar filtros
         </button>
       </div>
@@ -214,16 +214,10 @@ export function VehicleCatalog({
   return (
     <div className="grid min-w-0 gap-4">
       <div className="grid gap-3">
-        <h1 className="font-display text-[2rem] font-bold tracking-tight text-[#08090b] md:hidden">
-          Vehículos disponibles
-        </h1>
-        <p className="text-sm text-[#676a70] md:hidden">
-          Filtra por marca, modelo, año o precio.
-        </p>
-        <p className="text-sm text-[#676a70]">
+        <p className="text-sm font-medium text-[#676a70]">
           {visible.length === 1 ? "1 vehículo" : `${visible.length} vehículos`}
         </p>
-        <label className="block text-sm text-[#5c5c5c] lg:hidden">
+        <label className="block text-sm text-[#676a70] lg:hidden">
           Buscar
           <input
             value={search}
@@ -236,7 +230,7 @@ export function VehicleCatalog({
         <div className="grid grid-cols-2 gap-2 lg:flex lg:flex-wrap lg:items-center lg:justify-end">
           <button
             type="button"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[#e4e6ea] px-3 text-sm lg:hidden"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-[#e4e6ea] bg-white px-4 text-sm font-medium lg:hidden"
             onClick={() => setFiltersOpen(true)}
           >
             <SlidersHorizontal className="h-4 w-4" />
@@ -245,7 +239,7 @@ export function VehicleCatalog({
           <select
             value={sort}
             onChange={(event) => setSort(event.target.value)}
-            className="h-12 rounded-lg border border-[#e4e6ea] bg-white px-3 text-sm"
+            className="h-12 rounded-full border border-[#e4e6ea] bg-white px-4 text-sm"
             aria-label="Ordenar"
           >
             <option value="recent">Más recientes</option>
@@ -287,7 +281,7 @@ export function VehicleCatalog({
 
       <div
         className="hidden border border-[#e4e6ea] bg-white p-5 lg:block"
-        style={{ borderRadius: "var(--radius-xl)" }}
+        style={{ borderRadius: "var(--radius-card)" }}
       >
         {filters}
       </div>

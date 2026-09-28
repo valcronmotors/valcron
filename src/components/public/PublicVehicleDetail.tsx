@@ -61,7 +61,10 @@ export function PublicVehicleDetail({
 
   return (
     <article className="section-light bg-[#f5f6f7] pb-28 text-[#08090b] lg:pb-16">
-      <div className="mx-auto w-full max-w-7xl px-4 py-8 lg:px-8 lg:py-14">
+      <div
+        className="mx-auto w-full max-w-[var(--content-max)] py-8 lg:py-14"
+        style={{ paddingInline: "var(--page-gutter)" }}
+      >
         <nav aria-label="Migas de pan" className="text-sm text-[#676a70]">
           <ol className="flex min-w-0 flex-wrap items-center gap-2">
             <li>
@@ -80,27 +83,29 @@ export function PublicVehicleDetail({
           </ol>
         </nav>
 
-        <div className="mt-8 grid min-w-0 gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:gap-12">
+        <div className="mt-8 grid min-w-0 gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-start lg:gap-12">
           <VehicleGallery photos={photos} title={title} />
 
-          <div className="min-w-0">
+          <div
+            className="min-w-0 border border-[#e4e6ea] bg-white p-5 md:p-7 lg:sticky lg:top-24"
+            style={{ borderRadius: "var(--radius-card)" }}
+          >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p
-                className={`border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${badge.className}`}
-                style={{ borderRadius: "var(--radius-sm)" }}
+                className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${badge.className}`}
               >
                 {badge.label}
               </p>
               <CurrencySwitch compact tone="light" />
             </div>
-            <h1 className="mt-4 break-words font-display text-[2rem] font-bold leading-[1.1] tracking-[-0.03em] text-[#08090b] sm:text-4xl lg:text-[2.75rem]">
+            <h1 className="mt-4 break-words font-display text-[2rem] font-bold leading-[1.08] tracking-[-0.035em] text-[#08090b] sm:text-4xl lg:text-[2.75rem]">
               {year} {make} {model}
             </h1>
             {vehicle.trim ? <p className="mt-2 text-base text-[#676a70]">{vehicle.trim}</p> : null}
 
             {sold ? (
               <p
-                className="mt-6 border border-[#e4e6ea] bg-white px-4 py-3 text-sm text-[#676a70]"
+                className="mt-6 border border-[#e4e6ea] bg-[#f5f6f7] px-4 py-3 text-sm text-[#676a70]"
                 style={{ borderRadius: "var(--radius-lg)" }}
               >
                 Esta unidad figura como vendida. Conservamos la ficha para consulta. Si buscas algo
@@ -147,9 +152,9 @@ export function PublicVehicleDetail({
 
         {specs.length ? (
           <section className="mt-14">
-            <h2 className="font-display text-2xl font-semibold text-[#08090b]">Ficha del vehículo</h2>
+            <h2 className="font-display text-2xl font-bold text-[#08090b]">Ficha del vehículo</h2>
             <dl className="mt-6 grid grid-cols-1 gap-px overflow-hidden border border-[#e4e6ea] bg-[#e4e6ea] sm:grid-cols-2 lg:grid-cols-3"
-              style={{ borderRadius: "var(--radius-lg)" }}
+              style={{ borderRadius: "var(--radius-card)" }}
             >
               {specs.map((item) => (
                 <div key={item.label} className="bg-white p-4">
