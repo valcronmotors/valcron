@@ -38,13 +38,17 @@ export function VehicleCard({
 
   return (
     <article
-      className={`group flex flex-col overflow-hidden rounded-2xl border ${
+      className={`vehicle-card group flex flex-col overflow-hidden ${
         light
-          ? "border-[#e6e2db] bg-white shadow-[0_8px_24px_rgba(20,20,20,0.05)]"
+          ? "border border-[#e5e3de] bg-white"
           : "gloss-panel"
       }`}
+      style={{ borderRadius: "var(--radius-lg)" }}
     >
-      <Link href={href} className="relative aspect-[4/3] overflow-hidden bg-[#1a1a1a] sm:aspect-[16/10]">
+      <Link
+        href={href}
+        className="vehicle-card-media relative aspect-[4/3] overflow-hidden bg-[#1b1d20] sm:aspect-[16/10]"
+      >
         <VehiclePhoto
           src={cover}
           alt={vehicleImageAlt(vehicle)}
@@ -52,30 +56,31 @@ export function VehicleCard({
           className="object-cover"
         />
         <span
-          className={`absolute left-3 top-3 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${badge.className}`}
+          className={`absolute left-3 top-3 border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${badge.className}`}
+          style={{ borderRadius: "var(--radius-sm)" }}
         >
           {badge.label}
         </span>
       </Link>
 
-      <div className={`flex flex-1 flex-col gap-2 p-4 ${light ? "text-[#141414]" : "text-white"}`}>
+      <div className={`flex flex-1 flex-col gap-1.5 p-4 ${light ? "text-[#111214]" : "text-white"}`}>
         <h3 className="font-display text-lg font-semibold leading-snug tracking-tight">
           <Link href={href}>
             {vehicleDisplayTitle({ year, make, model, trim: null, ano: year, marca: make, modelo: model })}
           </Link>
         </h3>
         {vehicle.trim ? (
-          <p className={`text-sm ${light ? "text-[#5c5c5c]" : "text-[#d4d4d4]"}`}>{vehicle.trim}</p>
+          <p className={`text-sm ${light ? "text-[#676a70]" : "text-[#d4d4d4]"}`}>{vehicle.trim}</p>
         ) : null}
-        {specLine ? <p className={`text-sm ${light ? "text-[#4a4a4a]" : "text-[#d4d4d4]"}`}>{specLine}</p> : null}
-        <p className="pt-1 text-lg font-semibold">{price.primary}</p>
-        <div className="mt-auto grid grid-cols-[1fr_auto] gap-2 pt-2">
+        {specLine ? <p className={`text-sm ${light ? "text-[#676a70]" : "text-[#d4d4d4]"}`}>{specLine}</p> : null}
+        <p className="pt-2 font-display text-xl font-semibold tracking-tight">{price.primary}</p>
+        <div className="mt-auto grid grid-cols-[1fr_auto] gap-2 pt-3">
           <Link
             href={href}
             className={
               light
-                ? "inline-flex h-12 items-center justify-center rounded-lg bg-[#141414] px-3 text-sm font-semibold text-white"
-                : "inline-flex h-12 items-center justify-center rounded-lg bg-white px-3 text-sm font-semibold text-[#111]"
+                ? "inline-flex h-12 items-center justify-center rounded-[0.625rem] bg-[#111214] px-3 text-[0.9375rem] font-semibold text-white transition-colors duration-180 hover:bg-[#1b1d20]"
+                : "inline-flex h-12 items-center justify-center rounded-[0.625rem] bg-white px-3 text-[0.9375rem] font-semibold text-[#111214] transition-colors duration-180 hover:bg-[#ececec]"
             }
           >
             Ver detalles
@@ -86,8 +91,10 @@ export function VehicleCard({
               target="_blank"
               rel="noopener noreferrer"
               aria-label={quoteLabel}
-              className={`inline-flex h-12 min-w-12 items-center justify-center gap-1.5 rounded-lg border px-3 text-sm ${
-                light ? "border-[#e6e2db] text-[#141414]" : "border-white/15 text-white"
+              className={`inline-flex h-12 min-w-12 items-center justify-center gap-1.5 rounded-[0.625rem] border px-3 text-[0.9375rem] transition-colors duration-180 ${
+                light
+                  ? "border-[#e5e3de] text-[#111214] hover:border-[#111214]"
+                  : "border-white/15 text-white hover:border-white/40"
               }`}
             >
               <WhatsAppIcon className="h-4 w-4" />

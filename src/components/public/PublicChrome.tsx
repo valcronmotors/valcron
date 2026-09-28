@@ -20,7 +20,7 @@ export function PublicChrome({ children }: { children: ReactNode }) {
 
   return (
     <CurrencyProvider>
-      <div className="public-site flex min-h-full flex-1 flex-col overflow-x-clip bg-[#f7f5f1] text-[#141414]">
+      <div className="public-site flex min-h-full flex-1 flex-col overflow-x-clip bg-[#f6f5f1] text-[#111214]">
         <Navbar />
         <div className="flex min-h-0 flex-1 flex-col">{children}</div>
         <Footer />

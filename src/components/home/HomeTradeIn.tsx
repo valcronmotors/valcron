@@ -2,19 +2,22 @@ import Link from "next/link";
 
 export function HomeTradeIn() {
   return (
-    <section className="section-light bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-14">
-        <p className="kicker">Recibimos tu vehículo</p>
-        <h2 className="mt-2 max-w-xl font-display text-2xl font-bold tracking-tight text-[#141414] md:text-3xl">
-          ¿Tienes un vehículo para entregar?
-        </h2>
-        <p className="mt-3 max-w-xl text-base leading-relaxed text-[#5c5c5c]">
-          Podemos evaluar tu unidad como parte del proceso de compra. El valor se confirma después de
-          revisar la unidad.
-        </p>
-        <Link href="/solicitar-vehiculo" className="btn-secondary mt-5 inline-flex h-12">
-          Consultar mi vehículo
-        </Link>
+    <section className="section-light bg-[#f6f5f1]">
+      <div className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+        <div className="max-w-2xl border-l-2 border-[#9b793f] pl-6 md:pl-8">
+          <p className="kicker">Trade-in</p>
+          <h2 className="display-section mt-4 text-[#111214]">
+            ¿Tienes un vehículo
+            <span className="block">para entregar?</span>
+          </h2>
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-[#676a70] md:text-lg">
+            Podemos evaluar tu unidad como parte del proceso de compra. El valor se confirma después
+            de revisar la unidad — no prometemos tasación previa.
+          </p>
+          <Link href="/solicitar-vehiculo" className="btn-primary mt-8 inline-flex">
+            Consultar mi vehículo
+          </Link>
+        </div>
       </div>
     </section>
   );

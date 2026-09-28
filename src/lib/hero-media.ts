@@ -1,10 +1,12 @@
-const unsplash = (id: string) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1400&q=70`;
+const unsplash = (id: string, width = 1600) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=72`;
 
+/** Marketing photography — illustrative, not inventory. */
 export const HOME_HERO_SLIDES = [
   {
-    src: unsplash("photo-1519641471654-76ce0107ad1b"),
-    alt: "SUV familiar contemporáneo, fotografía ilustrativa",
+    src: unsplash("photo-1606664515524-ed2f786a0bd6"),
+    alt: "SUV contemporáneo en iluminación natural, fotografía ilustrativa de Valcron Motors",
+    mobileSrc: unsplash("photo-1606664515524-ed2f786a0bd6", 900),
   },
 ] as const;
 
@@ -14,7 +16,7 @@ export const PAGE_HERO_IMAGES = {
   financiamiento: unsplash("photo-1449965408869-eaa3f722e40d"),
   nosotros: unsplash("photo-1541899481282-d53bffcf8837"),
   contacto: unsplash("photo-1489824904134-891ab64532f1"),
-  subastas: unsplash("photo-1549317661-bd32c8ce0db2"),
+  subastas: unsplash("photo-1617469767053-d3b523a0b982"),
   servicios: unsplash("photo-1533473359331-0135ef1b58bf"),
 } as const;
 
@@ -24,7 +26,7 @@ export const PAGE_HERO_ALTS = {
   financiamiento: "Conducir en ciudad, contexto de compra y financiamiento",
   nosotros: "Vehículo contemporáneo en entorno abierto",
   contacto: "Detalle automotriz para atención al cliente",
-  subastas: "Sedán contemporáneo, fotografía ilustrativa",
+  subastas: "SUV contemporáneo, fotografía ilustrativa de búsqueda y subasta",
   servicios: "SUV contemporáneo, fotografía ilustrativa de servicios",
 } as const;
 

@@ -1,127 +1,41 @@
-"use client";
-
 import Link from "next/link";
-import { useState } from "react";
 import { EditorialImage } from "@/components/shared/EditorialImage";
 import { EDITORIAL } from "@/lib/editorial-media";
-import { formatDop, formatUsd } from "@/lib/money";
-import { financeConfig } from "@/lib/finance-config";
-import { monthlyPayment } from "@/lib/public-filters";
-import { DEFAULT_TASA_USD_DOP } from "@/lib/vehicle-costs";
 
 export function HomeFinance() {
-  const [price, setPrice] = useState(25000);
-  const [downPct, setDownPct] = useState<number>(financeConfig.defaultDownPaymentPct);
-  const [ratePct, setRatePct] = useState(financeConfig.defaultAnnualRate * 100);
-  const [term, setTerm] = useState<number>(financeConfig.defaultTermMonths);
-
-  const down = Math.round(price * (Math.max(downPct, 0) / 100));
-  const financed = Math.max(price - down, 0);
-  const cuota = monthlyPayment(financed, term, ratePct / 100);
-
   return (
-    <section className="section-light bg-[#f5f5f3]">
-      <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 lg:grid-cols-2 lg:px-8 lg:py-20">
-        <div className="relative hidden min-h-[32rem] overflow-hidden rounded-[1.5rem] bg-[#111] lg:block">
-          <EditorialImage
-            src={EDITORIAL.crossover.src}
-            alt={EDITORIAL.crossover.alt}
-            sizes="(min-width: 1024px) 42vw, 100vw"
-            className="object-cover"
-          />
-        </div>
+    <section className="section-dark bg-[#111214]">
+      <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-24">
         <div>
-          <p className="kicker">Financiamiento</p>
-          <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-[#111] sm:text-5xl">
-            Financia tu
-            <span className="block">próximo vehículo.</span>
+          <p className="kicker text-[#c7a96b]">Financiamiento</p>
+          <h2 className="display-section mt-4 text-white">
+            Financiamiento
+            <span className="block">con bancos locales</span>
           </h2>
-          <p className="mt-4 max-w-md text-base leading-relaxed text-[#525252]">
-            Te orientamos durante el proceso de financiamiento con instituciones financieras locales.
-            La aprobación y las condiciones las define cada banco.
+          <p className="mt-5 max-w-md text-base leading-relaxed text-[#a8abb0] md:text-lg">
+            Te orientamos durante el proceso con instituciones financieras locales. La aprobación y
+            las condiciones las define cada banco según el perfil del solicitante.
           </p>
-          <p className="mt-3 text-sm font-semibold text-[#9B793F]">Financiamiento con bancos locales</p>
-          <div className="mt-8 hidden rounded-2xl border border-[#ececea] bg-white p-6 shadow-[0_20px_50px_rgba(0,0,0,0.05)] md:block">
-            <label className="block text-sm text-[#737373]">
-              Precio vehículo (USD)
-              <input
-                type="number"
-                min={0}
-                value={price}
-                onChange={(event) => setPrice(Number(event.target.value) || 0)}
-                className="field-input"
-              />
-            </label>
-            <label className="mt-5 block text-sm text-[#737373]">
-              Inicial {downPct}% · {formatUsd(down)}
-              <input
-                type="range"
-                min={0}
-                max={70}
-                value={downPct}
-                onChange={(event) => setDownPct(Number(event.target.value))}
-                className="luxury-range mt-4 w-full"
-              />
-            </label>
-            <label className="mt-5 block text-sm text-[#737373]">
-              Tasa anual {ratePct.toFixed(1)}%
-              <input
-                type="range"
-                min={0}
-                max={30}
-                step={0.1}
-                value={ratePct}
-                onChange={(event) => setRatePct(Number(event.target.value))}
-                className="luxury-range mt-4 w-full"
-              />
-            </label>
-            <label className="mt-5 block text-sm text-[#737373]">
-              Plazo
-              <select
-                value={term}
-                onChange={(event) => setTerm(Number(event.target.value))}
-                className="field-input"
-              >
-                {financeConfig.terms.map((option) => (
-                  <option key={option} value={option}>
-                    {option} meses
-                  </option>
-                ))}
-              </select>
-            </label>
-            <div className="mt-6 rounded-2xl bg-[#111111] p-5 text-white">
-              <p className="text-[11px] uppercase tracking-[0.2em] text-[#C7A96B]">Cuota mensual estimada</p>
-              <p className="mt-2 font-display text-3xl font-semibold">{formatUsd(cuota)}</p>
-              <p className="mt-1 text-sm text-white/45">{formatDop(cuota * DEFAULT_TASA_USD_DOP)} referencia DOP</p>
-              <dl className="mt-4 grid grid-cols-2 gap-3 text-sm text-white/70">
-                <div>
-                  <dt className="text-[11px] uppercase tracking-[0.14em] text-white/45">Inicial</dt>
-                  <dd className="mt-1">{formatUsd(down)}</dd>
-                </div>
-                <div>
-                  <dt className="text-[11px] uppercase tracking-[0.14em] text-white/45">A financiar</dt>
-                  <dd className="mt-1">{formatUsd(financed)}</dd>
-                </div>
-                <div>
-                  <dt className="text-[11px] uppercase tracking-[0.14em] text-white/45">Plazo</dt>
-                  <dd className="mt-1">{term} meses</dd>
-                </div>
-                <div>
-                  <dt className="text-[11px] uppercase tracking-[0.14em] text-white/45">Precio</dt>
-                  <dd className="mt-1">{formatUsd(price)}</dd>
-                </div>
-              </dl>
-            </div>
-            <p className="mt-4 text-xs leading-relaxed text-[#737373]">
-              Estimación únicamente. Las tasas, comisiones, requisitos y aprobaciones dependen de
-              cada institución financiera y del perfil del solicitante.
-            </p>
-          </div>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/financiamiento" className="btn-primary h-12 w-full sm:w-auto">
+          <p className="mt-4 text-sm text-[#a8abb0]">
+            Valcron Motors no es un banco. No prometemos aprobación.
+          </p>
+          <div className="mt-8">
+            <Link href="/financiamiento" className="btn-primary">
               Conocer opciones
             </Link>
           </div>
+        </div>
+        <div
+          className="relative hidden min-h-[28rem] overflow-hidden bg-[#1b1d20] lg:block"
+          style={{ borderRadius: "var(--radius-panel)" }}
+        >
+          <EditorialImage
+            src={EDITORIAL.cityDrive.src}
+            alt={EDITORIAL.cityDrive.alt}
+            sizes="(min-width: 1024px) 42vw, 100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#111214]/50 to-transparent" />
         </div>
       </div>
     </section>

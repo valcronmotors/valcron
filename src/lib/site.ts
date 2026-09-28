@@ -10,7 +10,7 @@ export const SITE = {
   heroEyebrow: "Valcron Motors",
   heroTitle: "Tu próximo vehículo empieza aquí.",
   heroSubtitle:
-    "Compra vehículos disponibles en República Dominicana o solicita una opción mediante subasta e importación.",
+    "Encuentra vehículos disponibles en República Dominicana o solicita una opción mediante subasta e importación.",
   valueProposition:
     "Valcron Motors es un dealer en Santo Domingo Este. Encuentra vehículos disponibles, solicita una unidad o consulta financiamiento con bancos locales.",
   address: {
