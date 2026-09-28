@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
 import { PageHero } from "@/components/public/PageHero";
 import {
   contentPath,
@@ -16,19 +17,17 @@ const COPY: Record<
 > = {
   blog: {
     kicker: "Blog",
-    title: "Artículos para decidir con más contexto",
-    subtitle:
-      "Noticias, análisis y contexto para comprar un vehículo con más información.",
-    empty: "Todavía no hay artículos publicados.",
+    title: "Contexto para decidir mejor",
+    subtitle: "Artículos breves sobre compra, financiamiento e importación.",
+    empty: "Pronto publicaremos nuevos artículos.",
     image: PAGE_HERO_IMAGES.servicios,
     imageAlt: PAGE_HERO_ALTS.servicios,
   },
   guide: {
     kicker: "Guías",
-    title: "Recursos paso a paso para comprar e importar",
-    subtitle:
-      "Guías prácticas y permanentes: inventario, financiamiento, subastas e importación.",
-    empty: "Todavía no hay guías publicadas.",
+    title: "Pasos claros, sin tecnicismos",
+    subtitle: "Recursos permanentes sobre inventario, subastas e importación.",
+    empty: "Pronto publicaremos nuevas guías.",
     image: PAGE_HERO_IMAGES.importacion,
     imageAlt: PAGE_HERO_ALTS.importacion,
   },
@@ -43,11 +42,17 @@ export function ContentListing({ kind }: { kind: ContentKind }) {
 
   return (
     <main>
-      <PageHero kicker={copy.kicker} title={copy.title} subtitle={copy.subtitle} image={copy.image} imageAlt={copy.imageAlt} />
-      <section className="section-light bg-[#f5f6f7]">
-        <div className="mx-auto w-full max-w-7xl px-4 py-14 lg:px-8 lg:py-20">
+      <PageHero
+        kicker={copy.kicker}
+        title={copy.title}
+        subtitle={copy.subtitle}
+        image={copy.image}
+        imageAlt={copy.imageAlt}
+      />
+      <Section className="section-light bg-[#f7f8fa]">
+        <PageContainer>
           {categories.length ? (
-            <p className="text-xs uppercase tracking-[0.16em] text-[#676a70]">
+            <p className="text-xs font-medium uppercase tracking-[0.16em] text-[#676a70]">
               Temas: {categories.join(" · ")}
             </p>
           ) : null}
@@ -56,9 +61,9 @@ export function ContentListing({ kind }: { kind: ContentKind }) {
             <Link
               href={contentPath(featured)}
               className="mt-8 grid min-w-0 overflow-hidden border border-[#e4e6ea] bg-white lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]"
-              style={{ borderRadius: "var(--radius-panel)" }}
+              style={{ borderRadius: "var(--radius-card)" }}
             >
-              <div className="relative aspect-[16/10] min-h-[13rem] lg:aspect-auto lg:min-h-[24rem]">
+              <div className="relative aspect-[16/10] min-h-[13rem] bg-[#12141a] lg:aspect-auto lg:min-h-[24rem]">
                 <EditorialImage
                   src={featured.hero.src}
                   alt={featured.hero.alt}
@@ -67,14 +72,15 @@ export function ContentListing({ kind }: { kind: ContentKind }) {
                 />
               </div>
               <div className="flex min-w-0 flex-col justify-center p-6 sm:p-10 lg:p-12">
-                <p className="kicker">{featured.category}</p>
+                <p className="kicker !text-[#676a70]">{featured.category}</p>
                 <h2 className="mt-3 text-balance break-words font-display text-3xl font-semibold tracking-tight text-[#08090b] sm:text-4xl">
                   {featured.title}
                 </h2>
-                <p className="mt-4 text-base leading-relaxed text-[#676a70]">{featured.excerpt}</p>
-                <p className="mt-6 text-xs uppercase tracking-[0.14em] text-[#676a70]">
-                  {formatContentDate(featured.publishedAt)} · {readingTimeMinutes(featured)} min de
-                  lectura
+                <p className="mt-4 line-clamp-3 text-base leading-relaxed text-[#676a70]">
+                  {featured.excerpt}
+                </p>
+                <p className="mt-6 text-xs font-medium uppercase tracking-[0.14em] text-[#676a70]">
+                  {formatContentDate(featured.publishedAt)} · {readingTimeMinutes(featured)} min
                 </p>
               </div>
             </Link>
@@ -92,7 +98,7 @@ export function ContentListing({ kind }: { kind: ContentKind }) {
                 >
                   <div
                     className="relative aspect-[16/10] overflow-hidden bg-[#12141a]"
-                    style={{ borderRadius: "var(--radius-lg)" }}
+                    style={{ borderRadius: "var(--radius-card)" }}
                   >
                     <EditorialImage
                       src={article.hero.src}
@@ -102,25 +108,25 @@ export function ContentListing({ kind }: { kind: ContentKind }) {
                     />
                   </div>
                   <div className="flex flex-1 flex-col pt-5">
-                    <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#2b6cff]">
+                    <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#676a70]">
                       {article.category}
                     </p>
                     <h2 className="mt-2 text-balance break-words font-display text-xl font-semibold text-[#08090b] md:text-2xl">
                       {article.title}
                     </h2>
-                    <p className="mt-2 flex-1 text-sm leading-relaxed text-[#676a70]">
+                    <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-[#676a70]">
                       {article.excerpt}
                     </p>
-                    <p className="mt-4 text-xs uppercase tracking-[0.14em] text-[#676a70]">
-                      {readingTimeMinutes(article)} min de lectura
+                    <p className="mt-4 text-xs font-medium uppercase tracking-[0.14em] text-[#676a70]">
+                      {readingTimeMinutes(article)} min
                     </p>
                   </div>
                 </Link>
               ))}
             </div>
           ) : null}
-        </div>
-      </section>
+        </PageContainer>
+      </Section>
     </main>
   );
 }

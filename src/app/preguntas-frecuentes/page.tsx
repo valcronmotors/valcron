@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { FaqAccordion } from "@/components/public/FaqAccordion";
-import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
-import { PageHero } from "@/components/public/PageHero";
-import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
+import { PageContainer, Section } from "@/components/public/layout";
 import { SITE } from "@/lib/site";
 import { publicPageMetadata } from "@/lib/seo";
 
@@ -14,22 +12,17 @@ export const metadata = publicPageMetadata({
 
 export default function FaqPage() {
   return (
-    <main>
-      <PageHero
-        kicker="Recursos"
-        title="Preguntas frecuentes"
-        subtitle="Orientación clara antes de comprar, importar o solicitar una búsqueda."
-        image={PAGE_HERO_IMAGES.nosotros}
-        imageAlt={PAGE_HERO_ALTS.nosotros}
-      />
-      <Section className="section-light bg-[#f5f6f7]">
+    <main className="section-light bg-[#f7f8fa]">
+      <Section tight>
         <PageContainer narrow>
           <div className="text-center">
-            <SectionHeader
-              align="center"
-              title="Respuestas directas"
-              subtitle="Si no encuentras lo que buscas, escríbenos o solicita una búsqueda personalizada."
-            />
+            <h1 className="display-lg text-[#08090b]">
+              Preguntas
+              <span className="block">frecuentes</span>
+            </h1>
+            <p className="mt-3 text-[length:var(--text-body-lg)] text-[#676a70]">
+              ¿Todavía tienes dudas?
+            </p>
             <Link href="/solicitar-vehiculo" className="btn-secondary mt-6">
               Solicitar vehículo
             </Link>

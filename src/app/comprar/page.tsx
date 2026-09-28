@@ -1,79 +1,92 @@
+import Image from "next/image";
 import Link from "next/link";
-import { NumberedSteps } from "@/components/public/NumberedSteps";
-import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
-import { PageHero } from "@/components/public/PageHero";
-import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
-import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
+import { ArrowRight } from "lucide-react";
+import { PageContainer, Section } from "@/components/public/layout";
+import { EDITORIAL } from "@/lib/editorial-media";
 import { publicPageMetadata } from "@/lib/seo";
-import { SITE, whatsappHref } from "@/lib/site";
 
 export const metadata = publicPageMetadata({
   title: "Cómo comprar un vehículo en Valcron Motors",
   description:
-    "Proceso claro para comprar en inventario local o solicitar una búsqueda mediante subasta e importación. Valcron Motors, Santo Domingo Este.",
+    "Compra en inventario, solicita un vehículo, financiamiento o subastas. Valcron Motors, Santo Domingo Este.",
   path: "/comprar",
 });
 
-const LOCAL = [
-  { step: "01", title: "Explora", copy: "Revisa el inventario publicado." },
-  { step: "02", title: "Consulta", copy: "Escríbenos o visítanos." },
-  { step: "03", title: "Evalúa tus opciones", copy: "Compara unidad, precio y financiamiento." },
-  { step: "04", title: "Completa el proceso", copy: "Cierra con acompañamiento." },
-];
-
-const SOURCING = [
-  { step: "01", title: "Dinos qué buscas", copy: "Marca, modelo, año y presupuesto." },
-  { step: "02", title: "Revisamos opciones", copy: "Inventario y fuentes adecuadas." },
-  { step: "03", title: "Cotizamos", copy: "Costos y escenarios claros." },
-  { step: "04", title: "Seleccionas", copy: "Eliges la unidad que te conviene." },
-  { step: "05", title: "Gestionamos el proceso contratado", copy: "Te acompañamos hasta el cierre." },
-];
+const OPTIONS = [
+  {
+    title: "Vehículos en Valcron",
+    copy: "Unidades publicadas y disponibles.",
+    href: "/inventario",
+    cta: "Ver inventario",
+    image: EDITORIAL.citySuv,
+  },
+  {
+    title: "Solicitar vehículo",
+    copy: "Dinos marca, modelo y presupuesto.",
+    href: "/solicitar-vehiculo",
+    cta: "Solicitar",
+    image: EDITORIAL.compactSuv,
+  },
+  {
+    title: "Financiamiento",
+    copy: "Orientación con bancos locales.",
+    href: "/financiamiento",
+    cta: "Conocer opciones",
+    image: EDITORIAL.familySedan,
+  },
+  {
+    title: "Subastas",
+    copy: "Más opciones en Copart e IAA.",
+    href: "/subastas",
+    cta: "Explorar",
+    image: EDITORIAL.silverSedan,
+  },
+] as const;
 
 export default function ComprarPage() {
   return (
     <main>
-      <PageHero
-        kicker="Comprar"
-        title="Más opciones. Más claridad."
-        subtitle={`${SITE.shortName} te ayuda a encontrar y obtener tu próximo vehículo con un proceso corto y sin rodeos.`}
-        image={PAGE_HERO_IMAGES.servicios}
-        imageAlt={PAGE_HERO_ALTS.servicios}
-      />
-
-      <Section className="section-light bg-white">
+      <Section className="section-light bg-white" tight>
         <PageContainer>
-          <SectionHeader
-            kicker="Inventario local"
-            title="Si ya está publicado, el camino es directo."
-          />
-          <NumberedSteps steps={LOCAL} tone="light" />
-          <Link href="/inventario" className="btn-primary mt-10 inline-flex">
-            Ver inventario
-          </Link>
+          <p className="kicker !text-[#676a70]">Comprar</p>
+          <h1 className="display-lg mt-3 max-w-[16ch] text-[#08090b]">
+            Más opciones.
+            <span className="block">Más claridad.</span>
+          </h1>
+          <p className="mt-4 max-w-md text-[length:var(--text-body-lg)] text-[#676a70]">
+            Elige cómo quieres avanzar.
+          </p>
         </PageContainer>
       </Section>
 
-      <Section className="section-dark bg-[#08090b]">
+      <Section className="section-light bg-[#f7f8fa]" tight>
         <PageContainer>
-          <SectionHeader
-            kicker="Búsqueda y subasta"
-            title="Si no está en stock, lo buscamos."
-            tone="dark"
-          />
-          <NumberedSteps steps={SOURCING} tone="dark" />
-          <div className="mt-10 flex flex-wrap gap-3">
-            <Link href="/solicitar-vehiculo" className="btn-primary">
-              Solicitar vehículo
-            </Link>
-            <a
-              href={whatsappHref("Hola, quiero solicitar una búsqueda de vehículo.")}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-whatsapp"
-            >
-              <WhatsAppIcon className="h-4 w-4" />
-              WhatsApp
-            </a>
+          <div className="grid gap-4 md:grid-cols-2">
+            {OPTIONS.map((option) => (
+              <article
+                key={option.href}
+                className="overflow-hidden border border-[#e4e6ea] bg-white"
+                style={{ borderRadius: "var(--radius-card)" }}
+              >
+                <div className="relative aspect-[16/10] bg-[#f7f8fa]">
+                  <Image
+                    src={option.image.src}
+                    alt={option.image.alt}
+                    fill
+                    sizes="(max-width: 768px) 92vw, 45vw"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-5 md:p-6">
+                  <h2 className="font-display text-xl font-bold text-[#08090b]">{option.title}</h2>
+                  <p className="mt-2 text-sm text-[#676a70]">{option.copy}</p>
+                  <Link href={option.href} className="btn-primary mt-5">
+                    {option.cta}
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
+                </div>
+              </article>
+            ))}
           </div>
         </PageContainer>
       </Section>

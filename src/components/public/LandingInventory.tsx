@@ -5,7 +5,7 @@ import { SITE, whatsappHref } from "@/lib/site";
 export function InventoryEmptyState({
   title = PUBLIC_INVENTORY_EMPTY.title,
   copy = PUBLIC_INVENTORY_EMPTY.copy,
-  tone = "dark",
+  tone = "light",
   showRequest = false,
   onClear,
 }: {
@@ -21,8 +21,8 @@ export function InventoryEmptyState({
     <div
       className={
         light
-          ? "border border-[#e4e6ea] bg-[#f7f8fa] px-5 py-8 text-center"
-          : "gloss-panel px-5 py-8 text-center"
+          ? "border border-[#e4e6ea] bg-[#f7f8fa] px-5 py-8 text-center md:px-10 md:py-10"
+          : "gloss-panel px-5 py-8 text-center md:px-10 md:py-10"
       }
       style={{ borderRadius: "var(--radius-card)" }}
     >
@@ -34,7 +34,11 @@ export function InventoryEmptyState({
         {title}
       </p>
       {copy ? (
-        <p className={`mx-auto mt-2 max-w-md text-sm ${light ? "text-[#676a70]" : "text-[#d4d4d4]"}`}>
+        <p
+          className={`mx-auto mt-2 max-w-md text-sm leading-relaxed ${
+            light ? "text-[#676a70]" : "text-[#d4d4d4]"
+          }`}
+        >
           {copy}
         </p>
       ) : null}
