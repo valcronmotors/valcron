@@ -74,9 +74,15 @@ export function PublicVehicleDetail({
             </li>
             <li aria-hidden>/</li>
             <li>
-              <Link href="/inventario" className="hover:text-[#08090b]">
-                Inventario
-              </Link>
+              {auctionListing ? (
+                <Link href="/subastas" className="hover:text-[#08090b]">
+                  Subastas
+                </Link>
+              ) : (
+                <Link href="/inventario" className="hover:text-[#08090b]">
+                  Inventario Valcron
+                </Link>
+              )}
             </li>
             <li aria-hidden>/</li>
             <li className="min-w-0 break-words text-[#08090b]">{title}</li>

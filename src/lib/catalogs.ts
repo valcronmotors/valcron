@@ -54,3 +54,25 @@ export function filterLocalStockRows<T extends Pick<VehicleRow, "source_type">>(
 export function filterAuctionCatalogRows<T extends Pick<VehicleRow, "source_type">>(rows: T[]) {
   return rows.filter(isAuctionCatalogRow);
 }
+
+/** Admin Solicitudes context — Inventario Valcron vs Subasta vs general. */
+export type InquiryCatalogKind = "local" | "auction" | "general";
+
+export function inquiryCatalogKind(input: {
+  auctionOpportunityId?: string | null;
+  sourceType?: VehicleSourceType | null;
+  vehicleId?: string | null;
+}): InquiryCatalogKind {
+  if (input.auctionOpportunityId) return "auction";
+  if (input.sourceType != null) {
+    return isAuctionCatalogSource(input.sourceType) ? "auction" : "local";
+  }
+  if (input.vehicleId) return "local";
+  return "general";
+}
+
+export function inquiryCatalogLabel(kind: InquiryCatalogKind) {
+  if (kind === "auction") return "Subasta";
+  if (kind === "local") return "Inventario Valcron";
+  return "Consulta general";
+}

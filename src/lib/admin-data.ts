@@ -1,9 +1,14 @@
 import { publicActionError } from "@/lib/action-errors";
-import { filterLocalStockRows, LOCAL_STOCK_SOURCE_TYPES } from "@/lib/catalogs";
+import {
+  filterLocalStockRows,
+  inquiryCatalogKind,
+  LOCAL_STOCK_SOURCE_TYPES,
+  type InquiryCatalogKind,
+} from "@/lib/catalogs";
 import { VEHICLE_ADMIN_SELECT } from "@/lib/inventory";
 import { isMissingPublicPriceModeColumn, vehicleSelectWithoutPublicPriceMode } from "@/lib/public-price-mode";
 import { createClient } from "@/utils/supabase/server";
-import type { InquiryRow, VehicleRow } from "@/lib/website-schema";
+import type { InquiryRow, VehicleRow, VehicleSourceType } from "@/lib/website-schema";
 
 export const DASHBOARD_VEHICLE_SELECT =
   "id, year, make, model, trim, status, published, featured, price, currency, source_type, updated_at";
@@ -95,6 +100,11 @@ export async function getAdminVehicle(id: string) {
   };
 }
 
+export type AdminInquiryView = InquiryRow & {
+  catalogKind: InquiryCatalogKind;
+  vehicleTitle: string | null;
+};
+
 export async function getAdminInquiries() {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -102,8 +112,46 @@ export async function getAdminInquiries() {
     .select("*")
     .order("created_at", { ascending: false });
 
+  const inquiries = (data ?? []) as unknown as InquiryRow[];
+  const vehicleIds = [
+    ...new Set(inquiries.map((row) => row.vehicle_id).filter((id): id is string => Boolean(id))),
+  ];
+
+  const vehicleMeta = new Map<
+    string,
+    { source_type: VehicleSourceType; year: number; make: string; model: string }
+  >();
+  if (vehicleIds.length > 0) {
+    const { data: vehicles } = await supabase
+      .from("vehicles")
+      .select("id, source_type, year, make, model")
+      .in("id", vehicleIds);
+    for (const vehicle of (vehicles ?? []) as Array<{
+      id: string;
+      source_type: VehicleSourceType;
+      year: number;
+      make: string;
+      model: string;
+    }>) {
+      vehicleMeta.set(vehicle.id, vehicle);
+    }
+  }
+
+  const views: AdminInquiryView[] = inquiries.map((row) => {
+    const meta = row.vehicle_id ? vehicleMeta.get(row.vehicle_id) : undefined;
+    const catalogKind = inquiryCatalogKind({
+      auctionOpportunityId: row.auction_opportunity_id,
+      sourceType: meta?.source_type,
+      vehicleId: row.vehicle_id,
+    });
+    const vehicleTitle = meta
+      ? `${meta.year} ${meta.make} ${meta.model}`.replace(/\s+/g, " ").trim()
+      : null;
+    return { ...row, catalogKind, vehicleTitle };
+  });
+
   return {
-    inquiries: (data ?? []) as unknown as InquiryRow[],
+    inquiries: views,
     error: error ? publicActionError(error, "No pudimos cargar las solicitudes.") : null,
   };
 }

@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   filterAuctionCatalogVehicles,
   filterLocalStockVehicles,
+  inquiryCatalogKind,
+  inquiryCatalogLabel,
   isAuctionCatalogSource,
   isLocalStockSource,
 } from "@/lib/catalogs";
@@ -72,5 +74,15 @@ describe("dual catalog boundaries", () => {
     expect(filterLocalStockVehicles(pool)[0]?.make).toBe("Honda");
     expect(filterAuctionCatalogVehicles(pool)).toHaveLength(20);
     expect(filterAuctionCatalogVehicles(pool).every((item) => item.listingKind === "auction")).toBe(true);
+  });
+
+  it("labels admin inquiry context by catalog without a second lead system", () => {
+    expect(inquiryCatalogKind({ vehicleId: "a", sourceType: "valcron_stock" })).toBe("local");
+    expect(inquiryCatalogKind({ vehicleId: "a", sourceType: "other" })).toBe("auction");
+    expect(inquiryCatalogKind({ auctionOpportunityId: "opp-1" })).toBe("auction");
+    expect(inquiryCatalogKind({})).toBe("general");
+    expect(inquiryCatalogLabel("local")).toBe("Inventario Valcron");
+    expect(inquiryCatalogLabel("auction")).toBe("Subasta");
+    expect(inquiryCatalogLabel("general")).toBe("Consulta general");
   });
 });

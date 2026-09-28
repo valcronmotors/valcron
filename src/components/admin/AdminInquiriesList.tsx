@@ -7,7 +7,9 @@ import { Inbox } from "lucide-react";
 import { setInquiryStatus } from "@/app/actions/inquiries";
 import { AdminEmptyState, AdminNotice, AdminPageHeader } from "@/components/admin/ui";
 import { INQUIRY_SOURCE_LABEL, INQUIRY_STATUS_LABEL, formatAdminDate } from "@/lib/admin-copy";
-import type { InquiryRow, InquiryStatus } from "@/lib/website-schema";
+import type { AdminInquiryView } from "@/lib/admin-data";
+import { inquiryCatalogLabel } from "@/lib/catalogs";
+import type { InquiryStatus } from "@/lib/website-schema";
 
 const FILTERS: { id: InquiryStatus | "all"; label: string }[] = [
   { id: "new", label: "Nuevas" },
@@ -25,7 +27,7 @@ export function AdminInquiriesList({
   error,
   initialStatus,
 }: {
-  inquiries: InquiryRow[];
+  inquiries: AdminInquiryView[];
   error: string | null;
   initialStatus?: string;
 }) {
@@ -137,9 +139,22 @@ export function AdminInquiriesList({
                       {formatAdminDate(inquiry.created_at)} · {INQUIRY_SOURCE_LABEL[inquiry.source]}
                     </p>
                   </button>
-                  <span className="rounded-full border border-[var(--admin-border)] px-2.5 py-1 text-[11px] font-medium text-[var(--admin-text-secondary)]">
-                    {INQUIRY_STATUS_LABEL[inquiry.status]}
-                  </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                        inquiry.catalogKind === "auction"
+                          ? "bg-[var(--admin-brand)]/10 text-[var(--admin-brand)]"
+                          : inquiry.catalogKind === "local"
+                            ? "bg-[var(--admin-success)]/12 text-[var(--admin-success)]"
+                            : "border border-[var(--admin-border)] text-[var(--admin-text-secondary)]"
+                      }`}
+                    >
+                      {inquiryCatalogLabel(inquiry.catalogKind)}
+                    </span>
+                    <span className="rounded-full border border-[var(--admin-border)] px-2.5 py-1 text-[11px] font-medium text-[var(--admin-text-secondary)]">
+                      {INQUIRY_STATUS_LABEL[inquiry.status]}
+                    </span>
+                  </div>
                 </div>
                 <p className={`mt-3 text-sm leading-6 text-[var(--admin-text-secondary)] ${open ? "whitespace-pre-wrap" : "line-clamp-2"}`}>
                   {inquiry.message || "Sin mensaje."}
@@ -157,8 +172,18 @@ export function AdminInquiriesList({
                     <dt className="text-[var(--admin-text-muted)]">Vehículo</dt>
                     <dd>
                       {inquiry.vehicle_id ? (
-                        <Link href={`/admin/inventario/${inquiry.vehicle_id}`} className="underline-offset-2 hover:underline">
-                          Ver unidad
+                        <Link
+                          href={`/admin/inventario/${inquiry.vehicle_id}`}
+                          className="underline-offset-2 hover:underline"
+                        >
+                          {inquiry.vehicleTitle || "Ver unidad"}
+                        </Link>
+                      ) : inquiry.auction_opportunity_id ? (
+                        <Link
+                          href={`/admin/subastas/${inquiry.auction_opportunity_id}`}
+                          className="underline-offset-2 hover:underline"
+                        >
+                          Ver oportunidad
                         </Link>
                       ) : (
                         "Consulta general"

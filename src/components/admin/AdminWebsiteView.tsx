@@ -14,7 +14,7 @@ export function AdminWebsiteView({
 }: {
   vehicles: VehicleRow[];
   auctionVehicles?: VehicleRow[];
-  inquiries: InquiryRow[];
+  inquiries: Array<Pick<InquiryRow, "id" | "name" | "created_at" | "status">>;
 }) {
   const published = vehicles.filter((row) => row.published);
   const featured = vehicles.filter((row) => row.featured && row.published);

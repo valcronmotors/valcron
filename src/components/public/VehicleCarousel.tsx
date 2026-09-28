@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 /**
  * Premium auto-advancing horizontal vehicle rail.
- * CSS transform loop when enough cards; reduced-motion → manual snap scroll.
+ * CSS transform loop on fine pointers; touch/coarse + reduced-motion → native snap scroll.
  */
 export function VehicleCarousel({
   children,

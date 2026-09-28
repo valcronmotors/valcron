@@ -783,8 +783,27 @@ h3 {
   display: none;
 }
 
-.public-site .vehicle-carousel-viewport:hover .vehicle-carousel-track {
+.public-site .vehicle-carousel-viewport:hover .vehicle-carousel-track,
+.public-site .vehicle-carousel-viewport:focus-within .vehicle-carousel-track {
   animation-play-state: paused;
+}
+
+/* Touch / coarse pointers: native swipe rails — do not fight user scroll */
+@media (hover: none), (pointer: coarse) {
+  .public-site .brand-marquee-track {
+    display: none;
+    animation: none !important;
+  }
+  .public-site .brand-marquee-static {
+    display: block;
+  }
+  .public-site .vehicle-carousel-track {
+    display: none;
+    animation: none !important;
+  }
+  .public-site .vehicle-carousel-static {
+    display: block;
+  }
 }
 
 .public-site .motion-fade-up {
