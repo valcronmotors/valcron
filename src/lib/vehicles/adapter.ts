@@ -21,7 +21,7 @@ import { isPublicCatalogListing, isPublicDetailListing } from "@/lib/website-sch
 import { buildVehicleSlug, isVehicleUuid, matchesVehicleSlug } from "@/lib/vehicles/vehicle-slugs";
 import type { PublicVehicle, VehicleListResult, VehicleQuery } from "@/types/vehicle";
 import type { VehiclePhotoRow, VehicleRow } from "@/lib/website-schema";
-import { createAnonClient } from "@/utils/supabase/anon";
+import { createAnonClient, tryCreateAnonClient } from "@/utils/supabase/anon";
 
 const CATALOG_STATUSES = ["available", "reserved"] as const;
 const DETAIL_STATUSES = ["available", "reserved", "sold"] as const;
@@ -64,7 +64,10 @@ async function attachCoverPhotos(rows: VehicleRow[]): Promise<VehicleRow[]> {
 }
 
 async function loadCatalogRows(): Promise<{ data: PublicVehicle[]; error: string | null }> {
-  const supabase = createAnonClient();
+  const supabase = tryCreateAnonClient();
+  if (!supabase) {
+    return { data: [], error: "No pudimos cargar el inventario en este momento." };
+  }
   let { data, error } = await supabase
     .from("vehicles")
     .select(PUBLIC_VEHICLE_LIST_SELECT)
@@ -267,7 +270,10 @@ export async function getSimilarVehicles(vehicle: PublicVehicle, limit = 4) {
 }
 
 export async function getPublicSitemapVehicles() {
-  const supabase = createAnonClient();
+  const supabase = tryCreateAnonClient();
+  if (!supabase) {
+    return { data: [] as PublicVehicle[], error: null };
+  }
   const { data, error } = await supabase
     .from("vehicles")
     .select("id, year, make, model, trim, status, published, published_at, updated_at")

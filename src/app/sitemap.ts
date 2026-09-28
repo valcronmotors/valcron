@@ -41,11 +41,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: article.updatedAt,
   }));
 
-  const vehicles = await getPublicSitemapVehicles();
-  const vehicleEntries: MetadataRoute.Sitemap = (vehicles.data ?? []).map((vehicle) => ({
-    url: `${SITE.url}/inventario/${vehicle.slug}`,
-    lastModified: vehicle.updatedAt ?? vehicle.publishedAt ?? undefined,
-  }));
+  let vehicleEntries: MetadataRoute.Sitemap = [];
+  try {
+    const vehicles = await getPublicSitemapVehicles();
+    vehicleEntries = (vehicles.data ?? []).map((vehicle) => ({
+      url: `${SITE.url}/inventario/${vehicle.slug}`,
+      lastModified: vehicle.updatedAt ?? vehicle.publishedAt ?? undefined,
+    }));
+  } catch {
+    // Preview / local builds without public Supabase config still emit static routes.
+  }
 
   return [...staticEntries, ...blogEntries, ...guideEntries, ...vehicleEntries];
 }
