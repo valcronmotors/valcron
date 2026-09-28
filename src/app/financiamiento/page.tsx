@@ -1,8 +1,11 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { FinanceForm } from "@/components/public/FinanceForm";
 import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
 import { PageHero } from "@/components/public/PageHero";
+import { VisualCaption } from "@/components/public/VisualStory";
+import { EDITORIAL } from "@/lib/editorial-media";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
 import { publicPageMetadata } from "@/lib/seo";
@@ -13,6 +16,33 @@ export const metadata = publicPageMetadata({
     "Orientación para financiar con bancos en RD. Valcron no es banco; la aprobación la define cada institución.",
   path: "/financiamiento",
 });
+
+const FINANCE_STEPS = [
+  {
+    step: "01",
+    title: "Elige tu vehículo",
+    copy: "Inventario publicado o búsqueda a tu medida.",
+    image: EDITORIAL.compactSuv,
+  },
+  {
+    step: "02",
+    title: "Define tu inicial",
+    copy: "Ordenamos el escenario antes de hablar con el banco.",
+    image: EDITORIAL.processQuote,
+  },
+  {
+    step: "03",
+    title: "Evalúa opciones",
+    copy: "Plazo y cuota ilustrativa — sin tasas garantizadas.",
+    image: EDITORIAL.processFinance,
+  },
+  {
+    step: "04",
+    title: "Completa el proceso",
+    copy: "Con la institución financiera. La aprobación la define ella.",
+    image: EDITORIAL.processSelect,
+  },
+] as const;
 
 const REQUIREMENTS = [
   {
@@ -40,9 +70,38 @@ export default function FinanciamientoPage() {
         <PageContainer>
           <SectionHeader
             kicker="Cómo funciona"
-            title="Información ordenada, sin atajos"
+            title="Cuatro pasos visuales"
             subtitle={`${SITE.shortName} prepara tu compra ante bancos locales. Inicial, plazo, tasa y aprobación dependen de cada institución.`}
           />
+          <ol className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {FINANCE_STEPS.map((item) => (
+              <li
+                key={item.step}
+                className="overflow-hidden border border-[#e4e6ea] bg-[#f7f8fa]"
+                style={{ borderRadius: "var(--radius-card)" }}
+              >
+                <div className="relative aspect-[16/11] bg-[#eef0f3]">
+                  <Image
+                    src={item.image.src}
+                    alt={item.image.alt}
+                    fill
+                    sizes="(max-width: 768px) 92vw, 25vw"
+                    className="object-cover object-center"
+                  />
+                </div>
+                <div className="p-5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2b6cff]">
+                    {item.step}
+                  </p>
+                  <h3 className="mt-2 font-display text-lg font-bold text-[#08090b]">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[#676a70]">{item.copy}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <div className="mt-8">
+            <VisualCaption>Orientación para financiamiento · sin aprobaciones ficticias</VisualCaption>
+          </div>
         </PageContainer>
       </Section>
 

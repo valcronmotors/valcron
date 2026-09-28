@@ -210,8 +210,8 @@ export function AdminAuctionList({
         opportunities.length === 0 ? (
           <AdminEmptyState
             icon={Gavel}
-            title="No tienes oportunidades todavía."
-            copy="Busca el inventario de Copart o agrega una oportunidad manualmente."
+            title="No hay oportunidades de subasta."
+            copy="Busca en Copart o agrega una oportunidad."
             action={
               <div className="flex flex-wrap justify-center gap-2">
                 <Link href="/admin/subastas/copart">

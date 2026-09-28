@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { NumberedSteps } from "@/components/public/NumberedSteps";
 import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
 import { PageHero } from "@/components/public/PageHero";
+import { VisualPathCard } from "@/components/public/VisualStory";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
+import { EDITORIAL } from "@/lib/editorial-media";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { publicPageMetadata } from "@/lib/seo";
 import { SITE, whatsappHref } from "@/lib/site";
@@ -10,61 +11,86 @@ import { SITE, whatsappHref } from "@/lib/site";
 export const metadata = publicPageMetadata({
   title: "Cómo comprar un vehículo en Valcron Motors",
   description:
-    "Inventario local o búsqueda por subasta e importación. Proceso claro en Santo Domingo Este.",
+    "Inventario local, búsqueda personalizada, financiamiento u opciones de subasta. Proceso claro en Santo Domingo Este.",
   path: "/comprar",
 });
 
-const LOCAL = [
-  { step: "01", title: "Explora", copy: "Revisa el inventario." },
-  { step: "02", title: "Consulta", copy: "Escríbenos o visítanos." },
-  { step: "03", title: "Compara", copy: "Unidad, precio y financiamiento." },
-  { step: "04", title: "Cierra", copy: "Con acompañamiento." },
-];
-
-const SOURCING = [
-  { step: "01", title: "Cuéntanos", copy: "Marca, modelo, año y presupuesto." },
-  { step: "02", title: "Buscamos", copy: "Inventario y fuentes cuando aplica." },
-  { step: "03", title: "Cotizamos", copy: "Costos claros." },
-  { step: "04", title: "Eliges", copy: "La unidad que te conviene." },
-  { step: "05", title: "Gestionamos", copy: "Hasta el cierre contratado." },
-];
+const PATHS = [
+  {
+    title: "Vehículo en Valcron",
+    copy: "Revisa unidades publicadas y avanza directo.",
+    href: "/inventario",
+    cta: "Ver inventario",
+    image: {
+      src: EDITORIAL.compactSuv.src,
+      alt: EDITORIAL.compactSuv.alt,
+      caption: "Inventario publicado",
+    },
+  },
+  {
+    title: "Búsqueda personalizada",
+    copy: "Dinos marca, modelo, año y presupuesto.",
+    href: "/solicitar-vehiculo",
+    cta: "Solicitar vehículo",
+    image: {
+      src: EDITORIAL.processSearch.src,
+      alt: EDITORIAL.processSearch.alt,
+      caption: EDITORIAL.processSearch.caption,
+    },
+  },
+  {
+    title: "Financiamiento",
+    copy: "Orientación con bancos locales. No somos banco.",
+    href: "/financiamiento",
+    cta: "Ver financiamiento",
+    image: {
+      src: EDITORIAL.processFinance.src,
+      alt: EDITORIAL.processFinance.alt,
+      caption: EDITORIAL.processFinance.caption,
+    },
+  },
+  {
+    title: "Subasta",
+    copy: "Más opciones mediante plataformas de mercado.",
+    href: "/subastas",
+    cta: "Ver subastas",
+    image: {
+      src: EDITORIAL.processBrowse.src,
+      alt: EDITORIAL.processBrowse.alt,
+      caption: EDITORIAL.processBrowse.caption,
+    },
+  },
+] as const;
 
 export default function ComprarPage() {
   return (
     <main>
       <PageHero
         kicker="Comprar"
-        title="Dos caminos, un proceso claro"
-        subtitle={`En stock o a tu pedido — ${SITE.shortName} te orienta sin rodeos.`}
+        title="Elige tu camino"
+        subtitle={`Inventario, búsqueda o subasta — ${SITE.shortName} te orienta sin rodeos.`}
         image={PAGE_HERO_IMAGES.servicios}
         imageAlt={PAGE_HERO_ALTS.servicios}
       />
 
-      <Section className="section-light bg-white">
-        <PageContainer>
-          <SectionHeader kicker="Inventario local" title="Si está publicado, avanzamos directo." />
-          <NumberedSteps steps={LOCAL} tone="light" />
-          <Link href="/inventario" className="btn-primary mt-10 inline-flex">
-            Ver inventario
-          </Link>
-        </PageContainer>
-      </Section>
-
-      <Section className="section-dark bg-[#08090b]">
+      <Section className="section-light bg-[#f7f8fa]">
         <PageContainer>
           <SectionHeader
-            kicker="Búsqueda"
-            title="Si no está en stock, lo buscamos."
-            subtitle="Subasta e importación cuando encaja con tu presupuesto."
-            tone="dark"
+            kicker="Opciones"
+            title="Entiéndelo de un vistazo"
+            subtitle="Imagen + acción. Sin párrafos largos."
           />
-          <NumberedSteps steps={SOURCING} tone="dark" />
+          <div className="mt-10 grid gap-4 md:grid-cols-2">
+            {PATHS.map((path) => (
+              <VisualPathCard key={path.title} {...path} />
+            ))}
+          </div>
           <div className="mt-10 flex flex-wrap gap-3">
             <Link href="/solicitar-vehiculo" className="btn-primary">
               Solicitar vehículo
             </Link>
             <a
-              href={whatsappHref("Hola, quiero solicitar una búsqueda de vehículo.")}
+              href={whatsappHref("Hola, quiero orientación para comprar un vehículo.")}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-whatsapp"

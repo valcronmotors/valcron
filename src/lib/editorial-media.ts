@@ -98,4 +98,50 @@ export const EDITORIAL = {
     src: unsplash("photo-1649921777129-a28a26031a03"),
     alt: "SUV familiar contemporáneo, fotografía ilustrativa",
   },
+  /** Process storytelling — editorial, not Valcron inventory/customers. */
+  processSearch: {
+    src: unsplash("photo-1492144534655-ae79c964c9d7", 1400),
+    alt: "Selección visual de un vehículo contemporáneo",
+    caption: "Proceso de búsqueda personalizada",
+  },
+  processBrowse: {
+    src: unsplash("photo-1486262715619-67b85e0b08d3", 1400),
+    alt: "Patio de vehículos para revisión de opciones",
+    caption: "Opciones mediante plataformas de subasta",
+  },
+  processQuote: {
+    src: unsplash("photo-1554224155-6726b3ff858f", 1400),
+    alt: "Documentación y planificación de costos",
+    caption: "Preparación de cotización",
+  },
+  processSelect: {
+    src: unsplash("photo-1541899481282-d53bffcf8837", 1400),
+    alt: "Vehículo contemporáneo listo para evaluación",
+    caption: "Selección de unidad",
+  },
+  processLogistics: {
+    src: unsplash("photo-1601584115197-04ecc0da31d7", 1400),
+    alt: "Transporte terrestre de un vehículo",
+    caption: "Coordinación del proceso contratado",
+  },
+  processFinance: {
+    src: unsplash("photo-1449965408869-eaa3f722e40d", 1400),
+    alt: "Conducción en ciudad como contexto de compra y financiamiento",
+    caption: "Orientación para financiamiento",
+  },
+  processImport: {
+    src: unsplash("photo-1578575437130-527eed3abbec", 1400),
+    alt: "Logística marítima hacia destino internacional",
+    caption: "Coordinación del proceso de importación",
+  },
+  processTradeIn: {
+    src: unsplash("photo-1559416523-140ddc3d238c", 1400),
+    alt: "Vehículo en entorno abierto para evaluación",
+    caption: "Evaluación de trade-in",
+  },
+  processDelivery: {
+    src: unsplash("photo-1469854523086-cc02fe5d8800", 1400),
+    alt: "Carretera como contexto de destino del vehículo",
+    caption: "Coordinación de entrega",
+  },
 } as const;

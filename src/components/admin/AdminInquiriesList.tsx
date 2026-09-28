@@ -104,10 +104,10 @@ export function AdminInquiriesList({
       {filtered.length === 0 ? (
         <AdminEmptyState
           icon={Inbox}
-          title={inquiries.length === 0 ? "Todavía no hay solicitudes" : "Nada en esta vista"}
+          title={inquiries.length === 0 ? "No hay solicitudes." : "Nada en esta vista"}
           copy={
             inquiries.length === 0
-              ? "Cuando un visitante complete un formulario, aparecerá aquí."
+              ? "Las nuevas solicitudes aparecerán aquí."
               : "Cambia de pestaña para ver otras solicitudes."
           }
         />

@@ -588,6 +588,24 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
         </p>
       ) : null}
 
+      <div className="grid gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-4 sm:grid-cols-3 lg:grid-cols-6">
+        {[
+          "01 Datos básicos",
+          "02 Especificaciones",
+          "03 Fotos",
+          "04 Precio",
+          "05 Vista previa",
+          "06 Publicar",
+        ].map((step) => (
+          <p
+            key={step}
+            className="rounded-lg bg-[var(--admin-surface-muted)] px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--admin-text-secondary)]"
+          >
+            {step}
+          </p>
+        ))}
+      </div>
+
       <FormSection
         index="01"
         title="Identificación"
@@ -631,7 +649,11 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
               placeholder="XLE"
             />
           </AdminField>
-          <AdminField label="VIN" error={fieldErrors.vin}>
+          <AdminField
+            label="VIN"
+            hint="17 caracteres. Ayuda a validar la unidad; opcional si aún no lo tienes."
+            error={fieldErrors.vin}
+          >
             <AdminInput
               ref={vinRef}
               name="vin"
@@ -642,7 +664,10 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
               placeholder="Opcional"
             />
           </AdminField>
-          <AdminField label="Número de inventario" hint="Identificación interna. Opcional.">
+          <AdminField
+            label="Número de inventario"
+            hint="Stock interno (ej. VM-001). No aparece como marca o modelo."
+          >
             <AdminInput
               name="stock_number"
               value={values.stock_number}
@@ -790,6 +815,26 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
         title="Fotos"
         hint="JPG, PNG o WebP · máximo 8 MB por imagen. La portada es la imagen principal del catálogo."
       >
+        <div className="mb-4 grid gap-3 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] p-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--admin-text-muted)]">
+              Guía rápida
+            </p>
+            <ul className="mt-2 grid gap-1.5 text-sm text-[var(--admin-text-secondary)]">
+              <li>1. Foto principal — vehículo completo</li>
+              <li>2. Exterior — 3/4 frontal y lateral</li>
+              <li>3. Interior — tablero y asientos</li>
+              <li>4. Detalles — llantas, daños, extras</li>
+            </ul>
+          </div>
+          <div className="rounded-lg border border-dashed border-[var(--admin-border-strong)] bg-[var(--admin-surface)] px-3 py-3 text-sm text-[var(--admin-text-secondary)]">
+            <p className="font-medium text-[var(--admin-text)]">Buen ejemplo (referencia)</p>
+            <p className="mt-1 leading-5">
+              Vehículo completo visible, buena luz, horizontal, entorno limpio. Esto es una guía
+              general — no uses fotos de clientes ajenos como si fueran de Valcron.
+            </p>
+          </div>
+        </div>
         <p className="mb-4 text-sm text-[var(--admin-text-secondary)]">
           {saved
             ? "Arrastra para reordenar. La portada aparece primero en el website."
@@ -960,10 +1005,11 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
             {auctionOrigin ? (
               <>
                 <p className="text-[13px] font-medium text-[var(--admin-text-secondary)]">
-                  Precio para el website <span className="text-[var(--admin-brand)]">*</span>
+                  Precio público <span className="text-[var(--admin-brand)]">*</span>
                 </p>
                 <p className="mt-1 text-xs font-normal text-[var(--admin-text-muted)]">
-                  Los valores de la subasta no se copian como precio de Valcron.
+                  Precio fijo, desde, o “consultar precio”. Los valores de subasta no se copian como
+                  precio Valcron. “Disponible mediante subasta” es el origen, no el precio.
                 </p>
                 <fieldset className="mt-3 grid gap-2">
                   <legend className="sr-only">Modo de precio público</legend>
@@ -1051,8 +1097,8 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
         title="Publicación"
         hint={
           saved
-            ? "Marca disponible, revisa la vista previa y luego publica. Destacar es independiente."
-            : "Se guarda como borrador y no se publica. Después podrás marcar disponible y publicar."
+            ? "Disponible = estado del vehículo. Publicado = visible en el website. Destacado = prioridad en home/catálogo."
+            : "Se guarda como borrador y no se publica. Después: disponible → vista previa → publicar."
         }
       >
         <PublicationPanel

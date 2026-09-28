@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { ImportCostCalculator } from "@/components/public/ImportCostCalculator";
-import { NumberedSteps } from "@/components/public/NumberedSteps";
 import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
 import { PageHero } from "@/components/public/PageHero";
+import { VisualFlowDiagram, VisualMedia, VisualStepSequence } from "@/components/public/VisualStory";
+import { EDITORIAL } from "@/lib/editorial-media";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
 import { publicPageMetadata } from "@/lib/seo";
@@ -15,11 +16,47 @@ export const metadata = publicPageMetadata({
 });
 
 const PHASES = [
-  { step: "01", title: "Selección", copy: "Unidad en inventario o subasta." },
-  { step: "02", title: "Compra", copy: "Costos antes de avanzar." },
-  { step: "03", title: "Transporte", copy: "Traslado y salida hacia RD." },
-  { step: "04", title: "Llegada", copy: "Importación y entrega coordinada." },
-];
+  {
+    step: "01",
+    title: "Vehículo",
+    copy: "Selección en inventario o subasta.",
+    image: {
+      src: EDITORIAL.processSelect.src,
+      alt: EDITORIAL.processSelect.alt,
+      caption: "Selección de unidad",
+    },
+  },
+  {
+    step: "02",
+    title: "Compra",
+    copy: "Costos claros antes de avanzar.",
+    image: {
+      src: EDITORIAL.processQuote.src,
+      alt: EDITORIAL.processQuote.alt,
+      caption: EDITORIAL.processQuote.caption,
+    },
+  },
+  {
+    step: "03",
+    title: "Transporte / export",
+    copy: "Salida hacia República Dominicana.",
+    image: {
+      src: EDITORIAL.processImport.src,
+      alt: EDITORIAL.processImport.alt,
+      caption: EDITORIAL.processImport.caption,
+    },
+  },
+  {
+    step: "04",
+    title: "Llegada y entrega",
+    copy: "Importación y coordinación final.",
+    image: {
+      src: EDITORIAL.processDelivery.src,
+      alt: EDITORIAL.processDelivery.alt,
+      caption: EDITORIAL.processDelivery.caption,
+    },
+  },
+] as const;
 
 export default function ImportacionPage() {
   return (
@@ -32,11 +69,11 @@ export default function ImportacionPage() {
         imageAlt={PAGE_HERO_ALTS.importacion}
       />
 
-      <Section className="section-light bg-[#f7f8fa]">
+      <Section className="section-light bg-white">
         <PageContainer>
           <SectionHeader
-            kicker="Proceso"
-            title="Cuatro pasos esenciales"
+            kicker="Mapa del proceso"
+            title="Ruta visual"
             subtitle={
               <>
                 La búsqueda en subastas está en{" "}
@@ -50,7 +87,30 @@ export default function ImportacionPage() {
               </>
             }
           />
-          <NumberedSteps steps={PHASES} tone="light" />
+          <div className="mt-10">
+            <VisualFlowDiagram
+              label="Flujo de importación"
+              nodes={["Vehículo", "Compra", "Transporte", "República Dominicana", "Entrega"]}
+            />
+          </div>
+        </PageContainer>
+      </Section>
+
+      <Section className="section-light bg-[#f7f8fa]">
+        <PageContainer>
+          <SectionHeader kicker="Detalle" title="Qué ocurre en cada etapa" />
+          <VisualStepSequence steps={PHASES} tone="light" />
+          <div className="mt-10 max-w-xl">
+            <VisualMedia
+              asset={{
+                src: EDITORIAL.processLogistics.src,
+                alt: EDITORIAL.processLogistics.alt,
+                caption: "Coordinación logística · sin costos aduanales garantizados",
+              }}
+              aspect="21/9"
+              sizes="(max-width: 768px) 92vw, 70vw"
+            />
+          </div>
         </PageContainer>
       </Section>
 

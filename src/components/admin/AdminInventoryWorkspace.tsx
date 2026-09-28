@@ -262,10 +262,10 @@ export function AdminInventoryWorkspace({
       {filtered.length === 0 ? (
         <AdminEmptyState
           icon={Car}
-          title={vehicles.length === 0 ? "Todavía no hay unidades" : "Sin coincidencias"}
+          title={vehicles.length === 0 ? "Aún no tienes vehículos." : "Sin coincidencias"}
           copy={
             vehicles.length === 0
-              ? "Agrega el primer vehículo para armar el catálogo."
+              ? "Agrega la primera unidad: datos, fotos, precio y publicar."
               : "Prueba otro filtro o búsqueda."
           }
           action={
