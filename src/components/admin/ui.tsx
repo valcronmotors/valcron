@@ -9,7 +9,7 @@ import type {
 import { forwardRef } from "react";
 
 export const adminFieldClass =
-  "mt-1.5 h-11 w-full rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)] px-3 text-sm text-[var(--admin-text)] outline-none transition duration-200 placeholder:text-[var(--admin-text-muted)] focus:border-[var(--admin-brand)] focus:ring-2 focus:ring-[var(--admin-focus)]/25 disabled:cursor-not-allowed disabled:bg-[var(--admin-surface-muted)] disabled:opacity-70";
+  "mt-1.5 h-11 w-full rounded-[0.75rem] border border-[var(--admin-border)] bg-[var(--admin-surface)] px-3 text-sm text-[var(--admin-text)] outline-none transition duration-200 placeholder:text-[var(--admin-text-muted)] focus:border-[var(--admin-brand)] focus:ring-2 focus:ring-[var(--admin-focus)]/25 disabled:cursor-not-allowed disabled:bg-[var(--admin-surface-muted)] disabled:opacity-70";
 
 export function AdminField({
   label,
@@ -78,7 +78,7 @@ export function AdminPrimaryButton({
     <button
       type={type}
       {...props}
-      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[var(--admin-text)] px-5 text-sm font-medium text-white transition duration-200 hover:bg-[#1c1f24] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 ${className ?? ""}`}
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-[0.75rem] bg-[var(--admin-nav)] px-5 text-sm font-medium text-white transition duration-200 hover:bg-[var(--admin-nav-hover)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 ${className ?? ""}`}
     >
       {children}
     </button>
