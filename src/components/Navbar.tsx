@@ -23,8 +23,9 @@ function isActivePath(pathname: string, href: string) {
 }
 
 const navLinkClass =
-  "relative shrink-0 whitespace-nowrap px-2 py-2 text-[13px] font-medium text-[#E8E8E8] transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white xl:px-2.5";
-const navActiveClass = "text-white after:absolute after:bottom-1 after:left-2 after:right-2 after:h-px after:bg-[#C7A96B]";
+  "relative shrink-0 whitespace-nowrap px-2 py-2 text-[13px] font-medium text-[#E8E8E8] transition-colors duration-180 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white xl:px-2.5";
+const navActiveClass =
+  "text-white after:absolute after:bottom-1 after:left-2 after:right-2 after:h-px after:bg-[#C7A96B]";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -128,20 +129,23 @@ export function Navbar() {
                 onClick={() => setResourcesOpen((value) => !value)}
               >
                 Recursos
-                <ChevronDown className={`h-3.5 w-3.5 text-[#A3A3A3] transition ${resourcesOpen ? "rotate-180" : ""}`} />
+                <ChevronDown
+                  className={`h-3.5 w-3.5 text-[#A3A3A3] transition-transform duration-180 ${resourcesOpen ? "rotate-180" : ""}`}
+                />
               </button>
               {resourcesOpen ? (
                 <div
                   id={menuId}
                   role="menu"
-                  className="absolute right-0 top-full z-30 mt-2 min-w-[12.5rem] rounded-xl border border-white/12 bg-[#0b0c0e] p-1.5 shadow-[0_20px_48px_rgba(0,0,0,0.4)]"
+                  className="absolute right-0 top-full z-30 mt-2 min-w-[12.5rem] border border-white/12 bg-[#111214] p-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.35)]"
+                  style={{ borderRadius: "var(--radius-lg)" }}
                 >
                   {RESOURCE_NAV.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
                       role="menuitem"
-                      className={`block min-h-11 rounded-lg px-3 py-2.5 text-sm hover:bg-white/6 hover:text-white ${
+                      className={`block min-h-11 rounded-[0.5rem] px-3 py-2.5 text-sm transition-colors duration-180 hover:bg-white/6 hover:text-white ${
                         isActivePath(pathname, item.href) ? "text-white" : "text-[#E8E8E8]"
                       }`}
                       onClick={() => setResourcesOpen(false)}
@@ -167,7 +171,7 @@ export function Navbar() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Hablar por WhatsApp"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/12 text-[#E8E8E8] transition hover:border-white/30 hover:text-white"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-[0.625rem] border border-white/12 text-[#E8E8E8] transition-colors duration-180 hover:border-white/30 hover:text-white"
             >
               <WhatsAppIcon className="h-4 w-4" />
             </a>
@@ -176,14 +180,14 @@ export function Navbar() {
             </div>
             <Link
               href="/inventario"
-              className="hidden h-11 items-center rounded-lg bg-white px-4 text-sm font-semibold text-[#111] transition hover:bg-[#ececec] lg:inline-flex"
+              className="hidden h-11 items-center rounded-[0.625rem] bg-white px-4 text-sm font-semibold text-[#111214] transition-colors duration-180 hover:bg-[#ececec] lg:inline-flex"
             >
               Ver inventario
             </Link>
             <button
               ref={menuButtonRef}
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/12 text-white lg:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-[0.625rem] border border-white/12 text-white lg:hidden"
               onClick={() => setOpen((value) => !value)}
               aria-expanded={open}
               aria-controls="mobile-nav"
@@ -196,7 +200,7 @@ export function Navbar() {
       </header>
 
       {open ? (
-        <div id="mobile-nav" className="fixed inset-0 z-[70] flex flex-col bg-[#0b0c0e] pt-[56px] lg:hidden">
+        <div id="mobile-nav" className="fixed inset-0 z-[70] flex flex-col bg-[#111214] pt-[56px] lg:hidden">
           <nav className="flex flex-1 flex-col overflow-y-auto px-5 pb-4" aria-label="Menú">
             {MOBILE_NAV.map((item) => {
               const active = isActivePath(pathname, item.href);
@@ -205,7 +209,7 @@ export function Navbar() {
                   key={`${item.href}-${item.label}`}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`flex min-h-11 items-center border-b border-white/10 text-lg font-medium ${
+                  className={`flex min-h-14 items-center border-b border-white/10 font-display text-xl font-semibold tracking-tight ${
                     active ? "text-white" : "text-[#E8E8E8]"
                   }`}
                   onClick={() => setOpen(false)}
@@ -218,7 +222,7 @@ export function Navbar() {
           <div className="grid gap-3 border-t border-white/10 px-5 py-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
             <Link
               href="/inventario"
-              className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-white text-sm font-semibold text-[#111]"
+              className="inline-flex h-12 w-full items-center justify-center rounded-[0.625rem] bg-white text-[0.9375rem] font-semibold text-[#111214]"
               onClick={() => setOpen(false)}
             >
               Ver inventario
@@ -227,7 +231,7 @@ export function Navbar() {
               href={whatsappHref()}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-white/20 text-sm text-white"
+              className="btn-whatsapp h-12 w-full"
               onClick={() => setOpen(false)}
             >
               <WhatsAppIcon className="h-4 w-4" />

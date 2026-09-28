@@ -8,14 +8,14 @@ export function HomeFaqPreview() {
   const [open, setOpen] = useState(0);
 
   return (
-    <section className="section-light bg-[#ececea]" id="preguntas">
-      <div className="mx-auto max-w-4xl px-4 py-10 lg:px-8 lg:py-16">
+    <section className="section-light bg-[#f0eee9]" id="preguntas">
+      <div className="mx-auto max-w-3xl px-4 py-14 lg:px-8 lg:py-24">
         <p className="kicker">FAQ</p>
-        <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-[#111] md:text-4xl">
+        <h2 className="display-section mt-3 text-[#111214]">
           Preguntas antes
           <span className="block">de comprar.</span>
         </h2>
-        <div className="mt-12 divide-y divide-[#d4d4d4] border-y border-[#d4d4d4]">
+        <div className="mt-12 divide-y divide-[#e5e3de] border-y border-[#e5e3de]">
           {HOME_FAQS.map((item, index) => {
             const active = open === index;
             return (
@@ -26,11 +26,13 @@ export function HomeFaqPreview() {
                   aria-expanded={active}
                   onClick={() => setOpen(active ? -1 : index)}
                 >
-                  <span className="text-sm font-medium text-[#111] sm:text-base">{item.q}</span>
-                  <span className="text-[#737373]">{active ? "–" : "+"}</span>
+                  <span className="text-base font-medium text-[#111214]">{item.q}</span>
+                  <span className="shrink-0 text-[#676a70]" aria-hidden="true">
+                    {active ? "–" : "+"}
+                  </span>
                 </button>
                 {active ? (
-                  <p className="pb-5 text-sm leading-relaxed text-[#525252]">{item.a}</p>
+                  <p className="pb-5 text-base leading-relaxed text-[#676a70]">{item.a}</p>
                 ) : null}
               </div>
             );

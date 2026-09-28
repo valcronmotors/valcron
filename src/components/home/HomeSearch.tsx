@@ -25,12 +25,18 @@ export function HomeSearch({ vehicles = [] }: { vehicles?: PublicVehicle[] }) {
   }
 
   return (
-    <section id="buscar" className="section-light relative z-10 -mt-6 scroll-mt-24 px-4 pb-4 md:-mt-10 md:px-8 md:pb-6">
+    <section id="buscar" className="section-light scroll-mt-24 bg-[#f6f5f1] px-4 py-10 md:px-8 md:py-14">
       <div className="mx-auto max-w-7xl">
-        <form onSubmit={handleSubmit} className="rounded-2xl border border-[#e6e2db] bg-white p-4 shadow-[0_12px_32px_rgba(20,20,20,0.08)] md:p-6">
-          <p className="text-sm font-semibold text-[#141414]">Buscar vehículo</p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <label className="block text-sm text-[#5c5c5c]">
+        <form
+          onSubmit={handleSubmit}
+          className="border border-[#e5e3de] bg-white p-5 md:p-6 lg:px-8 lg:py-7"
+          style={{ borderRadius: "var(--radius-xl)" }}
+        >
+          <h2 className="font-display text-xl font-semibold tracking-tight text-[#111214] md:text-2xl">
+            ¿Qué vehículo buscas?
+          </h2>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto] lg:items-end">
+            <label className="block text-sm text-[#676a70]">
               Marca
               <select
                 value={marca}
@@ -48,7 +54,7 @@ export function HomeSearch({ vehicles = [] }: { vehicles?: PublicVehicle[] }) {
                 ))}
               </select>
             </label>
-            <label className="block text-sm text-[#5c5c5c]">
+            <label className="block text-sm text-[#676a70]">
               Modelo
               <select value={modelo} onChange={(event) => setModelo(event.target.value)} className={fieldClass}>
                 <option value="">Todos</option>
@@ -59,7 +65,7 @@ export function HomeSearch({ vehicles = [] }: { vehicles?: PublicVehicle[] }) {
                 ))}
               </select>
             </label>
-            <label className="block text-sm text-[#5c5c5c]">
+            <label className="block text-sm text-[#676a70]">
               Año
               <select value={ano} onChange={(event) => setAno(event.target.value)} className={fieldClass}>
                 <option value="">Todos</option>
@@ -70,15 +76,16 @@ export function HomeSearch({ vehicles = [] }: { vehicles?: PublicVehicle[] }) {
                 ))}
               </select>
             </label>
-            <div className="flex items-end">
-              <button type="submit" className="btn-primary h-12 w-full gap-2">
-                <Search className="h-4 w-4" />
-                Buscar vehículos
-              </button>
-            </div>
+            <button type="submit" className="btn-primary mt-1 h-12 w-full gap-2 lg:mt-0 lg:min-w-[12rem]">
+              <Search className="h-4 w-4" />
+              Buscar vehículos
+            </button>
           </div>
-          <Link href="/inventario" className="mt-3 inline-block min-h-11 text-sm font-medium text-[#141414] underline-offset-4 hover:underline">
-            Ver todos
+          <Link
+            href="/inventario"
+            className="mt-4 inline-flex min-h-11 items-center text-sm font-medium text-[#111214] underline-offset-4 hover:underline"
+          >
+            Ver todo el inventario
           </Link>
         </form>
       </div>

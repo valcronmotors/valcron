@@ -23,15 +23,18 @@ export function FeaturedInventory({
 
   return (
     <section className="section-light bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-10 lg:px-8 lg:py-16">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-24">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="kicker">{localFirst ? "Disponibles en Valcron" : "Inventario"}</p>
-            <h2 className="mt-2 max-w-xl text-balance font-display text-2xl font-bold tracking-tight text-[#111] md:text-4xl">
-              {localFirst
-                ? "Vehículos disponibles para tu próxima compra."
-                : "Explora las unidades publicadas actualmente."}
+            <p className="kicker">{localFirst ? "Disponibles" : "Inventario"}</p>
+            <h2 className="display-section mt-3 max-w-xl text-[#111214]">
+              Vehículos disponibles
             </h2>
+            <p className="mt-4 max-w-lg text-base leading-relaxed text-[#676a70]">
+              {localFirst
+                ? "Unidades publicadas para compra en República Dominicana."
+                : "Explora las unidades publicadas actualmente en Valcron Motors."}
+            </p>
           </div>
           <Link href="/inventario" className="btn-secondary shrink-0">
             Ver todo el inventario
@@ -48,7 +51,7 @@ export function FeaturedInventory({
             />
           </div>
         ) : (
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
             {visible.map((vehicle) => (
               <VehicleCard key={vehicle.id} vehicle={vehicle} tone="light" />
             ))}

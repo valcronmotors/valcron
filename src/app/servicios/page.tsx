@@ -1,7 +1,8 @@
 import { publicPageMetadata } from "@/lib/seo";
 import Link from "next/link";
-import { Car, Calculator, Gavel, RefreshCcw, Search, Ship } from "lucide-react";
 import { PageHero } from "@/components/public/PageHero";
+import { EditorialImage } from "@/components/shared/EditorialImage";
+import { EDITORIAL } from "@/lib/editorial-media";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
 
@@ -18,42 +19,39 @@ const SERVICES = [
     copy: "Unidades publicadas en inventario, listas para evaluar y comprar en República Dominicana.",
     href: "/inventario",
     cta: "Ver inventario",
-    icon: Car,
+    image: EDITORIAL.compactSuv,
   },
   {
     title: "Búsqueda personalizada",
     copy: "Dinos marca, modelo, año y presupuesto. Buscamos opciones que encajen.",
     href: "/solicitar-vehiculo",
     cta: "Solicitar vehículo",
-    icon: Search,
   },
   {
-    title: "Subastas en EE.UU.",
+    title: "Subastas",
     copy: "Te ayudamos a localizar vehículos disponibles mediante subastas en Copart e IAA y gestionar el proceso.",
     href: "/subastas",
-    cta: "Explorar oportunidades",
-    icon: Gavel,
+    cta: "Explorar subastas",
+    image: EDITORIAL.silverSedan,
   },
   {
     title: "Importación",
     copy: "Acompañamos el proceso de transporte, costos y llegada a República Dominicana.",
     href: "/importacion",
     cta: "Ver importación",
-    icon: Ship,
+    image: EDITORIAL.carrier,
   },
   {
     title: "Financiamiento",
     copy: "Orientación para presentar tu caso ante bancos locales. Valcron no es el prestamista.",
     href: "/financiamiento",
     cta: "Conocer opciones",
-    icon: Calculator,
   },
   {
-    title: "Recibimos tu vehículo",
+    title: "Trade-in",
     copy: "¿Tienes un vehículo para entregar? Podemos evaluarlo como parte del proceso de compra.",
     href: "/solicitar-vehiculo",
     cta: "Consultar mi vehículo",
-    icon: RefreshCcw,
   },
 ];
 
@@ -67,20 +65,33 @@ export default function ServiciosPage() {
         image={PAGE_HERO_IMAGES.servicios}
         imageAlt={PAGE_HERO_ALTS.servicios}
       />
-      <section className="section-light bg-[#f7f5f1]">
-        <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8 lg:py-20">
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <section className="section-light bg-[#f6f5f1]">
+        <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-24">
+          <div className="grid gap-px bg-[#e5e3de] md:grid-cols-2">
             {SERVICES.map((service) => (
-              <article key={service.title} className="rounded-2xl border border-[#e6e2db] bg-white p-6">
-                <service.icon className="h-5 w-5 text-[#9b793f]" strokeWidth={1.7} />
-                <h2 className="mt-4 font-display text-xl font-semibold text-[#141414]">{service.title}</h2>
-                <p className="mt-2 text-sm leading-relaxed text-[#5c5c5c]">{service.copy}</p>
-                <Link
-                  href={service.href}
-                  className="mt-4 inline-block text-sm font-semibold text-[#141414] underline-offset-4 hover:underline"
-                >
-                  {service.cta}
-                </Link>
+              <article key={service.title} className="flex flex-col bg-[#f6f5f1]">
+                {"image" in service && service.image ? (
+                  <div className="relative aspect-[16/9] overflow-hidden bg-[#1b1d20]">
+                    <EditorialImage
+                      src={service.image.src}
+                      alt={service.image.alt}
+                      sizes="(min-width: 768px) 50vw, 100vw"
+                      className="object-cover"
+                    />
+                  </div>
+                ) : null}
+                <div className="flex flex-1 flex-col p-6 lg:p-10">
+                  <h2 className="font-display text-2xl font-semibold tracking-tight text-[#111214] md:text-3xl">
+                    {service.title}
+                  </h2>
+                  <p className="mt-3 flex-1 text-base leading-relaxed text-[#676a70]">{service.copy}</p>
+                  <Link
+                    href={service.href}
+                    className="mt-6 inline-flex min-h-11 items-center text-sm font-semibold text-[#111214] underline-offset-4 hover:underline"
+                  >
+                    {service.cta}
+                  </Link>
+                </div>
               </article>
             ))}
           </div>

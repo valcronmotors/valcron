@@ -35,11 +35,11 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
             <BrandLogo size="footer" tone="onDark" />
           </Link>
           <p className="mt-6 text-xs font-medium uppercase tracking-[0.28em] text-[#D4D4D4]">
-            Vehículos • Inventario • Financiamiento
+            Vehículos · Inventario · Financiamiento
           </p>
-          <p className="mt-5 text-sm leading-relaxed text-[#A3A3A3]">
-            Dealer en Santo Domingo Este. Inventario, financiamiento con bancos locales y búsqueda
-            mediante subasta.
+          <p className="mt-5 max-w-md text-base leading-relaxed text-[#A3A3A3]">
+            Dealer en Santo Domingo Este. Inventario local, financiamiento con bancos locales y
+            búsqueda mediante subasta.
           </p>
           <FooterSocialIcons className="mt-8" />
           <nav aria-label="Enlaces principales" className="mt-8 grid gap-3 text-sm md:hidden">

@@ -214,8 +214,13 @@ export function VehicleCatalog({
   return (
     <div className="grid min-w-0 gap-4">
       <div className="grid gap-3">
-        <h1 className="font-display text-2xl font-bold text-[#141414] md:hidden">Inventario</h1>
-        <p className="text-sm text-[#5c5c5c]">
+        <h1 className="font-display text-[2rem] font-bold tracking-tight text-[#111214] md:hidden">
+          Vehículos disponibles
+        </h1>
+        <p className="text-sm text-[#676a70] md:hidden">
+          Filtra por marca, modelo, año o precio.
+        </p>
+        <p className="text-sm text-[#676a70]">
           {visible.length === 1 ? "1 vehículo" : `${visible.length} vehículos`}
         </p>
         <label className="block text-sm text-[#5c5c5c] lg:hidden">
@@ -280,7 +285,12 @@ export function VehicleCatalog({
         </div>
       ) : null}
 
-      <div className="hidden rounded-2xl border border-[#e6e2db] bg-white p-5 lg:block">{filters}</div>
+      <div
+        className="hidden border border-[#e5e3de] bg-white p-5 lg:block"
+        style={{ borderRadius: "var(--radius-xl)" }}
+      >
+        {filters}
+      </div>
 
       {filtersOpen ? (
         <div className="fixed inset-0 z-[90] lg:hidden">

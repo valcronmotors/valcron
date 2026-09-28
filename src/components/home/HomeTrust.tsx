@@ -1,39 +1,48 @@
 const ITEMS = [
   {
+    step: "01",
     title: "Atención personalizada",
-    copy: "Un trato directo para entender qué buscas y qué opciones tienen sentido.",
+    copy: "Un trato directo para entender qué buscas y qué opciones tienen sentido para ti.",
   },
   {
-    title: "Opciones locales y de subasta",
-    copy: "Inventario en República Dominicana y, cuando hace falta, búsqueda en plataformas de EE.UU.",
+    step: "02",
+    title: "Inventario y búsqueda a la medida",
+    copy: "Unidades publicadas en República Dominicana y, cuando hace falta, búsqueda enfocada fuera del inventario.",
   },
   {
-    title: "Acompañamiento en el proceso",
-    copy: "Te orientamos desde la consulta hasta la compra, sin inflar plazos ni resultados.",
+    step: "03",
+    title: "Opciones de financiamiento",
+    copy: "Te orientamos a preparar el caso. La aprobación y las condiciones las define cada banco local.",
   },
   {
-    title: "Orientación de financiamiento",
-    copy: "Te ayudamos a preparar el caso. La aprobación y las condiciones las define cada banco local.",
-  },
-  {
-    title: "Recibimos tu vehículo",
-    copy: "Recibimos tu vehículo actual como parte de la compra, sujeto a evaluación.",
+    step: "04",
+    title: "Vehículos mediante subasta",
+    copy: "Si no está en stock, podemos explorar unidades disponibles en plataformas como Copart e IAA.",
   },
 ];
 
 export function HomeTrust() {
   return (
     <section className="section-light bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-10 lg:px-8 lg:py-16">
+      <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-24">
         <p className="kicker">Por qué Valcron</p>
-        <h2 className="mt-3 max-w-2xl font-display text-2xl font-bold tracking-tight text-[#141414] md:text-4xl">
-          Un dealer serio, con proceso claro.
+        <h2 className="display-section mt-4 max-w-2xl text-[#111214]">
+          Un dealer serio,
+          <span className="block">con proceso claro.</span>
         </h2>
-        <div className="mt-10 grid gap-4 md:grid-cols-2">
+        <div className="mt-12 grid gap-0 border-t border-[#e5e3de] md:grid-cols-2">
           {ITEMS.map((item) => (
-            <article key={item.title} className="rounded-2xl border border-[#e6e2db] bg-[#f7f5f1] p-6">
-              <h3 className="font-display text-xl font-semibold text-[#141414]">{item.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-[#5c5c5c]">{item.copy}</p>
+            <article
+              key={item.step}
+              className="border-b border-[#e5e3de] py-8 md:border-r md:px-8 md:odd:pl-0 md:even:border-r-0 md:even:pr-0 lg:py-10"
+            >
+              <p className="font-display text-sm font-semibold tracking-[0.16em] text-[#9b793f]">
+                {item.step}
+              </p>
+              <h3 className="mt-3 font-display text-xl font-semibold tracking-tight text-[#111214] md:text-2xl">
+                {item.title}
+              </h3>
+              <p className="mt-3 max-w-md text-base leading-relaxed text-[#676a70]">{item.copy}</p>
             </article>
           ))}
         </div>

@@ -47,7 +47,10 @@ export function VehicleGallery({ photos, title }: { photos: GalleryPhoto[]; titl
 
   if (!cover) {
     return (
-      <div className="relative aspect-[16/10] min-h-[13rem] overflow-hidden rounded-2xl border border-[#e6e2db] bg-[#111]">
+      <div
+        className="relative aspect-[16/10] min-h-[13rem] overflow-hidden bg-[#1b1d20]"
+        style={{ borderRadius: "var(--radius-panel)" }}
+      >
         <VehiclePhoto src={null} alt={title} className="object-cover" />
       </div>
     );
@@ -56,7 +59,8 @@ export function VehicleGallery({ photos, title }: { photos: GalleryPhoto[]; titl
   return (
     <div className="min-w-0">
       <div
-        className="relative aspect-[16/10] min-h-[13rem] overflow-hidden rounded-2xl border border-[#e6e2db] bg-[#111]"
+        className="relative aspect-[16/10] min-h-[13rem] overflow-hidden bg-[#1b1d20]"
+        style={{ borderRadius: "var(--radius-panel)" }}
         onTouchStart={(event) => setTouchStart(event.changedTouches[0]?.clientX ?? null)}
         onTouchEnd={(event) => onTouchEnd(event.changedTouches[0]?.clientX ?? 0)}
       >
@@ -105,9 +109,10 @@ export function VehicleGallery({ photos, title }: { photos: GalleryPhoto[]; titl
               onClick={() => setIndex(photoIndex)}
               aria-label={`Ver foto ${photoIndex + 1}`}
               aria-current={safeIndex === photoIndex}
-              className={`relative aspect-[4/3] min-h-[4.5rem] overflow-hidden rounded-lg border ${
-                safeIndex === photoIndex ? "border-[#141414]" : "border-[#e6e2db]"
+              className={`relative aspect-[4/3] min-h-[4.5rem] overflow-hidden ${
+                safeIndex === photoIndex ? "ring-2 ring-[#111214]" : "opacity-80"
               }`}
+              style={{ borderRadius: "var(--radius-sm)" }}
             >
               <VehiclePhoto src={photo.url} alt="" className="object-cover" sizes="120px" />
             </button>
