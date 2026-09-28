@@ -16,9 +16,11 @@ import type { PublicVehicle } from "@/types/vehicle";
 export function VehicleCard({
   vehicle,
   tone = "light",
+  compact = false,
 }: {
   vehicle: PublicVehicle;
   tone?: "dark" | "light";
+  compact?: boolean;
 }) {
   const { currency } = useDisplayCurrency();
   const badge = publicListingBadge(vehicle);
@@ -49,41 +51,57 @@ export function VehicleCard({
         <VehiclePhoto
           src={cover}
           alt={vehicleImageAlt(vehicle)}
-          sizes="(min-width: 1280px) 25vw, (min-width: 768px) 50vw, 100vw"
-          className="object-contain object-center p-3"
+          sizes="(min-width: 1280px) 25vw, (min-width: 768px) 50vw, 50vw"
+          className="object-contain object-center p-2 sm:p-3"
         />
         {year ? (
-          <span className="absolute left-3 top-3 rounded-full bg-[#08090b] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-white">
+          <span className="absolute left-2 top-2 rounded-full bg-[#08090b] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-white sm:left-3 sm:top-3 sm:px-2.5 sm:py-1">
             {year}
           </span>
         ) : (
           <span
-            className={`absolute left-3 top-3 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] ${badge.className}`}
+            className={`absolute left-2 top-2 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] sm:left-3 sm:top-3 sm:px-2.5 sm:py-1 ${badge.className}`}
           >
             {badge.label}
           </span>
         )}
       </Link>
 
-      <div className={`flex flex-1 flex-col gap-1 p-4 ${light ? "text-[#08090b]" : "text-white"}`}>
-        <h3 className="font-display text-base font-bold leading-snug tracking-tight md:text-lg">
+      <div
+        className={`flex flex-1 flex-col gap-1 ${compact ? "p-3 sm:p-4" : "p-4"} ${
+          light ? "text-[#08090b]" : "text-white"
+        }`}
+      >
+        <h3
+          className={`font-display font-bold leading-snug tracking-tight ${
+            compact ? "text-sm sm:text-base md:text-lg" : "text-base md:text-lg"
+          }`}
+        >
           <Link href={href}>{title || "Vehículo"}</Link>
         </h3>
         {trimLine ? (
-          <p className={`text-sm ${light ? "text-[#676a70]" : "text-[#d4d4d4]"}`}>{trimLine}</p>
+          <p className={`text-xs sm:text-sm ${light ? "text-[#676a70]" : "text-[#d4d4d4]"}`}>
+            {trimLine}
+          </p>
         ) : null}
         {(mileage || vehicle.transmission) && (
-          <p className={`mt-1 text-xs ${light ? "text-[#676a70]" : "text-[#a8abb0]"}`}>
+          <p className={`mt-0.5 text-[11px] sm:text-xs ${light ? "text-[#676a70]" : "text-[#a8abb0]"}`}>
             {[mileage, vehicle.transmission].filter(Boolean).join(" · ")}
           </p>
         )}
-        <p className="mt-2 font-display text-lg font-bold tracking-tight md:text-xl">{price.primary}</p>
+        <p
+          className={`mt-1.5 font-display font-bold tracking-tight ${
+            compact ? "text-base sm:text-lg md:text-xl" : "text-lg md:text-xl"
+          }`}
+        >
+          {price.primary}
+        </p>
         <Link
           href={href}
           className={
             light
-              ? "mt-3 inline-flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#08090b] px-3 text-sm font-semibold text-white transition-colors duration-180 hover:bg-[#12141a]"
-              : "mt-3 inline-flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-white px-3 text-sm font-semibold text-[#08090b] transition-colors duration-180 hover:bg-[#ececec]"
+              ? "mt-2 inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-[#08090b] px-3 text-xs font-semibold text-white transition-colors duration-180 hover:bg-[#12141a] sm:mt-3 sm:h-11 sm:text-sm"
+              : "mt-2 inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-white px-3 text-xs font-semibold text-[#08090b] transition-colors duration-180 hover:bg-[#ececec] sm:mt-3 sm:h-11 sm:text-sm"
           }
         >
           Ver detalles

@@ -21,7 +21,7 @@ export const INQUIRY_SOURCE_LABEL: Record<InquirySource, string> = {
 
 export const PUBLIC_INVENTORY_EMPTY = {
   title: "Estamos preparando nuevas unidades.",
-  copy: "",
+  copy: "Solicita el vehículo que buscas.",
 };
 
 export const PUBLIC_INVENTORY_FILTER_EMPTY = {

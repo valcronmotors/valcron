@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { BrandMark } from "@/components/home/BrandMark";
 import { inventorySearchHref } from "@/lib/public-filters";
 import { VEHICLE_BRANDS } from "@/lib/vehicle-brands";
 
@@ -19,19 +20,16 @@ export function HomeBrandCarousel() {
               className="flex w-[4.75rem] shrink-0 snap-start flex-col items-center gap-2 sm:w-[5.25rem]"
             >
               <span
-                className="flex h-14 w-14 items-center justify-center border border-[#e4e6ea] bg-white text-sm font-bold tracking-tight text-[#08090b] sm:h-16 sm:w-16"
+                className="flex h-14 w-14 items-center justify-center border border-[#e4e6ea] bg-white text-[#08090b] sm:h-16 sm:w-16"
                 style={{ borderRadius: "9999px" }}
                 aria-hidden="true"
               >
-                {brand.mark}
+                <BrandMark name={brand.name} className="h-8 w-8 sm:h-9 sm:w-9" />
               </span>
               <span className="text-center text-[11px] font-medium text-[#676a70]">{brand.name}</span>
             </Link>
           ))}
         </div>
-        <p className="mt-3 text-center text-[11px] text-[#a3a3a3]">
-          Marcas que puedes buscar · Sin implicar franquicia ni alianza
-        </p>
       </div>
     </section>
   );

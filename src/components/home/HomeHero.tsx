@@ -38,8 +38,8 @@ export function HomeHero() {
 
       <div className="relative mx-auto w-full max-w-[var(--content-max)] px-[var(--page-gutter)] pb-8 md:pb-10">
         <div
-          className="relative overflow-hidden bg-[#f7f8fa]"
-          style={{ borderRadius: "var(--radius-card)", aspectRatio: "16 / 10" }}
+          className="relative overflow-hidden bg-gradient-to-b from-[#eef0f3] to-[#f7f8fa]"
+          style={{ borderRadius: "var(--radius-card)", aspectRatio: "5 / 4" }}
         >
           <Image
             src={slide.src}
@@ -47,12 +47,12 @@ export function HomeHero() {
             fill
             priority
             fetchPriority="high"
-            quality={75}
+            quality={80}
             sizes="(max-width: 768px) 92vw, (max-width: 1280px) 80vw, 72rem"
-            className="object-contain object-center p-2 sm:p-4"
+            className="object-contain object-center p-1 sm:p-3"
           />
         </div>
-        <p className="mt-3 text-right text-[10px] font-medium uppercase tracking-[0.14em] text-[#676a70]">
+        <p className="mt-3 text-center text-[10px] font-medium uppercase tracking-[0.14em] text-[#676a70]">
           Fotografía ilustrativa · Marketing
         </p>
       </div>
