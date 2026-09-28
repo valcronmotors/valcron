@@ -40,8 +40,8 @@ export function HomeHero() {
             </div>
           </div>
 
-          <div className="relative -mx-[var(--page-gutter)] lg:mx-0 lg:-mr-[var(--page-gutter)]">
-            <div className="relative min-h-[16rem] overflow-hidden bg-gradient-to-b from-[#eef0f3] via-[#f5f6f7] to-white sm:min-h-[20rem] lg:min-h-[26rem] lg:rounded-l-[var(--radius-card)]">
+          <div className="relative -mx-[var(--page-gutter)] lg:mx-0 lg:-mr-[calc(var(--page-gutter)+1rem)]">
+            <div className="relative min-h-[17.5rem] overflow-hidden bg-gradient-to-b from-[#eef0f3]/80 via-[#f7f8fa] to-white sm:min-h-[21rem] lg:min-h-[28rem]">
               <Image
                 src={slide.src}
                 alt={slide.alt}
@@ -49,11 +49,11 @@ export function HomeHero() {
                 priority
                 fetchPriority="high"
                 quality={82}
-                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 55vw, 40rem"
-                className="object-contain object-bottom scale-[1.08] sm:scale-110"
+                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 55vw, 44rem"
+                className="object-contain object-[center_80%] scale-[1.12] sm:scale-[1.15] lg:object-right-bottom"
               />
             </div>
-            <p className="mt-2 px-[var(--page-gutter)] text-left text-[10px] font-medium uppercase tracking-[0.14em] text-[#676a70] lg:px-0">
+            <p className="mt-2 px-[var(--page-gutter)] text-left text-[10px] font-medium uppercase tracking-[0.14em] text-[#676a70] lg:absolute lg:bottom-3 lg:right-4 lg:mt-0 lg:px-0 lg:text-right">
               Fotografía ilustrativa · Marketing
             </p>
           </div>
