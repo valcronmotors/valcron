@@ -9,13 +9,10 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   ...publicPageMetadata({
-    title: "Contacto y Ubicación",
-    description: `Visita a ${SITE.legalName} en Av Principal 20, Santo Domingo Este, República Dominicana. Oficina ${SITE.officePhoneDisplay}, WhatsApp ${SITE.whatsappDisplay}.`,
+    title: "Contacto en Santo Domingo Este",
+    description: `Visita a Valcron Motors en Av Principal 20, Santo Domingo Este. Llama al ${SITE.officePhoneDisplay} o escribe por WhatsApp al ${SITE.whatsappDisplay}.`,
     path: "/contacto",
   }),
-  title: {
-    absolute: "Contacto y Ubicación | Valcron Motors Group",
-  },
 };
 
 export default function ContactoPage() {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SlidersHorizontal, X } from "lucide-react";
 import { CurrencySwitch } from "@/components/public/CurrencyProvider";
@@ -95,17 +95,20 @@ export function VehicleCatalog({
     modelo ? { key: "modelo", label: modelo } : null,
     ano ? { key: "ano", label: ano } : null,
     search ? { key: "search", label: search } : null,
+    precioMin ? { key: "precioMin", label: `Desde US$ ${precioMin}` } : null,
+    precioMax ? { key: "precioMax", label: `Hasta US$ ${precioMax}` } : null,
   ].filter(Boolean) as { key: string; label: string }[];
 
   const filters = (
     <div className="grid min-w-0 gap-4 md:grid-cols-2 xl:grid-cols-4">
-      <label className="block min-w-0 text-sm text-[#5c5c5c] md:col-span-2 xl:col-span-4">
+      <label className="hidden min-w-0 text-sm text-[#5c5c5c] lg:block lg:col-span-2 xl:col-span-4">
         Buscar
         <input
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Marca, modelo o VIN"
           className={fieldClass}
+          inputMode="search"
         />
       </label>
       <label className="block min-w-0 text-sm text-[#5c5c5c]">
@@ -158,11 +161,11 @@ export function VehicleCatalog({
       </label>
       <label className="block min-w-0 text-sm text-[#5c5c5c]">
         Precio mínimo (USD)
-        <input type="number" min={0} value={precioMin} onChange={(event) => setPrecioMin(event.target.value)} className={fieldClass} />
+        <input type="number" min={0} inputMode="numeric" value={precioMin} onChange={(event) => setPrecioMin(event.target.value)} className={fieldClass} />
       </label>
       <label className="block min-w-0 text-sm text-[#5c5c5c]">
         Precio máximo (USD)
-        <input type="number" min={0} value={precioMax} onChange={(event) => setPrecioMax(event.target.value)} className={fieldClass} />
+        <input type="number" min={0} inputMode="numeric" value={precioMax} onChange={(event) => setPrecioMax(event.target.value)} className={fieldClass} />
       </label>
       <div className="flex items-end">
         <button type="button" onClick={clearFilters} className="h-11 w-full rounded-lg border border-[#e6e2db] text-sm text-[#141414]">
@@ -173,18 +176,71 @@ export function VehicleCatalog({
   );
 
   const emptyCatalog = vehicles.length === 0 || Boolean(error);
+  const sheetRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!filtersOpen) return;
+    const root = sheetRef.current;
+    if (!root) return;
+    const focusables = [...root.querySelectorAll<HTMLElement>("button, [href], input, select, textarea")].filter(
+      (node) => !node.hasAttribute("disabled"),
+    );
+    focusables[0]?.focus();
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setFiltersOpen(false);
+        return;
+      }
+      if (event.key !== "Tab" || focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previous;
+    };
+  }, [filtersOpen]);
 
   return (
-    <div className="grid min-w-0 gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="grid min-w-0 gap-4">
+      <div className="grid gap-3">
+        <h1 className="font-display text-2xl font-bold text-[#141414] md:hidden">Inventario</h1>
         <p className="text-sm text-[#5c5c5c]">
           {visible.length === 1 ? "1 vehículo" : `${visible.length} vehículos`}
         </p>
-        <div className="flex flex-wrap items-center gap-2">
+        <label className="block text-sm text-[#5c5c5c] lg:hidden">
+          Buscar
+          <input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Marca, modelo o VIN"
+            className={fieldClass}
+            inputMode="search"
+          />
+        </label>
+        <div className="grid grid-cols-2 gap-2 lg:flex lg:flex-wrap lg:items-center lg:justify-end">
+          <button
+            type="button"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[#e6e2db] px-3 text-sm lg:hidden"
+            onClick={() => setFiltersOpen(true)}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            Filtros
+          </button>
           <select
             value={sort}
             onChange={(event) => setSort(event.target.value)}
-            className="h-11 rounded-lg border border-[#e6e2db] bg-white px-3 text-sm"
+            className="h-12 rounded-lg border border-[#e6e2db] bg-white px-3 text-sm"
             aria-label="Ordenar"
           >
             <option value="recent">Más recientes</option>
@@ -192,15 +248,9 @@ export function VehicleCatalog({
             <option value="price-asc">Precio: menor a mayor</option>
             <option value="price-desc">Precio: mayor a menor</option>
           </select>
-          <CurrencySwitch tone="light" />
-          <button
-            type="button"
-            className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#e6e2db] px-3 text-sm lg:hidden"
-            onClick={() => setFiltersOpen(true)}
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-            Filtros
-          </button>
+          <div className="hidden lg:block">
+            <CurrencySwitch tone="light" />
+          </div>
         </div>
       </div>
 
@@ -210,7 +260,7 @@ export function VehicleCatalog({
             <button
               type="button"
               key={`${chip.key}-${chip.label}`}
-              className="rounded-full border border-[#e6e2db] px-3 py-1 text-xs text-[#141414]"
+              className="inline-flex min-h-11 items-center rounded-full border border-[#e6e2db] px-3 text-xs text-[#141414]"
               onClick={() => {
                 if (chip.key === "listing") setListing("");
                 if (chip.key === "marca") {
@@ -220,6 +270,8 @@ export function VehicleCatalog({
                 if (chip.key === "modelo") setModelo("");
                 if (chip.key === "ano") setAno("");
                 if (chip.key === "search") setSearch("");
+                if (chip.key === "precioMin") setPrecioMin("");
+                if (chip.key === "precioMax") setPrecioMax("");
               }}
             >
               {chip.label} ×
@@ -233,16 +285,22 @@ export function VehicleCatalog({
       {filtersOpen ? (
         <div className="fixed inset-0 z-[90] lg:hidden">
           <button type="button" className="absolute inset-0 bg-black/40" aria-label="Cerrar filtros" onClick={() => setFiltersOpen(false)} />
-          <div className="absolute inset-x-0 bottom-0 max-h-[88vh] overflow-y-auto rounded-t-2xl bg-white p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+          <div
+            ref={sheetRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Filtros"
+            className="absolute inset-x-0 bottom-0 max-h-[88svh] overflow-y-auto rounded-t-2xl bg-white p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
+          >
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-display text-lg font-semibold">Filtros</h2>
-              <button type="button" onClick={() => setFiltersOpen(false)} aria-label="Cerrar" className="inline-flex h-10 w-10 items-center justify-center">
+              <button type="button" onClick={() => setFiltersOpen(false)} aria-label="Cerrar" className="inline-flex h-11 w-11 items-center justify-center">
                 <X className="h-5 w-5" />
               </button>
             </div>
             {filters}
-            <button type="button" className="btn-primary mt-4 w-full" onClick={() => setFiltersOpen(false)}>
-              {visible.length === 1 ? "Ver 1 vehículo" : `Ver ${visible.length} vehículos`}
+            <button type="button" className="btn-primary mt-4 h-12 w-full" onClick={() => setFiltersOpen(false)}>
+              Ver resultados
             </button>
           </div>
         </div>
@@ -257,7 +315,7 @@ export function VehicleCatalog({
           onClear={emptyCatalog ? undefined : clearFilters}
         />
       ) : (
-        <div className="grid min-w-0 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid min-w-0 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {visible.map((vehicle) => (
             <VehicleCard key={vehicle.id} vehicle={vehicle} tone="light" />
           ))}

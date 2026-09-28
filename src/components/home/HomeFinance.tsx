@@ -21,7 +21,7 @@ export function HomeFinance() {
 
   return (
     <section className="section-light bg-[#f5f5f3]">
-      <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-24 lg:grid-cols-2 lg:px-8 lg:py-32">
+      <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 lg:grid-cols-2 lg:px-8 lg:py-20">
         <div className="relative hidden min-h-[32rem] overflow-hidden rounded-[1.5rem] bg-[#111] lg:block">
           <EditorialImage
             src={EDITORIAL.crossover.src}
@@ -36,17 +36,12 @@ export function HomeFinance() {
             Financia tu
             <span className="block">próximo vehículo.</span>
           </h2>
-          <p className="mt-5 max-w-md text-base leading-relaxed text-[#525252]">
-            Explora precio, inicial, monto a financiar, plazo y una cuota estimada antes de decidir.
+          <p className="mt-4 max-w-md text-base leading-relaxed text-[#525252]">
+            Te orientamos durante el proceso de financiamiento con instituciones financieras locales.
+            La aprobación y las condiciones las define cada banco.
           </p>
-          <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9B793F]">
-            Bancos locales
-          </p>
-          <p className="mt-2 max-w-md text-sm leading-relaxed text-[#525252]">
-            Las opciones, tasas, requisitos y aprobaciones dependen de cada institución financiera y
-            del perfil del solicitante. Valcron Motors no es un banco.
-          </p>
-          <div className="mt-8 rounded-[1.35rem] border border-[#ececea] bg-white p-6 shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
+          <p className="mt-3 text-sm font-semibold text-[#9B793F]">Financiamiento con bancos locales</p>
+          <div className="mt-8 hidden rounded-2xl border border-[#ececea] bg-white p-6 shadow-[0_20px_50px_rgba(0,0,0,0.05)] md:block">
             <label className="block text-sm text-[#737373]">
               Precio vehículo (USD)
               <input
@@ -123,11 +118,8 @@ export function HomeFinance() {
             </p>
           </div>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/contacto" className="btn-primary">
-              Solicitar orientación
-            </Link>
-            <Link href="/financiamiento" className="btn-secondary">
-              Ver financiamiento
+            <Link href="/financiamiento" className="btn-primary h-12 w-full sm:w-auto">
+              Conocer opciones
             </Link>
           </div>
         </div>

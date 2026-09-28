@@ -7,12 +7,12 @@ export const SITE = {
   brand: "valcronMotors",
   legalName: "Valcron Motors Group, SRL",
   url: "https://valcronmotors.com",
-  heroEyebrow: "Valcron Motors • Santo Domingo Este",
-  heroTitle: "Encuentra el vehículo ideal para ti.",
+  heroEyebrow: "Valcron Motors",
+  heroTitle: "Tu próximo vehículo empieza aquí.",
   heroSubtitle:
-    "Inventario local, financiamiento con bancos, trade-in y búsqueda en subastas de Estados Unidos cuando necesites más opciones.",
+    "Compra vehículos disponibles en República Dominicana o solicita una opción mediante subasta e importación.",
   valueProposition:
-    "Valcron Motors es un dealer en República Dominicana. Te ayudamos a encontrar, evaluar y adquirir tu próximo vehículo, con inventario, financiamiento y opciones de subasta e importación.",
+    "Valcron Motors es un dealer en Santo Domingo Este. Encuentra vehículos disponibles, solicita una unidad o consulta financiamiento con bancos locales.",
   address: {
     street: "Av Principal 20",
     streetAddress: "Av Principal 20",
@@ -72,6 +72,8 @@ export const RESOURCE_NAV = [
   { href: "/calculadoras", label: "Calculadoras" },
 ] as const;
 
+export const MOBILE_NAV = [...PUBLIC_NAV_PRIMARY, ...RESOURCE_NAV, PUBLIC_NAV_CONTACT] as const;
+
 export const FOOTER_INVENTORY = [
   { href: "/inventario", label: "Vehículos disponibles" },
   { href: "/inventario", label: "Buscar vehículo" },
@@ -84,7 +86,7 @@ export const FOOTER_SERVICES = [
   { href: "/subastas", label: "Subastas en EE.UU." },
   { href: "/importacion", label: "Importación" },
   { href: "/financiamiento", label: "Financiamiento" },
-  { href: "/solicitar-vehiculo", label: "Trade-in" },
+  { href: "/solicitar-vehiculo", label: "Recibimos tu vehículo" },
 ] as const;
 
 export const FOOTER_CONTACT = [
@@ -244,7 +246,7 @@ export function autoDealerJsonLd() {
   const business = {
     "@type": ["Organization", "LocalBusiness", "AutoDealer"],
     "@id": `${SITE.url}/#business`,
-    name: SITE.legalName,
+    name: "Valcron Motors Group",
     legalName: SITE.legalName,
     alternateName: [SITE.shortName, SITE.brand],
     brand: {

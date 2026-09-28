@@ -3,9 +3,9 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { publicPageMetadata, breadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata = publicPageMetadata({
-  title: "Guías para importar y comprar vehículos",
+  title: "Guías para Comprar e Importar Vehículos",
   description:
-    "Guías paso a paso de Valcron Motors: importar un vehículo a República Dominicana, comprar en subastas de Estados Unidos, leer fichas Copart o IAA, calcular costos, VIN y checklist de usados.",
+    "Guías de Valcron Motors para comprar un vehículo, entender financiamiento, subastas e importación a República Dominicana.",
   path: "/guias",
 });
 

@@ -4,12 +4,12 @@ import { CatalogSkeleton } from "@/components/public/InventorySkeleton";
 import { VehicleCatalog, type CatalogFilters } from "@/components/public/VehicleCatalog";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { loadPublicVehicles } from "@/lib/public-inventory";
-import { SITE } from "@/lib/site";
 import { publicPageMetadata } from "@/lib/seo";
 
 export const metadata = publicPageMetadata({
-  title: "Inventario de vehículos",
-  description: `Inventario de ${SITE.shortName}: vehículos disponibles en República Dominicana y unidades en proceso de subasta o importación.`,
+  title: "Inventario de Vehículos",
+  description:
+    "Vehículos disponibles en Valcron Motors, Santo Domingo Este, y unidades mediante subasta. Filtra por marca, modelo y año.",
   path: "/inventario",
 });
 
@@ -67,6 +67,7 @@ export default function InventarioPage({
   return (
     <main>
       <PageHero
+        className="hidden md:block"
         kicker="Inventario"
         title="Vehículos disponibles"
         subtitle="Filtra por marca, modelo, año, precio o disponibilidad. El catálogo refleja el inventario publicado de Valcron Motors."
@@ -74,7 +75,7 @@ export default function InventarioPage({
         imageAlt={PAGE_HERO_ALTS.inventario}
       />
       <section className="section-light bg-[#faf9f6]">
-        <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8 lg:py-24">
+        <div className="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-16 lg:py-20">
           <Suspense fallback={<CatalogSkeleton />}>
             <InventarioCatalog searchParams={searchParams} />
           </Suspense>

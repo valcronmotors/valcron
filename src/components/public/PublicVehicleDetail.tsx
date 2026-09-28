@@ -90,11 +90,10 @@ export function PublicVehicleDetail({
               </p>
               <CurrencySwitch compact tone="light" />
             </div>
-            <h1 className="mt-4 break-words font-display text-3xl font-bold tracking-tight text-[#141414] sm:text-4xl">
+            <h1 className="mt-4 break-words font-display text-[1.75rem] font-bold tracking-tight text-[#141414] sm:text-4xl">
               {year} {make} {model}
             </h1>
             {vehicle.trim ? <p className="mt-2 text-base text-[#5c5c5c]">{vehicle.trim}</p> : null}
-            {facts.length ? <p className="mt-3 text-sm leading-relaxed text-[#5c5c5c]">{facts.join(" · ")}</p> : null}
 
             {sold ? (
               <p className="mt-6 rounded-2xl border border-[#e6e2db] bg-white px-4 py-3 text-sm text-[#5c5c5c]">
@@ -103,7 +102,7 @@ export function PublicVehicleDetail({
               </p>
             ) : null}
 
-            <div className="mt-8 border-t border-[#e6e2db] pt-4">
+            <div className="mt-5 border-t border-[#e6e2db] pt-4">
               <p className="text-[11px] uppercase tracking-[0.16em] text-[#6b6b6b]">{price.label}</p>
               <p className="mt-1 font-display text-3xl text-[#141414]">{price.primary}</p>
               {price.secondary ? <p className="mt-1 text-sm text-[#6b6b6b]">{price.secondary}</p> : null}
@@ -112,6 +111,8 @@ export function PublicVehicleDetail({
                 <p className="mt-3 max-w-md text-sm leading-relaxed text-[#5c5c5c]">{AUCTION_SERVICE_COPY}</p>
               ) : null}
             </div>
+
+            {facts.length ? <p className="mt-4 text-sm leading-relaxed text-[#5c5c5c]">{facts.join(" · ")}</p> : null}
 
             <div className="mt-8 hidden flex-wrap gap-3 lg:flex">
               {!sold ? (
@@ -125,7 +126,7 @@ export function PublicVehicleDetail({
               </a>
               {canFinance ? (
                 <Link href={`/financiamiento?monto=${financeAmount}`} className="btn-secondary">
-                  Financiamiento
+                  Conocer opciones
                 </Link>
               ) : null}
             </div>
@@ -200,12 +201,12 @@ export function PublicVehicleDetail({
           className="fixed inset-x-0 bottom-0 z-40 border-t border-[#e6e2db] bg-white/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm lg:hidden"
         >
           <div className="mx-auto grid max-w-7xl grid-cols-2 gap-2">
-            <a href={whatsapp} target="_blank" rel="noreferrer" className="btn-whatsapp h-11">
+            <a href={whatsapp} target="_blank" rel="noreferrer" className="btn-whatsapp h-12">
               <WhatsAppIcon className="h-4 w-4" />
               WhatsApp
             </a>
-            <a href="#consulta" className="btn-primary h-11">
-              {primaryCta}
+            <a href="#consulta" className="btn-primary h-12">
+              {auctionListing ? "Cotizar" : "Solicitar información"}
             </a>
           </div>
         </div>

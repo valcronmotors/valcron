@@ -9,30 +9,25 @@ import { HomeFinalCta } from "@/components/home/HomeFinalCta";
 import { HomeFinance } from "@/components/home/HomeFinance";
 import { HomeHero } from "@/components/home/HomeHero";
 import { HomeProcess } from "@/components/home/HomeProcess";
+import { HomeQuickActions } from "@/components/home/HomeQuickActions";
 import { HomeSearch } from "@/components/home/HomeSearch";
-import { HomeServices } from "@/components/home/HomeServices";
+import { HomeTradeIn } from "@/components/home/HomeTradeIn";
 import { HomeTrust } from "@/components/home/HomeTrust";
 import { loadPublicVehicles } from "@/lib/public-inventory";
 import { SITE, autoDealerJsonLd } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Valcron Motors | Encuentra tu próximo vehículo en República Dominicana",
+    absolute: "Dealer de Vehículos en Santo Domingo Este | Valcron Motors",
   },
-  description: SITE.valueProposition,
+  description:
+    "Compra vehículos disponibles en República Dominicana o solicita una unidad. Financiamiento con bancos locales y opciones mediante subasta. Valcron Motors, Santo Domingo Este.",
   alternates: { canonical: "/" },
-  keywords: [
-    "Valcron Motors",
-    "dealer República Dominicana",
-    "comprar vehículo RD",
-    "inventario de vehículos Santo Domingo",
-    "financiamiento de vehículos RD",
-  ],
   openGraph: {
     locale: "es_DO",
     type: "website",
     siteName: SITE.shortName,
-    title: "Valcron Motors | Encuentra tu próximo vehículo en República Dominicana",
+    title: "Dealer de Vehículos en Santo Domingo Este | Valcron Motors",
     description: SITE.valueProposition,
     url: SITE.url,
     images: [{ url: "/hero-luxury.png", alt: SITE.shortName }],
@@ -61,10 +56,11 @@ export default function Home() {
         <Suspense fallback={<InventorySectionSkeleton />}>
           <HomeInventoryBand />
         </Suspense>
-        <HomeTrust />
-        <HomeServices />
+        <HomeQuickActions />
         <HomeFinance />
         <HomeAuctions />
+        <HomeTradeIn />
+        <HomeTrust />
         <HomeProcess />
         <HomeBlogPreview />
         <HomeFaqPreview />

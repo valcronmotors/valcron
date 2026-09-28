@@ -7,17 +7,18 @@ const LOCAL = [
 
 const SOURCING = [
   { step: "01", title: "Dinos qué buscas" },
-  { step: "02", title: "Seleccionamos opciones" },
-  { step: "03", title: "Revisas y cotizas" },
-  { step: "04", title: "Valcron gestiona el proceso" },
+  { step: "02", title: "Revisamos opciones" },
+  { step: "03", title: "Cotizamos el proceso" },
+  { step: "04", title: "Seleccionas la unidad" },
+  { step: "05", title: "Valcron gestiona el proceso contratado" },
 ];
 
 export function HomeProcess() {
   return (
     <section id="proceso" className="bg-[#141414]">
-      <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-24">
+      <div className="mx-auto max-w-7xl px-4 py-10 lg:px-8 lg:py-16">
         <p className="kicker text-[#C7A96B]">Cómo comprar</p>
-        <h2 className="mt-3 max-w-2xl font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">
+        <h2 className="mt-3 max-w-2xl font-display text-2xl font-bold tracking-tight text-white md:text-4xl">
           Un proceso corto, sin rodeos.
         </h2>
         <div className="mt-10 grid gap-8 lg:grid-cols-2">

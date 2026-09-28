@@ -16,7 +16,7 @@ const ITEMS = [
     copy: "Te ayudamos a preparar el caso. La aprobación y las condiciones las define cada banco local.",
   },
   {
-    title: "Trade-in",
+    title: "Recibimos tu vehículo",
     copy: "Recibimos tu vehículo actual como parte de la compra, sujeto a evaluación.",
   },
 ];
@@ -24,9 +24,9 @@ const ITEMS = [
 export function HomeTrust() {
   return (
     <section className="section-light bg-white">
-      <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-24">
+      <div className="mx-auto max-w-7xl px-4 py-10 lg:px-8 lg:py-16">
         <p className="kicker">Por qué Valcron</p>
-        <h2 className="mt-3 max-w-2xl font-display text-3xl font-bold tracking-tight text-[#141414] sm:text-4xl">
+        <h2 className="mt-3 max-w-2xl font-display text-2xl font-bold tracking-tight text-[#141414] md:text-4xl">
           Un dealer serio, con proceso claro.
         </h2>
         <div className="mt-10 grid gap-4 md:grid-cols-2">

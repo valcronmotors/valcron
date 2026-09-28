@@ -23,11 +23,11 @@ export function FeaturedInventory({
 
   return (
     <section className="section-light bg-white">
-      <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8 lg:py-20">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+      <div className="mx-auto max-w-7xl px-4 py-10 lg:px-8 lg:py-16">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="kicker">{localFirst ? "Disponibles en Valcron" : "Inventario"}</p>
-            <h2 className="mt-3 max-w-xl text-balance font-display text-4xl font-bold tracking-tight text-[#111] sm:text-5xl">
+            <h2 className="mt-2 max-w-xl text-balance font-display text-2xl font-bold tracking-tight text-[#111] md:text-4xl">
               {localFirst
                 ? "Vehículos disponibles para tu próxima compra."
                 : "Explora las unidades publicadas actualmente."}
@@ -48,7 +48,7 @@ export function FeaturedInventory({
             />
           </div>
         ) : (
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {visible.map((vehicle) => (
               <VehicleCard key={vehicle.id} vehicle={vehicle} tone="light" />
             ))}

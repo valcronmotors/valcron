@@ -29,7 +29,7 @@ function LocationActions({
 }) {
   const light = tone === "light";
   const base =
-    "inline-flex h-11 items-center justify-center rounded-[0.9rem] px-5 text-xs font-semibold uppercase tracking-[0.14em] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C7A96B]";
+    "inline-flex h-12 min-h-12 items-center justify-center rounded-xl px-4 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C7A96B]";
   const primary = light
     ? "bg-[#111] text-white hover:bg-[#1c1c1c]"
     : "bg-white text-[#111] hover:bg-[#C7A96B]";
@@ -39,6 +39,18 @@ function LocationActions({
 
   return (
     <div className={`flex flex-wrap gap-2 ${compact ? "mt-4" : "mt-6"}`}>
+      <a href={officeTelHref()} className={`${base} ${secondary}`}>
+        Llamar
+      </a>
+      <a
+        href={whatsappHref("Hola, quiero coordinar una visita a Valcron Motors.")}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${base} ${secondary}`}
+      >
+        <WhatsAppIcon className="mr-2 h-3.5 w-3.5" />
+        WhatsApp
+      </a>
       <a
         href={mapsDirectionsUrl()}
         target="_blank"
@@ -46,15 +58,6 @@ function LocationActions({
         className={`${base} ${primary}`}
       >
         Cómo llegar
-      </a>
-      <a
-        href={whatsappHref("Hola, quiero coordinar una visita a Valcron Motors Group.")}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`${base} ${secondary}`}
-      >
-        <WhatsAppIcon className="mr-2 h-3.5 w-3.5" />
-        WhatsApp
       </a>
     </div>
   );

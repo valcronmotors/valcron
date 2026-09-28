@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { FinanceForm } from "@/components/public/FinanceForm";
 import { PageHero } from "@/components/public/PageHero";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
@@ -6,9 +7,9 @@ import { publicPageMetadata } from "@/lib/seo";
 import { Suspense } from "react";
 
 export const metadata = publicPageMetadata({
-  title: "Financiamiento de vehículos en RD",
+  title: "Financiamiento de Vehículos en RD",
   description:
-    "Explora escenarios de compra y opciones de financiamiento disponibles a través de bancos locales. La aprobación y las condiciones las define cada institución financiera.",
+    "Te orientamos durante el proceso de financiamiento con bancos locales. La aprobación la define cada institución financiera.",
   path: "/financiamiento",
 });
 
@@ -40,19 +41,19 @@ export default function FinanciamientoPage() {
         <PageHero
           kicker="Financiamiento"
           title="Bancos locales, proceso ordenado"
-          subtitle="Explora escenarios de compra y opciones de financiamiento disponibles a través de bancos locales, sujeto a evaluación y condiciones de cada institución."
+          subtitle="Te orientamos durante el proceso de financiamiento con instituciones financieras locales. No prometemos aprobación."
           image={PAGE_HERO_IMAGES.financiamiento}
           imageAlt={PAGE_HERO_ALTS.financiamiento}
         />
 
-        <section className="bg-background">
-          <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8">
+        <section className="section-light bg-white">
+          <div className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
             <div className="max-w-3xl">
               <p className="kicker">Bancos locales</p>
-              <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+              <h2 className="mt-2 font-display text-2xl font-semibold tracking-tight text-[#141414] md:text-4xl">
                 Financiamiento con bancos locales
               </h2>
-              <p className="mt-5 text-base leading-relaxed text-[#d4d4d4]">
+              <p className="mt-4 text-base leading-relaxed text-[#5c5c5c]">
                 {SITE.shortName} te ayuda a organizar la información de tu compra. No somos un
                 banco. Las opciones, tasas, requisitos y aprobaciones dependen de cada institución
                 financiera y del perfil del solicitante.
@@ -61,12 +62,12 @@ export default function FinanciamientoPage() {
           </div>
         </section>
 
-        <section className="section-light bg-[#faf9f6]">
-          <div className="mx-auto grid max-w-7xl gap-12 px-5 py-24 lg:grid-cols-2 lg:px-8">
+        <section className="section-light bg-[#f7f5f1]">
+          <div className="mx-auto grid max-w-7xl gap-4 px-4 py-10 md:grid-cols-2 md:px-8 md:py-16">
             {REQUIREMENTS.map((group) => (
-              <article key={group.title} className="rounded-[1.15rem] border border-black/10 bg-white p-8 shadow-[0_12px_32px_rgba(0,0,0,0.04)]">
-                <h3 className="font-display text-2xl font-semibold text-[#111]">{group.title}</h3>
-                <ul className="mt-6 grid gap-3 text-sm leading-relaxed text-[#404040]">
+              <article key={group.title} className="rounded-2xl border border-[#e6e2db] bg-white p-6">
+                <h3 className="font-display text-xl font-semibold text-[#141414]">{group.title}</h3>
+                <ul className="mt-4 grid gap-3 text-sm leading-relaxed text-[#5c5c5c]">
                   {group.items.map((item) => (
                     <li key={item} className="border-l-2 border-[#C7A96B] pl-4">
                       {item}
@@ -78,27 +79,32 @@ export default function FinanciamientoPage() {
           </div>
         </section>
 
-        <section className="bg-background">
-          <div className="mx-auto grid max-w-7xl gap-12 px-5 py-24 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+        <section className="bg-[#141414]">
+          <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-[0.8fr_1.2fr] md:px-8 md:py-16">
             <div>
-              <p className="kicker">Simulador</p>
-              <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-foreground">
+              <p className="kicker text-[#C7A96B]">Simulador</p>
+              <h2 className="mt-2 font-display text-2xl font-semibold tracking-tight text-white md:text-3xl">
                 Calcula escenarios de compra
               </h2>
-              <p className="mt-5 text-sm leading-relaxed text-muted">
+              <p className="mt-4 text-sm leading-relaxed text-white/70">
                 Ingresa precio, inicial, tasa y plazo. La cuota es ilustrativa. La aprobación
                 definitiva la define cada banco local. WhatsApp {SITE.whatsapp}.
               </p>
+              <Link href="/calculadoras/financiamiento" className="btn-secondary mt-6 inline-flex h-12 border-white/40 text-white md:hidden">
+                Abrir calculadora
+              </Link>
             </div>
+            <div className="hidden md:block">
             <Suspense
               fallback={
-                <div className="gloss-panel p-8 text-sm text-muted">
+                <div className="gloss-panel p-8 text-sm text-white/70">
                   Cargando simulador...
                 </div>
               }
             >
               <FinanceForm />
             </Suspense>
+            </div>
           </div>
         </section>
       </main>

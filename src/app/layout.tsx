@@ -21,7 +21,7 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: "Valcron Motors | Encuentra tu próximo vehículo en República Dominicana",
+    default: "Dealer de Vehículos en Santo Domingo Este | Valcron Motors",
     template: "%s | Valcron Motors",
   },
   description: SITE.valueProposition,
@@ -39,14 +39,14 @@ export const metadata: Metadata = {
     locale: "es_DO",
     type: "website",
     siteName: SITE.shortName,
-    title: "Valcron Motors | Encuentra tu próximo vehículo en República Dominicana",
+    title: "Dealer de Vehículos en Santo Domingo Este | Valcron Motors",
     description: SITE.valueProposition,
     url: SITE.url,
     images: [{ url: "/hero-luxury.png", alt: SITE.shortName }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Valcron Motors | Vehículos importados en República Dominicana",
+    title: "Dealer de Vehículos en Santo Domingo Este | Valcron Motors",
     description: SITE.valueProposition,
     images: ["/hero-luxury.png"],
   },

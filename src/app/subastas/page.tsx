@@ -6,9 +6,9 @@ import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE, whatsappHref } from "@/lib/site";
 
 export const metadata = publicPageMetadata({
-  title: "Subastas de vehículos en Estados Unidos",
+  title: "Vehículos de Subasta e Importación",
   description:
-    "Valcron Motors puede ayudarte a localizar y gestionar vehículos elegibles en plataformas de subasta como Copart e IAA.",
+    "Valcron puede ayudarte a localizar vehículos disponibles mediante subastas en Estados Unidos y gestionar el proceso. Copart e IAA son plataformas, no socios.",
   path: "/subastas",
 });
 
@@ -24,10 +24,11 @@ const PLATFORMS = [
 ];
 
 const STEPS = [
-  { step: "01", title: "Defines marca, modelo y presupuesto" },
-  { step: "02", title: "Localizamos opciones elegibles" },
-  { step: "03", title: "Revisas y cotizas" },
-  { step: "04", title: "Valcron gestiona el proceso" },
+  { step: "01", title: "Dinos qué buscas" },
+  { step: "02", title: "Revisamos opciones" },
+  { step: "03", title: "Cotizamos el proceso" },
+  { step: "04", title: "Seleccionas la unidad" },
+  { step: "05", title: "Valcron gestiona el proceso contratado" },
 ];
 
 export default function SubastasPage() {
@@ -36,7 +37,7 @@ export default function SubastasPage() {
       <PageHero
         kicker="Subastas USA"
         title="Oportunidades en subastas de Estados Unidos"
-        subtitle="Valcron puede ayudarte a localizar y gestionar vehículos elegibles publicados en plataformas como Copart e IAA."
+        subtitle="Valcron puede ayudarte a localizar vehículos disponibles mediante subastas en Estados Unidos y gestionar el proceso."
         image={PAGE_HERO_IMAGES.subastas}
         imageAlt={PAGE_HERO_ALTS.subastas}
       />
@@ -71,7 +72,7 @@ export default function SubastasPage() {
           <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">
             De la búsqueda a la gestión
           </h2>
-          <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
             {STEPS.map((item) => (
               <article key={item.step} className="rounded-xl border border-white/10 p-6">
                 <p className="kicker text-[#C7A96B]">{item.step}</p>
@@ -82,6 +83,9 @@ export default function SubastasPage() {
           <div className="mt-10 flex flex-wrap gap-3">
             <Link href="/solicitar-vehiculo" className="btn-primary">
               Solicitar vehículo
+            </Link>
+            <Link href="/importacion" className="btn-secondary">
+              Ver importación
             </Link>
             <a
               href={whatsappHref("Hola, quiero solicitar una búsqueda de vehículo en subastas de Estados Unidos.")}

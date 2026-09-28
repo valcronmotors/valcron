@@ -4,7 +4,7 @@ import { EDITORIAL } from "@/lib/editorial-media";
 
 export function HomeFinalCta() {
   return (
-    <section className="relative isolate min-h-[64vh] overflow-hidden bg-black">
+    <section className="relative isolate min-h-[48svh] overflow-hidden bg-black md:min-h-[58vh]">
       <EditorialImage
         src={EDITORIAL.crossover.src}
         alt={EDITORIAL.crossover.alt}
@@ -13,10 +13,10 @@ export function HomeFinalCta() {
       />
       <div className="absolute inset-0 bg-black/62" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/20" />
-      <div className="hero-on-dark relative mx-auto flex min-h-[64vh] max-w-7xl items-end px-5 py-24 lg:px-8">
+      <div className="hero-on-dark relative mx-auto flex min-h-[48svh] max-w-7xl items-end px-4 py-12 md:min-h-[58vh] md:px-8 md:py-20">
         <div className="max-w-2xl">
           <div className="mb-5 h-px w-16 bg-[#C7A96B]" />
-          <h2 className="text-balance font-display text-4xl font-bold tracking-tight text-white sm:text-6xl">
+          <h2 className="text-balance font-display text-[1.85rem] font-bold tracking-tight text-white md:text-5xl">
             Tu próximo vehículo puede empezar aquí.
           </h2>
           <p className="mt-5 max-w-xl text-base text-white/70">

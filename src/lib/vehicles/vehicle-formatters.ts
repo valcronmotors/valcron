@@ -126,14 +126,14 @@ export function formatRelativeUpdate(value: string | null | undefined) {
 
 export function buildVehicleWhatsAppMessage(vehicle: PublicVehicle) {
   const title = vehicleDisplayTitle(vehicle);
-  const lot = vehicle.auction?.lotNumber;
-  if (vehicle.availability === "auction" && lot) {
-    return `Hola, estoy interesado en el ${title}, lote ${lot}, que vi en Valcron Motors.`;
+  const url = canonicalVehicleUrl(vehicle);
+  if (vehicle.availability === "auction" || vehicle.listingKind === "auction") {
+    return `Hola, me interesa recibir una cotización de este vehículo disponible mediante subasta: ${title}. ${url}`;
   }
   if (vehicle.availability === "sold") {
-    return `Hola, estoy interesado en encontrar un vehículo similar al ${title} que vi en Valcron Motors.`;
+    return `Hola, me interesa un vehículo similar a este: ${title}. ${url}`;
   }
-  return `Hola, estoy interesado en el ${title} que vi en Valcron Motors.`;
+  return `Hola, me interesa este vehículo disponible en Valcron: ${title}. ${url}`;
 }
 
 export function buildVehicleWhatsAppUrl(vehicle: PublicVehicle) {

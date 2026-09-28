@@ -139,7 +139,7 @@ export function ArticleView({ article }: { article: ContentArticle }) {
         <div className="mt-8 grid min-w-0 gap-10 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,0.28fr)]">
           <div className="min-w-0">
             <p className="kicker">{article.category}</p>
-            <h1 className="mt-3 max-w-[22ch] font-display text-4xl font-bold tracking-tight text-[#111] sm:text-5xl">
+            <h1 className="mt-3 max-w-[22ch] font-display text-[1.75rem] font-bold tracking-tight text-[#111] md:text-4xl lg:text-5xl">
               {article.title}
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-[#525252]">{article.excerpt}</p>
@@ -158,7 +158,7 @@ export function ArticleView({ article }: { article: ContentArticle }) {
               />
             </div>
 
-            <div className="mt-10 max-w-[46rem] space-y-6">
+            <div className="mt-10 max-w-[46rem] space-y-6 overflow-x-auto text-base leading-7 md:text-[1.05rem] md:leading-8">
               {article.blocks.map((block, index) => (
                 <BlockView key={`${block.type}-${index}`} block={block} />
               ))}
@@ -171,7 +171,9 @@ export function ArticleView({ article }: { article: ContentArticle }) {
                   {faq.map((item) => (
                     <div key={item.question} className="rounded-2xl border border-[#ececea] bg-white p-5">
                       <h3 className="font-display text-xl font-semibold text-[#111]">{item.question}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-[#404040]">{item.answer}</p>
+                      <p className="mt-2 text-sm leading-relaxed text-[#404040]">
+                        <RichText text={item.answer} />
+                      </p>
                     </div>
                   ))}
                 </div>

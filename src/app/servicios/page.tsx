@@ -29,7 +29,7 @@ const SERVICES = [
   },
   {
     title: "Subastas en EE.UU.",
-    copy: "Te ayudamos a localizar y gestionar vehículos elegibles en Copart e IAA.",
+    copy: "Te ayudamos a localizar vehículos disponibles mediante subastas en Copart e IAA y gestionar el proceso.",
     href: "/subastas",
     cta: "Explorar oportunidades",
     icon: Gavel,
@@ -45,14 +45,14 @@ const SERVICES = [
     title: "Financiamiento",
     copy: "Orientación para presentar tu caso ante bancos locales. Valcron no es el prestamista.",
     href: "/financiamiento",
-    cta: "Ver financiamiento",
+    cta: "Conocer opciones",
     icon: Calculator,
   },
   {
-    title: "Trade-in",
-    copy: "Recibimos tu vehículo actual como parte de la compra, sujeto a evaluación.",
+    title: "Recibimos tu vehículo",
+    copy: "¿Tienes un vehículo para entregar? Podemos evaluarlo como parte del proceso de compra.",
     href: "/solicitar-vehiculo",
-    cta: "Consultar trade-in",
+    cta: "Consultar mi vehículo",
     icon: RefreshCcw,
   },
 ];

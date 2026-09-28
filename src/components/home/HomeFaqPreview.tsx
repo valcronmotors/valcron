@@ -9,9 +9,9 @@ export function HomeFaqPreview() {
 
   return (
     <section className="section-light bg-[#ececea]" id="preguntas">
-      <div className="mx-auto max-w-4xl px-5 py-24 lg:px-8 lg:py-32">
+      <div className="mx-auto max-w-4xl px-4 py-10 lg:px-8 lg:py-16">
         <p className="kicker">FAQ</p>
-        <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-[#111] sm:text-5xl">
+        <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-[#111] md:text-4xl">
           Preguntas antes
           <span className="block">de comprar.</span>
         </h2>

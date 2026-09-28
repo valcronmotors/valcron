@@ -11,9 +11,9 @@ import {
   formatCustomerFacingPrice,
 } from "@/lib/public-price-mode";
 import { vehicleJsonLd } from "@/lib/seo";
-import { PUBLIC_NAV, PUBLIC_NAV_PRIMARY, RESOURCE_NAV, SITE } from "@/lib/site";
+import { PUBLIC_NAV, PUBLIC_NAV_PRIMARY, RESOURCE_NAV, MOBILE_NAV, SITE } from "@/lib/site";
 import { toPublicVehicle } from "@/lib/vehicles/normalizeVehicle";
-import { displayVehiclePrice, visibleVehicleSpecs } from "@/lib/vehicles/vehicle-formatters";
+import { buildVehicleWhatsAppMessage, displayVehiclePrice, visibleVehicleSpecs } from "@/lib/vehicles/vehicle-formatters";
 import {
   availabilityLabel,
   publicListingBadge,
@@ -87,6 +87,18 @@ describe("public website v2 navigation", () => {
       "Contacto",
     ]);
     expect(RESOURCE_NAV.map((item) => item.label)).toEqual(["Blog", "Guías", "Calculadoras"]);
+    expect(MOBILE_NAV.map((item) => item.label)).toEqual([
+      "Inicio",
+      "Inventario",
+      "Servicios",
+      "Financiamiento",
+      "Subastas",
+      "Nosotros",
+      "Blog",
+      "Guías",
+      "Calculadoras",
+      "Contacto",
+    ]);
     const labels: string[] = PUBLIC_NAV.map((item) => item.label);
     expect(labels).not.toContain("Importación");
   });
@@ -205,6 +217,14 @@ describe("inventory empty states and filters", () => {
 describe("public copy constraints", () => {
   it("does not present Manheim as an active public integration", () => {
     expect(HOME_FAQS.some((item) => /Manheim/i.test(item.a))).toBe(false);
-    expect(SITE.heroTitle).toBe("Encuentra el vehículo ideal para ti.");
+    expect(SITE.heroTitle).toBe("Tu próximo vehículo empieza aquí.");
+  });
+
+  it("uses Dominican WhatsApp copy with vehicle context", () => {
+    const stock = toPublicVehicle(row());
+    const auction = toPublicVehicle(row({ source_type: "other", public_price_mode: "contact", price: null }));
+    expect(buildVehicleWhatsAppMessage(stock)).toMatch(/^Hola, me interesa este vehículo disponible en Valcron: 2023 Toyota RAV4/);
+    expect(buildVehicleWhatsAppMessage(stock)).toContain("https://valcronmotors.com/inventario/");
+    expect(buildVehicleWhatsAppMessage(auction)).toMatch(/cotización de este vehículo disponible mediante subasta/);
   });
 });

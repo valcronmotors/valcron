@@ -7,8 +7,8 @@ import { publicPageMetadata, breadcrumbJsonLd } from "@/lib/seo";
 import { SITE } from "@/lib/site";
 
 export const metadata = publicPageMetadata({
-  title: "Nosotros",
-  description: `Conoce a ${SITE.legalName}: dealer en Santo Domingo Este para encontrar, evaluar y adquirir vehículos en República Dominicana.`,
+  title: "Sobre Valcron Motors",
+  description: `Conoce a Valcron Motors: dealer en Av Principal 20, Santo Domingo Este, República Dominicana.`,
   path: "/nosotros",
 });
 

@@ -38,15 +38,22 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
             Vehículos • Inventario • Financiamiento
           </p>
           <p className="mt-5 text-sm leading-relaxed text-[#A3A3A3]">
-            Dealer en República Dominicana para encontrar, evaluar y adquirir tu próximo vehículo,
-            con inventario, búsqueda personalizada y soluciones de compra.
+            Dealer en Santo Domingo Este. Inventario, financiamiento con bancos locales y búsqueda
+            mediante subasta.
           </p>
           <FooterSocialIcons className="mt-8" />
+          <nav aria-label="Enlaces principales" className="mt-8 grid gap-3 text-sm md:hidden">
+            <Link href="/inventario" className={linkClass}>Inventario</Link>
+            <Link href="/financiamiento" className={linkClass}>Financiamiento</Link>
+            <Link href="/subastas" className={linkClass}>Subastas</Link>
+            <Link href="/solicitar-vehiculo" className={linkClass}>Solicitar vehículo</Link>
+            <Link href="/contacto" className={linkClass}>Contacto</Link>
+          </nav>
         </div>
 
         <nav
           aria-label="Navegación del pie de página"
-          className="mt-14 grid grid-cols-1 gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+          className="mt-10 hidden grid-cols-1 gap-x-10 gap-y-12 sm:grid-cols-2 md:grid lg:grid-cols-3 xl:grid-cols-5"
         >
           <FooterColumn title="Inventario" items={FOOTER_INVENTORY} />
           <FooterColumn title="Servicios" items={FOOTER_SERVICES} />

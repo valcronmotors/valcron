@@ -30,6 +30,9 @@
 }
 
 .public-site {
+  overflow-x: clip;
+  font-size: 16px;
+  line-height: 1.65;
   --background: #f7f5f1;
   --surface: #ffffff;
   --surface-2: #f3f1ed;
@@ -150,7 +153,8 @@ h3 {
 
 @utility btn-primary {
   display: inline-flex;
-  height: 2.85rem;
+  min-height: 2.75rem;
+  height: 2.75rem;
   align-items: center;
   justify-content: center;
   border-radius: 0.9rem;
@@ -176,7 +180,8 @@ h3 {
 
 @utility btn-secondary {
   display: inline-flex;
-  height: 2.85rem;
+  min-height: 2.75rem;
+  height: 2.75rem;
   align-items: center;
   justify-content: center;
   border-radius: 0.9rem;
@@ -203,7 +208,8 @@ h3 {
 
 @utility btn-whatsapp {
   display: inline-flex;
-  height: 2.85rem;
+  min-height: 2.75rem;
+  height: 2.75rem;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
@@ -248,7 +254,7 @@ h3 {
 
 .site-header {
   isolation: isolate;
-  height: 68px;
+  height: 56px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   background-color: #050608;
   background-image: linear-gradient(180deg, #121317 0%, #07080a 100%);
@@ -258,7 +264,7 @@ h3 {
 }
 
 .site-header.is-compact {
-  height: 60px;
+  height: 52px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
 }
 
@@ -523,6 +529,12 @@ input[type="range"].luxury-range::-moz-range-thumb {
   --admin-shadow: 0 1px 2px rgba(18, 20, 23, 0.04), 0 10px 28px rgba(18, 20, 23, 0.05);
   color: var(--admin-text);
   background: var(--admin-bg);
+}
+
+.public-site article :is(table, pre) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .admin-console :focus-visible {

@@ -8,6 +8,7 @@ import { BrandLogo } from "@/components/public/BrandLogo";
 import { CurrencySwitch } from "@/components/public/CurrencyProvider";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import {
+  MOBILE_NAV,
   PUBLIC_NAV_CONTACT,
   PUBLIC_NAV_PRIMARY,
   RESOURCE_NAV,
@@ -28,6 +29,7 @@ const navActiveClass = "text-white after:absolute after:bottom-1 after:left-2 af
 export function Navbar() {
   const pathname = usePathname();
   const resourcesRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const [compact, setCompact] = useState(false);
@@ -60,6 +62,12 @@ export function Navbar() {
       desktop.removeEventListener("change", applyOverflow);
       document.body.style.overflow = "";
     };
+  }, [open]);
+
+  useEffect(() => {
+    if (open) {
+      menuButtonRef.current?.focus();
+    }
   }, [open]);
 
   useEffect(() => {
@@ -113,7 +121,7 @@ export function Navbar() {
             <div className="relative shrink-0" ref={resourcesRef}>
               <button
                 type="button"
-                className={`${navLinkClass} inline-flex items-center gap-1 ${resourcesActive ? navActiveClass : ""}`}
+                className={`${navLinkClass} inline-flex min-h-11 items-center gap-1 ${resourcesActive ? navActiveClass : ""}`}
                 aria-expanded={resourcesOpen}
                 aria-haspopup="menu"
                 aria-controls={menuId}
@@ -133,7 +141,7 @@ export function Navbar() {
                       key={item.href}
                       href={item.href}
                       role="menuitem"
-                      className={`block rounded-lg px-3 py-2.5 text-sm hover:bg-white/6 hover:text-white ${
+                      className={`block min-h-11 rounded-lg px-3 py-2.5 text-sm hover:bg-white/6 hover:text-white ${
                         isActivePath(pathname, item.href) ? "text-white" : "text-[#E8E8E8]"
                       }`}
                       onClick={() => setResourcesOpen(false)}
@@ -144,18 +152,13 @@ export function Navbar() {
                 </div>
               ) : null}
             </div>
-            {(() => {
-              const active = isActivePath(pathname, PUBLIC_NAV_CONTACT.href);
-              return (
-                <Link
-                  href={PUBLIC_NAV_CONTACT.href}
-                  aria-current={active ? "page" : undefined}
-                  className={`${navLinkClass} ${active ? navActiveClass : ""}`}
-                >
-                  {PUBLIC_NAV_CONTACT.label}
-                </Link>
-              );
-            })()}
+            <Link
+              href={PUBLIC_NAV_CONTACT.href}
+              aria-current={isActivePath(pathname, PUBLIC_NAV_CONTACT.href) ? "page" : undefined}
+              className={`${navLinkClass} ${isActivePath(pathname, PUBLIC_NAV_CONTACT.href) ? navActiveClass : ""}`}
+            >
+              {PUBLIC_NAV_CONTACT.label}
+            </Link>
           </nav>
 
           <div className="ml-auto flex shrink-0 items-center gap-2">
@@ -163,45 +166,46 @@ export function Navbar() {
               href={whatsappHref()}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="WhatsApp de Valcron Motors"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/12 text-[#E8E8E8] transition hover:border-white/30 hover:text-white"
+              aria-label="Hablar por WhatsApp"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/12 text-[#E8E8E8] transition hover:border-white/30 hover:text-white"
             >
               <WhatsAppIcon className="h-4 w-4" />
             </a>
-            <div className="hidden sm:block">
+            <div className="hidden lg:block">
               <CurrencySwitch compact />
             </div>
             <Link
               href="/inventario"
-              className="hidden h-10 items-center rounded-lg bg-white px-4 text-sm font-semibold text-[#111] transition hover:bg-[#ececec] sm:inline-flex"
+              className="hidden h-11 items-center rounded-lg bg-white px-4 text-sm font-semibold text-[#111] transition hover:bg-[#ececec] lg:inline-flex"
             >
               Ver inventario
             </Link>
             <button
+              ref={menuButtonRef}
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/12 text-white lg:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/12 text-white lg:hidden"
               onClick={() => setOpen((value) => !value)}
               aria-expanded={open}
               aria-controls="mobile-nav"
               aria-label={open ? "Cerrar menú" : "Abrir menú"}
             >
-              {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
       </header>
 
       {open ? (
-        <div id="mobile-nav" className="fixed inset-0 z-[70] flex flex-col bg-[#0b0c0e] pt-[68px] lg:hidden">
-          <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-5 py-5" aria-label="Menú">
-            {PUBLIC_NAV_PRIMARY.map((item) => {
+        <div id="mobile-nav" className="fixed inset-0 z-[70] flex flex-col bg-[#0b0c0e] pt-[56px] lg:hidden">
+          <nav className="flex flex-1 flex-col overflow-y-auto px-5 pb-4" aria-label="Menú">
+            {MOBILE_NAV.map((item) => {
               const active = isActivePath(pathname, item.href);
               return (
                 <Link
-                  key={item.href}
+                  key={`${item.href}-${item.label}`}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`min-h-11 border-b border-white/10 py-3 text-lg font-medium ${
+                  className={`flex min-h-11 items-center border-b border-white/10 text-lg font-medium ${
                     active ? "text-white" : "text-[#E8E8E8]"
                   }`}
                   onClick={() => setOpen(false)}
@@ -210,37 +214,11 @@ export function Navbar() {
                 </Link>
               );
             })}
-            <p className="pt-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#A3A3A3]">Recursos</p>
-            {RESOURCE_NAV.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`min-h-11 border-b border-white/10 py-3 text-base ${
-                  isActivePath(pathname, item.href) ? "text-white" : "text-[#E8E8E8]"
-                }`}
-                onClick={() => setOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
-            <Link
-              href={PUBLIC_NAV_CONTACT.href}
-              aria-current={isActivePath(pathname, PUBLIC_NAV_CONTACT.href) ? "page" : undefined}
-              className={`min-h-11 border-b border-white/10 py-3 text-lg font-medium ${
-                isActivePath(pathname, PUBLIC_NAV_CONTACT.href) ? "text-white" : "text-[#E8E8E8]"
-              }`}
-              onClick={() => setOpen(false)}
-            >
-              {PUBLIC_NAV_CONTACT.label}
-            </Link>
           </nav>
-          <div className="grid gap-3 border-t border-white/10 px-5 py-5">
-            <div className="sm:hidden">
-              <CurrencySwitch />
-            </div>
+          <div className="grid gap-3 border-t border-white/10 px-5 py-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
             <Link
               href="/inventario"
-              className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-white text-sm font-semibold text-[#111]"
+              className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-white text-sm font-semibold text-[#111]"
               onClick={() => setOpen(false)}
             >
               Ver inventario
@@ -249,11 +227,11 @@ export function Navbar() {
               href={whatsappHref()}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-white/20 text-sm text-white"
+              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-white/20 text-sm text-white"
               onClick={() => setOpen(false)}
             >
               <WhatsAppIcon className="h-4 w-4" />
-              WhatsApp
+              Hablar por WhatsApp
             </a>
           </div>
         </div>

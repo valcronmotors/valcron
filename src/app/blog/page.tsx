@@ -3,9 +3,9 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { publicPageMetadata, breadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata = publicPageMetadata({
-  title: "Blog automotriz",
+  title: "Blog Automotriz en RD",
   description:
-    "Artículos de Valcron Motors sobre importar vehículos a República Dominicana, subastas de Estados Unidos, títulos, híbridos y compra informada en Santo Domingo Este.",
+    "Artículos de Valcron Motors sobre comprar vehículos en República Dominicana, financiamiento, subastas e importación.",
   path: "/blog",
 });
 

@@ -5,11 +5,11 @@ import { HOME_ARTICLES } from "@/lib/home-content";
 export function HomeBlogPreview() {
   return (
     <section className="section-light bg-white">
-      <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8 lg:py-32">
+      <div className="mx-auto max-w-7xl px-4 py-10 lg:px-8 lg:py-16">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="kicker">Recursos</p>
-            <h2 className="mt-3 font-display text-4xl font-bold tracking-tight text-[#111] sm:text-5xl">
+            <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-[#111] md:text-4xl">
               Antes de comprar,
               <span className="block">conoce lo importante.</span>
             </h2>

@@ -7,16 +7,16 @@ export const EDITORIAL = {
     alt: "SUV premium en iluminación nocturna",
   },
   sedan: {
-    src: unsplash("photo-1503376780353-7e6692767b70"),
-    alt: "Sedán de alta gama en fotografía cinematográfica",
+    src: unsplash("photo-1619767886558-efdc259cde1a"),
+    alt: "Sedán familiar contemporáneo, fotografía ilustrativa",
   },
   mustang: {
-    src: unsplash("photo-1494976388531-d1058494cdd8"),
-    alt: "Vehículo deportivo en carretera",
+    src: unsplash("photo-1519641471654-76ce0107ad1b"),
+    alt: "SUV familiar contemporáneo, fotografía ilustrativa",
   },
   muscle: {
-    src: unsplash("photo-1552519507-da3b142c6e3d"),
-    alt: "Vehículo de alto contraste en estudio",
+    src: unsplash("photo-1533473359331-0135ef1b58bf"),
+    alt: "SUV contemporáneo, fotografía ilustrativa",
   },
   cabin: {
     src: unsplash("photo-1542362567-b07e54358753"),
