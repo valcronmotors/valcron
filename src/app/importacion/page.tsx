@@ -10,31 +10,15 @@ import { publicPageMetadata } from "@/lib/seo";
 export const metadata = publicPageMetadata({
   title: "Importación de vehículos a República Dominicana",
   description:
-    "Orientación clara sobre selección, compra, transporte e importación de vehículos a RD. Sin montos de impuestos garantizados. Valcron Motors.",
+    "Selección, compra, transporte e importación a RD. Sin impuestos garantizados por adelantado.",
   path: "/importacion",
 });
 
 const PHASES = [
-  {
-    step: "01",
-    title: "Selección",
-    copy: "Identificamos la unidad según lo que buscas, en inventario o mediante subasta.",
-  },
-  {
-    step: "02",
-    title: "Compra",
-    copy: "Organizamos la información de compra y los costos asociados antes de avanzar.",
-  },
-  {
-    step: "03",
-    title: "Transporte y exportación",
-    copy: "Traslado terrestre, booking marítimo y salida hacia República Dominicana.",
-  },
-  {
-    step: "04",
-    title: "Importación y entrega",
-    copy: "Llegada, contexto de importación y coordinación de entrega. Los impuestos se confirman al despacho.",
-  },
+  { step: "01", title: "Selección", copy: "Unidad en inventario o subasta." },
+  { step: "02", title: "Compra", copy: "Costos antes de avanzar." },
+  { step: "03", title: "Transporte", copy: "Traslado y salida hacia RD." },
+  { step: "04", title: "Llegada", copy: "Importación y entrega coordinada." },
 ];
 
 export default function ImportacionPage() {
@@ -42,17 +26,17 @@ export default function ImportacionPage() {
     <main>
       <PageHero
         kicker="Importación"
-        title="Cuando el vehículo viene de fuera"
-        subtitle="Selección, compra, transporte y coordinación de llegada. Sin cifras fijas que puedan cambiar."
+        title="Del origen a República Dominicana"
+        subtitle="Selección, compra y coordinación de llegada — sin cifras fijas."
         image={PAGE_HERO_IMAGES.importacion}
         imageAlt={PAGE_HERO_ALTS.importacion}
       />
 
-      <Section className="section-light bg-[#f5f6f7]">
+      <Section className="section-light bg-[#f7f8fa]">
         <PageContainer>
           <SectionHeader
             kicker="Proceso"
-            title="Lo esencial, sin tecnicismos."
+            title="Cuatro pasos esenciales"
             subtitle={
               <>
                 La búsqueda en subastas está en{" "}
@@ -62,7 +46,7 @@ export default function ImportacionPage() {
                 >
                   Subastas
                 </Link>
-                . Aquí cubrimos el traslado a República Dominicana.
+                . Aquí va el traslado a RD.
               </>
             }
           />
@@ -76,8 +60,8 @@ export default function ImportacionPage() {
             <div>
               <SectionHeader
                 kicker="Estimación"
-                title="Calcula partidas de referencia"
-                subtitle={`El resultado es ilustrativo y no sustituye una cotización. WhatsApp ${SITE.whatsapp}.`}
+                title="Partidas de referencia"
+                subtitle={`Resultado ilustrativo. WhatsApp ${SITE.whatsappDisplay}.`}
                 tone="dark"
               />
               <Link

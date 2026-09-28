@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
+import { PageContainer, Section } from "@/components/public/layout";
 import { PageHero } from "@/components/public/PageHero";
 import {
   contentPath,

@@ -10,26 +10,26 @@ import { publicPageMetadata } from "@/lib/seo";
 export const metadata = publicPageMetadata({
   title: "Vehículos de subasta desde Estados Unidos",
   description:
-    "Valcron puede asistirte con vehículos disponibles mediante plataformas como Copart e IAA. Cotización clara y proceso coordinado. Santo Domingo Este.",
+    "Asistencia con unidades en plataformas como Copart e IAA. Cotización clara. Santo Domingo Este.",
   path: "/subastas",
 });
 
 const STEPS = [
-  { step: "01", title: "Dinos qué buscas", copy: "Marca, modelo, año y presupuesto." },
-  { step: "02", title: "Revisamos opciones", copy: "Opciones publicadas en plataformas de subasta." },
-  { step: "03", title: "Cotizamos", copy: "Escenarios de costo y proceso." },
-  { step: "04", title: "Seleccionas", copy: "Eliges la unidad que te conviene." },
-  { step: "05", title: "Coordinamos el proceso contratado", copy: "Te acompañamos hasta el cierre." },
+  { step: "01", title: "Cuéntanos", copy: "Marca, modelo, año y presupuesto." },
+  { step: "02", title: "Revisamos", copy: "Lotes publicados en subasta." },
+  { step: "03", title: "Cotizamos", copy: "Costos y pasos." },
+  { step: "04", title: "Eliges", copy: "La opción que prefieres." },
+  { step: "05", title: "Coordinamos", copy: "El proceso contratado." },
 ];
 
 const PLATFORMS = [
   {
     name: "Copart",
-    copy: "Plataforma con publicaciones, fotos y datos de lote. La usamos como fuente de mercado.",
+    copy: "Publicaciones y fotos de lote. Fuente de mercado, no socio.",
   },
   {
     name: "IAA",
-    copy: "Otra plataforma de subastas. Revisamos la información disponible antes de avanzar.",
+    copy: "Otra plataforma de subasta. Revisamos datos antes de avanzar.",
   },
 ];
 
@@ -38,8 +38,8 @@ export default function SubastasPage() {
     <main>
       <PageHero
         kicker="Subastas"
-        title="Más opciones para encontrar tu vehículo."
-        subtitle="Si no está en inventario, Valcron puede ayudarte a localizar unidades disponibles mediante plataformas de subasta en Estados Unidos."
+        title="Más opciones fuera del inventario"
+        subtitle="Te asistimos con vehículos publicados en subastas de Estados Unidos."
         image={PAGE_HERO_IMAGES.subastas}
         imageAlt={PAGE_HERO_ALTS.subastas}
       />
@@ -48,17 +48,17 @@ export default function SubastasPage() {
         <PageContainer>
           <SectionHeader
             kicker="Plataformas"
-            title="Copart e IAA, como fuentes de mercado."
-            subtitle={`${SITE.shortName} te ayuda a explorar vehículos publicados en Copart e IAA. No operamos como socio, partner ni afiliado de esas compañías. Son plataformas de subasta.`}
+            title="Copart e IAA como referencia"
+            subtitle={`${SITE.shortName} no es socio, partner ni afiliado de esas compañías.`}
           />
           <div className="mt-10 grid gap-4 md:grid-cols-2">
             {PLATFORMS.map((item) => (
               <article
                 key={item.name}
-                className="border border-[#e4e6ea] bg-[#f5f6f7] p-6 md:p-8"
+                className="border border-[#e4e6ea] bg-[#f7f8fa] p-6 md:p-8"
                 style={{ borderRadius: "var(--radius-card)" }}
               >
-                <p className="kicker">Plataforma</p>
+                <p className="kicker !text-[#676a70]">Plataforma</p>
                 <h3 className="mt-3 font-display text-2xl font-semibold text-[#08090b]">{item.name}</h3>
                 <p className="mt-3 text-base leading-relaxed text-[#676a70]">{item.copy}</p>
               </article>
@@ -71,8 +71,8 @@ export default function SubastasPage() {
         <PageContainer>
           <SectionHeader
             kicker="Proceso"
-            title="De la búsqueda a la gestión"
-            subtitle="Un flujo claro para evaluar opciones publicadas y avanzar solo cuando tengas contexto."
+            title="De la búsqueda al cierre"
+            subtitle="Avanzamos cuando tengas contexto suficiente."
             tone="dark"
           />
           <NumberedSteps steps={STEPS} tone="dark" className="md:grid-cols-1 lg:grid-cols-2" />
@@ -81,12 +81,10 @@ export default function SubastasPage() {
               Solicitar vehículo
             </Link>
             <Link href="/inventario?listing=auction" className="btn-secondary">
-              Ver oportunidades publicadas
+              Ver oportunidades
             </Link>
             <a
-              href={whatsappHref(
-                "Hola, quiero solicitar una búsqueda de vehículo en subastas de Estados Unidos.",
-              )}
+              href={whatsappHref("Hola, quiero información sobre subastas en Estados Unidos.")}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-whatsapp"

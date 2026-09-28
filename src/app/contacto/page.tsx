@@ -13,7 +13,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   ...publicPageMetadata({
     title: "Contacto en Santo Domingo Este",
-    description: `Visita a Valcron Motors en Av Principal 20, Santo Domingo Este. Llama al ${SITE.officePhoneDisplay} o escribe por WhatsApp al ${SITE.whatsappDisplay}.`,
+    description: `Valcron Motors, Av Principal 20. Tel. ${SITE.officePhoneDisplay} · WhatsApp ${SITE.whatsappDisplay}.`,
     path: "/contacto",
   }),
 };
@@ -23,13 +23,13 @@ export default function ContactoPage() {
     <main>
       <PageHero
         kicker="Contacto"
-        title="Hablemos de tu próximo vehículo"
-        subtitle="Oficina en Av Principal 20, Santo Domingo Este. Atención directa por teléfono y WhatsApp."
+        title="Hablemos de tu vehículo"
+        subtitle="Av Principal 20, Santo Domingo Este. Teléfono y WhatsApp con respuesta directa."
         image={PAGE_HERO_IMAGES.contacto}
         imageAlt={PAGE_HERO_ALTS.contacto}
       />
 
-      <Section className="section-light bg-[#f5f6f7]" tight>
+      <Section className="section-light bg-[#f7f8fa]" tight>
         <PageContainer>
           <div className="grid gap-3 sm:grid-cols-3">
             <a href={officeTelHref()} className="btn-primary h-12 w-full">
@@ -63,13 +63,15 @@ export default function ContactoPage() {
           <div className="grid min-w-0 gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
             <div className="min-w-0">
               <SectionHeader
-                kicker="¿En qué podemos ayudarte?"
-                title={SITE.shortName}
-                subtitle="Cuéntanos si buscas un vehículo disponible, una importación, una oportunidad en subasta o información de financiamiento. También puedes visitarnos en Santo Domingo Este."
+                kicker="Escríbenos"
+                title="Cuéntanos qué necesitas"
+                subtitle="Inventario, importación, subasta o financiamiento."
               />
               <address className="mt-8 not-italic text-base text-[#676a70]">
                 <p className="font-display text-lg font-semibold text-[#08090b]">{SITE.address.street}</p>
-                <p className="mt-1">{SITE.address.city}, {SITE.address.country}</p>
+                <p className="mt-1">
+                  {SITE.address.city}, {SITE.address.country}
+                </p>
                 <p className="mt-4">
                   Oficina{" "}
                   <a className="font-semibold text-[#08090b]" href={officeTelHref()}>
@@ -88,7 +90,7 @@ export default function ContactoPage() {
                   </a>
                 </p>
               </address>
-              <Link href="/solicitar-vehiculo" className="btn-secondary mt-8 inline-flex">
+              <Link href="/solicitar-vehiculo" className="btn-primary mt-8 inline-flex">
                 Solicitar vehículo
               </Link>
               <SocialLinks className="mt-8" tone="light" />

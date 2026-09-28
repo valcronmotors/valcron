@@ -10,28 +10,18 @@ import { publicPageMetadata } from "@/lib/seo";
 export const metadata = publicPageMetadata({
   title: "Financiamiento de vehículos con bancos locales",
   description:
-    "Orientación de financiamiento con bancos locales en República Dominicana. Calcula escenarios. La aprobación la define cada banco.",
+    "Orientación para financiar con bancos en RD. Valcron no es banco; la aprobación la define cada institución.",
   path: "/financiamiento",
 });
 
 const REQUIREMENTS = [
   {
-    title: "Persona física asalariada",
-    items: [
-      "Cédula de identidad y electoral",
-      "Carta de trabajo y últimos comprobantes de ingresos",
-      "Estados de cuenta o evidencia de capacidad de pago",
-      "Referencias y buró crediticio según política de cada banco",
-    ],
+    title: "Asalariado",
+    items: ["Cédula y carta de trabajo", "Comprobantes de ingreso", "Referencias según el banco"],
   },
   {
-    title: "Independientes / formalizados",
-    items: [
-      "Cédula y RNC o evidencia de actividad económica",
-      "Declaraciones o estados financieros recientes",
-      "Estados de cuenta de los últimos meses",
-      "Documentación del vehículo a financiar",
-    ],
+    title: "Independiente",
+    items: ["Cédula y actividad económica", "Estados de cuenta recientes", "Datos del vehículo a financiar"],
   },
 ];
 
@@ -40,8 +30,8 @@ export default function FinanciamientoPage() {
     <main>
       <PageHero
         kicker="Financiamiento"
-        title="Financiamiento con bancos locales"
-        subtitle="Te orientamos a organizar tu caso. No prometemos aprobación. Las condiciones las define cada institución financiera."
+        title="Orientación con bancos locales"
+        subtitle="Te ayudamos a ordenar tu caso. No prometemos aprobación ni somos prestamista."
         image={PAGE_HERO_IMAGES.financiamiento}
         imageAlt={PAGE_HERO_ALTS.financiamiento}
       />
@@ -50,13 +40,13 @@ export default function FinanciamientoPage() {
         <PageContainer>
           <SectionHeader
             kicker="Cómo funciona"
-            title="Un proceso ordenado, sin atajos."
-            subtitle={`${SITE.shortName} te ayuda a preparar la información de tu compra. No somos un banco. Inicial, plazo, tasa y aprobación dependen de cada institución y de tu perfil.`}
+            title="Información ordenada, sin atajos"
+            subtitle={`${SITE.shortName} prepara tu compra ante bancos locales. Inicial, plazo, tasa y aprobación dependen de cada institución.`}
           />
         </PageContainer>
       </Section>
 
-      <Section className="section-light bg-[#f5f6f7]" tight>
+      <Section className="section-light bg-[#f7f8fa]" tight>
         <PageContainer>
           <div className="grid gap-4 md:grid-cols-2">
             {REQUIREMENTS.map((group) => (
@@ -71,7 +61,10 @@ export default function FinanciamientoPage() {
                 <ul className="mt-5 grid gap-3 text-base text-[#676a70]">
                   {group.items.map((item) => (
                     <li key={item} className="flex gap-3 leading-relaxed">
-                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#2b6cff]" aria-hidden />
+                      <span
+                        className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#2b6cff]"
+                        aria-hidden
+                      />
                       {item}
                     </li>
                   ))}
@@ -88,8 +81,8 @@ export default function FinanciamientoPage() {
             <div>
               <SectionHeader
                 kicker="Simulador"
-                title="Calcula escenarios de compra"
-                subtitle="Ingresa precio, inicial, tasa y plazo. La cuota es ilustrativa. La aprobación definitiva la define cada banco local."
+                title="Calcula escenarios"
+                subtitle="Cuota ilustrativa. La aprobación la define cada banco."
                 tone="dark"
               />
               <Link
@@ -105,7 +98,9 @@ export default function FinanciamientoPage() {
             >
               <Suspense
                 fallback={
-                  <div className="gloss-panel p-8 text-sm text-white/70">Cargando simulador...</div>
+                  <div className="border border-white/10 bg-[#12141a] p-8 text-sm text-white/70">
+                    Cargando simulador...
+                  </div>
                 }
               >
                 <FinanceForm />

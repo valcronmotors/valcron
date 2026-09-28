@@ -10,47 +10,47 @@ import { publicPageMetadata } from "@/lib/seo";
 export const metadata = publicPageMetadata({
   title: "Servicios automotrices en Santo Domingo Este",
   description:
-    "Compra de vehículos, búsqueda personalizada, financiamiento con bancos locales, subastas, importación y trade-in. Valcron Motors.",
+    "Inventario, búsqueda, financiamiento con bancos locales, subastas, importación y trade-in.",
   path: "/servicios",
 });
 
 const SERVICES = [
   {
     title: "Compra de vehículos",
-    copy: "Unidades publicadas en inventario, listas para evaluar y comprar en República Dominicana.",
+    copy: "Unidades en inventario, listas para evaluar.",
     href: "/inventario",
     cta: "Ver inventario",
     image: EDITORIAL.compactSuv,
   },
   {
     title: "Búsqueda personalizada",
-    copy: "Dinos marca, modelo, año y presupuesto. Buscamos opciones que encajen.",
+    copy: "Marca, modelo, año y presupuesto.",
     href: "/solicitar-vehiculo",
     cta: "Solicitar vehículo",
   },
   {
     title: "Financiamiento",
-    copy: "Orientación para presentar tu caso ante bancos locales. Valcron no es el prestamista.",
+    copy: "Orientación con bancos locales. No somos banco.",
     href: "/financiamiento",
-    cta: "Conocer opciones",
+    cta: "Ver financiamiento",
   },
   {
     title: "Subastas",
-    copy: "Asistencia con vehículos disponibles mediante plataformas como Copart e IAA.",
+    copy: "Asistencia con Copart e IAA cuando aplica.",
     href: "/subastas",
-    cta: "Explorar subastas",
+    cta: "Ver subastas",
     image: EDITORIAL.silverSedan,
   },
   {
     title: "Importación",
-    copy: "Acompañamos el proceso de transporte, costos y llegada cuando aplica a tu caso.",
+    copy: "Transporte, costos y llegada coordinados.",
     href: "/importacion",
     cta: "Ver importación",
     image: EDITORIAL.carrier,
   },
   {
     title: "Trade-in",
-    copy: "¿Tienes un vehículo para entregar? Podemos evaluarlo como parte de la compra.",
+    copy: "Evaluamos tu vehículo como parte de la compra.",
     href: "/contacto?asunto=trade-in",
     cta: "Solicitar evaluación",
   },
@@ -61,17 +61,17 @@ export default function ServiciosPage() {
     <main>
       <PageHero
         kicker="Servicios"
-        title="Cómo te ayudamos a conseguir tu vehículo"
-        subtitle={`Soluciones claras de ${SITE.shortName}: inventario local, búsqueda, financiamiento y opciones de subasta.`}
+        title="Todo lo que necesitas en un lugar"
+        subtitle={`Inventario, búsqueda y financiamiento con ${SITE.shortName}.`}
         image={PAGE_HERO_IMAGES.servicios}
         imageAlt={PAGE_HERO_ALTS.servicios}
       />
-      <Section className="section-light bg-[#f5f6f7]">
+      <Section className="section-light bg-[#f7f8fa]">
         <PageContainer>
           <SectionHeader
-            kicker="Todo en un solo lugar"
-            title="Elige el servicio que necesitas"
-            subtitle="Cada camino tiene su proceso. Te orientamos con información clara antes de avanzar."
+            kicker="Servicios"
+            title="Elige tu camino"
+            subtitle="Te orientamos antes de comprometerte."
           />
           <div className="mt-10 grid gap-4 md:grid-cols-2">
             {SERVICES.map((service) => (
@@ -95,7 +95,7 @@ export default function ServiciosPage() {
                     {service.title}
                   </h2>
                   <p className="mt-3 flex-1 text-base leading-relaxed text-[#676a70]">{service.copy}</p>
-                  <Link href={service.href} className="btn-secondary mt-6 w-full sm:w-auto">
+                  <Link href={service.href} className="btn-primary mt-6 w-full sm:w-auto">
                     {service.cta}
                   </Link>
                 </div>

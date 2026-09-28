@@ -8,20 +8,20 @@ import { publicPageMetadata } from "@/lib/seo";
 export const metadata = publicPageMetadata({
   title: "Solicitar vehículo",
   description:
-    "Cuéntanos qué vehículo buscas. Valcron Motors revisa inventario, subastas e importación según tu presupuesto. Santo Domingo Este.",
+    "Cuéntanos qué buscas. Revisamos inventario, subastas e importación según tu presupuesto.",
   path: "/solicitar-vehiculo",
 });
 
 export default function SolicitarVehiculoPage() {
   return (
-    <main>
-      <Section className="section-light bg-white" tight>
+    <main className="section-light bg-[#f7f8fa]">
+      <Section className="bg-white" tight>
         <PageContainer narrow>
           <SectionHeader
             align="center"
-            kicker="Búsqueda personalizada"
+            kicker="Búsqueda"
             title="Solicitar vehículo"
-            subtitle="Marca, modelo, año, presupuesto y cualquier detalle que nos ayude a orientarte. Revisamos inventario y otras fuentes cuando aplica."
+            subtitle="Marca, modelo, año y presupuesto. Revisamos opciones en inventario y otras fuentes."
           />
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <a
@@ -40,15 +40,15 @@ export default function SolicitarVehiculoPage() {
         </PageContainer>
       </Section>
 
-      <Section className="section-light bg-[#f5f6f7]">
+      <Section tight>
         <PageContainer narrow>
           <QuoteForm
             showVehicleInterest
             submitLabel="Enviar solicitud"
-            defaultMessage="Marca, modelo, año aproximado, presupuesto y preferencias:"
+            defaultMessage="Marca, modelo, año, presupuesto:"
           />
           <p className="mt-6 text-center text-sm text-[#676a70]">
-            También puedes visitarnos en {SITE.address.street}, {SITE.address.city}.
+            {SITE.address.street}, {SITE.address.city} · {SITE.officePhoneDisplay}
           </p>
         </PageContainer>
       </Section>
