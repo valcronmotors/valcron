@@ -16,8 +16,8 @@ export function VehiclePhoto({
 }) {
   if (!src) {
     return (
-      <span className="absolute inset-0 flex h-full w-full min-h-[13rem] flex-col items-center justify-center bg-[#111] px-4 text-center">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#2B6CFF]">
+      <span className="absolute inset-0 flex h-full w-full min-h-[13rem] flex-col items-center justify-center bg-[#f7f8fa] px-4 text-center">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#676a70]">
           Imagen no disponible
         </span>
       </span>

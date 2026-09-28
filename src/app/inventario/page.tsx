@@ -8,7 +8,7 @@ import { publicPageMetadata } from "@/lib/seo";
 export const metadata = publicPageMetadata({
   title: "Inventario de Vehículos",
   description:
-    "Vehículos disponibles en Valcron Motors, Santo Domingo Este, y unidades mediante subasta. Filtra por marca, modelo y año.",
+    "Vehículos disponibles en Valcron Motors, Santo Domingo Este. Filtra por marca, modelo y año.",
   path: "/inventario",
 });
 
@@ -64,17 +64,13 @@ export default function InventarioPage({
   }>;
 }) {
   return (
-    <main className="section-light bg-[#f5f6f7]">
-      <PageContainer className="pb-14 pt-10 md:pb-20 md:pt-14">
-        <header className="max-w-[40rem]">
-          <p className="kicker">Inventario</p>
-          <h1 className="display-lg mt-3 text-[#08090b]">Vehículos disponibles</h1>
-          <p className="mt-4 text-[length:var(--text-body-lg)] leading-[1.55] text-[#676a70]">
-            Filtra por marca, modelo, año o precio. El catálogo refleja el inventario publicado de
-            Valcron Motors.
-          </p>
-        </header>
-        <div className="mt-8 md:mt-10">
+    <main className="section-light bg-[#f7f8fa]">
+      <PageContainer className="pb-14 pt-8 md:pb-16 md:pt-10">
+        <p className="kicker !text-[#676a70]">Inventario</p>
+        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-[#08090b] md:text-4xl">
+          Vehículos
+        </h1>
+        <div className="mt-6 md:mt-8">
           <Suspense fallback={<CatalogSkeleton />}>
             <InventarioCatalog searchParams={searchParams} />
           </Suspense>

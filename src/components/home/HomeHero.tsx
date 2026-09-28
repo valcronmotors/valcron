@@ -5,43 +5,41 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { PageContainer } from "@/components/public/layout";
 import { HOME_HERO_SLIDES } from "@/lib/hero-media";
-import { SITE } from "@/lib/site";
 
 const slide = HOME_HERO_SLIDES[0];
 
 export function HomeHero() {
   return (
     <section className="relative isolate overflow-hidden bg-white">
-      <PageContainer className="pb-6 pt-10 text-center md:pb-10 md:pt-14 lg:pt-16">
-        <p className="motion-fade-up mx-auto inline-flex items-center rounded-full border border-[#e4e6ea] px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#08090b]">
-          Santo Domingo Este · República Dominicana
+      <PageContainer className="pb-4 pt-8 text-center md:pb-6 md:pt-12">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#676a70]">
+          Tu próximo vehículo
         </p>
-
-        <h1 className="motion-fade-up display-xl mx-auto mt-7 max-w-[16ch] text-balance text-[#08090b] md:mt-8">
-          Tu próximo vehículo,{" "}
-          <span className="text-[#2b6cff]">más simple</span>.
+        <h1 className="display-xl mx-auto mt-4 max-w-[14ch] text-balance text-[#08090b]">
+          Más opciones.{" "}
+          <span className="text-[#2b6cff]">Más cerca</span> de ti.
         </h1>
-
-        <p className="motion-fade-up-delay mx-auto mt-5 max-w-[28rem] text-[length:var(--text-body-lg)] leading-[1.55] text-[#676a70]">
-          Más opciones para encontrarlo: inventario local, búsqueda personalizada,
-          financiamiento con bancos locales y subastas cuando aplica.
+        <p className="mx-auto mt-4 max-w-[26rem] text-[length:var(--text-body-lg)] leading-[1.5] text-[#676a70]">
+          Explora nuestras unidades o solicita el vehículo que buscas.
         </p>
-
-        <div className="motion-fade-up-delay mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-          <Link href="/inventario" className="btn-primary w-full sm:w-auto sm:min-w-[12rem]">
+        <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <Link href="/inventario" className="btn-primary w-full sm:w-auto sm:min-w-[11.5rem]">
             Ver inventario
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
-          <Link href="/solicitar-vehiculo" className="btn-secondary w-full sm:w-auto sm:min-w-[12rem]">
+          <Link
+            href="/solicitar-vehiculo"
+            className="btn-secondary w-full sm:w-auto sm:min-w-[11.5rem]"
+          >
             Solicitar vehículo
           </Link>
         </div>
       </PageContainer>
 
-      <div className="relative mx-auto w-full max-w-[var(--content-max)] px-[var(--page-gutter)] pb-10 md:pb-14">
+      <div className="relative mx-auto w-full max-w-[var(--content-max)] px-[var(--page-gutter)] pb-8 md:pb-10">
         <div
-          className="relative overflow-hidden bg-[#12141a]"
-          style={{ borderRadius: "var(--radius-card)", aspectRatio: "16 / 11" }}
+          className="relative overflow-hidden bg-[#f7f8fa]"
+          style={{ borderRadius: "var(--radius-card)", aspectRatio: "16 / 10" }}
         >
           <Image
             src={slide.src}
@@ -49,15 +47,14 @@ export function HomeHero() {
             fill
             priority
             fetchPriority="high"
-            quality={74}
+            quality={75}
             sizes="(max-width: 768px) 92vw, (max-width: 1280px) 80vw, 72rem"
-            className="object-cover object-[center_42%]"
+            className="object-contain object-center p-2 sm:p-4"
           />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#08090b]/55 via-transparent to-transparent" />
-          <p className="absolute bottom-4 left-4 right-4 text-left text-[11px] uppercase tracking-[0.14em] text-white/70 md:bottom-5 md:left-6">
-            Fotografía ilustrativa · {SITE.shortName}
-          </p>
         </div>
+        <p className="mt-3 text-right text-[10px] font-medium uppercase tracking-[0.14em] text-[#676a70]">
+          Fotografía ilustrativa · Marketing
+        </p>
       </div>
     </section>
   );

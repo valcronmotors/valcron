@@ -14,7 +14,7 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: "Tu próximo vehículo, más simple | Valcron Motors",
+    default: "Más opciones. Más cerca de ti. | Valcron Motors",
     template: "%s | Valcron Motors",
   },
   description: SITE.valueProposition,
@@ -32,14 +32,14 @@ export const metadata: Metadata = {
     locale: "es_DO",
     type: "website",
     siteName: SITE.shortName,
-    title: "Tu próximo vehículo, más simple | Valcron Motors",
+    title: "Más opciones. Más cerca de ti. | Valcron Motors",
     description: SITE.valueProposition,
     url: SITE.url,
     images: [{ url: "/hero-luxury.png", alt: SITE.shortName }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tu próximo vehículo, más simple | Valcron Motors",
+    title: "Más opciones. Más cerca de ti. | Valcron Motors",
     description: SITE.valueProposition,
     images: ["/hero-luxury.png"],
   },

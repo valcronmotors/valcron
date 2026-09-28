@@ -2,25 +2,20 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { FeaturedInventory } from "@/components/public/FeaturedInventory";
 import { InventorySectionSkeleton } from "@/components/public/InventorySkeleton";
-import { HomeAuctions } from "@/components/home/HomeAuctions";
-import { HomeBlogPreview } from "@/components/home/HomeBlogPreview";
+import { HomeActionMedia } from "@/components/home/HomeActionMedia";
+import { HomeBrandCarousel } from "@/components/home/HomeBrandCarousel";
 import { HomeFaqPreview } from "@/components/home/HomeFaqPreview";
 import { HomeFinalCta } from "@/components/home/HomeFinalCta";
-import { HomeFinance } from "@/components/home/HomeFinance";
 import { HomeHero } from "@/components/home/HomeHero";
-import { HomePaths } from "@/components/home/HomePaths";
-import { HomeProcess } from "@/components/home/HomeProcess";
-import { HomeSearch } from "@/components/home/HomeSearch";
 import { HomeSignatureBlue } from "@/components/home/HomeSignatureBlue";
 import { HomeSignatureDark } from "@/components/home/HomeSignatureDark";
-import { HomeTradeIn } from "@/components/home/HomeTradeIn";
-import { HomeTrust } from "@/components/home/HomeTrust";
+import { HomeStories } from "@/components/home/HomeStories";
 import { loadPublicVehicles } from "@/lib/public-inventory";
 import { SITE, autoDealerJsonLd } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Tu próximo vehículo, más simple | Valcron Motors",
+    absolute: "Más opciones. Más cerca de ti. | Valcron Motors",
   },
   description: SITE.valueProposition,
   alternates: { canonical: "/" },
@@ -28,7 +23,7 @@ export const metadata: Metadata = {
     locale: "es_DO",
     type: "website",
     siteName: SITE.shortName,
-    title: "Tu próximo vehículo, más simple | Valcron Motors",
+    title: "Más opciones. Más cerca de ti. | Valcron Motors",
     description: SITE.valueProposition,
     url: SITE.url,
     images: [{ url: "/hero-luxury.png", alt: SITE.shortName }],
@@ -37,12 +32,7 @@ export const metadata: Metadata = {
 
 async function HomeInventoryBand() {
   const inventory = await loadPublicVehicles();
-  return (
-    <>
-      <HomeSearch vehicles={inventory.data} />
-      <FeaturedInventory vehicles={inventory.data} error={inventory.error} />
-    </>
-  );
+  return <FeaturedInventory vehicles={inventory.data} error={inventory.error} />;
 }
 
 export default function Home() {
@@ -54,18 +44,14 @@ export default function Home() {
       />
       <main>
         <HomeHero />
+        <HomeBrandCarousel />
         <Suspense fallback={<InventorySectionSkeleton />}>
           <HomeInventoryBand />
         </Suspense>
         <HomeSignatureBlue />
-        <HomePaths />
         <HomeSignatureDark />
-        <HomeFinance />
-        <HomeAuctions />
-        <HomeTradeIn />
-        <HomeTrust />
-        <HomeProcess />
-        <HomeBlogPreview />
+        <HomeStories />
+        <HomeActionMedia />
         <HomeFaqPreview />
         <HomeFinalCta />
       </main>

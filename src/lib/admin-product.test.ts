@@ -175,7 +175,7 @@ describe("public empty inventory", () => {
   it("hides technical load failures from visitors", () => {
     expect(isUnavailableInventoryError("No pudimos cargar el inventario en este momento.")).toBe(true);
     expect(publicInventoryDisplayError("No pudimos cargar el inventario en este momento.")).toBeNull();
-    expect(PUBLIC_INVENTORY_EMPTY.title).toMatch(/unidades en camino/i);
+    expect(PUBLIC_INVENTORY_EMPTY.title).toMatch(/preparando nuevas unidades/i);
   });
 });
 

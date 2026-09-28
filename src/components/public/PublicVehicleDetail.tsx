@@ -83,11 +83,11 @@ export function PublicVehicleDetail({
           </ol>
         </nav>
 
-        <div className="mt-8 grid min-w-0 gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-start lg:gap-12">
+        <div className="mt-6 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-start lg:gap-10">
           <VehicleGallery photos={photos} title={title} />
 
           <div
-            className="min-w-0 border border-[#e4e6ea] bg-white p-5 md:p-7 lg:sticky lg:top-24"
+            className="min-w-0 border border-[#e4e6ea] bg-white p-5 md:p-6 lg:sticky lg:top-24"
             style={{ borderRadius: "var(--radius-card)" }}
           >
             <div className="flex flex-wrap items-center justify-between gap-3">

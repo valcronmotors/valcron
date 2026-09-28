@@ -20,8 +20,8 @@ export const INQUIRY_SOURCE_LABEL: Record<InquirySource, string> = {
 };
 
 export const PUBLIC_INVENTORY_EMPTY = {
-  title: "Nuevas unidades en camino",
-  copy: "¿Buscas algo específico? Dinos marca, modelo y presupuesto. Revisamos opciones a tu medida.",
+  title: "Estamos preparando nuevas unidades.",
+  copy: "Solicita el vehículo que buscas.",
 };
 
 export const PUBLIC_INVENTORY_FILTER_EMPTY = {

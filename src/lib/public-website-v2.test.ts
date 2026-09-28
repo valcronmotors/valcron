@@ -190,8 +190,8 @@ describe("auction vs Valcron labels and CTAs", () => {
 
 describe("inventory empty states and filters", () => {
   it("uses customer-facing empty copy", () => {
-    expect(PUBLIC_INVENTORY_EMPTY.title).toBe("Nuevas unidades en camino");
-    expect(PUBLIC_INVENTORY_EMPTY.copy).toMatch(/buscas algo específico/i);
+    expect(PUBLIC_INVENTORY_EMPTY.title).toMatch(/preparando nuevas unidades/i);
+    expect(PUBLIC_INVENTORY_EMPTY.copy).toMatch(/solicita/i);
     expect(PUBLIC_INVENTORY_FILTER_EMPTY.title).toBe("No encontramos vehículos con estos filtros.");
   });
 
@@ -226,7 +226,8 @@ describe("inventory empty states and filters", () => {
 describe("public copy constraints", () => {
   it("does not present Manheim as an active public integration", () => {
     expect(HOME_FAQS.some((item) => /Manheim/i.test(item.a))).toBe(false);
-    expect(SITE.heroTitle).toBe("Tu próximo vehículo, más simple.");
+    expect(SITE.heroTitle).toMatch(/Más opciones/i);
+    expect(SITE.heroTitle).toMatch(/Más cerca/i);
   });
 
   it("uses Dominican WhatsApp copy with vehicle context", () => {
