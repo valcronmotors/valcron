@@ -4,9 +4,9 @@ const unsplash = (id: string, width = 1600) =>
 /** Marketing photography — illustrative, not inventory. */
 export const HOME_HERO_SLIDES = [
   {
-    src: unsplash("photo-1606664515524-ed2f786a0bd6"),
-    alt: "SUV contemporáneo en iluminación natural, fotografía ilustrativa de Valcron Motors",
-    mobileSrc: unsplash("photo-1606664515524-ed2f786a0bd6", 900),
+    src: unsplash("photo-1707070182914-fb69f596c98e"),
+    alt: "Crossover SUV contemporáneo en iluminación natural, fotografía ilustrativa de Valcron Motors",
+    mobileSrc: unsplash("photo-1707070182914-fb69f596c98e", 900),
   },
 ] as const;
 
