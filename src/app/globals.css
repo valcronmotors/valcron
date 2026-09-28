@@ -685,13 +685,47 @@ h3 {
   }
 }
 
-@keyframes kenburns {
+/* Infinite brand marquee — compositor-friendly transform loop */
+@keyframes brand-marquee-scroll {
   from {
-    transform: scale(1);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: scale(1.04);
+    transform: translate3d(-50%, 0, 0);
   }
+}
+
+.public-site .brand-marquee-viewport {
+  width: 100%;
+}
+
+.public-site .brand-marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: brand-marquee-scroll 48s linear infinite;
+}
+
+.public-site .brand-marquee-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-inline: 0.375rem;
+}
+
+@media (min-width: 640px) {
+  .public-site .brand-marquee-group {
+    gap: 1rem;
+    padding-inline: 0.5rem;
+  }
+}
+
+.public-site .brand-marquee-static {
+  display: none;
+}
+
+.public-site .brand-marquee-viewport:hover .brand-marquee-track {
+  animation-play-state: paused;
 }
 
 .public-site .motion-fade-up {
@@ -703,7 +737,13 @@ h3 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-kenburns,
+  .public-site .brand-marquee-track {
+    display: none;
+    animation: none !important;
+  }
+  .public-site .brand-marquee-static {
+    display: block;
+  }
   .public-site .vehicle-card-media img,
   .public-site .group:hover .vehicle-card-media img,
   .public-site .motion-fade-up,

@@ -23,9 +23,9 @@ export function FeaturedInventory({
   const empty = visible.length === 0 || Boolean(error);
 
   return (
-    <Section className="section-light bg-white" tight>
+    <Section className="section-light bg-white !py-8 md:!py-10">
       <PageContainer>
-        <div className="mb-5 flex items-center justify-between gap-3">
+        <div className="mb-4 flex items-center justify-between gap-3">
           <p className="kicker !text-[#676a70]">Inventario</p>
           <Link
             href="/inventario"
@@ -38,32 +38,28 @@ export function FeaturedInventory({
 
         {empty ? (
           <div
-            className="border border-[#e4e6ea] bg-[#f7f8fa] px-5 py-8 text-center"
+            className="border border-[#e4e6ea] bg-[#f7f8fa] px-5 py-6 text-center sm:py-7"
             style={{ borderRadius: "var(--radius-card)" }}
           >
-            <p className="font-display text-lg font-semibold text-[#08090b]">
+            <p className="font-display text-base font-semibold text-[#08090b] sm:text-lg">
               {PUBLIC_INVENTORY_EMPTY.title}
             </p>
-            {PUBLIC_INVENTORY_EMPTY.copy ? (
-              <p className="mt-2 text-sm text-[#676a70]">{PUBLIC_INVENTORY_EMPTY.copy}</p>
-            ) : null}
-            <Link href="/solicitar-vehiculo" className="btn-primary mt-5">
+            <p className="mt-1.5 text-sm text-[#676a70]">¿Buscas algo específico?</p>
+            <Link href="/solicitar-vehiculo" className="btn-primary mt-4">
               Solicitar vehículo
             </Link>
           </div>
         ) : (
-          <>
-            <div className="-mx-[var(--page-gutter)] flex snap-x snap-mandatory gap-3 overflow-x-auto px-[var(--page-gutter)] pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden xl:mx-0 xl:grid xl:grid-cols-3 xl:gap-4 xl:overflow-visible xl:px-0 xl:pb-0">
-              {visible.map((vehicle) => (
-                <div
-                  key={vehicle.id}
-                  className="w-[min(72vw,18.5rem)] shrink-0 snap-start sm:w-[min(46vw,20rem)] xl:w-auto xl:shrink"
-                >
-                  <VehicleCard vehicle={vehicle} tone="light" compact />
-                </div>
-              ))}
-            </div>
-          </>
+          <div className="-mx-[var(--page-gutter)] flex snap-x snap-mandatory gap-3 overflow-x-auto px-[var(--page-gutter)] pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden xl:mx-0 xl:grid xl:grid-cols-3 xl:gap-4 xl:overflow-visible xl:px-0 xl:pb-0">
+            {visible.map((vehicle) => (
+              <div
+                key={vehicle.id}
+                className="w-[min(72vw,18.5rem)] shrink-0 snap-start sm:w-[min(46vw,20rem)] xl:w-auto xl:shrink"
+              >
+                <VehicleCard vehicle={vehicle} tone="light" compact />
+              </div>
+            ))}
+          </div>
         )}
       </PageContainer>
     </Section>

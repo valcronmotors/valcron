@@ -1,15 +1,7 @@
 const unsplash = (id: string, width = 1600) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=72`;
 
-/** Marketing photography — illustrative, not inventory. */
-export const HOME_HERO_SLIDES = [
-  {
-    src: unsplash("photo-1707070182914-fb69f596c98e"),
-    alt: "Crossover SUV contemporáneo en iluminación natural, fotografía ilustrativa de Valcron Motors",
-    mobileSrc: unsplash("photo-1707070182914-fb69f596c98e", 900),
-  },
-] as const;
-
+/** Page heroes — editorial marketing photography, not inventory. */
 export const PAGE_HERO_IMAGES = {
   inventario: unsplash("photo-1492144534655-ae79c964c9d7"),
   importacion: unsplash("photo-1601584115197-04ecc0da31d7"),

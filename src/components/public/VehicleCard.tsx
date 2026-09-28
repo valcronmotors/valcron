@@ -30,10 +30,13 @@ export function VehicleCard({
   const light = tone === "light";
   const cover = vehicle.images[0]?.url;
   const year = vehicle.year ?? vehicle.ano;
-  const make = vehicle.make || vehicle.marca;
-  const model = vehicle.model || vehicle.modelo;
-  const title = [make, model].filter(Boolean).join(" ");
-  const trimLine = [vehicle.trim, vehicle.drivetrain].filter(Boolean).join(" · ");
+  const make = (vehicle.make || vehicle.marca || "").trim();
+  const model = (vehicle.model || vehicle.modelo || "").trim();
+  const title = [year ? String(year) : null, make, model].filter(Boolean).join(" ");
+  const trim = (vehicle.trim || "").trim();
+  const transmission = (vehicle.transmission || "").trim();
+  const metaLine = [mileage, transmission].filter(Boolean).join(" · ");
+  const showBadge = Boolean(badge?.label);
 
   return (
     <article
@@ -45,7 +48,7 @@ export function VehicleCard({
       <Link
         href={href}
         className={`vehicle-card-media relative aspect-[4/3] overflow-hidden ${
-          light ? "bg-[#f7f8fa]" : "bg-[#12141a]"
+          light ? "bg-white" : "bg-[#12141a]"
         }`}
       >
         <VehiclePhoto
@@ -54,17 +57,13 @@ export function VehicleCard({
           sizes="(min-width: 1280px) 25vw, (min-width: 768px) 50vw, 50vw"
           className="object-contain object-center p-2 sm:p-3"
         />
-        {year ? (
-          <span className="absolute left-2 top-2 rounded-full bg-[#08090b] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-white sm:left-3 sm:top-3 sm:px-2.5 sm:py-1">
-            {year}
-          </span>
-        ) : (
+        {showBadge ? (
           <span
             className={`absolute left-2 top-2 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] sm:left-3 sm:top-3 sm:px-2.5 sm:py-1 ${badge.className}`}
           >
             {badge.label}
           </span>
-        )}
+        ) : null}
       </Link>
 
       <div
@@ -79,23 +78,25 @@ export function VehicleCard({
         >
           <Link href={href}>{title || "Vehículo"}</Link>
         </h3>
-        {trimLine ? (
+        {trim ? (
           <p className={`text-xs sm:text-sm ${light ? "text-[#676a70]" : "text-[#d4d4d4]"}`}>
-            {trimLine}
+            {trim}
           </p>
         ) : null}
-        {(mileage || vehicle.transmission) && (
+        {metaLine ? (
           <p className={`mt-0.5 text-[11px] sm:text-xs ${light ? "text-[#676a70]" : "text-[#a8abb0]"}`}>
-            {[mileage, vehicle.transmission].filter(Boolean).join(" · ")}
+            {metaLine}
           </p>
-        )}
-        <p
-          className={`mt-1.5 font-display font-bold tracking-tight ${
-            compact ? "text-base sm:text-lg md:text-xl" : "text-lg md:text-xl"
-          }`}
-        >
-          {price.primary}
-        </p>
+        ) : null}
+        {price.primary ? (
+          <p
+            className={`mt-1.5 font-display font-bold tracking-tight ${
+              compact ? "text-base sm:text-lg md:text-xl" : "text-lg md:text-xl"
+            }`}
+          >
+            {price.primary}
+          </p>
+        ) : null}
         <Link
           href={href}
           className={
