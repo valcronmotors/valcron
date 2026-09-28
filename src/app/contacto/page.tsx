@@ -1,5 +1,7 @@
-import { PageHero } from "@/components/public/PageHero";
+import Link from "next/link";
 import { BusinessLocation } from "@/components/public/BusinessLocation";
+import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
+import { PageHero } from "@/components/public/PageHero";
 import { QuoteForm } from "@/components/public/QuoteForm";
 import { SocialLinks } from "@/components/shared/SocialLinks";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
@@ -18,98 +20,83 @@ export const metadata: Metadata = {
 
 export default function ContactoPage() {
   return (
-    <>
-      <main>
-        <PageHero
-          className="hidden md:block"
-          kicker="Contacto"
-          title="Hablemos de tu próximo vehículo"
-          subtitle="Oficina en Av Principal 20, Santo Domingo Este. Atención directa por teléfono y WhatsApp."
-          image={PAGE_HERO_IMAGES.contacto}
-          imageAlt={PAGE_HERO_ALTS.contacto}
-        />
+    <main>
+      <PageHero
+        kicker="Contacto"
+        title="Hablemos de tu próximo vehículo"
+        subtitle="Oficina en Av Principal 20, Santo Domingo Este. Atención directa por teléfono y WhatsApp."
+        image={PAGE_HERO_IMAGES.contacto}
+        imageAlt={PAGE_HERO_ALTS.contacto}
+      />
 
-        {/* Mobile-first contact actions */}
-        <section className="section-light bg-[#f5f6f7] md:hidden">
-          <div className="px-4 py-8">
-            <h1 className="font-display text-[2.125rem] font-bold leading-[1.08] tracking-[-0.03em] text-[#08090b]">
-              Contacto
-            </h1>
-            <p className="mt-3 text-base text-[#676a70]">
-              Habla con Valcron Motors en Santo Domingo Este.
-            </p>
-            <div className="mt-6 grid gap-3">
-              <a href={officeTelHref()} className="btn-primary h-12 w-full">
-                Llamar
-              </a>
-              <a
-                href={whatsappHref("Hola, quiero información de Valcron Motors.")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-whatsapp h-12 w-full"
-              >
-                <WhatsAppIcon className="h-4 w-4" />
-                WhatsApp
-              </a>
-              <a
-                href={mapsDirectionsUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-secondary h-12 w-full"
-              >
-                Cómo llegar
-              </a>
-            </div>
-            <address className="mt-8 not-italic">
-              <p className="font-display text-lg font-semibold text-[#08090b]">{SITE.shortName}</p>
-              <p className="mt-2 text-sm leading-relaxed text-[#676a70]">
-                {SITE.address.street}
-                <br />
-                {SITE.address.city}
-                <br />
-                {SITE.address.country}
-              </p>
-              <p className="mt-4 text-sm text-[#676a70]">
-                Oficina{" "}
-                <a className="font-medium text-[#08090b]" href={officeTelHref()}>
-                  {SITE.officePhoneDisplay}
-                </a>
-              </p>
-              <p className="mt-2 text-sm text-[#676a70]">
-                WhatsApp{" "}
-                <a
-                  className="font-medium text-[#08090b]"
-                  href={SITE.whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {SITE.whatsappDisplay}
-                </a>
-              </p>
-            </address>
+      <Section className="section-light bg-[#f5f6f7]" tight>
+        <PageContainer>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <a href={officeTelHref()} className="btn-primary h-12 w-full">
+              Llamar {SITE.officePhoneDisplay}
+            </a>
+            <a
+              href={whatsappHref("Hola, quiero información de Valcron Motors.")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-whatsapp h-12 w-full"
+            >
+              <WhatsAppIcon className="h-4 w-4" />
+              WhatsApp
+            </a>
+            <a
+              href={mapsDirectionsUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary h-12 w-full"
+            >
+              Cómo llegar
+            </a>
           </div>
-        </section>
+        </PageContainer>
+      </Section>
 
-        <BusinessLocation variant="full" heading="Visítanos" />
+      <BusinessLocation variant="full" heading="Visítanos" />
 
-        <section className="section-light bg-white">
-          <div className="mx-auto grid max-w-7xl min-w-0 gap-12 px-4 py-14 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:px-8 lg:py-24">
+      <Section className="section-light bg-white">
+        <PageContainer>
+          <div className="grid min-w-0 gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
             <div className="min-w-0">
-              <p className="kicker">¿En qué podemos ayudarte?</p>
-              <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-[#08090b] md:text-4xl">
-                {SITE.shortName}
-              </h2>
-              <p className="mt-4 max-w-md text-base leading-relaxed text-[#676a70]">
-                Cuéntanos si buscas un vehículo disponible, una importación, una oportunidad en
-                subasta o información de financiamiento. También puedes visitarnos en Santo Domingo
-                Este.
-              </p>
+              <SectionHeader
+                kicker="¿En qué podemos ayudarte?"
+                title={SITE.shortName}
+                subtitle="Cuéntanos si buscas un vehículo disponible, una importación, una oportunidad en subasta o información de financiamiento. También puedes visitarnos en Santo Domingo Este."
+              />
+              <address className="mt-8 not-italic text-base text-[#676a70]">
+                <p className="font-display text-lg font-semibold text-[#08090b]">{SITE.address.street}</p>
+                <p className="mt-1">{SITE.address.city}, {SITE.address.country}</p>
+                <p className="mt-4">
+                  Oficina{" "}
+                  <a className="font-semibold text-[#08090b]" href={officeTelHref()}>
+                    {SITE.officePhoneDisplay}
+                  </a>
+                </p>
+                <p className="mt-2">
+                  WhatsApp{" "}
+                  <a
+                    className="font-semibold text-[#08090b]"
+                    href={SITE.whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {SITE.whatsappDisplay}
+                  </a>
+                </p>
+              </address>
+              <Link href="/solicitar-vehiculo" className="btn-secondary mt-8 inline-flex">
+                Solicitar vehículo
+              </Link>
               <SocialLinks className="mt-8" tone="light" />
             </div>
             <QuoteForm showVehicleInterest showSubject submitLabel="Enviar mensaje" />
           </div>
-        </section>
-      </main>
-    </>
+        </PageContainer>
+      </Section>
+    </main>
   );
 }

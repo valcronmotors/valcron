@@ -43,7 +43,7 @@ export function VehicleCard({
           ? "border border-[#e4e6ea] bg-white"
           : "gloss-panel"
       }`}
-      style={{ borderRadius: "var(--radius-lg)" }}
+      style={{ borderRadius: "var(--radius-card)" }}
     >
       <Link
         href={href}
@@ -56,15 +56,14 @@ export function VehicleCard({
           className="object-cover"
         />
         <span
-          className={`absolute left-3 top-3 border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${badge.className}`}
-          style={{ borderRadius: "var(--radius-sm)" }}
+          className={`absolute left-3 top-3 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${badge.className}`}
         >
           {badge.label}
         </span>
       </Link>
 
-      <div className={`flex flex-1 flex-col gap-1.5 p-4 ${light ? "text-[#08090b]" : "text-white"}`}>
-        <h3 className="font-display text-lg font-semibold leading-snug tracking-tight">
+      <div className={`flex flex-1 flex-col gap-1.5 p-5 ${light ? "text-[#08090b]" : "text-white"}`}>
+        <h3 className="font-display text-lg font-semibold leading-snug tracking-tight md:text-xl">
           <Link href={href}>
             {vehicleDisplayTitle({ year, make, model, trim: null, ano: year, marca: make, modelo: model })}
           </Link>
@@ -73,14 +72,14 @@ export function VehicleCard({
           <p className={`text-sm ${light ? "text-[#676a70]" : "text-[#d4d4d4]"}`}>{vehicle.trim}</p>
         ) : null}
         {specLine ? <p className={`text-sm ${light ? "text-[#676a70]" : "text-[#d4d4d4]"}`}>{specLine}</p> : null}
-        <p className="pt-2 font-display text-xl font-semibold tracking-tight">{price.primary}</p>
-        <div className="mt-auto grid grid-cols-[1fr_auto] gap-2 pt-3">
+        <p className="pt-2 font-display text-xl font-bold tracking-tight md:text-2xl">{price.primary}</p>
+        <div className="mt-auto grid grid-cols-[1fr_auto] gap-2 pt-4">
           <Link
             href={href}
             className={
               light
-                ? "inline-flex h-12 items-center justify-center rounded-[0.625rem] bg-[#08090b] px-3 text-[0.9375rem] font-semibold text-white transition-colors duration-180 hover:bg-[#12141a]"
-                : "inline-flex h-12 items-center justify-center rounded-[0.625rem] bg-white px-3 text-[0.9375rem] font-semibold text-[#08090b] transition-colors duration-180 hover:bg-[#ececec]"
+                ? "inline-flex h-12 items-center justify-center rounded-full bg-[#08090b] px-3 text-[0.9375rem] font-semibold text-white transition-colors duration-180 hover:bg-[#12141a]"
+                : "inline-flex h-12 items-center justify-center rounded-full bg-white px-3 text-[0.9375rem] font-semibold text-[#08090b] transition-colors duration-180 hover:bg-[#ececec]"
             }
           >
             Ver detalles
@@ -91,7 +90,7 @@ export function VehicleCard({
               target="_blank"
               rel="noopener noreferrer"
               aria-label={quoteLabel}
-              className={`inline-flex h-12 min-w-12 items-center justify-center gap-1.5 rounded-[0.625rem] border px-3 text-[0.9375rem] transition-colors duration-180 ${
+              className={`inline-flex h-12 min-w-12 items-center justify-center gap-1.5 rounded-full border px-3 text-[0.9375rem] transition-colors duration-180 ${
                 light
                   ? "border-[#e4e6ea] text-[#08090b] hover:border-[#08090b]"
                   : "border-white/15 text-white hover:border-white/40"

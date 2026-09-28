@@ -1,52 +1,62 @@
+import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
+
 const ITEMS = [
   {
     step: "01",
     title: "Atención personalizada",
-    copy: "Un trato directo para entender qué buscas y qué opciones tienen sentido.",
+    copy: "Trato directo para entender qué buscas y qué opciones tienen sentido.",
   },
   {
     step: "02",
-    title: "Inventario y búsqueda a la medida",
-    copy: "Unidades publicadas en República Dominicana y, cuando hace falta, búsqueda enfocada.",
+    title: "Más opciones",
+    copy: "Inventario local y, cuando hace falta, búsqueda, subasta e importación.",
   },
   {
     step: "03",
-    title: "Opciones de financiamiento",
-    copy: "Te orientamos a preparar el caso. La aprobación la define cada banco local.",
+    title: "Proceso claro",
+    copy: "Pasos cortos, sin tecnicismos innecesarios ni promesas vacías.",
   },
   {
     step: "04",
-    title: "Más opciones mediante subasta",
-    copy: "Si no está en stock, exploramos unidades en plataformas como Copart e IAA.",
+    title: "Presencia local",
+    copy: "Santo Domingo Este. Oficina, WhatsApp y acompañamiento real.",
   },
-];
+] as const;
 
 export function HomeTrust() {
   return (
-    <section className="section-light bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-24">
-        <p className="kicker">Por qué Valcron</p>
-        <h2 className="display-section mt-4 max-w-2xl text-[#08090b]">
-          Claridad primero.
-          <span className="block">Proceso después.</span>
-        </h2>
-        <div className="mt-12 grid gap-0 border-t border-[#e4e6ea] md:grid-cols-2">
-          {ITEMS.map((item) => (
+    <Section className="section-light bg-[#f5f6f7]" tight>
+      <PageContainer>
+        <SectionHeader
+          kicker="Por qué Valcron"
+          title={
+            <>
+              Claridad primero.
+              <span className="block">Proceso después.</span>
+            </>
+          }
+          align="center"
+        />
+        <div className="mx-auto mt-10 grid max-w-[52rem] gap-3 sm:grid-cols-2 md:mt-12 md:gap-4">
+          {ITEMS.map((item, index) => (
             <article
               key={item.step}
-              className="border-b border-[#e4e6ea] py-8 md:border-r md:px-8 md:odd:pl-0 md:even:border-r-0 md:even:pr-0 lg:py-10"
+              className={`border border-[#e4e6ea] bg-white p-5 md:p-6 ${
+                index === 1 || index === 2 ? "sm:translate-y-2" : ""
+              }`}
+              style={{ borderRadius: "var(--radius-card)" }}
             >
-              <p className="font-display text-sm font-semibold tracking-[0.16em] text-[#2b6cff]">
+              <p className="font-display text-sm font-bold tracking-[0.16em] text-[#2b6cff]">
                 {item.step}
               </p>
-              <h3 className="mt-3 font-display text-xl font-semibold tracking-tight text-[#08090b] md:text-2xl">
+              <h3 className="mt-3 font-display text-xl font-semibold tracking-tight text-[#08090b]">
                 {item.title}
               </h3>
-              <p className="mt-3 max-w-md text-base leading-relaxed text-[#676a70]">{item.copy}</p>
+              <p className="mt-2 text-base leading-relaxed text-[#676a70]">{item.copy}</p>
             </article>
           ))}
         </div>
-      </div>
-    </section>
+      </PageContainer>
+    </Section>
   );
 }

@@ -1,24 +1,28 @@
 import Link from "next/link";
+import { PageContainer, Section } from "@/components/public/layout";
 
 export function HomeTradeIn() {
   return (
-    <section className="section-light bg-[#f5f6f7]">
-      <div className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
-        <div className="max-w-2xl border-l-2 border-[#2b6cff] pl-6 md:pl-8">
+    <Section className="section-light bg-white" tight>
+      <PageContainer>
+        <div
+          className="mx-auto max-w-[40rem] border border-[#e4e6ea] bg-[#f5f6f7] p-[var(--card-padding)] text-center md:p-10"
+          style={{ borderRadius: "var(--radius-card)" }}
+        >
           <p className="kicker">Trade-in</p>
-          <h2 className="display-section mt-4 text-[#08090b]">
+          <h2 className="display-lg mt-3 text-[#08090b]">
             ¿Tienes un vehículo
             <span className="block">para entregar?</span>
           </h2>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-[#676a70] md:text-lg">
-            Podemos evaluar tu unidad como parte del proceso de compra. El valor se confirma después
-            de revisar la unidad — sin tasación prometida por adelantado.
+          <p className="mx-auto mt-4 max-w-md text-[length:var(--text-body-lg)] leading-[1.55] text-[#676a70]">
+            Podemos evaluar tu unidad como parte del proceso de compra. El valor se confirma
+            después de revisar la unidad — sin tasación prometida por adelantado.
           </p>
-          <Link href="/contacto?asunto=trade-in" className="btn-primary mt-8 inline-flex">
+          <Link href="/contacto?asunto=trade-in" className="btn-primary mt-8">
             Solicitar evaluación
           </Link>
         </div>
-      </div>
-    </section>
+      </PageContainer>
+    </Section>
   );
 }

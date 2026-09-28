@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { NumberedSteps } from "@/components/public/NumberedSteps";
+import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
 import { PageHero } from "@/components/public/PageHero";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
@@ -38,58 +40,29 @@ export default function ComprarPage() {
         imageAlt={PAGE_HERO_ALTS.servicios}
       />
 
-      <section className="section-light bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-20">
-          <p className="kicker">Inventario local</p>
-          <h2 className="display-section mt-3 max-w-2xl text-[#08090b]">
-            Si ya está publicado, el camino es directo.
-          </h2>
-          <ol className="mt-10 max-w-3xl space-y-0">
-            {LOCAL.map((item) => (
-              <li
-                key={item.step}
-                className="grid grid-cols-[3.5rem_1fr] gap-4 border-t border-[#e4e6ea] py-5"
-              >
-                <span className="font-display text-sm font-semibold tracking-[0.14em] text-[#2b6cff]">
-                  {item.step}
-                </span>
-                <div>
-                  <h3 className="font-display text-lg font-semibold text-[#08090b]">{item.title}</h3>
-                  <p className="mt-1 text-sm text-[#676a70]">{item.copy}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-          <Link href="/inventario" className="btn-primary mt-8 inline-flex">
+      <Section className="section-light bg-white">
+        <PageContainer>
+          <SectionHeader
+            kicker="Inventario local"
+            title="Si ya está publicado, el camino es directo."
+          />
+          <NumberedSteps steps={LOCAL} tone="light" />
+          <Link href="/inventario" className="btn-primary mt-10 inline-flex">
             Ver inventario
           </Link>
-        </div>
-      </section>
+        </PageContainer>
+      </Section>
 
-      <section className="section-dark bg-[#08090b]">
-        <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-20">
-          <p className="kicker text-[#2b6cff]">Búsqueda y subasta</p>
-          <h2 className="display-section mt-3 max-w-2xl text-white">
-            Si no está en stock, lo buscamos.
-          </h2>
-          <ol className="mt-10 max-w-3xl space-y-0">
-            {SOURCING.map((item) => (
-              <li
-                key={item.step}
-                className="grid grid-cols-[3.5rem_1fr] gap-4 border-t border-white/10 py-5"
-              >
-                <span className="font-display text-sm font-semibold tracking-[0.14em] text-[#2b6cff]">
-                  {item.step}
-                </span>
-                <div>
-                  <h3 className="font-display text-lg font-semibold text-white">{item.title}</h3>
-                  <p className="mt-1 text-sm text-white/60">{item.copy}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
+      <Section className="section-dark bg-[#08090b]">
+        <PageContainer>
+          <SectionHeader
+            kicker="Búsqueda y subasta"
+            title="Si no está en stock, lo buscamos."
+            tone="dark"
+          />
+          <NumberedSteps steps={SOURCING} tone="dark" />
           <div className="mt-10 flex flex-wrap gap-3">
-            <Link href="/contacto" className="btn-primary">
+            <Link href="/solicitar-vehiculo" className="btn-primary">
               Solicitar vehículo
             </Link>
             <a
@@ -102,8 +75,8 @@ export default function ComprarPage() {
               WhatsApp
             </a>
           </div>
-        </div>
-      </section>
+        </PageContainer>
+      </Section>
     </main>
   );
 }

@@ -29,12 +29,13 @@
   --footer: #08090b;
 }
 
-/* —— Valcron Public Design System V4 — Gloss Black —— */
+/* —— Valcron Public Design System V7 — Reference-driven · Gloss Black —— */
 .public-site {
   overflow-x: clip;
   font-size: 16px;
   line-height: 1.65;
 
+  /* Color */
   --canvas: #f5f6f7;
   --surface: #ffffff;
   --surface-soft: #eef0f3;
@@ -42,7 +43,7 @@
   --surface-dark-elevated: #0b0c0e;
   --border: #e4e6ea;
   --border-dark: rgba(255, 255, 255, 0.1);
-  --text-primary: #0b0c0e;
+  --text-primary: #08090b;
   --text-secondary: #676a70;
   --text-inverse: #f7f8fa;
   --brand: #2b6cff;
@@ -52,6 +53,7 @@
   --danger: #9b2c2c;
   --focus: #2b6cff;
 
+  /* Bridge aliases */
   --background: var(--canvas);
   --surface-2: var(--surface-soft);
   --foreground: var(--text-primary);
@@ -69,20 +71,49 @@
   --footer-bg: #08090b;
   --footer: #08090b;
   --brand-white: #ffffff;
-  --brand-nav: #0b0c0e;
+  --brand-nav: #08090b;
   --brand-silver: #a3a3a3;
   --brand-champagne: #2b6cff;
   --brand-champagne-dark: #1f56e0;
 
-  --radius-sm: 0.5rem;
-  --radius-md: 0.625rem;
-  --radius-lg: 0.875rem;
-  --radius-xl: 1rem;
-  --radius-panel: 1.25rem;
-  --public-card-radius: var(--radius-lg);
-  --public-control-height: 3rem;
-  --public-shadow: 0 8px 24px rgba(8, 9, 11, 0.05);
-  --public-transition: 180ms ease;
+  /* Spacing — automatic responsive */
+  --page-gutter: clamp(1.25rem, 4vw, 4.5rem);
+  --section-space: clamp(4.5rem, 10vw, 8.5rem);
+  --section-space-tight: clamp(3rem, 6vw, 5rem);
+  --content-max: 72rem;
+  --content-narrow: 42rem;
+  --card-padding: clamp(1.25rem, 3vw, 2rem);
+  --header-height: 3.75rem;
+  --stack-xs: 0.5rem;
+  --stack-sm: 0.75rem;
+  --stack-md: 1.25rem;
+  --stack-lg: 2rem;
+  --stack-xl: 3rem;
+
+  /* Radius — large editorial cards */
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 1.75rem;
+  --radius-card: 1.5rem;
+  --radius-button: 9999px;
+  --radius-panel: 1.75rem;
+  --public-card-radius: var(--radius-card);
+  --public-control-height: 3.25rem;
+  --public-shadow: 0 10px 30px rgba(8, 9, 11, 0.06);
+  --public-transition: 200ms ease;
+
+  /* Type scale */
+  --text-display-xl: clamp(2.75rem, 8.5vw, 5.5rem);
+  --text-display-lg: clamp(2.25rem, 5.5vw, 3.75rem);
+  --text-h1: clamp(2rem, 4.5vw, 3.25rem);
+  --text-h2: clamp(1.75rem, 3.5vw, 2.5rem);
+  --text-h3: clamp(1.25rem, 2vw, 1.5rem);
+  --text-body-lg: clamp(1.0625rem, 1.4vw, 1.1875rem);
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+  --text-kicker: 0.6875rem;
+  --text-label: 0.75rem;
 
   color-scheme: light;
   background: var(--canvas);
@@ -103,7 +134,7 @@
   --color-whatsapp: var(--whatsapp);
   --color-whatsapp-hover: var(--whatsapp-hover);
   --color-footer: var(--footer);
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-jakarta);
   --font-display: var(--font-jakarta);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
@@ -115,7 +146,7 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter), Inter, Arial, Helvetica, sans-serif;
+  font-family: var(--font-jakarta), "Plus Jakarta Sans", sans-serif;
   font-weight: 400;
   line-height: 1.625;
 }
@@ -138,41 +169,57 @@ h3 {
   color: var(--text-primary);
 }
 
-/* Typography utilities */
+/* —— Typography —— */
 @utility kicker {
-  font-size: 0.75rem;
+  font-size: var(--text-kicker, 0.6875rem);
   line-height: 1rem;
-  font-weight: 500;
-  letter-spacing: 0.18em;
+  font-weight: 600;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: #737373;
 }
 
 .public-site .kicker {
-  color: var(--brand);
+  color: var(--text-secondary);
+}
+
+@utility display-xl {
+  font-family: var(--font-jakarta), "Plus Jakarta Sans", sans-serif;
+  font-size: var(--text-display-xl, clamp(2.75rem, 8.5vw, 5.5rem));
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+@utility display-lg {
+  font-family: var(--font-jakarta), "Plus Jakarta Sans", sans-serif;
+  font-size: var(--text-display-lg, clamp(2.25rem, 5.5vw, 3.75rem));
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
 }
 
 @utility display-hero {
   font-family: var(--font-jakarta), "Plus Jakarta Sans", sans-serif;
-  font-size: clamp(2.625rem, 7vw, 5rem);
+  font-size: var(--text-display-xl, clamp(2.75rem, 8.5vw, 5.5rem));
   font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.035em;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
 }
 
 @utility display-section {
   font-family: var(--font-jakarta), "Plus Jakarta Sans", sans-serif;
-  font-size: clamp(1.875rem, 4.5vw, 3.5rem);
+  font-size: var(--text-display-lg, clamp(2.25rem, 5.5vw, 3.75rem));
   font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
 }
 
 @utility display-sub {
   font-family: var(--font-jakarta), "Plus Jakarta Sans", sans-serif;
-  font-size: clamp(1.375rem, 2.5vw, 1.875rem);
+  font-size: var(--text-h3, clamp(1.25rem, 2vw, 1.5rem));
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.25;
   letter-spacing: -0.025em;
 }
 
@@ -186,7 +233,7 @@ h3 {
 }
 
 .public-site :is(.section-light, .bg-surface, .bg-surface-2, .bg-canvas) .kicker {
-  color: var(--brand);
+  color: var(--text-secondary);
 }
 
 .public-site .section-dark,
@@ -201,19 +248,33 @@ h3 {
 
 .public-site .section-dark .kicker,
 .public-site .gloss-panel .kicker {
-  color: #2b6cff;
+  color: rgba(255, 255, 255, 0.55);
 }
 
-/* Buttons — primary gloss black / secondary light outline */
+.public-site .section-accent {
+  --foreground: #ffffff;
+  --ink: rgba(255, 255, 255, 0.9);
+  --muted: rgba(255, 255, 255, 0.82);
+  --line: rgba(255, 255, 255, 0.22);
+  --accent: #ffffff;
+  color: #ffffff;
+}
+
+.public-site .section-accent .kicker {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* —— Buttons — pill CTAs —— */
 @utility btn-primary {
   display: inline-flex;
-  min-height: 3rem;
-  height: 3rem;
+  min-height: 3.25rem;
+  height: 3.25rem;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-md, 0.625rem);
+  gap: 0.5rem;
+  border-radius: var(--radius-button, 9999px);
   background-color: var(--foreground);
-  padding-inline: 1.5rem;
+  padding-inline: 1.75rem;
   font-size: 0.9375rem;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -226,7 +287,7 @@ h3 {
 
 .public-site .btn-primary {
   background-color: #08090b;
-  background-image: linear-gradient(180deg, #12141a 0%, #08090b 100%);
+  background-image: linear-gradient(180deg, #14161c 0%, #08090b 100%);
   color: #ffffff;
 }
 
@@ -237,15 +298,16 @@ h3 {
 
 @utility btn-secondary {
   display: inline-flex;
-  min-height: 3rem;
-  height: 3rem;
+  min-height: 3.25rem;
+  height: 3.25rem;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-md, 0.625rem);
+  gap: 0.5rem;
+  border-radius: var(--radius-button, 9999px);
   border: 1px solid var(--accent);
-  padding-inline: 1.25rem;
+  padding-inline: 1.5rem;
   font-size: 0.9375rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--accent);
   transition: background-color 180ms ease, border-color 180ms ease;
@@ -256,24 +318,25 @@ h3 {
 
 .public-site .btn-secondary {
   background-color: #ffffff;
-  border-color: rgba(11, 12, 14, 0.22);
-  color: #0b0c0e;
+  border-color: rgba(8, 9, 11, 0.18);
+  color: #08090b;
 }
 
 .public-site .btn-secondary:hover {
   background-color: #f5f6f7;
-  border-color: #0b0c0e;
+  border-color: #08090b;
 }
 
 @utility btn-brand {
   display: inline-flex;
-  min-height: 3rem;
-  height: 3rem;
+  min-height: 3.25rem;
+  height: 3.25rem;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-md, 0.625rem);
+  gap: 0.5rem;
+  border-radius: var(--radius-button, 9999px);
   background-color: var(--brand, #2b6cff);
-  padding-inline: 1.5rem;
+  padding-inline: 1.75rem;
   font-size: 0.9375rem;
   font-weight: 600;
   color: #ffffff;
@@ -283,16 +346,36 @@ h3 {
   }
 }
 
-@utility btn-whatsapp {
+@utility btn-ghost-accent {
   display: inline-flex;
-  min-height: 3rem;
-  height: 3rem;
+  min-height: 3.25rem;
+  height: 3.25rem;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: var(--radius-md, 0.625rem);
+  border-radius: var(--radius-button, 9999px);
+  border: 1.5px solid #2b6cff;
+  background: transparent;
+  padding-inline: 1.75rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #ffffff;
+  transition: background-color 180ms ease, border-color 180ms ease;
+  &:hover {
+    background-color: rgba(43, 108, 255, 0.12);
+  }
+}
+
+@utility btn-whatsapp {
+  display: inline-flex;
+  min-height: 3.25rem;
+  height: 3.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-button, 9999px);
   background-color: var(--whatsapp);
-  padding-inline: 1.25rem;
+  padding-inline: 1.5rem;
   font-size: 0.9375rem;
   font-weight: 600;
   color: #ffffff;
@@ -304,12 +387,12 @@ h3 {
 
 @utility field-input {
   margin-top: 0.5rem;
-  height: 3rem;
+  height: 3.25rem;
   width: 100%;
-  border-radius: var(--radius-sm, 0.5rem);
+  border-radius: var(--radius-md, 1rem);
   border: 1px solid var(--line);
   background-color: #ffffff;
-  padding-inline: 0.75rem;
+  padding-inline: 1rem;
   font-size: 0.9375rem;
   color: var(--foreground);
   outline: none;
@@ -329,42 +412,53 @@ h3 {
   border-color: var(--brand);
 }
 
-/* Header — light premium bar */
+/* —— Cards —— */
+@utility card-surface {
+  border-radius: var(--radius-card, 1.5rem);
+  border: 1px solid var(--border, #e4e6ea);
+  background: #ffffff;
+  padding: var(--card-padding, 1.5rem);
+}
+
+/* —— Header — light premium bar —— */
 .site-header {
   isolation: isolate;
-  height: 56px;
-  border-bottom: 1px solid #e4e6ea;
+  height: var(--header-height, 3.75rem);
+  border-bottom: 1px solid transparent;
   background-color: #ffffff;
   background-image: none;
-  color: #0b0c0e;
-  transition: height 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+  color: #08090b;
+  transition: height 180ms ease, box-shadow 180ms ease, background-color 180ms ease,
+    border-color 180ms ease;
 }
 
 .site-header.is-compact {
-  height: 52px;
+  height: 3.25rem;
+  border-bottom-color: #e4e6ea;
   background-color: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 6px 18px rgba(8, 9, 11, 0.06);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 6px 18px rgba(8, 9, 11, 0.05);
 }
 
 @media (min-width: 1024px) {
-  .site-header {
-    height: 72px;
+  .public-site {
+    --header-height: 4.5rem;
   }
   .site-header.is-compact {
-    height: 60px;
+    height: 3.75rem;
   }
 }
 
 .site-header .brand-logo img {
   mix-blend-mode: normal;
+  filter: brightness(0);
 }
 
-/* Footer — Valcron gloss black */
+/* —— Footer — gloss black —— */
 .site-footer {
   isolation: isolate;
   background-color: #08090b;
-  background-image: linear-gradient(180deg, #12141a 0%, #08090b 55%, #050608 100%);
+  background-image: linear-gradient(180deg, #0e1014 0%, #08090b 55%, #050608 100%);
   color: #a3a3a3;
 }
 
@@ -375,7 +469,7 @@ h3 {
 
 .section-light,
 .public-site :is(.bg-surface, .bg-surface-2, .bg-canvas) {
-  color: var(--text-primary, #0b0c0e);
+  color: var(--text-primary, #08090b);
 }
 
 .bg-canvas {
@@ -388,10 +482,16 @@ h3 {
   color: var(--text-inverse, #f7f8fa);
 }
 
+.section-accent {
+  background-color: #2b6cff;
+  background-image: linear-gradient(160deg, #3d7aff 0%, #2b6cff 45%, #1f56e0 100%);
+  color: #ffffff;
+}
+
 .section-light .btn-primary,
 .public-site :is(.bg-surface, .bg-surface-2, .bg-canvas) .btn-primary {
   background-color: #08090b;
-  background-image: linear-gradient(180deg, #12141a 0%, #08090b 100%);
+  background-image: linear-gradient(180deg, #14161c 0%, #08090b 100%);
   color: #ffffff;
 }
 
@@ -404,21 +504,21 @@ h3 {
 .section-light .btn-secondary,
 .public-site :is(.bg-surface, .bg-surface-2, .bg-canvas) .btn-secondary {
   background-color: #ffffff;
-  border-color: rgba(11, 12, 14, 0.22);
-  color: #0b0c0e;
+  border-color: rgba(8, 9, 11, 0.18);
+  color: #08090b;
 }
 
 .section-light .btn-secondary:hover,
 .public-site :is(.bg-surface, .bg-surface-2, .bg-canvas) .btn-secondary:hover {
   background-color: #f5f6f7;
-  border-color: #0b0c0e;
+  border-color: #08090b;
 }
 
 .section-light .field-input,
 .public-site :is(.bg-surface, .bg-surface-2, .bg-canvas) .field-input {
   background-color: #ffffff;
   border-color: #e4e6ea;
-  color: #0b0c0e;
+  color: #08090b;
 }
 
 .section-light .field-input:focus,
@@ -449,7 +549,7 @@ h3 {
 .public-site .gloss-panel .btn-primary {
   background-color: #ffffff;
   background-image: none;
-  color: #0b0c0e;
+  color: #08090b;
 }
 
 .public-site .section-dark .btn-primary:hover,
@@ -470,6 +570,22 @@ h3 {
   border-color: #ffffff;
 }
 
+.public-site .section-accent .btn-primary {
+  background-color: #ffffff;
+  background-image: none;
+  color: #08090b;
+}
+
+.public-site .section-accent .btn-primary:hover {
+  background-color: #f0f2f5;
+}
+
+.public-site .section-accent .btn-secondary {
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.65);
+  color: #ffffff;
+}
+
 .public-site .gloss-panel .field-input {
   background-color: #12141a;
   border-color: rgba(255, 255, 255, 0.18);
@@ -484,7 +600,7 @@ h3 {
 .public-site .hero-on-dark .btn-primary {
   background-color: #ffffff;
   background-image: none;
-  color: #0b0c0e;
+  color: #08090b;
 }
 
 .hero-on-dark .btn-primary:hover,
@@ -515,10 +631,10 @@ h3 {
 }
 
 @utility badge-status {
-  border-radius: 0.5rem;
+  border-radius: 9999px;
   border: 1px solid transparent;
   background-color: color-mix(in srgb, #ffffff 92%, transparent);
-  padding: 0.3rem 0.7rem;
+  padding: 0.3rem 0.75rem;
   font-size: 0.625rem;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -527,10 +643,14 @@ h3 {
 }
 
 @utility gloss-panel {
-  border-radius: var(--radius-xl, 1rem);
+  border-radius: var(--radius-xl, 1.75rem);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(11, 12, 14, 0.94) 52%, #08090b 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(11, 12, 14, 0.94) 52%,
+    #08090b 100%
+  );
 }
 
 @utility metallic-border {
@@ -540,7 +660,7 @@ h3 {
 /* Vehicle card hover */
 @media (hover: hover) and (pointer: fine) {
   .public-site .vehicle-card-media img {
-    transition: transform 280ms ease;
+    transition: transform 320ms ease;
   }
   .public-site .group:hover .vehicle-card-media img {
     transform: scale(1.03);
@@ -549,8 +669,19 @@ h3 {
     transition: border-color 180ms ease, box-shadow 180ms ease;
   }
   .public-site .vehicle-card:hover {
-    border-color: color-mix(in srgb, var(--border) 35%, #0b0c0e);
-    box-shadow: 0 12px 28px rgba(8, 9, 11, 0.07);
+    border-color: color-mix(in srgb, var(--border) 35%, #08090b);
+    box-shadow: 0 16px 36px rgba(8, 9, 11, 0.08);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -563,10 +694,20 @@ h3 {
   }
 }
 
+.public-site .motion-fade-up {
+  animation: fade-up 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.public-site .motion-fade-up-delay {
+  animation: fade-up 640ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-kenburns,
   .public-site .vehicle-card-media img,
-  .public-site .group:hover .vehicle-card-media img {
+  .public-site .group:hover .vehicle-card-media img,
+  .public-site .motion-fade-up,
+  .public-site .motion-fade-up-delay {
     animation: none;
     transform: none !important;
     transition: none !important;
@@ -577,7 +718,8 @@ h3 {
   .public-site .btn-primary,
   .public-site .btn-secondary,
   .public-site .btn-whatsapp,
-  .public-site .btn-brand {
+  .public-site .btn-brand,
+  .public-site .btn-ghost-accent {
     transition: none;
   }
   .site-header.is-compact {
@@ -596,7 +738,7 @@ input[type="range"].luxury-range::-webkit-slider-thumb {
   width: 1.15rem;
   height: 1.15rem;
   border-radius: 9999px;
-  background: #0b0c0e;
+  background: #08090b;
   border: 2px solid #2b6cff;
   box-shadow: 0 0 0 4px rgba(43, 108, 255, 0.16);
   cursor: pointer;
@@ -605,7 +747,7 @@ input[type="range"].luxury-range::-moz-range-thumb {
   width: 1.15rem;
   height: 1.15rem;
   border-radius: 9999px;
-  background: #0b0c0e;
+  background: #08090b;
   border: 2px solid #2b6cff;
   cursor: pointer;
 }
@@ -627,16 +769,16 @@ input[type="range"].luxury-range::-moz-range-thumb {
   background: #e4e6ea;
 }
 .section-light input[type="range"].luxury-range::-webkit-slider-thumb {
-  background: #0b0c0e;
+  background: #08090b;
   border: 2px solid #2b6cff;
   box-shadow: 0 0 0 4px rgba(43, 108, 255, 0.16);
 }
 .section-light input[type="range"].luxury-range::-moz-range-thumb {
-  background: #0b0c0e;
+  background: #08090b;
   border: 2px solid #2b6cff;
 }
 
-/* Admin console — Valcron gloss black + electric blue accents (V6) */
+/* Admin console — Valcron gloss black + electric blue accents */
 .admin-console {
   --admin-bg: #f5f6f7;
   --admin-surface: #ffffff;
@@ -644,7 +786,7 @@ input[type="range"].luxury-range::-moz-range-thumb {
   --admin-surface-muted: #eef0f3;
   --admin-border: #e4e6ea;
   --admin-border-strong: #cfd3d8;
-  --admin-text: #0b0c0e;
+  --admin-text: #08090b;
   --admin-text-secondary: #4a4f57;
   --admin-text-muted: #676a70;
   --admin-brand: #2b6cff;
@@ -662,6 +804,7 @@ input[type="range"].luxury-range::-moz-range-thumb {
   --admin-info: #2b6cff;
   --admin-focus: #2b6cff;
   --admin-shadow: 0 1px 2px rgba(8, 9, 11, 0.04), 0 10px 28px rgba(8, 9, 11, 0.05);
+  --admin-radius: 1rem;
   color: var(--admin-text);
   background: var(--admin-bg);
 }

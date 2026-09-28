@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { BrandLogo } from "@/components/public/BrandLogo";
 import { CurrencySwitch } from "@/components/public/CurrencyProvider";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
@@ -23,9 +23,9 @@ function isActivePath(pathname: string, href: string) {
 }
 
 const navLinkClass =
-  "relative shrink-0 whitespace-nowrap px-2 py-2 text-[13px] font-medium text-[#3a3d42] transition-colors duration-180 hover:text-[#0b0c0e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff] xl:px-2.5";
+  "relative shrink-0 whitespace-nowrap px-2 py-2 text-[13px] font-medium text-[#3a3d42] transition-colors duration-180 hover:text-[#08090b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff] xl:px-2.5";
 const navActiveClass =
-  "text-[#0b0c0e] after:absolute after:bottom-1 after:left-2 after:right-2 after:h-px after:bg-[#2b6cff]";
+  "text-[#08090b] after:absolute after:bottom-1 after:left-2 after:right-2 after:h-px after:bg-[#2b6cff]";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -100,7 +100,10 @@ export function Navbar() {
   return (
     <>
       <header className={`site-header sticky top-0 z-[80] ${compact ? "is-compact" : ""}`}>
-        <div className="mx-auto flex h-full w-full max-w-[1440px] items-center gap-3 px-4 lg:px-6 xl:px-8">
+        <div
+          className="mx-auto flex h-full w-full max-w-[var(--content-max)] items-center gap-3"
+          style={{ paddingInline: "var(--page-gutter)" }}
+        >
           <Link href="/" aria-label={SITE.brand} className="relative z-10 shrink-0" onClick={() => setOpen(false)}>
             <BrandLogo size="header" tone="onLight" />
           </Link>
@@ -145,8 +148,8 @@ export function Navbar() {
                       key={item.href}
                       href={item.href}
                       role="menuitem"
-                      className={`block min-h-11 rounded-[0.5rem] px-3 py-2.5 text-sm transition-colors duration-180 hover:bg-[#f5f6f7] ${
-                        isActivePath(pathname, item.href) ? "text-[#2b6cff]" : "text-[#0b0c0e]"
+                      className={`block min-h-11 rounded-[0.75rem] px-3 py-2.5 text-sm transition-colors duration-180 hover:bg-[#f5f6f7] ${
+                        isActivePath(pathname, item.href) ? "text-[#2b6cff]" : "text-[#08090b]"
                       }`}
                       onClick={() => setResourcesOpen(false)}
                     >
@@ -166,34 +169,29 @@ export function Navbar() {
           </nav>
 
           <div className="ml-auto flex shrink-0 items-center gap-2">
-            <a
-              href={whatsappHref()}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Hablar por WhatsApp"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-[0.625rem] border border-[#e4e6ea] text-[#128c4b] transition-colors duration-180 hover:border-[#128c4b]/40 hover:bg-[#f5f6f7]"
-            >
-              <WhatsAppIcon className="h-4 w-4" />
-            </a>
             <div className="hidden lg:block">
               <CurrencySwitch compact tone="light" />
             </div>
             <Link
               href="/inventario"
-              className="hidden h-11 items-center rounded-[0.625rem] bg-[#08090b] px-4 text-sm font-semibold text-white transition-colors duration-180 hover:bg-[#12141a] lg:inline-flex"
+              className="hidden h-11 items-center rounded-full bg-[#08090b] px-5 text-sm font-semibold text-white transition-colors duration-180 hover:bg-[#12141a] lg:inline-flex"
             >
               Ver inventario
             </Link>
             <button
               ref={menuButtonRef}
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-[0.625rem] border border-[#e4e6ea] text-[#0b0c0e] lg:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center text-[#08090b] lg:hidden"
               onClick={() => setOpen((value) => !value)}
               aria-expanded={open}
               aria-controls="mobile-nav"
               aria-label={open ? "Cerrar menú" : "Abrir menú"}
             >
-              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              <span className="flex w-5 flex-col gap-[5px]" aria-hidden="true">
+                <span className={`h-px w-full bg-current transition-transform ${open ? "translate-y-[3px] rotate-45" : ""}`} />
+                <span className={`h-px w-full bg-current transition-opacity ${open ? "opacity-0" : ""}`} />
+                <span className={`h-px w-full bg-current transition-transform ${open ? "-translate-y-[3px] -rotate-45" : ""}`} />
+              </span>
             </button>
           </div>
         </div>
@@ -202,8 +200,7 @@ export function Navbar() {
       {open ? (
         <div
           id="mobile-nav"
-          className="fixed inset-0 z-[70] flex flex-col bg-[#08090b] pt-[56px] lg:hidden"
-          style={{ backgroundImage: "linear-gradient(180deg, #12141a 0%, #08090b 100%)" }}
+          className="fixed inset-0 z-[70] flex flex-col bg-white pt-[var(--header-height)] lg:hidden"
         >
           <nav className="flex flex-1 flex-col overflow-y-auto px-5 pb-4" aria-label="Menú">
             {MOBILE_NAV.map((item) => {
@@ -213,8 +210,8 @@ export function Navbar() {
                   key={`${item.href}-${item.label}`}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`flex min-h-14 items-center border-b border-white/10 font-display text-xl font-semibold tracking-tight ${
-                    active ? "text-white" : "text-[#E8E8E8]"
+                  className={`flex min-h-14 items-center border-b border-[#eef0f3] font-display text-xl font-semibold tracking-tight ${
+                    active ? "text-[#2b6cff]" : "text-[#08090b]"
                   }`}
                   onClick={() => setOpen(false)}
                 >
@@ -223,10 +220,10 @@ export function Navbar() {
               );
             })}
           </nav>
-          <div className="grid gap-3 border-t border-white/10 px-5 py-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+          <div className="grid gap-3 border-t border-[#eef0f3] px-5 py-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
             <Link
               href="/inventario"
-              className="inline-flex h-12 w-full items-center justify-center rounded-[0.625rem] bg-white text-[0.9375rem] font-semibold text-[#0b0c0e]"
+              className="btn-primary h-12 w-full"
               onClick={() => setOpen(false)}
             >
               Ver inventario
@@ -239,7 +236,7 @@ export function Navbar() {
               onClick={() => setOpen(false)}
             >
               <WhatsAppIcon className="h-4 w-4" />
-              Hablar por WhatsApp
+              WhatsApp
             </a>
           </div>
         </div>

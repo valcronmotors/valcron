@@ -1,19 +1,24 @@
+import Image from "next/image";
 import Link from "next/link";
+import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
+import { EDITORIAL } from "@/lib/editorial-media";
 
 const PATHS = [
   {
     step: "01",
-    title: "Ver inventario",
-    copy: "Explora unidades publicadas y disponibles para compra.",
+    title: "Compra local",
+    copy: "Explora unidades publicadas y disponibles para compra en República Dominicana.",
     href: "/inventario",
-    cta: "Ir al inventario",
+    cta: "Ver inventario",
+    image: EDITORIAL.citySuv,
   },
   {
     step: "02",
-    title: "Solicitar un vehículo",
-    copy: "Dinos qué buscas. Revisamos opciones a tu medida.",
-    href: "/contacto",
+    title: "Búsqueda personalizada",
+    copy: "Dinos marca, modelo y presupuesto. Revisamos opciones a tu medida.",
+    href: "/solicitar-vehiculo",
     cta: "Solicitar vehículo",
+    image: EDITORIAL.compactSuv,
   },
   {
     step: "03",
@@ -21,47 +26,69 @@ const PATHS = [
     copy: "Orientación con bancos locales. Sin promesa de aprobación.",
     href: "/financiamiento",
     cta: "Conocer opciones",
+    image: EDITORIAL.familySedan,
   },
   {
     step: "04",
-    title: "Subastas",
-    copy: "Más opciones mediante plataformas como Copart e IAA.",
+    title: "Subastas e importación",
+    copy: "Más opciones mediante plataformas como Copart e IAA, con proceso claro.",
     href: "/subastas",
     cta: "Explorar subastas",
+    image: EDITORIAL.silverSedan,
   },
 ] as const;
 
 export function HomePaths() {
   return (
-    <section className="section-light bg-[#f5f6f7]">
-      <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-20">
-        <p className="kicker">Empieza por aquí</p>
-        <h2 className="display-section mt-3 max-w-2xl text-[#08090b]">
-          Elige cómo quieres avanzar.
-        </h2>
-        <div className="mt-10 grid gap-0 border-t border-[#e4e6ea] md:grid-cols-2">
-          {PATHS.map((path) => (
+    <Section className="section-light bg-[#f5f6f7]">
+      <PageContainer>
+        <SectionHeader
+          kicker="Empieza por aquí"
+          title={
+            <>
+              Elige cómo quieres
+              <span className="block">encontrar tu vehículo.</span>
+            </>
+          }
+          subtitle="Cuatro caminos claros. El que elijas depende de lo que buscas hoy."
+        />
+
+        <div className="mt-10 space-y-5 md:mt-12 md:space-y-6">
+          {PATHS.map((path, index) => (
             <article
               key={path.step}
-              className="border-b border-[#e4e6ea] py-8 md:border-r md:px-8 md:odd:pl-0 md:even:border-r-0 md:even:pr-0"
+              className={`overflow-hidden border border-[#e4e6ea] bg-white ${
+                index % 2 === 1 ? "lg:flex-row-reverse" : ""
+              } lg:flex`}
+              style={{ borderRadius: "var(--radius-card)" }}
             >
-              <p className="font-display text-sm font-semibold tracking-[0.16em] text-[#2b6cff]">
-                {path.step}
-              </p>
-              <h3 className="mt-3 font-display text-xl font-semibold text-[#08090b] md:text-2xl">
-                {path.title}
-              </h3>
-              <p className="mt-2 max-w-md text-base text-[#676a70]">{path.copy}</p>
-              <Link
-                href={path.href}
-                className="mt-5 inline-flex min-h-11 items-center text-sm font-semibold text-[#08090b] underline-offset-4 hover:underline"
-              >
-                {path.cta}
-              </Link>
+              <div className="relative aspect-[16/10] bg-[#12141a] lg:aspect-auto lg:min-h-[18rem] lg:w-[44%]">
+                <Image
+                  src={path.image.src}
+                  alt={path.image.alt}
+                  fill
+                  sizes="(max-width: 1023px) 92vw, 40vw"
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex flex-1 flex-col justify-center p-[var(--card-padding)]">
+                <p className="font-display text-sm font-bold tracking-[0.16em] text-[#2b6cff]">
+                  {path.step}
+                </p>
+                <h3 className="mt-3 font-display text-2xl font-bold tracking-tight text-[#08090b] md:text-3xl">
+                  {path.title}
+                </h3>
+                <p className="mt-3 max-w-md text-base leading-relaxed text-[#676a70]">
+                  {path.copy}
+                </p>
+                <Link href={path.href} className="btn-primary mt-6 w-fit">
+                  {path.cta}
+                </Link>
+              </div>
             </article>
           ))}
         </div>
-      </div>
-    </section>
+      </PageContainer>
+    </Section>
   );
 }

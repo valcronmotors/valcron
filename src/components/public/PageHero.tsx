@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { PageContainer } from "@/components/public/layout";
 
 export function PageHero({
   kicker,
@@ -16,7 +17,9 @@ export function PageHero({
   className?: string;
 }) {
   return (
-    <section className={`relative isolate min-h-[36vh] overflow-hidden md:min-h-[48vh] ${className}`}>
+    <section
+      className={`section-dark relative isolate min-h-[42vh] overflow-hidden md:min-h-[50vh] ${className}`}
+    >
       <Image
         src={image}
         alt={imageAlt}
@@ -27,19 +30,17 @@ export function PageHero({
         className="object-cover object-center"
         sizes="100vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#08090b]/88 via-[#08090b]/55 to-[#08090b]/20" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#08090b]/92 via-[#08090b]/62 to-[#08090b]/25" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#08090b] via-transparent to-transparent" />
-      <div className="relative mx-auto flex min-h-[36vh] max-w-7xl items-end px-4 py-10 md:min-h-[48vh] md:px-8 md:py-16 lg:py-20">
-        <div className="max-w-3xl">
-          <p className="kicker text-[#2b6cff]">{kicker}</p>
-          <h1 className="mt-3 text-balance font-display text-[2.125rem] font-bold leading-[1.08] tracking-[-0.03em] text-white sm:text-4xl lg:text-5xl xl:text-[3.5rem]">
-            {title}
-          </h1>
-          <p className="mt-5 max-w-2xl text-base leading-relaxed text-[#d4d4d4]">
+      <PageContainer className="relative flex min-h-[42vh] items-end pb-10 pt-16 md:min-h-[50vh] md:pb-14 md:pt-20">
+        <div className="max-w-[40rem]">
+          <p className="kicker">{kicker}</p>
+          <h1 className="display-xl mt-4 text-balance text-white">{title}</h1>
+          <p className="mt-5 max-w-[36rem] text-[length:var(--text-body-lg)] leading-[1.55] text-white/75">
             {subtitle}
           </p>
         </div>
-      </div>
+      </PageContainer>
     </section>
   );
 }

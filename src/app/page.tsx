@@ -11,6 +11,8 @@ import { HomeHero } from "@/components/home/HomeHero";
 import { HomePaths } from "@/components/home/HomePaths";
 import { HomeProcess } from "@/components/home/HomeProcess";
 import { HomeSearch } from "@/components/home/HomeSearch";
+import { HomeSignatureBlue } from "@/components/home/HomeSignatureBlue";
+import { HomeSignatureDark } from "@/components/home/HomeSignatureDark";
 import { HomeTradeIn } from "@/components/home/HomeTradeIn";
 import { HomeTrust } from "@/components/home/HomeTrust";
 import { loadPublicVehicles } from "@/lib/public-inventory";
@@ -18,7 +20,7 @@ import { SITE, autoDealerJsonLd } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Dealer de Vehículos en Santo Domingo Este | Valcron Motors",
+    absolute: "Tu próximo vehículo, más simple | Valcron Motors",
   },
   description: SITE.valueProposition,
   alternates: { canonical: "/" },
@@ -26,7 +28,7 @@ export const metadata: Metadata = {
     locale: "es_DO",
     type: "website",
     siteName: SITE.shortName,
-    title: "Dealer de Vehículos en Santo Domingo Este | Valcron Motors",
+    title: "Tu próximo vehículo, más simple | Valcron Motors",
     description: SITE.valueProposition,
     url: SITE.url,
     images: [{ url: "/hero-luxury.png", alt: SITE.shortName }],
@@ -55,7 +57,9 @@ export default function Home() {
         <Suspense fallback={<InventorySectionSkeleton />}>
           <HomeInventoryBand />
         </Suspense>
+        <HomeSignatureBlue />
         <HomePaths />
+        <HomeSignatureDark />
         <HomeFinance />
         <HomeAuctions />
         <HomeTradeIn />

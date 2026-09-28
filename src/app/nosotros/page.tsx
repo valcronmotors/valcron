@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BusinessLocation } from "@/components/public/BusinessLocation";
+import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
 import { PageHero } from "@/components/public/PageHero";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
@@ -23,22 +24,25 @@ export default function NosotrosPage() {
         imageAlt={PAGE_HERO_ALTS.nosotros}
       />
 
-      <section className="section-light bg-white">
-        <div className="mx-auto max-w-3xl px-4 py-14 lg:px-8 lg:py-20">
-          <p className="kicker">Quiénes somos</p>
-          <h2 className="display-section mt-3 text-[#08090b]">
-            Atención personalizada en Santo Domingo Este.
-          </h2>
-          <div className="mt-8 space-y-5 text-base leading-relaxed text-[#676a70] md:text-lg">
+      <Section className="section-light bg-white">
+        <PageContainer narrow>
+          <SectionHeader
+            kicker="Quiénes somos"
+            title="Atención personalizada en Santo Domingo Este."
+          />
+          <div
+            className="mt-10 space-y-5 border border-[#e4e6ea] bg-[#f5f6f7] p-6 text-base leading-relaxed text-[#676a70] md:p-10 md:text-lg"
+            style={{ borderRadius: "var(--radius-card)" }}
+          >
             <p>
-              Somos un dealer automotriz enfocado en lo que el cliente necesita: ver unidades
-              reales, entender opciones de pago y, cuando hace falta, buscar un vehículo fuera del
-              inventario publicado.
+              Somos un dealer automotriz enfocado en lo que el cliente necesita: ver unidades reales,
+              entender opciones de pago y, cuando hace falta, buscar un vehículo fuera del inventario
+              publicado.
             </p>
             <p>
-              Trabajamos con inventario local y, cuando conviene, con vehículos disponibles
-              mediante plataformas de subasta como Copart e IAA. Esas plataformas son fuentes de
-              mercado, no socios.
+              Trabajamos con inventario local y, cuando conviene, con vehículos disponibles mediante
+              plataformas de subasta como Copart e IAA. Esas plataformas son fuentes de mercado, no
+              socios.
             </p>
             <p>
               Nuestro compromiso es un proceso claro: consulta directa, información útil y
@@ -53,8 +57,8 @@ export default function NosotrosPage() {
               Contactarnos
             </Link>
           </div>
-        </div>
-      </section>
+        </PageContainer>
+      </Section>
 
       <BusinessLocation variant="full" heading="Nuestra ubicación" />
     </main>

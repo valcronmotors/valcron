@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
 import { PageHero } from "@/components/public/PageHero";
 import { EditorialImage } from "@/components/shared/EditorialImage";
 import { EDITORIAL } from "@/lib/editorial-media";
@@ -24,7 +25,7 @@ const SERVICES = [
   {
     title: "Búsqueda personalizada",
     copy: "Dinos marca, modelo, año y presupuesto. Buscamos opciones que encajen.",
-    href: "/contacto",
+    href: "/solicitar-vehiculo",
     cta: "Solicitar vehículo",
   },
   {
@@ -65,11 +66,20 @@ export default function ServiciosPage() {
         image={PAGE_HERO_IMAGES.servicios}
         imageAlt={PAGE_HERO_ALTS.servicios}
       />
-      <section className="section-light bg-[#f5f6f7]">
-        <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-24">
-          <div className="grid gap-px bg-[#e4e6ea] md:grid-cols-2">
+      <Section className="section-light bg-[#f5f6f7]">
+        <PageContainer>
+          <SectionHeader
+            kicker="Todo en un solo lugar"
+            title="Elige el servicio que necesitas"
+            subtitle="Cada camino tiene su proceso. Te orientamos con información clara antes de avanzar."
+          />
+          <div className="mt-10 grid gap-4 md:grid-cols-2">
             {SERVICES.map((service) => (
-              <article key={service.title} className="flex flex-col bg-[#f5f6f7]">
+              <article
+                key={service.title}
+                className="flex flex-col overflow-hidden border border-[#e4e6ea] bg-white"
+                style={{ borderRadius: "var(--radius-card)" }}
+              >
                 {"image" in service && service.image ? (
                   <div className="relative aspect-[16/9] overflow-hidden bg-[#12141a]">
                     <EditorialImage
@@ -80,23 +90,20 @@ export default function ServiciosPage() {
                     />
                   </div>
                 ) : null}
-                <div className="flex flex-1 flex-col p-6 lg:p-10">
-                  <h2 className="font-display text-2xl font-semibold tracking-tight text-[#08090b] md:text-3xl">
+                <div className="flex flex-1 flex-col p-6 md:p-8">
+                  <h2 className="font-display text-2xl font-semibold tracking-tight text-[#08090b]">
                     {service.title}
                   </h2>
                   <p className="mt-3 flex-1 text-base leading-relaxed text-[#676a70]">{service.copy}</p>
-                  <Link
-                    href={service.href}
-                    className="mt-6 inline-flex min-h-11 items-center text-sm font-semibold text-[#08090b] underline-offset-4 hover:underline"
-                  >
+                  <Link href={service.href} className="btn-secondary mt-6 w-full sm:w-auto">
                     {service.cta}
                   </Link>
                 </div>
               </article>
             ))}
           </div>
-        </div>
-      </section>
+        </PageContainer>
+      </Section>
     </main>
   );
 }

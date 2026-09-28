@@ -1,36 +1,29 @@
 import Link from "next/link";
-import { EditorialImage } from "@/components/shared/EditorialImage";
+import { ArrowRight } from "lucide-react";
+import { PageContainer, Section } from "@/components/public/layout";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
-import { EDITORIAL } from "@/lib/editorial-media";
-import { whatsappHref } from "@/lib/site";
+import { SITE, whatsappHref } from "@/lib/site";
 
 export function HomeFinalCta() {
   return (
-    <section className="relative isolate min-h-[52svh] overflow-hidden bg-[#08090b] md:min-h-[62vh]">
-      <EditorialImage
-        src={EDITORIAL.crossover.src}
-        alt={EDITORIAL.crossover.alt}
-        sizes="100vw"
-        className="object-cover object-[center_40%]"
-      />
-      <div className="absolute inset-0 bg-[#08090b]/72" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#08090b]/85 via-[#08090b]/40 to-transparent" />
-      <div className="hero-on-dark relative mx-auto flex min-h-[52svh] max-w-7xl items-end px-4 py-14 md:min-h-[62vh] md:px-8 md:py-24">
-        <div className="max-w-2xl">
-          <div className="mb-5 h-px w-14 bg-[#2b6cff]" />
-          <h2 className="display-section text-white">
+    <Section className="section-dark">
+      <PageContainer>
+        <div className="mx-auto max-w-[40rem] text-center">
+          <p className="kicker">Siguiente paso</p>
+          <h2 className="display-lg mt-4 text-balance text-white">
             ¿Listo para encontrar
             <span className="block">tu próximo vehículo?</span>
           </h2>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-white/70 md:text-lg">
+          <p className="mx-auto mt-5 max-w-lg text-[length:var(--text-body-lg)] leading-[1.55] text-white/70">
             Explora el inventario o cuéntanos qué buscas. Te orientamos en la compra y el
             financiamiento con bancos locales.
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center">
             <Link href="/inventario" className="btn-primary">
               Ver inventario
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
-            <Link href="/contacto" className="btn-secondary">
+            <Link href="/solicitar-vehiculo" className="btn-secondary">
               Solicitar vehículo
             </Link>
             <a
@@ -43,8 +36,11 @@ export function HomeFinalCta() {
               WhatsApp
             </a>
           </div>
+          <p className="mt-8 text-sm text-white/50">
+            {SITE.address.full} · {SITE.officePhoneDisplay}
+          </p>
         </div>
-      </div>
-    </section>
+      </PageContainer>
+    </Section>
   );
 }

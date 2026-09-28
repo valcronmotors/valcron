@@ -8,12 +8,12 @@ export const SITE = {
   legalName: "Valcron Motors Group, SRL",
   url: "https://valcronmotors.com",
   tagline: "Tu próximo vehículo, más simple.",
-  heroEyebrow: "Valcron Motors",
+  heroEyebrow: "Santo Domingo Este · República Dominicana",
   heroTitle: "Tu próximo vehículo, más simple.",
   heroSubtitle:
-    "Vehículos disponibles en República Dominicana y opciones adicionales mediante subasta e importación. Atención directa en Santo Domingo Este.",
+    "Más opciones para encontrarlo: inventario local, búsqueda personalizada, financiamiento con bancos locales y subastas cuando aplica.",
   valueProposition:
-    "Valcron Motors ayuda a clientes en República Dominicana a encontrar, financiar y obtener el vehículo correcto: inventario local, búsqueda personalizada y orientación con bancos locales.",
+    "Valcron Motors ayuda a clientes en República Dominicana a encontrar su próximo vehículo: inventario local, búsqueda personalizada, financiamiento con bancos locales y opciones de subasta e importación cuando aplica.",
   address: {
     street: "Av Principal 20",
     streetAddress: "Av Principal 20",

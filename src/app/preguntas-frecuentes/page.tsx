@@ -1,5 +1,7 @@
-import { PageHero } from "@/components/public/PageHero";
+import Link from "next/link";
 import { FaqAccordion } from "@/components/public/FaqAccordion";
+import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
+import { PageHero } from "@/components/public/PageHero";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
 import { publicPageMetadata } from "@/lib/seo";
@@ -20,11 +22,23 @@ export default function FaqPage() {
         image={PAGE_HERO_IMAGES.nosotros}
         imageAlt={PAGE_HERO_ALTS.nosotros}
       />
-      <section className="section-light bg-[#faf9f6]">
-        <div className="mx-auto max-w-4xl px-5 py-20 lg:px-8">
-          <FaqAccordion tone="light" />
-        </div>
-      </section>
+      <Section className="section-light bg-[#f5f6f7]">
+        <PageContainer narrow>
+          <div className="text-center">
+            <SectionHeader
+              align="center"
+              title="Respuestas directas"
+              subtitle="Si no encuentras lo que buscas, escríbenos o solicita una búsqueda personalizada."
+            />
+            <Link href="/solicitar-vehiculo" className="btn-secondary mt-6">
+              Solicitar vehículo
+            </Link>
+          </div>
+          <div className="mt-10 md:mt-12">
+            <FaqAccordion tone="light" />
+          </div>
+        </PageContainer>
+      </Section>
     </main>
   );
 }
