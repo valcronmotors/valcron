@@ -48,10 +48,10 @@ export function VehicleGallery({ photos, title }: { photos: GalleryPhoto[]; titl
   if (!cover) {
     return (
       <div
-        className="relative aspect-[16/10] min-h-[13rem] overflow-hidden bg-[#12141a]"
-        style={{ borderRadius: "var(--radius-panel)" }}
+        className="relative aspect-[16/10] min-h-[13rem] overflow-hidden border border-[#e4e6ea] bg-[#f7f8fa]"
+        style={{ borderRadius: "var(--radius-card)" }}
       >
-        <VehiclePhoto src={null} alt={title} className="object-cover" />
+        <VehiclePhoto src={null} alt={title} className="object-contain p-4" />
       </div>
     );
   }
@@ -59,8 +59,8 @@ export function VehicleGallery({ photos, title }: { photos: GalleryPhoto[]; titl
   return (
     <div className="min-w-0">
       <div
-        className="relative aspect-[16/10] min-h-[13rem] overflow-hidden bg-[#12141a]"
-        style={{ borderRadius: "var(--radius-panel)" }}
+        className="relative aspect-[16/10] min-h-[13rem] overflow-hidden border border-[#e4e6ea] bg-[#f7f8fa]"
+        style={{ borderRadius: "var(--radius-card)" }}
         onTouchStart={(event) => setTouchStart(event.changedTouches[0]?.clientX ?? null)}
         onTouchEnd={(event) => onTouchEnd(event.changedTouches[0]?.clientX ?? 0)}
       >
@@ -69,7 +69,7 @@ export function VehicleGallery({ photos, title }: { photos: GalleryPhoto[]; titl
           alt={cover.alt}
           priority
           sizes="(min-width: 1024px) 55vw, 100vw"
-          className="object-cover"
+          className="object-contain object-center p-3"
         />
         {count > 1 ? (
           <>
