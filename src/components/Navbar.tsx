@@ -187,10 +187,17 @@ export function Navbar() {
               aria-controls="mobile-nav"
               aria-label={open ? "Cerrar menú" : "Abrir menú"}
             >
-              <span className="flex w-5 flex-col gap-[5px]" aria-hidden="true">
-                <span className={`h-px w-full bg-current transition-transform ${open ? "translate-y-[3px] rotate-45" : ""}`} />
-                <span className={`h-px w-full bg-current transition-opacity ${open ? "opacity-0" : ""}`} />
-                <span className={`h-px w-full bg-current transition-transform ${open ? "-translate-y-[3px] -rotate-45" : ""}`} />
+              <span className="flex w-5 flex-col gap-[6px]" aria-hidden="true">
+                <span
+                  className={`h-[1.5px] w-full bg-current transition-transform ${
+                    open ? "translate-y-[3.75px] rotate-45" : ""
+                  }`}
+                />
+                <span
+                  className={`h-[1.5px] w-full bg-current transition-transform ${
+                    open ? "-translate-y-[3.75px] -rotate-45" : ""
+                  }`}
+                />
               </span>
             </button>
           </div>
