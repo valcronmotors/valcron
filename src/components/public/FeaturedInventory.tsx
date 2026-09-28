@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { PageContainer, Section } from "@/components/public/layout";
 import { VehicleCard } from "@/components/public/VehicleCard";
+import { PUBLIC_INVENTORY_EMPTY } from "@/lib/admin-copy";
 import type { PublicVehicle } from "@/lib/public-catalog";
 
 export function FeaturedInventory({
@@ -41,8 +42,11 @@ export function FeaturedInventory({
             style={{ borderRadius: "var(--radius-card)" }}
           >
             <p className="font-display text-lg font-semibold text-[#08090b]">
-              Estamos preparando nuevas unidades.
+              {PUBLIC_INVENTORY_EMPTY.title}
             </p>
+            {PUBLIC_INVENTORY_EMPTY.copy ? (
+              <p className="mt-2 text-sm text-[#676a70]">{PUBLIC_INVENTORY_EMPTY.copy}</p>
+            ) : null}
             <Link href="/solicitar-vehiculo" className="btn-primary mt-5">
               Solicitar vehículo
             </Link>
