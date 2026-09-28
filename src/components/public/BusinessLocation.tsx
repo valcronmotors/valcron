@@ -29,10 +29,10 @@ function LocationActions({
 }) {
   const light = tone === "light";
   const base =
-    "inline-flex h-12 min-h-12 items-center justify-center rounded-xl px-4 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C7A96B]";
+    "inline-flex h-12 min-h-12 items-center justify-center rounded-xl px-4 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2B6CFF]";
   const primary = light
     ? "bg-[#111] text-white hover:bg-[#1c1c1c]"
-    : "bg-white text-[#111] hover:bg-[#C7A96B]";
+    : "bg-white text-[#111] hover:bg-[#2B6CFF]";
   const secondary = light
     ? "border border-[#111] text-[#111] hover:bg-[#111] hover:text-white"
     : "border border-white/20 text-white hover:bg-white/10";
@@ -108,7 +108,7 @@ export function BusinessLocation({
           target="_blank"
           rel="noopener noreferrer"
           className={`mt-3 inline-flex text-xs font-semibold uppercase tracking-[0.14em] ${
-            light ? "text-[#111] hover:underline" : "text-[#C7A96B] hover:text-white"
+            light ? "text-[#111] hover:underline" : "text-[#2B6CFF] hover:text-white"
           }`}
         >
           Cómo llegar

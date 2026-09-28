@@ -97,10 +97,10 @@ export function CurrencySwitch({
             } ${compact ? "px-2 py-1.5 text-[10px]" : "px-2.5 py-1.5 text-[11px]"} ${
               active
                 ? light
-                  ? "bg-[#111111] text-white shadow-sm"
-                  : "bg-[#F5F5F5] text-[#111111] shadow-sm"
+                  ? "bg-[#08090b] text-white shadow-sm"
+                  : "bg-[#F5F5F5] text-[#08090b] shadow-sm"
                 : light
-                  ? "text-[#525252] hover:text-[#111]"
+                  ? "text-[#525252] hover:text-[#08090b]"
                   : "text-[#EDEDED] hover:text-white"
             }`}
           >

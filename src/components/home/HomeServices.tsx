@@ -45,18 +45,18 @@ const SERVICES = [
 
 export function HomeServices() {
   return (
-    <section className="section-light bg-[#f0eee9]">
+    <section className="section-light bg-[#eef0f3]">
       <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-24">
         <p className="kicker">Servicios</p>
-        <h2 className="display-section mt-4 max-w-2xl text-[#111214]">
+        <h2 className="display-section mt-4 max-w-2xl text-[#08090b]">
           Cómo te ayudamos a conseguir tu vehículo.
         </h2>
 
-        <div className="mt-12 grid gap-px bg-[#e5e3de] md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-12 grid gap-px bg-[#e4e6ea] md:grid-cols-2 xl:grid-cols-3">
           {SERVICES.map((service) => (
-            <article key={service.title} className="flex flex-col bg-[#f0eee9]">
+            <article key={service.title} className="flex flex-col bg-[#eef0f3]">
               {"image" in service && service.image ? (
-                <div className="relative aspect-[16/9] overflow-hidden bg-[#1b1d20]">
+                <div className="relative aspect-[16/9] overflow-hidden bg-[#12141a]">
                   <EditorialImage
                     src={service.image.src}
                     alt={service.image.alt}
@@ -66,13 +66,13 @@ export function HomeServices() {
                 </div>
               ) : null}
               <div className="flex flex-1 flex-col p-6 lg:p-8">
-                <h3 className="font-display text-2xl font-semibold tracking-tight text-[#111214]">
+                <h3 className="font-display text-2xl font-semibold tracking-tight text-[#08090b]">
                   {service.title}
                 </h3>
                 <p className="mt-3 flex-1 text-base leading-relaxed text-[#676a70]">{service.copy}</p>
                 <Link
                   href={service.href}
-                  className="mt-6 inline-flex min-h-11 items-center text-sm font-semibold text-[#111214] underline-offset-4 hover:underline"
+                  className="mt-6 inline-flex min-h-11 items-center text-sm font-semibold text-[#08090b] underline-offset-4 hover:underline"
                 >
                   {service.cta}
                 </Link>

@@ -37,7 +37,7 @@ export function HomeEducation() {
             <Link
               key={guide.title}
               href={guide.href}
-              className="rounded-[1.25rem] border border-[#ececea] bg-[#faf9f6] p-6 transition hover:-translate-y-1 hover:border-[#C7A96B]/40"
+              className="rounded-[1.25rem] border border-[#ececea] bg-[#faf9f6] p-6 transition hover:-translate-y-1 hover:border-[#2B6CFF]/40"
             >
               <h3 className="font-display text-2xl font-semibold text-[#111]">{guide.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-[#525252]">{guide.copy}</p>

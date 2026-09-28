@@ -46,7 +46,7 @@ export default function SubastasPage() {
         <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-24">
           <div className="max-w-3xl">
             <p className="kicker">Fuentes de mercado</p>
-            <h2 className="display-section mt-3 text-[#111214]">
+            <h2 className="display-section mt-3 text-[#08090b]">
               Copart e IAA, como plataformas.
             </h2>
             <p className="mt-5 text-base leading-relaxed text-[#676a70]">
@@ -54,16 +54,16 @@ export default function SubastasPage() {
               como socio, partner, representante autorizado ni afiliado de esas compañías.
             </p>
           </div>
-          <div className="mt-12 grid gap-0 border-t border-[#e5e3de] md:grid-cols-2">
+          <div className="mt-12 grid gap-0 border-t border-[#e4e6ea] md:grid-cols-2">
             {PLATFORMS.map((item) => (
               <article
                 key={item.name}
-                className="border-b border-[#e5e3de] py-8 md:border-r md:px-8 md:odd:pl-0 md:even:border-r-0 md:even:pr-0"
+                className="border-b border-[#e4e6ea] py-8 md:border-r md:px-8 md:odd:pl-0 md:even:border-r-0 md:even:pr-0"
               >
-                <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#9b793f]">
+                <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#2b6cff]">
                   Plataforma
                 </p>
-                <h3 className="mt-3 font-display text-2xl font-semibold text-[#111214]">{item.name}</h3>
+                <h3 className="mt-3 font-display text-2xl font-semibold text-[#08090b]">{item.name}</h3>
                 <p className="mt-3 text-base leading-relaxed text-[#676a70]">{item.copy}</p>
               </article>
             ))}
@@ -71,9 +71,9 @@ export default function SubastasPage() {
         </div>
       </section>
 
-      <section className="section-dark bg-[#111214]">
+      <section className="section-dark bg-[#08090b]">
         <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-24">
-          <p className="kicker text-[#c7a96b]">Proceso</p>
+          <p className="kicker text-[#2b6cff]">Proceso</p>
           <h2 className="display-section mt-3 text-white">De la búsqueda a la gestión</h2>
           <ol className="mt-12 max-w-3xl space-y-0">
             {STEPS.map((item) => (
@@ -81,7 +81,7 @@ export default function SubastasPage() {
                 key={item.step}
                 className="grid grid-cols-[3.5rem_1fr] gap-4 border-t border-white/10 py-5"
               >
-                <span className="font-display text-sm font-semibold tracking-[0.14em] text-[#c7a96b]">
+                <span className="font-display text-sm font-semibold tracking-[0.14em] text-[#2b6cff]">
                   {item.step}
                 </span>
                 <div>

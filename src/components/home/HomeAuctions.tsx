@@ -8,7 +8,7 @@ export function HomeAuctions() {
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:px-8 lg:py-24">
         <div>
           <p className="kicker">Subastas</p>
-          <h2 className="display-section mt-4 text-[#111214]">
+          <h2 className="display-section mt-4 text-[#08090b]">
             Más opciones.
             <span className="block">Más formas de encontrar tu vehículo.</span>
           </h2>
@@ -27,7 +27,7 @@ export function HomeAuctions() {
           </div>
         </div>
         <div
-          className="relative aspect-[5/4] overflow-hidden bg-[#1b1d20]"
+          className="relative aspect-[5/4] overflow-hidden bg-[#12141a]"
           style={{ borderRadius: "var(--radius-panel)" }}
         >
           <EditorialImage

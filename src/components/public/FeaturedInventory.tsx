@@ -27,7 +27,7 @@ export function FeaturedInventory({
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="kicker">{localFirst ? "Disponibles" : "Inventario"}</p>
-            <h2 className="display-section mt-3 max-w-xl text-[#111214]">
+            <h2 className="display-section mt-3 max-w-xl text-[#08090b]">
               Vehículos disponibles
             </h2>
             <p className="mt-4 max-w-lg text-base leading-relaxed text-[#676a70]">

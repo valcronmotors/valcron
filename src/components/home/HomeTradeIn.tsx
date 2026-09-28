@@ -2,11 +2,11 @@ import Link from "next/link";
 
 export function HomeTradeIn() {
   return (
-    <section className="section-light bg-[#f6f5f1]">
+    <section className="section-light bg-[#f5f6f7]">
       <div className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
-        <div className="max-w-2xl border-l-2 border-[#9b793f] pl-6 md:pl-8">
+        <div className="max-w-2xl border-l-2 border-[#2b6cff] pl-6 md:pl-8">
           <p className="kicker">Trade-in</p>
-          <h2 className="display-section mt-4 text-[#111214]">
+          <h2 className="display-section mt-4 text-[#08090b]">
             ¿Tienes un vehículo
             <span className="block">para entregar?</span>
           </h2>

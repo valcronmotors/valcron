@@ -168,7 +168,7 @@ export function VehicleCatalog({
         <input type="number" min={0} inputMode="numeric" value={precioMax} onChange={(event) => setPrecioMax(event.target.value)} className={fieldClass} />
       </label>
       <div className="flex items-end">
-        <button type="button" onClick={clearFilters} className="h-11 w-full rounded-lg border border-[#e6e2db] text-sm text-[#141414]">
+        <button type="button" onClick={clearFilters} className="h-11 w-full rounded-lg border border-[#e4e6ea] text-sm text-[#0b0c0e]">
           Limpiar filtros
         </button>
       </div>
@@ -214,7 +214,7 @@ export function VehicleCatalog({
   return (
     <div className="grid min-w-0 gap-4">
       <div className="grid gap-3">
-        <h1 className="font-display text-[2rem] font-bold tracking-tight text-[#111214] md:hidden">
+        <h1 className="font-display text-[2rem] font-bold tracking-tight text-[#08090b] md:hidden">
           Vehículos disponibles
         </h1>
         <p className="text-sm text-[#676a70] md:hidden">
@@ -236,7 +236,7 @@ export function VehicleCatalog({
         <div className="grid grid-cols-2 gap-2 lg:flex lg:flex-wrap lg:items-center lg:justify-end">
           <button
             type="button"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[#e6e2db] px-3 text-sm lg:hidden"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[#e4e6ea] px-3 text-sm lg:hidden"
             onClick={() => setFiltersOpen(true)}
           >
             <SlidersHorizontal className="h-4 w-4" />
@@ -245,7 +245,7 @@ export function VehicleCatalog({
           <select
             value={sort}
             onChange={(event) => setSort(event.target.value)}
-            className="h-12 rounded-lg border border-[#e6e2db] bg-white px-3 text-sm"
+            className="h-12 rounded-lg border border-[#e4e6ea] bg-white px-3 text-sm"
             aria-label="Ordenar"
           >
             <option value="recent">Más recientes</option>
@@ -265,7 +265,7 @@ export function VehicleCatalog({
             <button
               type="button"
               key={`${chip.key}-${chip.label}`}
-              className="inline-flex min-h-11 items-center rounded-full border border-[#e6e2db] px-3 text-xs text-[#141414]"
+              className="inline-flex min-h-11 items-center rounded-full border border-[#e4e6ea] px-3 text-xs text-[#0b0c0e]"
               onClick={() => {
                 if (chip.key === "listing") setListing("");
                 if (chip.key === "marca") {
@@ -286,7 +286,7 @@ export function VehicleCatalog({
       ) : null}
 
       <div
-        className="hidden border border-[#e5e3de] bg-white p-5 lg:block"
+        className="hidden border border-[#e4e6ea] bg-white p-5 lg:block"
         style={{ borderRadius: "var(--radius-xl)" }}
       >
         {filters}

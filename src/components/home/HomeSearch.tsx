@@ -25,14 +25,14 @@ export function HomeSearch({ vehicles = [] }: { vehicles?: PublicVehicle[] }) {
   }
 
   return (
-    <section id="buscar" className="section-light scroll-mt-24 bg-[#f6f5f1] px-4 py-10 md:px-8 md:py-14">
+    <section id="buscar" className="section-light scroll-mt-24 bg-[#f5f6f7] px-4 py-10 md:px-8 md:py-14">
       <div className="mx-auto max-w-7xl">
         <form
           onSubmit={handleSubmit}
-          className="border border-[#e5e3de] bg-white p-5 md:p-6 lg:px-8 lg:py-7"
+          className="border border-[#e4e6ea] bg-white p-5 md:p-6 lg:px-8 lg:py-7"
           style={{ borderRadius: "var(--radius-xl)" }}
         >
-          <h2 className="font-display text-xl font-semibold tracking-tight text-[#111214] md:text-2xl">
+          <h2 className="font-display text-xl font-semibold tracking-tight text-[#08090b] md:text-2xl">
             ¿Qué vehículo buscas?
           </h2>
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto] lg:items-end">
@@ -83,7 +83,7 @@ export function HomeSearch({ vehicles = [] }: { vehicles?: PublicVehicle[] }) {
           </div>
           <Link
             href="/inventario"
-            className="mt-4 inline-flex min-h-11 items-center text-sm font-medium text-[#111214] underline-offset-4 hover:underline"
+            className="mt-4 inline-flex min-h-11 items-center text-sm font-medium text-[#08090b] underline-offset-4 hover:underline"
           >
             Ver todo el inventario
           </Link>

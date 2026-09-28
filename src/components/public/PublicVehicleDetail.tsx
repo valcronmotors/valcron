@@ -60,23 +60,23 @@ export function PublicVehicleDetail({
     .filter(Boolean);
 
   return (
-    <article className="section-light bg-[#f6f5f1] pb-28 text-[#111214] lg:pb-16">
+    <article className="section-light bg-[#f5f6f7] pb-28 text-[#08090b] lg:pb-16">
       <div className="mx-auto w-full max-w-7xl px-4 py-8 lg:px-8 lg:py-14">
         <nav aria-label="Migas de pan" className="text-sm text-[#676a70]">
           <ol className="flex min-w-0 flex-wrap items-center gap-2">
             <li>
-              <Link href="/" className="hover:text-[#111214]">
+              <Link href="/" className="hover:text-[#08090b]">
                 Inicio
               </Link>
             </li>
             <li aria-hidden>/</li>
             <li>
-              <Link href="/inventario" className="hover:text-[#111214]">
+              <Link href="/inventario" className="hover:text-[#08090b]">
                 Inventario
               </Link>
             </li>
             <li aria-hidden>/</li>
-            <li className="min-w-0 break-words text-[#111214]">{title}</li>
+            <li className="min-w-0 break-words text-[#08090b]">{title}</li>
           </ol>
         </nav>
 
@@ -93,14 +93,14 @@ export function PublicVehicleDetail({
               </p>
               <CurrencySwitch compact tone="light" />
             </div>
-            <h1 className="mt-4 break-words font-display text-[2rem] font-bold leading-[1.1] tracking-[-0.03em] text-[#111214] sm:text-4xl lg:text-[2.75rem]">
+            <h1 className="mt-4 break-words font-display text-[2rem] font-bold leading-[1.1] tracking-[-0.03em] text-[#08090b] sm:text-4xl lg:text-[2.75rem]">
               {year} {make} {model}
             </h1>
             {vehicle.trim ? <p className="mt-2 text-base text-[#676a70]">{vehicle.trim}</p> : null}
 
             {sold ? (
               <p
-                className="mt-6 border border-[#e5e3de] bg-white px-4 py-3 text-sm text-[#676a70]"
+                className="mt-6 border border-[#e4e6ea] bg-white px-4 py-3 text-sm text-[#676a70]"
                 style={{ borderRadius: "var(--radius-lg)" }}
               >
                 Esta unidad figura como vendida. Conservamos la ficha para consulta. Si buscas algo
@@ -108,9 +108,9 @@ export function PublicVehicleDetail({
               </p>
             ) : null}
 
-            <div className="mt-6 border-t border-[#e5e3de] pt-5">
+            <div className="mt-6 border-t border-[#e4e6ea] pt-5">
               <p className="text-[11px] uppercase tracking-[0.16em] text-[#676a70]">{price.label}</p>
-              <p className="mt-1 font-display text-[2rem] font-bold tracking-tight text-[#111214] sm:text-4xl">
+              <p className="mt-1 font-display text-[2rem] font-bold tracking-tight text-[#08090b] sm:text-4xl">
                 {price.primary}
               </p>
               {price.secondary ? <p className="mt-1 text-sm text-[#676a70]">{price.secondary}</p> : null}
@@ -147,14 +147,14 @@ export function PublicVehicleDetail({
 
         {specs.length ? (
           <section className="mt-14">
-            <h2 className="font-display text-2xl font-semibold text-[#111214]">Ficha del vehículo</h2>
-            <dl className="mt-6 grid grid-cols-1 gap-px overflow-hidden border border-[#e5e3de] bg-[#e5e3de] sm:grid-cols-2 lg:grid-cols-3"
+            <h2 className="font-display text-2xl font-semibold text-[#08090b]">Ficha del vehículo</h2>
+            <dl className="mt-6 grid grid-cols-1 gap-px overflow-hidden border border-[#e4e6ea] bg-[#e4e6ea] sm:grid-cols-2 lg:grid-cols-3"
               style={{ borderRadius: "var(--radius-lg)" }}
             >
               {specs.map((item) => (
                 <div key={item.label} className="bg-white p-4">
                   <dt className="text-[11px] uppercase tracking-[0.16em] text-[#676a70]">{item.label}</dt>
-                  <dd className="mt-1 break-words text-sm font-medium text-[#111214]">{item.value}</dd>
+                  <dd className="mt-1 break-words text-sm font-medium text-[#08090b]">{item.value}</dd>
                 </div>
               ))}
             </dl>
@@ -163,17 +163,17 @@ export function PublicVehicleDetail({
 
         {description ? (
           <section className="mt-12 max-w-3xl">
-            <h2 className="font-display text-2xl font-semibold text-[#111214]">Descripción</h2>
+            <h2 className="font-display text-2xl font-semibold text-[#08090b]">Descripción</h2>
             <p className="mt-4 text-base leading-relaxed text-[#3a3d42]">{description}</p>
           </section>
         ) : null}
 
         {features.length ? (
           <section className="mt-12 max-w-3xl">
-            <h2 className="font-display text-2xl font-semibold text-[#111214]">Características</h2>
+            <h2 className="font-display text-2xl font-semibold text-[#08090b]">Características</h2>
             <ul className="mt-4 grid gap-2 text-base text-[#3a3d42]">
               {features.map((feature) => (
-                <li key={feature} className="border-l-2 border-[#c7a96b] pl-4">
+                <li key={feature} className="border-l-2 border-[#2b6cff] pl-4">
                   {feature}
                 </li>
               ))}
@@ -187,7 +187,7 @@ export function PublicVehicleDetail({
             className="mt-14 scroll-mt-28 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]"
           >
             <div className="min-w-0">
-              <h2 className="font-display text-2xl font-semibold text-[#111214]">{primaryCta}</h2>
+              <h2 className="font-display text-2xl font-semibold text-[#08090b]">{primaryCta}</h2>
               <p className="mt-3 max-w-md text-base leading-relaxed text-[#676a70]">
                 Déjanos tus datos y un asesor te contacta sobre este {title}. También puedes
                 escribirnos por WhatsApp.
@@ -204,7 +204,7 @@ export function PublicVehicleDetail({
 
         {similar.length ? (
           <section className="mt-16">
-            <h2 className="font-display text-2xl font-semibold text-[#111214]">Vehículos similares</h2>
+            <h2 className="font-display text-2xl font-semibold text-[#08090b]">Vehículos similares</h2>
             <div className="mt-6 grid min-w-0 gap-5 sm:grid-cols-2 xl:grid-cols-4">
               {similar.map((item) => (
                 <VehicleCard key={item.id} vehicle={item} tone="light" />
@@ -217,7 +217,7 @@ export function PublicVehicleDetail({
       {!sold ? (
         <div
           data-sticky-cta
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-[#e5e3de] bg-white/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-[#e4e6ea] bg-white/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm lg:hidden"
         >
           <div className="mx-auto grid max-w-7xl grid-cols-2 gap-2">
             <a href={whatsapp} target="_blank" rel="noreferrer" className="btn-whatsapp h-12">

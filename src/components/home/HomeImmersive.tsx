@@ -15,7 +15,7 @@ export function HomeImmersive() {
       <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
       <div className="relative mx-auto flex min-h-[68vh] max-w-7xl items-end px-5 py-20 lg:min-h-[76vh] lg:px-8">
         <div className="max-w-3xl">
-          <div className="mb-5 h-px w-16 bg-[#C7A96B]" />
+          <div className="mb-5 h-px w-16 bg-[#2B6CFF]" />
           <h2 className="font-display text-4xl font-bold tracking-tight text-white sm:text-6xl">
             Tu próximo vehículo
             <span className="block">puede estar más cerca</span>
