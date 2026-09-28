@@ -6,18 +6,18 @@ import { whatsappHref } from "@/lib/site";
 
 export function HomeFinalCta() {
   return (
-    <section className="relative isolate min-h-[52svh] overflow-hidden bg-[#090a0b] md:min-h-[62vh]">
+    <section className="relative isolate min-h-[52svh] overflow-hidden bg-[#08090b] md:min-h-[62vh]">
       <EditorialImage
         src={EDITORIAL.crossover.src}
         alt={EDITORIAL.crossover.alt}
         sizes="100vw"
         className="object-cover object-[center_40%]"
       />
-      <div className="absolute inset-0 bg-[#090a0b]/70" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#090a0b]/80 via-[#090a0b]/35 to-transparent" />
+      <div className="absolute inset-0 bg-[#08090b]/70" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#08090b]/80 via-[#08090b]/35 to-transparent" />
       <div className="hero-on-dark relative mx-auto flex min-h-[52svh] max-w-7xl items-end px-4 py-14 md:min-h-[62vh] md:px-8 md:py-24">
         <div className="max-w-2xl">
-          <div className="mb-5 h-px w-14 bg-[#c7a96b]" />
+          <div className="mb-5 h-px w-14 bg-[#2b6cff]" />
           <h2 className="display-section text-white">
             Tu próximo vehículo
             <span className="block">puede empezar aquí.</span>

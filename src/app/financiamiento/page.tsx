@@ -50,7 +50,7 @@ export default function FinanciamientoPage() {
           <div className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
             <div className="max-w-3xl">
               <p className="kicker">Bancos locales</p>
-              <h2 className="display-section mt-3 text-[#111214]">
+              <h2 className="display-section mt-3 text-[#08090b]">
                 Financiamiento con bancos locales
               </h2>
               <p className="mt-5 text-base leading-relaxed text-[#676a70]">
@@ -62,19 +62,19 @@ export default function FinanciamientoPage() {
           </div>
         </section>
 
-        <section className="section-light bg-[#f6f5f1]">
-          <div className="mx-auto grid max-w-7xl gap-0 border-y border-[#e5e3de] px-4 py-0 md:grid-cols-2 md:px-8">
+        <section className="section-light bg-[#f5f6f7]">
+          <div className="mx-auto grid max-w-7xl gap-0 border-y border-[#e4e6ea] px-4 py-0 md:grid-cols-2 md:px-8">
             {REQUIREMENTS.map((group) => (
               <article
                 key={group.title}
-                className="border-b border-[#e5e3de] py-10 md:border-r md:px-8 md:odd:pl-0 md:even:border-r-0 md:even:pr-0 md:border-b-0"
+                className="border-b border-[#e4e6ea] py-10 md:border-r md:px-8 md:odd:pl-0 md:even:border-r-0 md:even:pr-0 md:border-b-0"
               >
-                <h3 className="font-display text-xl font-semibold text-[#111214] md:text-2xl">
+                <h3 className="font-display text-xl font-semibold text-[#08090b] md:text-2xl">
                   {group.title}
                 </h3>
                 <ul className="mt-5 grid gap-3 text-base leading-relaxed text-[#676a70]">
                   {group.items.map((item) => (
-                    <li key={item} className="border-l-2 border-[#c7a96b] pl-4">
+                    <li key={item} className="border-l-2 border-[#2b6cff] pl-4">
                       {item}
                     </li>
                   ))}
@@ -84,10 +84,10 @@ export default function FinanciamientoPage() {
           </div>
         </section>
 
-        <section className="section-dark bg-[#111214]">
+        <section className="section-dark bg-[#08090b]">
           <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 md:grid-cols-[0.8fr_1.2fr] md:px-8 md:py-20">
             <div>
-              <p className="kicker text-[#c7a96b]">Simulador</p>
+              <p className="kicker text-[#2b6cff]">Simulador</p>
               <h2 className="mt-3 font-display text-2xl font-semibold tracking-tight text-white md:text-3xl">
                 Calcula escenarios de compra
               </h2>

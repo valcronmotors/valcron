@@ -74,7 +74,7 @@ export default function InventarioPage({
         image={PAGE_HERO_IMAGES.inventario}
         imageAlt={PAGE_HERO_ALTS.inventario}
       />
-      <section className="section-light bg-[#f6f5f1]">
+      <section className="section-light bg-[#f5f6f7]">
         <div className="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-14 lg:py-20">
           <Suspense fallback={<CatalogSkeleton />}>
             <InventarioCatalog searchParams={searchParams} />

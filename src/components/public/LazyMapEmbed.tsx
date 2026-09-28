@@ -41,7 +41,7 @@ export function LazyMapEmbed({
           referrerPolicy="strict-origin-when-cross-origin"
         />
       ) : (
-        <div className="flex h-full w-full items-center justify-center bg-[#111] text-xs uppercase tracking-[0.16em] text-[#C7A96B]">
+        <div className="flex h-full w-full items-center justify-center bg-[#111] text-xs uppercase tracking-[0.16em] text-[#2B6CFF]">
           Mapa
         </div>
       )}

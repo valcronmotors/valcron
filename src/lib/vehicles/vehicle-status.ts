@@ -98,7 +98,7 @@ export function statusBadgeClass(availability: VehicleAvailability) {
     case "available_rd":
       return "border-emerald-700/20 bg-emerald-700/90 text-white";
     case "auction":
-      return "border-[#C7A96B]/30 bg-[#9B793F] text-white";
+      return "border-[#2B6CFF]/30 bg-[#2B6CFF] text-white";
     case "in_transit":
       return "border-sky-800/20 bg-sky-800/90 text-white";
     case "reserved":

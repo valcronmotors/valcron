@@ -65,13 +65,13 @@ export default function ServiciosPage() {
         image={PAGE_HERO_IMAGES.servicios}
         imageAlt={PAGE_HERO_ALTS.servicios}
       />
-      <section className="section-light bg-[#f6f5f1]">
+      <section className="section-light bg-[#f5f6f7]">
         <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-24">
-          <div className="grid gap-px bg-[#e5e3de] md:grid-cols-2">
+          <div className="grid gap-px bg-[#e4e6ea] md:grid-cols-2">
             {SERVICES.map((service) => (
-              <article key={service.title} className="flex flex-col bg-[#f6f5f1]">
+              <article key={service.title} className="flex flex-col bg-[#f5f6f7]">
                 {"image" in service && service.image ? (
-                  <div className="relative aspect-[16/9] overflow-hidden bg-[#1b1d20]">
+                  <div className="relative aspect-[16/9] overflow-hidden bg-[#12141a]">
                     <EditorialImage
                       src={service.image.src}
                       alt={service.image.alt}
@@ -81,13 +81,13 @@ export default function ServiciosPage() {
                   </div>
                 ) : null}
                 <div className="flex flex-1 flex-col p-6 lg:p-10">
-                  <h2 className="font-display text-2xl font-semibold tracking-tight text-[#111214] md:text-3xl">
+                  <h2 className="font-display text-2xl font-semibold tracking-tight text-[#08090b] md:text-3xl">
                     {service.title}
                   </h2>
                   <p className="mt-3 flex-1 text-base leading-relaxed text-[#676a70]">{service.copy}</p>
                   <Link
                     href={service.href}
-                    className="mt-6 inline-flex min-h-11 items-center text-sm font-semibold text-[#111214] underline-offset-4 hover:underline"
+                    className="mt-6 inline-flex min-h-11 items-center text-sm font-semibold text-[#08090b] underline-offset-4 hover:underline"
                   >
                     {service.cta}
                   </Link>

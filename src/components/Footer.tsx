@@ -27,7 +27,7 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
   return (
     <footer className="site-footer relative mt-auto overflow-hidden">
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.03)_0%,transparent_16%)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#C7A96B]/35 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#2B6CFF]/35 to-transparent" />
 
       <div className="relative mx-auto max-w-7xl px-5 py-16 lg:px-8 lg:py-20">
         <div className="max-w-xl">
@@ -71,7 +71,7 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
           <h2 className={headingClass}>Contacto</h2>
           <address className="not-italic">
             <p className="flex gap-3 text-sm leading-relaxed text-[#D4D4D4]">
-              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#C7A96B]" aria-hidden="true" />
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#2B6CFF]" aria-hidden="true" />
               <span>
                 <span className="block font-medium text-white">{SITE.facebookDisplay}</span>
                 {SITE.address.street},
@@ -82,7 +82,7 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
               </span>
             </p>
             <p className="mt-5 flex gap-3 text-sm">
-              <Phone className="mt-0.5 h-4 w-4 shrink-0 text-[#C7A96B]" aria-hidden="true" />
+              <Phone className="mt-0.5 h-4 w-4 shrink-0 text-[#2B6CFF]" aria-hidden="true" />
               <span>
                 <span className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-white">
                   Oficina
@@ -127,7 +127,7 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
       </div>
 
       <div className="relative border-t border-white/10 px-5 py-6">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#C7A96B]/25 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#2B6CFF]/25 to-transparent" />
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-3 text-center text-xs text-[#A3A3A3] sm:flex-row sm:justify-between sm:text-left lg:px-8">
           <p>
             © {year} {SITE.legalName}. Todos los derechos reservados.

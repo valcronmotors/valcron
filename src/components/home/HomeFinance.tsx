@@ -4,10 +4,10 @@ import { EDITORIAL } from "@/lib/editorial-media";
 
 export function HomeFinance() {
   return (
-    <section className="section-dark bg-[#111214]">
+    <section className="section-dark bg-[#08090b]">
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-24">
         <div>
-          <p className="kicker text-[#c7a96b]">Financiamiento</p>
+          <p className="kicker text-[#2b6cff]">Financiamiento</p>
           <h2 className="display-section mt-4 text-white">
             Financiamiento
             <span className="block">con bancos locales</span>
@@ -26,7 +26,7 @@ export function HomeFinance() {
           </div>
         </div>
         <div
-          className="relative hidden min-h-[28rem] overflow-hidden bg-[#1b1d20] lg:block"
+          className="relative hidden min-h-[28rem] overflow-hidden bg-[#12141a] lg:block"
           style={{ borderRadius: "var(--radius-panel)" }}
         >
           <EditorialImage
@@ -35,7 +35,7 @@ export function HomeFinance() {
             sizes="(min-width: 1024px) 42vw, 100vw"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#111214]/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#08090b]/50 to-transparent" />
         </div>
       </div>
     </section>

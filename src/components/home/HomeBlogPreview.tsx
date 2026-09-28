@@ -9,7 +9,7 @@ export function HomeBlogPreview() {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="kicker">Recursos</p>
-            <h2 className="display-section mt-3 text-[#111214]">
+            <h2 className="display-section mt-3 text-[#08090b]">
               Antes de comprar,
               <span className="block">conoce lo importante.</span>
             </h2>
@@ -32,11 +32,11 @@ export function HomeBlogPreview() {
             <Link
               key={article.title}
               href={article.href}
-              className="group block border-t border-[#e5e3de] pt-6 transition-opacity duration-180 hover:opacity-90"
+              className="group block border-t border-[#e4e6ea] pt-6 transition-opacity duration-180 hover:opacity-90"
             >
               {index === 0 ? (
                 <div
-                  className="relative mb-6 aspect-[16/10] overflow-hidden bg-[#1b1d20]"
+                  className="relative mb-6 aspect-[16/10] overflow-hidden bg-[#12141a]"
                   style={{ borderRadius: "var(--radius-lg)" }}
                 >
                   <EditorialImage
@@ -48,7 +48,7 @@ export function HomeBlogPreview() {
                 </div>
               ) : (
                 <div
-                  className="relative mb-6 aspect-[16/10] overflow-hidden bg-[#1b1d20] md:aspect-[16/9]"
+                  className="relative mb-6 aspect-[16/10] overflow-hidden bg-[#12141a] md:aspect-[16/9]"
                   style={{ borderRadius: "var(--radius-lg)" }}
                 >
                   <EditorialImage
@@ -59,10 +59,10 @@ export function HomeBlogPreview() {
                   />
                 </div>
               )}
-              <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#9b793f]">
+              <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#2b6cff]">
                 {article.category}
               </p>
-              <h3 className="mt-3 font-display text-xl font-semibold tracking-tight text-[#111214] md:text-2xl">
+              <h3 className="mt-3 font-display text-xl font-semibold tracking-tight text-[#08090b] md:text-2xl">
                 {article.title}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-[#676a70]">{article.excerpt}</p>

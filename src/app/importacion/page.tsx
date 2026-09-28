@@ -49,21 +49,21 @@ export default function ImportacionPage() {
       <section className="section-light bg-white">
         <div className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
           <p className="kicker">Proceso</p>
-          <h2 className="mt-2 max-w-2xl font-display text-2xl font-bold tracking-tight text-[#141414] md:text-4xl">
+          <h2 className="mt-2 max-w-2xl font-display text-2xl font-bold tracking-tight text-[#0b0c0e] md:text-4xl">
             Cómo llega un vehículo a RD
           </h2>
           <p className="mt-3 max-w-2xl text-base leading-relaxed text-[#5c5c5c]">
             Esta página cubre el traslado. La búsqueda en subastas está en{" "}
-            <Link href="/subastas" className="font-medium text-[#141414] underline underline-offset-4">
+            <Link href="/subastas" className="font-medium text-[#0b0c0e] underline underline-offset-4">
               Subastas
             </Link>
             .
           </p>
           <div className="mt-8 grid gap-3 sm:grid-cols-2">
             {PHASES.map((phase) => (
-              <article key={phase.step} className="rounded-2xl border border-[#e6e2db] bg-[#f7f5f1] p-5">
-                <p className="text-xs font-medium text-[#9b793f]">{phase.step}</p>
-                <h3 className="mt-2 font-display text-xl font-semibold text-[#141414]">{phase.title}</h3>
+              <article key={phase.step} className="rounded-2xl border border-[#e4e6ea] bg-[#f7f5f1] p-5">
+                <p className="text-xs font-medium text-[#2b6cff]">{phase.step}</p>
+                <h3 className="mt-2 font-display text-xl font-semibold text-[#0b0c0e]">{phase.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-[#5c5c5c]">{phase.copy}</p>
               </article>
             ))}
@@ -71,10 +71,10 @@ export default function ImportacionPage() {
         </div>
       </section>
 
-      <section className="bg-[#141414]">
+      <section className="bg-[#0b0c0e]">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-[0.85fr_1.15fr] md:px-8 md:py-16">
           <div>
-            <p className="kicker text-[#C7A96B]">Estimación</p>
+            <p className="kicker text-[#2B6CFF]">Estimación</p>
             <h2 className="mt-2 font-display text-2xl font-semibold tracking-tight text-white md:text-3xl">
               Calcula partidas de referencia
             </h2>

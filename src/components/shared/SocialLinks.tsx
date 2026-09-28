@@ -36,7 +36,7 @@ function FacebookIcon({ className }: { className?: string }) {
 const darkBox =
   "inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/12 bg-white/5 transition duration-200 hover:-translate-y-0.5 hover:scale-[1.04] hover:border-white/25 hover:shadow-[0_8px_18px_rgba(0,0,0,0.28)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white motion-reduce:transform-none lg:h-12 lg:w-12";
 const lightBox =
-  "inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[#ececea] bg-white transition duration-200 hover:-translate-y-0.5 hover:scale-[1.04] hover:border-[#C7A96B]/50 hover:shadow-[0_8px_18px_rgba(0,0,0,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111] motion-reduce:transform-none lg:h-12 lg:w-12";
+  "inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[#ececea] bg-white transition duration-200 hover:-translate-y-0.5 hover:scale-[1.04] hover:border-[#2B6CFF]/50 hover:shadow-[0_8px_18px_rgba(0,0,0,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111] motion-reduce:transform-none lg:h-12 lg:w-12";
 
 export function SocialLinks({
   className = "",

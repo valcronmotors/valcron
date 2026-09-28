@@ -20,11 +20,11 @@ export function InventoryEmptyState({
     <div
       className={
         light
-          ? "rounded-2xl border border-[#e6e2db] bg-white px-6 py-12 text-center"
+          ? "rounded-2xl border border-[#e4e6ea] bg-white px-6 py-12 text-center"
           : "gloss-panel px-6 py-12 text-center"
       }
     >
-      <p className={`font-display text-2xl ${light ? "text-[#141414]" : "text-white"}`}>{title}</p>
+      <p className={`font-display text-2xl ${light ? "text-[#0b0c0e]" : "text-white"}`}>{title}</p>
       <p className={`mx-auto mt-3 max-w-xl text-sm leading-relaxed ${light ? "text-[#5c5c5c]" : "text-[#d4d4d4]"}`}>
         {copy}
       </p>

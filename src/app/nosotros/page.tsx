@@ -112,7 +112,7 @@ export default function NosotrosPage() {
                   key={item.title}
                   className="flex h-full min-w-0 flex-col rounded-[1.15rem] border border-white/10 bg-[#0D0E10] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.06)] sm:p-8"
                 >
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[#C7A96B]">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[#2B6CFF]">
                     <item.icon className="h-5 w-5" strokeWidth={2.2} />
                   </span>
                   <h3 className="mt-5 font-display text-2xl font-semibold text-white">{item.title}</h3>

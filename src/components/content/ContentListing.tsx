@@ -44,7 +44,7 @@ export function ContentListing({ kind }: { kind: ContentKind }) {
   return (
     <main>
       <PageHero kicker={copy.kicker} title={copy.title} subtitle={copy.subtitle} image={copy.image} imageAlt={copy.imageAlt} />
-      <section className="section-light bg-[#f6f5f1]">
+      <section className="section-light bg-[#f5f6f7]">
         <div className="mx-auto w-full max-w-7xl px-4 py-14 lg:px-8 lg:py-20">
           {categories.length ? (
             <p className="text-xs uppercase tracking-[0.16em] text-[#676a70]">
@@ -55,7 +55,7 @@ export function ContentListing({ kind }: { kind: ContentKind }) {
           {featured ? (
             <Link
               href={contentPath(featured)}
-              className="mt-8 grid min-w-0 overflow-hidden border border-[#e5e3de] bg-white lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]"
+              className="mt-8 grid min-w-0 overflow-hidden border border-[#e4e6ea] bg-white lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]"
               style={{ borderRadius: "var(--radius-panel)" }}
             >
               <div className="relative aspect-[16/10] min-h-[13rem] lg:aspect-auto lg:min-h-[24rem]">
@@ -68,7 +68,7 @@ export function ContentListing({ kind }: { kind: ContentKind }) {
               </div>
               <div className="flex min-w-0 flex-col justify-center p-6 sm:p-10 lg:p-12">
                 <p className="kicker">{featured.category}</p>
-                <h2 className="mt-3 text-balance break-words font-display text-3xl font-semibold tracking-tight text-[#111214] sm:text-4xl">
+                <h2 className="mt-3 text-balance break-words font-display text-3xl font-semibold tracking-tight text-[#08090b] sm:text-4xl">
                   {featured.title}
                 </h2>
                 <p className="mt-4 text-base leading-relaxed text-[#676a70]">{featured.excerpt}</p>
@@ -83,7 +83,7 @@ export function ContentListing({ kind }: { kind: ContentKind }) {
           )}
 
           {rest.length ? (
-            <div className="mt-12 grid gap-8 border-t border-[#e5e3de] pt-10 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-12 grid gap-8 border-t border-[#e4e6ea] pt-10 sm:grid-cols-2 xl:grid-cols-3">
               {rest.map((article) => (
                 <Link
                   key={article.slug}
@@ -91,7 +91,7 @@ export function ContentListing({ kind }: { kind: ContentKind }) {
                   className="group flex min-w-0 flex-col"
                 >
                   <div
-                    className="relative aspect-[16/10] overflow-hidden bg-[#1b1d20]"
+                    className="relative aspect-[16/10] overflow-hidden bg-[#12141a]"
                     style={{ borderRadius: "var(--radius-lg)" }}
                   >
                     <EditorialImage
@@ -102,10 +102,10 @@ export function ContentListing({ kind }: { kind: ContentKind }) {
                     />
                   </div>
                   <div className="flex flex-1 flex-col pt-5">
-                    <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#9b793f]">
+                    <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#2b6cff]">
                       {article.category}
                     </p>
-                    <h2 className="mt-2 text-balance break-words font-display text-xl font-semibold text-[#111214] md:text-2xl">
+                    <h2 className="mt-2 text-balance break-words font-display text-xl font-semibold text-[#08090b] md:text-2xl">
                       {article.title}
                     </h2>
                     <p className="mt-2 flex-1 text-sm leading-relaxed text-[#676a70]">

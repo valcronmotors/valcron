@@ -15,9 +15,9 @@ const SOURCING = [
 
 export function HomeProcess() {
   return (
-    <section id="proceso" className="section-dark bg-[#111214]">
+    <section id="proceso" className="section-dark bg-[#08090b]">
       <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-24">
-        <p className="kicker text-[#c7a96b]">Cómo comprar</p>
+        <p className="kicker text-[#2b6cff]">Cómo comprar</p>
         <h2 className="display-section mt-4 max-w-2xl text-white">
           Un proceso corto,
           <span className="block">sin rodeos.</span>
@@ -34,7 +34,7 @@ export function HomeProcess() {
                   key={item.step}
                   className="grid grid-cols-[3.5rem_1fr] gap-4 border-t border-white/10 py-5"
                 >
-                  <span className="font-display text-sm font-semibold tracking-[0.14em] text-[#c7a96b]">
+                  <span className="font-display text-sm font-semibold tracking-[0.14em] text-[#2b6cff]">
                     {item.step}
                   </span>
                   <div>
@@ -58,7 +58,7 @@ export function HomeProcess() {
                   key={item.step}
                   className="grid grid-cols-[3.5rem_1fr] gap-4 border-t border-white/10 py-5"
                 >
-                  <span className="font-display text-sm font-semibold tracking-[0.14em] text-[#c7a96b]">
+                  <span className="font-display text-sm font-semibold tracking-[0.14em] text-[#2b6cff]">
                     {item.step}
                   </span>
                   <div>

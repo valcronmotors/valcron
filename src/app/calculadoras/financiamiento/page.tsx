@@ -25,7 +25,7 @@ export default function CalculadoraFinanciamientoPage() {
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-[0.8fr_1.2fr] md:px-8 md:py-16">
           <div>
             <p className="kicker">Estimación</p>
-            <h2 className="mt-3 font-display text-2xl font-semibold tracking-tight text-[#141414] md:text-4xl">
+            <h2 className="mt-3 font-display text-2xl font-semibold tracking-tight text-[#0b0c0e] md:text-4xl">
               Calcula escenarios antes de solicitar información
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-[#5c5c5c]">

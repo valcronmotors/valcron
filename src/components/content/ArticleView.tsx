@@ -29,7 +29,7 @@ function RichText({ text }: { text: string }) {
           <Link
             key={index}
             href={href}
-            className="font-medium text-[#111] underline decoration-[#C7A96B]/70 underline-offset-4 hover:decoration-[#C7A96B]"
+            className="font-medium text-[#111] underline decoration-[#2B6CFF]/70 underline-offset-4 hover:decoration-[#2B6CFF]"
             {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
           >
             {label}
@@ -85,7 +85,7 @@ function BlockView({ block }: { block: ContentBlock }) {
     );
   }
   return (
-    <aside className="rounded-2xl border border-[#C7A96B]/35 bg-[#111111] px-5 py-4 text-[#D4D4D4]">
+    <aside className="rounded-2xl border border-[#2B6CFF]/35 bg-[#111111] px-5 py-4 text-[#D4D4D4]">
       {block.title ? <p className="text-sm font-semibold text-white">{block.title}</p> : null}
       <p className={`text-sm leading-relaxed ${block.title ? "mt-2" : ""}`}>
         <RichText text={block.text} />
@@ -188,7 +188,7 @@ export function ArticleView({ article }: { article: ContentArticle }) {
                     <Link
                       key={`${item.kind}-${item.slug}`}
                       href={contentPath(item)}
-                      className="rounded-2xl border border-[#ececea] bg-white p-5 hover:border-[#C7A96B]/40"
+                      className="rounded-2xl border border-[#ececea] bg-white p-5 hover:border-[#2B6CFF]/40"
                     >
                       <p className="kicker">{item.kind === "guide" ? "Guía" : "Blog"}</p>
                       <p className="mt-2 font-display text-xl font-semibold text-[#111]">{item.title}</p>

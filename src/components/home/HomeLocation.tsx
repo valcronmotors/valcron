@@ -13,7 +13,7 @@ export function HomeLocation() {
         </h2>
         <div className="mt-10 max-w-xl">
           <p className="flex gap-3 text-sm leading-relaxed text-[#525252]">
-            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#C7A96B]" aria-hidden="true" />
+            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#2B6CFF]" aria-hidden="true" />
             <span>
               <span className="block font-medium text-[#111]">{SITE.facebookDisplay}</span>
               {SITE.address.street}
@@ -22,7 +22,7 @@ export function HomeLocation() {
             </span>
           </p>
           <p className="mt-5 flex gap-3 text-sm text-[#525252]">
-            <Phone className="mt-0.5 h-4 w-4 shrink-0 text-[#C7A96B]" aria-hidden="true" />
+            <Phone className="mt-0.5 h-4 w-4 shrink-0 text-[#2B6CFF]" aria-hidden="true" />
             <a href={officeTelHref()} className="hover:text-[#111] hover:underline">
               {SITE.officePhoneDisplay}
             </a>

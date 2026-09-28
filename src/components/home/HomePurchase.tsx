@@ -46,7 +46,7 @@ export function HomePurchase() {
               key={item.title}
               className="rounded-[1.25rem] border border-[#ececea] bg-white p-6"
             >
-              <item.icon className="h-5 w-5 text-[#C7A96B]" strokeWidth={1.7} />
+              <item.icon className="h-5 w-5 text-[#2B6CFF]" strokeWidth={1.7} />
               <h3 className="mt-5 font-display text-xl font-semibold text-[#111]">{item.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-[#525252]">{item.copy}</p>
             </article>

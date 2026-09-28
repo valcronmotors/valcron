@@ -91,14 +91,14 @@ export function QuoteForm({
   }
 
   return (
-    <form action={handleSubmit} className="relative grid min-w-0 gap-4 rounded-2xl border border-[#e6e2db] bg-white p-6 shadow-[0_10px_28px_rgba(20,20,20,0.06)]">
+    <form action={handleSubmit} className="relative grid min-w-0 gap-4 rounded-2xl border border-[#e4e6ea] bg-white p-6 shadow-[0_10px_28px_rgba(20,20,20,0.06)]">
       {error ? (
         <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
           {error}
         </p>
       ) : null}
       {sent ? (
-        <p role="status" className="rounded-lg border border-[#e6e2db] bg-[#f7f5f1] px-4 py-3 text-sm leading-relaxed text-[#141414]">
+        <p role="status" className="rounded-lg border border-[#e4e6ea] bg-[#f7f5f1] px-4 py-3 text-sm leading-relaxed text-[#0b0c0e]">
           Recibimos tu mensaje. Un asesor de {SITE.shortName} te contactará pronto para continuar.
         </p>
       ) : (

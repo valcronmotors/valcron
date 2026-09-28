@@ -40,14 +40,14 @@ export function VehicleCard({
     <article
       className={`vehicle-card group flex flex-col overflow-hidden ${
         light
-          ? "border border-[#e5e3de] bg-white"
+          ? "border border-[#e4e6ea] bg-white"
           : "gloss-panel"
       }`}
       style={{ borderRadius: "var(--radius-lg)" }}
     >
       <Link
         href={href}
-        className="vehicle-card-media relative aspect-[4/3] overflow-hidden bg-[#1b1d20] sm:aspect-[16/10]"
+        className="vehicle-card-media relative aspect-[4/3] overflow-hidden bg-[#12141a] sm:aspect-[16/10]"
       >
         <VehiclePhoto
           src={cover}
@@ -63,7 +63,7 @@ export function VehicleCard({
         </span>
       </Link>
 
-      <div className={`flex flex-1 flex-col gap-1.5 p-4 ${light ? "text-[#111214]" : "text-white"}`}>
+      <div className={`flex flex-1 flex-col gap-1.5 p-4 ${light ? "text-[#08090b]" : "text-white"}`}>
         <h3 className="font-display text-lg font-semibold leading-snug tracking-tight">
           <Link href={href}>
             {vehicleDisplayTitle({ year, make, model, trim: null, ano: year, marca: make, modelo: model })}
@@ -79,8 +79,8 @@ export function VehicleCard({
             href={href}
             className={
               light
-                ? "inline-flex h-12 items-center justify-center rounded-[0.625rem] bg-[#111214] px-3 text-[0.9375rem] font-semibold text-white transition-colors duration-180 hover:bg-[#1b1d20]"
-                : "inline-flex h-12 items-center justify-center rounded-[0.625rem] bg-white px-3 text-[0.9375rem] font-semibold text-[#111214] transition-colors duration-180 hover:bg-[#ececec]"
+                ? "inline-flex h-12 items-center justify-center rounded-[0.625rem] bg-[#08090b] px-3 text-[0.9375rem] font-semibold text-white transition-colors duration-180 hover:bg-[#12141a]"
+                : "inline-flex h-12 items-center justify-center rounded-[0.625rem] bg-white px-3 text-[0.9375rem] font-semibold text-[#08090b] transition-colors duration-180 hover:bg-[#ececec]"
             }
           >
             Ver detalles
@@ -93,7 +93,7 @@ export function VehicleCard({
               aria-label={quoteLabel}
               className={`inline-flex h-12 min-w-12 items-center justify-center gap-1.5 rounded-[0.625rem] border px-3 text-[0.9375rem] transition-colors duration-180 ${
                 light
-                  ? "border-[#e5e3de] text-[#111214] hover:border-[#111214]"
+                  ? "border-[#e4e6ea] text-[#08090b] hover:border-[#08090b]"
                   : "border-white/15 text-white hover:border-white/40"
               }`}
             >

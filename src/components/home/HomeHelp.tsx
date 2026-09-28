@@ -25,9 +25,9 @@ export function HomeHelp() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-[1.25rem] border border-[#ececea] bg-white p-6 transition hover:-translate-y-1 hover:border-[#C7A96B]/40"
+              className="rounded-[1.25rem] border border-[#ececea] bg-white p-6 transition hover:-translate-y-1 hover:border-[#2B6CFF]/40"
             >
-              <item.icon className="h-5 w-5 text-[#C7A96B]" strokeWidth={1.7} />
+              <item.icon className="h-5 w-5 text-[#2B6CFF]" strokeWidth={1.7} />
               <h3 className="mt-5 font-display text-xl font-semibold text-[#111]">{item.title}</h3>
               <p className="mt-2 text-sm text-[#525252]">{item.copy}</p>
             </Link>
