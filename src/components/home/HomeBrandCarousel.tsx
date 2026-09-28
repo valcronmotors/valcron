@@ -5,12 +5,10 @@ import { VEHICLE_BRANDS } from "@/lib/vehicle-brands";
 
 function BrandTile({
   name,
-  slug,
   logoSrc,
   duplicate,
 }: {
   name: string;
-  slug: string;
   logoSrc: string;
   duplicate?: boolean;
 }) {
