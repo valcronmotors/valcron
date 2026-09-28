@@ -3,7 +3,7 @@ import { Car, Calculator, Gavel, Search } from "lucide-react";
 
 const ACTIONS = [
   { href: "/inventario", label: "Comprar vehículo", icon: Car },
-  { href: "/solicitar-vehiculo", label: "Solicitar vehículo", icon: Search },
+  { href: "/contacto", label: "Solicitar vehículo", icon: Search },
   { href: "/financiamiento", label: "Financiamiento", icon: Calculator },
   { href: "/subastas", label: "Subastas", icon: Gavel },
 ] as const;

@@ -72,31 +72,40 @@ describe("public website v2 navigation", () => {
     expect(PUBLIC_NAV_PRIMARY.map((item) => item.label)).toEqual([
       "Inicio",
       "Inventario",
-      "Servicios",
+      "Comprar",
       "Financiamiento",
       "Subastas",
+      "Servicios",
       "Nosotros",
     ]);
     expect(PUBLIC_NAV.map((item) => item.label)).toEqual([
       "Inicio",
       "Inventario",
-      "Servicios",
+      "Comprar",
       "Financiamiento",
       "Subastas",
+      "Servicios",
       "Nosotros",
       "Contacto",
     ]);
-    expect(RESOURCE_NAV.map((item) => item.label)).toEqual(["Blog", "Guías", "Calculadoras"]);
+    expect(RESOURCE_NAV.map((item) => item.label)).toEqual([
+      "Blog",
+      "Guías",
+      "Calculadoras",
+      "Preguntas frecuentes",
+    ]);
     expect(MOBILE_NAV.map((item) => item.label)).toEqual([
       "Inicio",
       "Inventario",
-      "Servicios",
+      "Comprar",
       "Financiamiento",
       "Subastas",
+      "Servicios",
       "Nosotros",
       "Blog",
       "Guías",
       "Calculadoras",
+      "Preguntas frecuentes",
       "Contacto",
     ]);
     const labels: string[] = PUBLIC_NAV.map((item) => item.label);
@@ -217,7 +226,7 @@ describe("inventory empty states and filters", () => {
 describe("public copy constraints", () => {
   it("does not present Manheim as an active public integration", () => {
     expect(HOME_FAQS.some((item) => /Manheim/i.test(item.a))).toBe(false);
-    expect(SITE.heroTitle).toBe("Tu próximo vehículo empieza aquí.");
+    expect(SITE.heroTitle).toBe("Tu próximo vehículo, más simple.");
   });
 
   it("uses Dominican WhatsApp copy with vehicle context", () => {

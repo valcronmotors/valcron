@@ -13,15 +13,14 @@ export function HomeAuctions() {
             <span className="block">Más formas de encontrar tu vehículo.</span>
           </h2>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-[#676a70] md:text-lg">
-            Valcron puede asistirte con vehículos disponibles mediante plataformas como Copart e
-            IAA. Son plataformas de subasta, no socios. Te ayudamos a evaluar la unidad y el
-            proceso.
+            Si no está en inventario, podemos asistirte con vehículos disponibles mediante
+            plataformas como Copart e IAA. Son plataformas, no socios.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/subastas" className="btn-primary">
               Explorar subastas
             </Link>
-            <Link href="/solicitar-vehiculo" className="btn-secondary">
+            <Link href="/contacto" className="btn-secondary">
               Solicitar vehículo
             </Link>
           </div>

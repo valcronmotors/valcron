@@ -636,32 +636,32 @@ input[type="range"].luxury-range::-moz-range-thumb {
   border: 2px solid #2b6cff;
 }
 
-/* Admin tokens — do not alter public mapping */
+/* Admin console — Valcron gloss black + electric blue accents (V6) */
 .admin-console {
-  --admin-bg: #f6f7f8;
+  --admin-bg: #f5f6f7;
   --admin-surface: #ffffff;
   --admin-surface-elevated: #ffffff;
-  --admin-surface-muted: #f1f2f4;
-  --admin-border: #e6e8eb;
+  --admin-surface-muted: #eef0f3;
+  --admin-border: #e4e6ea;
   --admin-border-strong: #cfd3d8;
-  --admin-text: #121417;
+  --admin-text: #0b0c0e;
   --admin-text-secondary: #4a4f57;
-  --admin-text-muted: #6b717a;
-  --admin-brand: #c7a96b;
-  --admin-brand-hover: #b49355;
-  --admin-nav: #0b0d10;
-  --admin-nav-hover: #15181d;
-  --admin-nav-text: #ececec;
-  --admin-nav-muted: #9aa0a8;
+  --admin-text-muted: #676a70;
+  --admin-brand: #2b6cff;
+  --admin-brand-hover: #1f56e0;
+  --admin-nav: #08090b;
+  --admin-nav-hover: #12141a;
+  --admin-nav-text: #f7f8fa;
+  --admin-nav-muted: #a3a3a3;
   --admin-success: #1f7a4d;
   --admin-success-bg: #e8f5ee;
   --admin-warning: #8a6414;
   --admin-warning-bg: #f7f1e3;
   --admin-danger: #9b2c2c;
   --admin-danger-bg: #f8eaea;
-  --admin-info: #2c5282;
-  --admin-focus: #c7a96b;
-  --admin-shadow: 0 1px 2px rgba(18, 20, 23, 0.04), 0 10px 28px rgba(18, 20, 23, 0.05);
+  --admin-info: #2b6cff;
+  --admin-focus: #2b6cff;
+  --admin-shadow: 0 1px 2px rgba(8, 9, 11, 0.04), 0 10px 28px rgba(8, 9, 11, 0.05);
   color: var(--admin-text);
   background: var(--admin-bg);
 }

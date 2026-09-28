@@ -75,7 +75,7 @@ export const GUIDE_ARTICLES: ContentArticle[] = [
       {
         type: "callout",
         title: "Dónde entra Valcron Motors",
-        text: "Como dealer en Av Principal 20, Santo Domingo Este, orientamos búsqueda, costos documentados e importación. No somos Aduanas ni el banco. Para iniciar el flujo, visita [Importación](/importacion) o [solicita un vehículo](/solicitar-vehiculo).",
+        text: "Como dealer en Av Principal 20, Santo Domingo Este, orientamos búsqueda, costos documentados e importación. No somos Aduanas ni el banco. Para iniciar el flujo, visita [Importación](/importacion) o [solicita un vehículo](/contacto).",
       },
     ],
     faq: [
@@ -121,7 +121,7 @@ export const GUIDE_ARTICLES: ContentArticle[] = [
     blocks: [
       {
         type: "p",
-        text: "Las subastas de vehículos en Estados Unidos permiten pujar o, cuando existe, comprar ahora. Desde República Dominicana el comprador rara vez está en el yard. Por eso el proceso se apoya en cuentas, representantes y un dealer que sepa leer costos. Copart, IAA/IAAI y Manheim son plataformas o canales; no son socios de Valcron Motors.",
+        text: "Las subastas de vehículos en Estados Unidos permiten pujar o, cuando existe, comprar ahora. Desde República Dominicana el comprador rara vez está en el yard. Por eso el proceso se apoya en cuentas, representantes y un dealer que sepa leer costos. Copart e IAA/IAAI son plataformas; no son socios de Valcron Motors.",
       },
       { type: "h2", id: "como-funciona", text: "Cómo funciona una subasta, en corto" },
       {
@@ -137,7 +137,7 @@ export const GUIDE_ARTICLES: ContentArticle[] = [
       { type: "h2", id: "plataformas", text: "Plataformas que verás con más frecuencia" },
       {
         type: "p",
-        text: "Copart e IAA concentran mucho inventario de seguro. Manheim opera otro tipo de subasta, más cercana al canal dealer. Elige por la unidad, no por el logo. Contrasta con [Copart vs IAA](/blog/copart-vs-iaa-subastas-vehiculos-estados-unidos).",
+        text: "Copart e IAA concentran mucho inventario de seguro. Elige por la unidad, no por el logo. Contrasta con [Copart vs IAA](/blog/copart-vs-iaa-subastas-vehiculos-estados-unidos).",
       },
       { type: "h2", id: "desde-rd", text: "Qué cambia cuando compras desde RD" },
       {

@@ -1,21 +1,21 @@
-import { publicPageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { PageHero } from "@/components/public/PageHero";
 import { EditorialImage } from "@/components/shared/EditorialImage";
 import { EDITORIAL } from "@/lib/editorial-media";
 import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { SITE } from "@/lib/site";
+import { publicPageMetadata } from "@/lib/seo";
 
 export const metadata = publicPageMetadata({
-  title: "Servicios de dealer en Santo Domingo Este",
+  title: "Servicios automotrices en Santo Domingo Este",
   description:
-    "Servicios de Valcron Motors: venta de vehículos, búsqueda personalizada, subastas en EE.UU., importación, financiamiento con bancos locales y trade-in.",
+    "Compra de vehículos, búsqueda personalizada, financiamiento con bancos locales, subastas, importación y trade-in. Valcron Motors.",
   path: "/servicios",
 });
 
 const SERVICES = [
   {
-    title: "Venta de vehículos",
+    title: "Compra de vehículos",
     copy: "Unidades publicadas en inventario, listas para evaluar y comprar en República Dominicana.",
     href: "/inventario",
     cta: "Ver inventario",
@@ -24,22 +24,8 @@ const SERVICES = [
   {
     title: "Búsqueda personalizada",
     copy: "Dinos marca, modelo, año y presupuesto. Buscamos opciones que encajen.",
-    href: "/solicitar-vehiculo",
+    href: "/contacto",
     cta: "Solicitar vehículo",
-  },
-  {
-    title: "Subastas",
-    copy: "Te ayudamos a localizar vehículos disponibles mediante subastas en Copart e IAA y gestionar el proceso.",
-    href: "/subastas",
-    cta: "Explorar subastas",
-    image: EDITORIAL.silverSedan,
-  },
-  {
-    title: "Importación",
-    copy: "Acompañamos el proceso de transporte, costos y llegada a República Dominicana.",
-    href: "/importacion",
-    cta: "Ver importación",
-    image: EDITORIAL.carrier,
   },
   {
     title: "Financiamiento",
@@ -48,10 +34,24 @@ const SERVICES = [
     cta: "Conocer opciones",
   },
   {
+    title: "Subastas",
+    copy: "Asistencia con vehículos disponibles mediante plataformas como Copart e IAA.",
+    href: "/subastas",
+    cta: "Explorar subastas",
+    image: EDITORIAL.silverSedan,
+  },
+  {
+    title: "Importación",
+    copy: "Acompañamos el proceso de transporte, costos y llegada cuando aplica a tu caso.",
+    href: "/importacion",
+    cta: "Ver importación",
+    image: EDITORIAL.carrier,
+  },
+  {
     title: "Trade-in",
-    copy: "¿Tienes un vehículo para entregar? Podemos evaluarlo como parte del proceso de compra.",
-    href: "/solicitar-vehiculo",
-    cta: "Consultar mi vehículo",
+    copy: "¿Tienes un vehículo para entregar? Podemos evaluarlo como parte de la compra.",
+    href: "/contacto?asunto=trade-in",
+    cta: "Solicitar evaluación",
   },
 ];
 
@@ -61,7 +61,7 @@ export default function ServiciosPage() {
       <PageHero
         kicker="Servicios"
         title="Cómo te ayudamos a conseguir tu vehículo"
-        subtitle={`Conoce las soluciones de ${SITE.shortName} para encontrar, evaluar y adquirir tu próximo vehículo en República Dominicana.`}
+        subtitle={`Soluciones claras de ${SITE.shortName}: inventario local, búsqueda, financiamiento y opciones de subasta.`}
         image={PAGE_HERO_IMAGES.servicios}
         imageAlt={PAGE_HERO_ALTS.servicios}
       />

@@ -7,12 +7,13 @@ export const SITE = {
   brand: "valcronMotors",
   legalName: "Valcron Motors Group, SRL",
   url: "https://valcronmotors.com",
+  tagline: "Tu próximo vehículo, más simple.",
   heroEyebrow: "Valcron Motors",
-  heroTitle: "Tu próximo vehículo empieza aquí.",
+  heroTitle: "Tu próximo vehículo, más simple.",
   heroSubtitle:
-    "Encuentra vehículos disponibles en República Dominicana o solicita una opción mediante subasta e importación.",
+    "Vehículos disponibles en República Dominicana y opciones adicionales mediante subasta e importación. Atención directa en Santo Domingo Este.",
   valueProposition:
-    "Valcron Motors es un dealer en Santo Domingo Este. Encuentra vehículos disponibles, solicita una unidad o consulta financiamiento con bancos locales.",
+    "Valcron Motors ayuda a clientes en República Dominicana a encontrar, financiar y obtener el vehículo correcto: inventario local, búsqueda personalizada y orientación con bancos locales.",
   address: {
     street: "Av Principal 20",
     streetAddress: "Av Principal 20",
@@ -38,7 +39,7 @@ export const SITE = {
   facebookDisplay: "Valcron Motors Group",
   newsletterEnabled: false,
   defaultWhatsappMessage:
-    "Hola, estoy interesado en información sobre un vehículo de Valcron Motors.",
+    "Hola, quiero información sobre un vehículo con Valcron Motors.",
   maps: {
     query: "Valcron Motors Group, Av Principal 20, Santo Domingo Este, República Dominicana",
     embedTitle: "Ubicación de Valcron Motors Group en Santo Domingo Este",
@@ -53,12 +54,14 @@ export const SITE = {
 
 export const companyConfig = SITE;
 
+/** Customer-intent primary navigation (V6). */
 export const PUBLIC_NAV_PRIMARY = [
   { href: "/", label: "Inicio" },
   { href: "/inventario", label: "Inventario" },
-  { href: "/servicios", label: "Servicios" },
+  { href: "/comprar", label: "Comprar" },
   { href: "/financiamiento", label: "Financiamiento" },
   { href: "/subastas", label: "Subastas" },
+  { href: "/servicios", label: "Servicios" },
   { href: "/nosotros", label: "Nosotros" },
 ] as const;
 
@@ -70,29 +73,30 @@ export const RESOURCE_NAV = [
   { href: "/blog", label: "Blog" },
   { href: "/guias", label: "Guías" },
   { href: "/calculadoras", label: "Calculadoras" },
+  { href: "/preguntas-frecuentes", label: "Preguntas frecuentes" },
 ] as const;
 
 export const MOBILE_NAV = [...PUBLIC_NAV_PRIMARY, ...RESOURCE_NAV, PUBLIC_NAV_CONTACT] as const;
 
 export const FOOTER_INVENTORY = [
   { href: "/inventario", label: "Vehículos disponibles" },
-  { href: "/inventario", label: "Buscar vehículo" },
-  { href: "/solicitar-vehiculo", label: "Solicitar vehículo" },
+  { href: "/contacto", label: "Solicitar vehículo" },
+  { href: "/comprar", label: "Cómo comprar" },
 ] as const;
 
 export const FOOTER_SERVICES = [
-  { href: "/inventario", label: "Venta de vehículos" },
-  { href: "/solicitar-vehiculo", label: "Búsqueda personalizada" },
-  { href: "/subastas", label: "Subastas en EE.UU." },
-  { href: "/importacion", label: "Importación" },
+  { href: "/inventario", label: "Compra de vehículos" },
+  { href: "/contacto", label: "Búsqueda personalizada" },
   { href: "/financiamiento", label: "Financiamiento" },
-  { href: "/solicitar-vehiculo", label: "Recibimos tu vehículo" },
+  { href: "/subastas", label: "Subastas" },
+  { href: "/importacion", label: "Importación" },
+  { href: "/contacto?asunto=trade-in", label: "Trade-in" },
 ] as const;
 
 export const FOOTER_CONTACT = [
   { href: "/contacto", label: "Visítanos" },
   { href: SITE.whatsappUrl, label: "WhatsApp" },
-  { href: "/solicitar-vehiculo", label: "Solicitar vehículo" },
+  { href: "/contacto", label: "Escribirnos" },
 ] as const;
 
 export const FOOTER_RESOURCES = [
@@ -104,15 +108,15 @@ export const FOOTER_RESOURCES = [
 
 export const FOOTER_COMPANY = [
   { href: "/nosotros", label: "Nosotros" },
-  { href: "/como-funciona", label: "Cómo funciona" },
+  { href: "/comprar", label: "Cómo comprar" },
   { href: "/contacto", label: "Contacto" },
 ] as const;
 
 export const FOOTER_EXPLORE = [
   { href: "/", label: "Inicio" },
   { href: "/inventario", label: "Inventario" },
-  { href: "/importacion", label: "Importación" },
   { href: "/subastas", label: "Subastas" },
+  { href: "/financiamiento", label: "Financiamiento" },
 ] as const;
 
 export const FOOTER_NAV = [
@@ -141,6 +145,7 @@ export const PUBLIC_PATHS = [
   "/blog",
   "/guias",
   "/nosotros",
+  "/comprar",
   "/politicas",
   "/terminos",
   "/privacidad",

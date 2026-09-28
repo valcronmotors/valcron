@@ -6,6 +6,7 @@ import { getPublicSitemapVehicles } from "@/lib/vehicles/adapter";
 const STATIC_PATHS = [
   "/",
   "/inventario",
+  "/comprar",
   "/subastas",
   "/importacion",
   "/financiamiento",
@@ -14,7 +15,6 @@ const STATIC_PATHS = [
   "/contacto",
   "/blog",
   "/guias",
-  "/como-funciona",
   "/preguntas-frecuentes",
   "/calculadoras",
   "/calculadoras/financiamiento",

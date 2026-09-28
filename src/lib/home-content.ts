@@ -1,31 +1,35 @@
 export const HOME_FAQS = [
   {
+    q: "¿Dónde están ubicados?",
+    a: "En Av Principal 20, Santo Domingo Este, República Dominicana. Puedes visitarnos, llamar al (809) 623-9381 o escribir por WhatsApp al (829) 321-1271.",
+  },
+  {
     q: "¿Tienen vehículos disponibles en República Dominicana?",
-    a: "Sí, cuando hay unidades publicadas en inventario como disponibles para compra local. El catálogo indica el estado de cada vehículo. Si no ves la unidad que buscas, podemos explorar otras opciones.",
+    a: "Sí, cuando hay unidades publicadas en inventario. Cada ficha indica el estado. Si no ves lo que buscas, podemos explorar otras opciones.",
   },
   {
     q: "¿Puedo financiar mi vehículo?",
-    a: "Puedes explorar escenarios de inicial, plazo y cuota estimada. Las opciones, tasas, requisitos y aprobaciones las define cada banco local según el perfil del solicitante. Valcron Motors no es un banco.",
+    a: "Puedes explorar escenarios de inicial, plazo y cuota estimada. Las opciones, tasas y aprobaciones las define cada banco local según tu perfil. Valcron no es un banco.",
   },
   {
-    q: "¿Cómo funciona la inicial?",
-    a: "La inicial es el pago inicial sobre el precio del vehículo. El resto puede evaluarse para financiamiento con bancos locales. El porcentaje y las condiciones dependen de cada institución y del caso.",
+    q: "¿Trabajan con bancos locales?",
+    a: "Te orientamos para presentar tu caso ante instituciones financieras locales. La decisión final es del banco.",
   },
   {
-    q: "¿Pueden orientarme con el seguro del vehículo?",
-    a: "Sí. Te orientamos para gestionar opciones de cobertura disponibles, incluida full cover cuando corresponda. No somos aseguradora ni intermediario autorizado; la cobertura la define cada aseguradora.",
-  },
-  {
-    q: "¿Los vehículos tienen garantía?",
-    a: "Algunos vehículos elegibles pueden tener opciones de garantía o protección. No todas las unidades incluyen cobertura. Consulta condiciones caso por caso antes de comprar.",
-  },
-  {
-    q: "¿Pueden buscar un vehículo específico para mí?",
-    a: "Sí. Indica marca, modelo, año, presupuesto y preferencias. Exploramos inventario y otras fuentes adecuadas para encontrar el vehículo que buscas.",
+    q: "¿Pueden buscar un vehículo para mí?",
+    a: "Sí. Indica marca, modelo, año, presupuesto y preferencias. Revisamos inventario y otras fuentes adecuadas.",
   },
   {
     q: "¿Cómo funcionan las subastas?",
-    a: "Las plataformas publican vehículos con fotos, lote, daños y tipo de título. Te ayudamos a evaluar la unidad y el proceso de compra. Copart e IAA son plataformas; no somos socios oficiales de esas compañías.",
+    a: "Plataformas como Copart e IAA publican vehículos con fotos y datos de lote. Te ayudamos a evaluar y cotizar el proceso. Son plataformas, no socios de Valcron.",
+  },
+  {
+    q: "¿Puedo entregar mi vehículo?",
+    a: "Sí, podemos evaluar tu unidad como parte de la compra. El valor se confirma después de revisar la unidad.",
+  },
+  {
+    q: "¿Cómo funciona una importación?",
+    a: "Cuando aplica, te orientamos en selección, compra, transporte y proceso de llegada a República Dominicana. Los tiempos y costos dependen de cada caso.",
   },
 ] as const;
 
@@ -33,7 +37,7 @@ export const PAGE_FAQS = [
   ...HOME_FAQS,
   {
     q: "¿Cuánto tarda una importación?",
-    a: "El tiempo depende del vehículo, el transporte, el embarque y el proceso en República Dominicana. Te orientamos con un cronograma estimado para cada caso, no con una promesa genérica.",
+    a: "Depende del vehículo, el transporte y el proceso en República Dominicana. Te damos un cronograma estimado para tu caso, no una promesa genérica.",
   },
 ] as const;
 
@@ -41,8 +45,8 @@ export const HOME_ARTICLES = [
   {
     href: "/guias/checklist-vehiculo-usado-antes-de-comprar",
     category: "Guías",
-    title: "Cómo comprar un vehículo usado",
-    excerpt: "Una lista práctica para revisar unidad, historial y costos antes de decidir.",
+    title: "Checklist antes de comprar un usado",
+    excerpt: "Qué revisar en la unidad, el historial y los costos antes de decidir.",
     image: {
       src: "https://images.unsplash.com/photo-1489824904134-891ab64532f1?auto=format&fit=crop&w=1600&q=75",
       alt: "Fotografía ilustrativa de un vehículo listo para inspección",
@@ -51,11 +55,11 @@ export const HOME_ARTICLES = [
   {
     href: "/guias/comprar-vehiculos-subastas-estados-unidos-desde-rd",
     category: "Guías",
-    title: "Cómo funcionan las subastas",
-    excerpt: "Plataformas, lote, pujas y lo que conviene revisar antes de ofertar.",
+    title: "Subastas desde República Dominicana",
+    excerpt: "Cómo leer opciones en plataformas como Copart e IAA antes de ofertar.",
     image: {
-      src: "https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?auto=format&fit=crop&w=1600&q=75",
-      alt: "SUV compacto contemporáneo, fotografía ilustrativa",
+      src: "https://images.unsplash.com/photo-1617469767053-d3b523a0b982?auto=format&fit=crop&w=1600&q=75",
+      alt: "SUV contemporáneo, fotografía ilustrativa",
     },
   },
   {

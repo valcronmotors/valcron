@@ -35,7 +35,7 @@ export function InventoryEmptyState({
           </button>
         ) : null}
         {showRequest ? (
-          <Link href="/solicitar-vehiculo" className="btn-primary">
+          <Link href="/contacto" className="btn-primary">
             Solicitar vehículo
           </Link>
         ) : null}
