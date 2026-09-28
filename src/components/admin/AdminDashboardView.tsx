@@ -76,7 +76,6 @@ export function AdminDashboardView({
   const sold = localVehicles.filter((row) => row.status === "sold");
   const drafts = localVehicles.filter((row) => row.status === "draft" || !row.published);
   const hidden = localVehicles.filter((row) => row.status === "hidden");
-  const featured = localVehicles.filter((row) => row.featured && row.published);
   const publishedAuctions = auctionVehicles.filter((row) => row.published);
   const newInquiries = inquiries.filter((row) => row.status === "new");
   const recentVehicles = localVehicles.slice(0, 6);
