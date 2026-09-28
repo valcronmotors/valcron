@@ -23,9 +23,12 @@ function isActivePath(pathname: string, href: string) {
 }
 
 const navLinkClass =
-  "relative shrink-0 whitespace-nowrap px-2 py-2 text-[13px] font-medium text-[#3a3d42] transition-colors duration-180 hover:text-[#08090b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff] xl:px-2.5";
+  "relative shrink-0 whitespace-nowrap px-1.5 py-2 text-[13px] font-medium text-[#3a3d42] transition-colors duration-180 hover:text-[#08090b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff] 2xl:px-2.5";
 const navActiveClass =
-  "text-[#08090b] after:absolute after:bottom-1 after:left-2 after:right-2 after:h-px after:bg-[#2b6cff]";
+  "text-[#08090b] after:absolute after:bottom-1 after:left-1.5 after:right-1.5 after:h-px after:bg-[#2b6cff]";
+
+/** Full horizontal nav needs room; logo already covers Inicio. */
+const DESKTOP_NAV_PRIMARY = PUBLIC_NAV_PRIMARY.filter((item) => item.href !== "/");
 
 export function Navbar() {
   const pathname = usePathname();
@@ -53,7 +56,8 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    const desktop = window.matchMedia("(min-width: 1024px)");
+    // Match when the horizontal nav is visible (xl+).
+    const desktop = window.matchMedia("(min-width: 1280px)");
     function applyOverflow() {
       document.body.style.overflow = open && !desktop.matches ? "hidden" : "";
     }
@@ -108,8 +112,11 @@ export function Navbar() {
             <BrandLogo size="header" tone="onLight" />
           </Link>
 
-          <nav className="hidden min-w-0 flex-1 items-center justify-center lg:flex" aria-label="Principal">
-            {PUBLIC_NAV_PRIMARY.map((item) => {
+          <nav
+            className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 overflow-hidden xl:flex"
+            aria-label="Principal"
+          >
+            {DESKTOP_NAV_PRIMARY.map((item) => {
               const active = isActivePath(pathname, item.href);
               return (
                 <Link
@@ -168,20 +175,20 @@ export function Navbar() {
             </Link>
           </nav>
 
-          <div className="ml-auto flex shrink-0 items-center gap-2">
-            <div className="hidden lg:block">
+          <div className="relative z-10 ml-auto flex shrink-0 items-center gap-2">
+            <div className="hidden 2xl:block">
               <CurrencySwitch compact tone="light" />
             </div>
             <Link
               href="/inventario"
-              className="hidden h-11 items-center rounded-full bg-[#08090b] px-5 text-sm font-semibold text-white transition-colors duration-180 hover:bg-[#12141a] lg:inline-flex"
+              className="hidden h-11 items-center rounded-full bg-[#08090b] px-4 text-sm font-semibold text-white transition-colors duration-180 hover:bg-[#12141a] xl:inline-flex 2xl:px-5"
             >
               Ver inventario
             </Link>
             <button
               ref={menuButtonRef}
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center text-[#08090b] lg:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center text-[#08090b] xl:hidden"
               onClick={() => setOpen((value) => !value)}
               aria-expanded={open}
               aria-controls="mobile-nav"
@@ -207,7 +214,7 @@ export function Navbar() {
       {open ? (
         <div
           id="mobile-nav"
-          className="fixed inset-0 z-[70] flex flex-col bg-white pt-[var(--header-height)] lg:hidden"
+          className="fixed inset-0 z-[70] flex flex-col bg-white pt-[var(--header-height)] xl:hidden"
         >
           <nav className="flex flex-1 flex-col overflow-y-auto px-5 pb-4" aria-label="Menú">
             {MOBILE_NAV.map((item) => {
