@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import { BrandLogo } from "@/components/public/BrandLogo";
 import { CurrencySwitch } from "@/components/public/CurrencyProvider";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
@@ -175,13 +175,20 @@ export function Navbar() {
             </Link>
           </nav>
 
-          <div className="relative z-10 ml-auto flex shrink-0 items-center gap-2">
+          <div className="relative z-10 ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
             <div className="hidden 2xl:block">
               <CurrencySwitch compact tone="light" />
             </div>
             <Link
               href="/inventario"
-              className="hidden h-11 items-center rounded-full bg-[#08090b] px-4 text-sm font-semibold text-white transition-colors duration-180 hover:bg-[#12141a] xl:inline-flex 2xl:px-5"
+              aria-label="Buscar inventario"
+              className="inline-flex h-11 w-11 items-center justify-center text-[#08090b] xl:hidden"
+            >
+              <Search className="h-[1.15rem] w-[1.15rem]" strokeWidth={1.75} aria-hidden="true" />
+            </Link>
+            <Link
+              href="/inventario"
+              className="hidden h-10 items-center rounded-full bg-[#08090b] px-3.5 text-sm font-semibold text-white transition-colors duration-180 hover:bg-[#12141a] sm:inline-flex xl:h-11 xl:px-4 2xl:px-5"
             >
               Ver inventario
             </Link>

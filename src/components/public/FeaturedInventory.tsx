@@ -52,11 +52,18 @@ export function FeaturedInventory({
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3">
-            {visible.map((vehicle) => (
-              <VehicleCard key={vehicle.id} vehicle={vehicle} tone="light" compact />
-            ))}
-          </div>
+          <>
+            <div className="-mx-[var(--page-gutter)] flex snap-x snap-mandatory gap-3 overflow-x-auto px-[var(--page-gutter)] pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden xl:mx-0 xl:grid xl:grid-cols-3 xl:gap-4 xl:overflow-visible xl:px-0 xl:pb-0">
+              {visible.map((vehicle) => (
+                <div
+                  key={vehicle.id}
+                  className="w-[min(72vw,18.5rem)] shrink-0 snap-start sm:w-[min(46vw,20rem)] xl:w-auto xl:shrink"
+                >
+                  <VehicleCard vehicle={vehicle} tone="light" compact />
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </PageContainer>
     </Section>

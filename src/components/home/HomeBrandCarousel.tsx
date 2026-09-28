@@ -12,16 +12,16 @@ export function HomeBrandCarousel() {
         className="mx-auto w-full max-w-[var(--content-max)] py-5 md:py-6"
         style={{ paddingInline: "var(--page-gutter)" }}
       >
-        <div className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="-mx-1 flex snap-x snap-mandatory gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-3">
           {VEHICLE_BRANDS.map((brand) => (
             <Link
               key={brand.name}
               href={inventorySearchHref({ marca: brand.name })}
-              className="flex w-[4.75rem] shrink-0 snap-start flex-col items-center gap-2 sm:w-[5.25rem]"
+              className="flex w-[4.5rem] shrink-0 snap-start flex-col items-center gap-2 sm:w-[5.25rem]"
             >
               <span
-                className="flex h-14 w-14 items-center justify-center border border-[#e4e6ea] bg-white text-[#08090b] sm:h-16 sm:w-16"
-                style={{ borderRadius: "9999px" }}
+                className="flex h-[4.25rem] w-[4.25rem] items-center justify-center border border-[#e4e6ea] bg-white text-[#08090b] shadow-[0_4px_14px_rgba(8,9,11,0.04)] sm:h-[4.75rem] sm:w-[4.75rem]"
+                style={{ borderRadius: "1.1rem" }}
                 aria-hidden="true"
               >
                 <BrandMark name={brand.name} className="h-8 w-8 sm:h-9 sm:w-9" />
