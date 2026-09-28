@@ -73,7 +73,7 @@ export const BLOG_ARTICLES: ContentArticle[] = [
       {
         question: "¿Valcron Motors es socio de Copart o IAA?",
         answer:
-          "No. Copart, IAA/IAAI y Manheim son plataformas o fuentes de mercado. Valcron Motors las usa como referencia de búsqueda, no como alianza comercial.",
+          "No. Copart e IAA/IAAI son plataformas de subasta. Valcron Motors las usa como fuentes de mercado, no como socios o afiliados.",
       },
     ],
     related: [
@@ -117,7 +117,7 @@ export const BLOG_ARTICLES: ContentArticle[] = [
       { type: "h2", id: "como-distinguirlas", text: "Cómo distinguirlas en la práctica" },
       {
         type: "p",
-        text: "Copart concentra un volumen alto de unidades de seguro y salvage, con un lenguaje de listado que hay que aprender (damage, keys, runs). IAA/IAAI opera un modelo comparable de subasta de seguros, con su propia ficha, fotos y reglas de yard. Manheim, en cambio, es un canal distinto, más asociado a dealer-to-dealer; no lo mezcles en la misma frase como si fuera el mismo producto.",
+        text: "Copart concentra un volumen alto de unidades de seguro y salvage, con un lenguaje de listado que hay que aprender (damage, keys, runs). IAA/IAAI opera un modelo comparable de subasta de seguros, con su propia ficha, fotos y reglas de yard. Cada plataforma tiene reglas distintas: contrasta ficha, fotos y costos antes de decidir.",
       },
       {
         type: "p",
@@ -140,7 +140,7 @@ export const BLOG_ARTICLES: ContentArticle[] = [
           "Elegir solo porque un lote “se ve barato” en dólares de puja.",
           "Ignorar el tipo de título porque la foto del exterior está limpia.",
           "Asumir que Copart e IAA publican la misma información con los mismos campos.",
-          "Tratar a Manheim, Copart e IAA como un único “socio de Valcron”.",
+          "Tratar a Copart e IAA como un único “socio de Valcron”.",
         ],
       },
       {

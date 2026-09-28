@@ -12,10 +12,10 @@ export function HomeTradeIn() {
           </h2>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-[#676a70] md:text-lg">
             Podemos evaluar tu unidad como parte del proceso de compra. El valor se confirma después
-            de revisar la unidad — no prometemos tasación previa.
+            de revisar la unidad — sin tasación prometida por adelantado.
           </p>
-          <Link href="/solicitar-vehiculo" className="btn-primary mt-8 inline-flex">
-            Consultar mi vehículo
+          <Link href="/contacto?asunto=trade-in" className="btn-primary mt-8 inline-flex">
+            Solicitar evaluación
           </Link>
         </div>
       </div>

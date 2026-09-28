@@ -2,22 +2,22 @@ const ITEMS = [
   {
     step: "01",
     title: "Atención personalizada",
-    copy: "Un trato directo para entender qué buscas y qué opciones tienen sentido para ti.",
+    copy: "Un trato directo para entender qué buscas y qué opciones tienen sentido.",
   },
   {
     step: "02",
     title: "Inventario y búsqueda a la medida",
-    copy: "Unidades publicadas en República Dominicana y, cuando hace falta, búsqueda enfocada fuera del inventario.",
+    copy: "Unidades publicadas en República Dominicana y, cuando hace falta, búsqueda enfocada.",
   },
   {
     step: "03",
     title: "Opciones de financiamiento",
-    copy: "Te orientamos a preparar el caso. La aprobación y las condiciones las define cada banco local.",
+    copy: "Te orientamos a preparar el caso. La aprobación la define cada banco local.",
   },
   {
     step: "04",
-    title: "Vehículos mediante subasta",
-    copy: "Si no está en stock, podemos explorar unidades disponibles en plataformas como Copart e IAA.",
+    title: "Más opciones mediante subasta",
+    copy: "Si no está en stock, exploramos unidades en plataformas como Copart e IAA.",
   },
 ];
 
@@ -27,8 +27,8 @@ export function HomeTrust() {
       <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-24">
         <p className="kicker">Por qué Valcron</p>
         <h2 className="display-section mt-4 max-w-2xl text-[#08090b]">
-          Un dealer serio,
-          <span className="block">con proceso claro.</span>
+          Claridad primero.
+          <span className="block">Proceso después.</span>
         </h2>
         <div className="mt-12 grid gap-0 border-t border-[#e4e6ea] md:grid-cols-2">
           {ITEMS.map((item) => (

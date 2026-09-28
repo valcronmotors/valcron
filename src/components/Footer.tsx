@@ -46,7 +46,7 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
             <Link href="/inventario" className={linkClass}>Inventario</Link>
             <Link href="/financiamiento" className={linkClass}>Financiamiento</Link>
             <Link href="/subastas" className={linkClass}>Subastas</Link>
-            <Link href="/solicitar-vehiculo" className={linkClass}>Solicitar vehículo</Link>
+            <Link href="/contacto" className={linkClass}>Solicitar vehículo</Link>
             <Link href="/contacto" className={linkClass}>Contacto</Link>
           </nav>
         </div>

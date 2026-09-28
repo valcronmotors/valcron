@@ -28,8 +28,8 @@ export const metadata: Metadata = {
   keywords: [
     "Valcron Motors",
     "dealer República Dominicana",
+    "vehículos en venta Santo Domingo Este",
     "comprar vehículo RD",
-    "inventario de vehículos Santo Domingo",
     "financiamiento de vehículos RD",
     "subastas de vehículos USA",
     "importación de vehículos RD",

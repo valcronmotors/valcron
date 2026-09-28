@@ -13,7 +13,7 @@ const SERVICES = [
   {
     title: "Búsqueda personalizada",
     copy: "Dinos marca, modelo, año y presupuesto. Buscamos opciones que encajen.",
-    href: "/solicitar-vehiculo",
+    href: "/contacto",
     cta: "Solicitar vehículo",
   },
   {
@@ -38,7 +38,7 @@ const SERVICES = [
   {
     title: "Trade-in",
     copy: "Recibimos tu vehículo actual como parte de la compra, sujeto a evaluación.",
-    href: "/solicitar-vehiculo",
+    href: "/contacto",
     cta: "Consultar trade-in",
   },
 ];

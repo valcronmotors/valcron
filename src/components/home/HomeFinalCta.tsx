@@ -13,14 +13,14 @@ export function HomeFinalCta() {
         sizes="100vw"
         className="object-cover object-[center_40%]"
       />
-      <div className="absolute inset-0 bg-[#08090b]/70" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#08090b]/80 via-[#08090b]/35 to-transparent" />
+      <div className="absolute inset-0 bg-[#08090b]/72" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#08090b]/85 via-[#08090b]/40 to-transparent" />
       <div className="hero-on-dark relative mx-auto flex min-h-[52svh] max-w-7xl items-end px-4 py-14 md:min-h-[62vh] md:px-8 md:py-24">
         <div className="max-w-2xl">
           <div className="mb-5 h-px w-14 bg-[#2b6cff]" />
           <h2 className="display-section text-white">
-            Tu próximo vehículo
-            <span className="block">puede empezar aquí.</span>
+            ¿Listo para encontrar
+            <span className="block">tu próximo vehículo?</span>
           </h2>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-white/70 md:text-lg">
             Explora el inventario o cuéntanos qué buscas. Te orientamos en la compra y el
@@ -30,6 +30,9 @@ export function HomeFinalCta() {
             <Link href="/inventario" className="btn-primary">
               Ver inventario
             </Link>
+            <Link href="/contacto" className="btn-secondary">
+              Solicitar vehículo
+            </Link>
             <a
               href={whatsappHref()}
               target="_blank"
@@ -37,7 +40,7 @@ export function HomeFinalCta() {
               className="btn-whatsapp"
             >
               <WhatsAppIcon className="h-4 w-4" />
-              Hablar por WhatsApp
+              WhatsApp
             </a>
           </div>
         </div>

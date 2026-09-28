@@ -18,22 +18,20 @@ export function FeaturedInventory({
       vehicle.availability !== "auction",
   );
   const localFirst = dealerStock.length > 0;
-  const visible = (localFirst ? dealerStock : vehicles).slice(0, 4);
+  const visible = (localFirst ? dealerStock : vehicles).slice(0, 6);
   const empty = visible.length === 0 || Boolean(error);
 
   return (
     <section className="section-light bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-24">
+      <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-20">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="kicker">{localFirst ? "Disponibles" : "Inventario"}</p>
-            <h2 className="display-section mt-3 max-w-xl text-[#08090b]">
-              Vehículos disponibles
-            </h2>
+            <p className="kicker">Inventario</p>
+            <h2 className="display-section mt-3 max-w-xl text-[#08090b]">Vehículos disponibles</h2>
             <p className="mt-4 max-w-lg text-base leading-relaxed text-[#676a70]">
               {localFirst
                 ? "Unidades publicadas para compra en República Dominicana."
-                : "Explora las unidades publicadas actualmente en Valcron Motors."}
+                : "Explora las unidades publicadas actualmente. Si no ves lo que buscas, solicítalo."}
             </p>
           </div>
           <Link href="/inventario" className="btn-secondary shrink-0">
@@ -51,7 +49,7 @@ export function FeaturedInventory({
             />
           </div>
         ) : (
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {visible.map((vehicle) => (
               <VehicleCard key={vehicle.id} vehicle={vehicle} tone="light" />
             ))}

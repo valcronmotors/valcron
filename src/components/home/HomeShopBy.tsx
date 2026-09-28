@@ -15,7 +15,7 @@ const CATEGORIES = [
     image: EDITORIAL.crossover,
   },
   {
-    href: "/solicitar-vehiculo",
+    href: "/contacto",
     title: "Búsqueda personalizada",
     copy: "Dinos marca, modelo, año y presupuesto. Exploramos opciones a tu medida.",
     image: EDITORIAL.compactSuv,
