@@ -115,7 +115,7 @@ export const EDITORIAL = {
     caption: "Preparación de cotización",
   },
   processSelect: {
-    src: unsplash("photo-1541899481282-d53bffcf8837", 1400),
+    src: unsplash("photo-1519641471654-76ce0107ad1b", 1400),
     alt: "Vehículo contemporáneo listo para evaluación",
     caption: "Selección de unidad",
   },

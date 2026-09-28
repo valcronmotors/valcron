@@ -14,7 +14,7 @@ export const PAGE_HERO_IMAGES = {
   inventario: unsplash("photo-1492144534655-ae79c964c9d7"),
   importacion: unsplash("photo-1601584115197-04ecc0da31d7"),
   financiamiento: unsplash("photo-1449965408869-eaa3f722e40d"),
-  nosotros: unsplash("photo-1541899481282-d53bffcf8837"),
+  nosotros: unsplash("photo-1519641471654-76ce0107ad1b"),
   contacto: unsplash("photo-1489824904134-891ab64532f1"),
   subastas: unsplash("photo-1617469767053-d3b523a0b982"),
   servicios: unsplash("photo-1533473359331-0135ef1b58bf"),

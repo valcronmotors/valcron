@@ -95,7 +95,7 @@ export default function SubastasPage() {
           <SectionHeader
             kicker="Proceso visual"
             title="De la búsqueda al cierre"
-            subtitle="Texto corto. La imagen explica el paso."
+            subtitle="Así te acompañamos, paso a paso."
           />
           <VisualStepSequence steps={STEPS} tone="light" />
           <div className="mt-10 flex flex-wrap gap-3">

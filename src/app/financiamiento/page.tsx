@@ -40,7 +40,7 @@ const FINANCE_STEPS = [
     step: "04",
     title: "Completa el proceso",
     copy: "Con la institución financiera. La aprobación la define ella.",
-    image: EDITORIAL.processSelect,
+    image: EDITORIAL.cityDrive,
   },
 ] as const;
 

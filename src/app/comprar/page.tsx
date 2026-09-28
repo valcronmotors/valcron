@@ -78,7 +78,7 @@ export default function ComprarPage() {
           <SectionHeader
             kicker="Opciones"
             title="Entiéndelo de un vistazo"
-            subtitle="Imagen + acción. Sin párrafos largos."
+            subtitle="Elige el camino que mejor se ajusta a lo que buscas."
           />
           <div className="mt-10 grid gap-4 md:grid-cols-2">
             {PATHS.map((path) => (
