@@ -1,8 +1,7 @@
 import { Suspense } from "react";
-import { PageHero } from "@/components/public/PageHero";
+import { PageContainer } from "@/components/public/layout";
 import { CatalogSkeleton } from "@/components/public/InventorySkeleton";
 import { VehicleCatalog, type CatalogFilters } from "@/components/public/VehicleCatalog";
-import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
 import { loadPublicVehicles } from "@/lib/public-inventory";
 import { publicPageMetadata } from "@/lib/seo";
 
@@ -65,22 +64,22 @@ export default function InventarioPage({
   }>;
 }) {
   return (
-    <main>
-      <PageHero
-        className="hidden md:block"
-        kicker="Inventario"
-        title="Vehículos disponibles"
-        subtitle="Filtra por marca, modelo, año, precio o disponibilidad. El catálogo refleja el inventario publicado de Valcron Motors."
-        image={PAGE_HERO_IMAGES.inventario}
-        imageAlt={PAGE_HERO_ALTS.inventario}
-      />
-      <section className="section-light bg-[#f5f6f7]">
-        <div className="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-14 lg:py-20">
+    <main className="section-light bg-[#f5f6f7]">
+      <PageContainer className="pb-14 pt-10 md:pb-20 md:pt-14">
+        <header className="max-w-[40rem]">
+          <p className="kicker">Inventario</p>
+          <h1 className="display-lg mt-3 text-[#08090b]">Vehículos disponibles</h1>
+          <p className="mt-4 text-[length:var(--text-body-lg)] leading-[1.55] text-[#676a70]">
+            Filtra por marca, modelo, año o precio. El catálogo refleja el inventario publicado de
+            Valcron Motors.
+          </p>
+        </header>
+        <div className="mt-8 md:mt-10">
           <Suspense fallback={<CatalogSkeleton />}>
             <InventarioCatalog searchParams={searchParams} />
           </Suspense>
         </div>
-      </section>
+      </PageContainer>
     </main>
   );
 }

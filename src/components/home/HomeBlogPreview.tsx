@@ -1,22 +1,23 @@
 import Link from "next/link";
 import { EditorialImage } from "@/components/shared/EditorialImage";
+import { PageContainer, Section, SectionHeader } from "@/components/public/layout";
 import { HOME_ARTICLES } from "@/lib/home-content";
 
 export function HomeBlogPreview() {
   return (
-    <section className="section-light bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-14 lg:px-8 lg:py-24">
+    <Section className="section-light bg-white" tight>
+      <PageContainer>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="kicker">Recursos</p>
-            <h2 className="display-section mt-3 text-[#08090b]">
-              Antes de comprar,
-              <span className="block">conoce lo importante.</span>
-            </h2>
-            <p className="mt-5 max-w-2xl text-base leading-relaxed text-[#676a70]">
-              Guías y artículos para entender inventario, financiamiento, títulos y costos.
-            </p>
-          </div>
+          <SectionHeader
+            kicker="Recursos"
+            title={
+              <>
+                Antes de comprar,
+                <span className="block">conoce lo importante.</span>
+              </>
+            }
+            subtitle="Guías y artículos para entender inventario, financiamiento, títulos y costos."
+          />
           <div className="flex flex-wrap gap-3">
             <Link href="/blog" className="btn-secondary">
               Ver blog
@@ -27,49 +28,35 @@ export function HomeBlogPreview() {
           </div>
         </div>
 
-        <div className="mt-12 grid gap-8 md:grid-cols-3">
-          {HOME_ARTICLES.map((article, index) => (
+        <div className="mt-10 grid gap-4 md:mt-12 md:grid-cols-3 md:gap-5">
+          {HOME_ARTICLES.map((article) => (
             <Link
               key={article.title}
               href={article.href}
-              className="group block border-t border-[#e4e6ea] pt-6 transition-opacity duration-180 hover:opacity-90"
+              className="group block overflow-hidden border border-[#e4e6ea] bg-[#f5f6f7] transition-opacity duration-180 hover:opacity-95"
+              style={{ borderRadius: "var(--radius-card)" }}
             >
-              {index === 0 ? (
-                <div
-                  className="relative mb-6 aspect-[16/10] overflow-hidden bg-[#12141a]"
-                  style={{ borderRadius: "var(--radius-lg)" }}
-                >
-                  <EditorialImage
-                    src={article.image.src}
-                    alt={article.image.alt}
-                    sizes="(min-width: 768px) 33vw, 100vw"
-                    className="object-cover transition-transform duration-300 group-hover:scale-[1.02] motion-reduce:transform-none"
-                  />
-                </div>
-              ) : (
-                <div
-                  className="relative mb-6 aspect-[16/10] overflow-hidden bg-[#12141a] md:aspect-[16/9]"
-                  style={{ borderRadius: "var(--radius-lg)" }}
-                >
-                  <EditorialImage
-                    src={article.image.src}
-                    alt={article.image.alt}
-                    sizes="(min-width: 768px) 33vw, 100vw"
-                    className="object-cover transition-transform duration-300 group-hover:scale-[1.02] motion-reduce:transform-none"
-                  />
-                </div>
-              )}
-              <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#2b6cff]">
-                {article.category}
-              </p>
-              <h3 className="mt-3 font-display text-xl font-semibold tracking-tight text-[#08090b] md:text-2xl">
-                {article.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-[#676a70]">{article.excerpt}</p>
+              <div className="relative aspect-[16/10] overflow-hidden bg-[#12141a]">
+                <EditorialImage
+                  src={article.image.src}
+                  alt={article.image.alt}
+                  sizes="(min-width: 768px) 33vw, 100vw"
+                  className="object-cover transition-transform duration-300 group-hover:scale-[1.02] motion-reduce:transform-none"
+                />
+              </div>
+              <div className="p-5 md:p-6">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2b6cff]">
+                  {article.category}
+                </p>
+                <h3 className="mt-3 font-display text-xl font-semibold tracking-tight text-[#08090b]">
+                  {article.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-[#676a70]">{article.excerpt}</p>
+              </div>
             </Link>
           ))}
         </div>
-      </div>
-    </section>
+      </PageContainer>
+    </Section>
   );
 }
