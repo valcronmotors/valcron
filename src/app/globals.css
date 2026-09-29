@@ -752,39 +752,19 @@ h3 {
   display: none;
 }
 
-.public-site .brand-marquee-viewport:hover .brand-marquee-track {
-  animation-play-state: paused;
-}
-
-/* Vehicle inventory carousels — same compositor-friendly loop pattern */
-@keyframes vehicle-carousel-scroll {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(-50%, 0, 0);
+/* Hover pause only on fine pointers — iOS sticky :hover must not freeze the marquee */
+@media (hover: hover) and (pointer: fine) {
+  .public-site .brand-marquee-viewport:hover .brand-marquee-track {
+    animation-play-state: paused;
   }
 }
 
-.public-site .vehicle-carousel-viewport {
+/* Vehicle inventory carousels — native scroll-snap + JS card auto-advance */
+.public-site .vehicle-carousel-scroller {
   width: 100%;
-  overflow: hidden;
-}
-
-.public-site .vehicle-carousel-track {
-  display: flex;
-  width: max-content;
-  will-change: transform;
-  animation-name: vehicle-carousel-scroll;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
-
-.public-site .vehicle-carousel-group {
-  display: flex;
-  align-items: stretch;
-  gap: 0.75rem;
-  padding-inline: 0.25rem;
+  -webkit-overflow-scrolling: touch;
+  touch-action: manipulation;
+  overscroll-behavior-x: contain;
 }
 
 .public-site .vehicle-carousel-item {
@@ -793,9 +773,6 @@ h3 {
 }
 
 @media (min-width: 640px) {
-  .public-site .vehicle-carousel-group {
-    gap: 1rem;
-  }
   .public-site .vehicle-carousel-item {
     width: min(46vw, 20.5rem);
   }
@@ -829,43 +806,9 @@ h3 {
   display: none;
 }
 
-.public-site .vehicle-carousel-static {
-  display: none;
-}
-
 @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
   .public-site .vehicle-carousel-controls {
     display: flex;
-  }
-  .public-site .vehicle-carousel.has-controls .vehicle-carousel-track {
-    display: none;
-    animation: none !important;
-  }
-  .public-site .vehicle-carousel.has-controls .vehicle-carousel-static {
-    display: block;
-  }
-}
-
-.public-site .vehicle-carousel-viewport:hover .vehicle-carousel-track,
-.public-site .vehicle-carousel-viewport:focus-within .vehicle-carousel-track {
-  animation-play-state: paused;
-}
-
-/* Touch / coarse pointers: native swipe rails — do not fight user scroll */
-@media (hover: none), (pointer: coarse) {
-  .public-site .brand-marquee-track {
-    display: none;
-    animation: none !important;
-  }
-  .public-site .brand-marquee-static {
-    display: block;
-  }
-  .public-site .vehicle-carousel-track {
-    display: none;
-    animation: none !important;
-  }
-  .public-site .vehicle-carousel-static {
-    display: block;
   }
 }
 
@@ -883,13 +826,6 @@ h3 {
     animation: none !important;
   }
   .public-site .brand-marquee-static {
-    display: block;
-  }
-  .public-site .vehicle-carousel-track {
-    display: none;
-    animation: none !important;
-  }
-  .public-site .vehicle-carousel-static {
     display: block;
   }
   .public-site .vehicle-card-media img,

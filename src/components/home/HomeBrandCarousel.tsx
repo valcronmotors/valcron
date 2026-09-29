@@ -38,8 +38,9 @@ function BrandTile({
 }
 
 /**
- * Continuous infinite brand marquee (CSS transform).
- * Each group repeats the brand set so 1920/2560 never shows a trailing empty gap.
+ * Continuous infinite brand marquee (CSS transform) on all viewports,
+ * including mobile/iOS. Reduced-motion → static horizontal scroll rail.
+ * Brand set is repeated in each track group so wide/desktop widths stay seamless.
  */
 export function HomeBrandCarousel() {
   const sequence = [...VEHICLE_BRANDS, ...VEHICLE_BRANDS, ...VEHICLE_BRANDS];
