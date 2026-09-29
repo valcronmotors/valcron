@@ -68,7 +68,7 @@ export function VehicleGallery({ photos, title }: { photos: GalleryPhoto[]; titl
           src={cover.url}
           alt={cover.alt}
           priority
-          sizes="(min-width: 1024px) 55vw, 100vw"
+          sizes="(min-width: 1600px) 900px, (min-width: 1024px) 58vw, 100vw"
           className="object-contain object-center p-3"
         />
         {count > 1 ? (

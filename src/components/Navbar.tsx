@@ -23,9 +23,9 @@ function isActivePath(pathname: string, href: string) {
 }
 
 const navLinkClass =
-  "relative shrink-0 whitespace-nowrap px-1.5 py-2 text-[13px] font-medium text-[#3a3d42] transition-colors duration-180 hover:text-[#08090b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff] 2xl:px-2.5";
+  "relative shrink-0 whitespace-nowrap px-2 py-2 text-[14px] font-medium text-[#3a3d42] transition-colors duration-180 hover:text-[#08090b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff] 2xl:px-2.5";
 const navActiveClass =
-  "text-[#08090b] after:absolute after:bottom-1 after:left-1.5 after:right-1.5 after:h-px after:bg-[#2b6cff]";
+  "text-[#08090b] after:absolute after:bottom-1 after:left-2 after:right-2 after:h-px after:bg-[#2b6cff]";
 
 /** Full horizontal nav needs room; logo already covers Inicio. */
 const DESKTOP_NAV_PRIMARY = PUBLIC_NAV_PRIMARY.filter((item) => item.href !== "/");
@@ -105,7 +105,7 @@ export function Navbar() {
     <>
       <header className={`site-header sticky top-0 z-[80] ${compact ? "is-compact" : ""}`}>
         <div
-          className="mx-auto flex h-full w-full max-w-[var(--content-max)] items-center gap-3"
+          className="mx-auto flex h-full w-full max-w-[var(--content-wide)] items-center gap-4"
           style={{ paddingInline: "var(--page-gutter)" }}
         >
           <Link href="/" aria-label={SITE.brand} className="relative z-10 shrink-0" onClick={() => setOpen(false)}>
@@ -113,7 +113,7 @@ export function Navbar() {
           </Link>
 
           <nav
-            className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 overflow-hidden xl:flex"
+            className="hidden min-w-0 flex-1 items-center justify-center gap-1 overflow-hidden xl:flex"
             aria-label="Principal"
           >
             {DESKTOP_NAV_PRIMARY.map((item) => {
@@ -176,7 +176,7 @@ export function Navbar() {
           </nav>
 
           <div className="relative z-10 ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
-            <div className="hidden 2xl:block">
+            <div className="hidden xl:block">
               <CurrencySwitch compact tone="light" />
             </div>
             <Link

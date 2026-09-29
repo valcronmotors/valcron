@@ -26,7 +26,7 @@ export default function ComprarPage() {
       <Section className="section-light bg-[#f7f8fa]" tight>
         <PageContainer>
           <SectionHeader kicker="Opciones" title="Entiéndelo de un vistazo" />
-          <div className="mt-8 grid gap-3 sm:grid-cols-2">
+          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <CompactPathTile
               title="Comprar una unidad disponible"
               copy="Revisa el inventario publicado."

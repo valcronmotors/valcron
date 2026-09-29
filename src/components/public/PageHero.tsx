@@ -25,8 +25,8 @@ export function PageHero({
   if (tone === "light" || !image) {
     return (
       <section className={`relative bg-white ${className}`}>
-        <PageContainer className="pb-8 pt-10 md:pb-10 md:pt-14">
-          <div className="max-w-[36rem]">
+        <PageContainer className="pb-8 pt-10 md:pb-10 md:pt-12 lg:pb-12 lg:pt-14">
+          <div className="max-w-[36rem] lg:max-w-[46rem]">
             <p
               className="inline-flex min-h-9 items-center border border-[#e4e6ea] bg-white px-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#3a3d42]"
               style={{ borderRadius: "9999px" }}

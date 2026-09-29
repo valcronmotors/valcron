@@ -76,8 +76,14 @@ export function CompactFeatureCard({
       className={`overflow-hidden ${t.shell} ${className}`}
       style={{ borderRadius: "var(--radius-card)" }}
     >
-      <div className={`grid ${image ? "md:grid-cols-[1.1fr_0.9fr]" : ""}`}>
-        <div className="flex flex-col p-5 sm:p-6 md:p-7">
+      <div
+        className={
+          image
+            ? "grid md:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]"
+            : "flex flex-col md:flex-row md:items-center md:justify-between"
+        }
+      >
+        <div className="flex flex-col p-5 sm:p-6 md:p-7 lg:max-w-[42rem] lg:p-8">
           {kicker ? (
             <p className={`text-[11px] font-semibold uppercase tracking-[0.16em] ${t.kicker}`}>
               {kicker}
@@ -99,12 +105,14 @@ export function CompactFeatureCard({
               ))}
             </ol>
           ) : null}
-          <div className="mt-5">
-            <Link href={href} className={ctaClass}>
-              {cta}
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-          </div>
+          {image ? (
+            <div className="mt-5">
+              <Link href={href} className={ctaClass}>
+                {cta}
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </div>
+          ) : null}
         </div>
         {image ? (
           <div className={`relative min-h-[9.5rem] ${t.mediaBg} md:min-h-0`}>
@@ -113,12 +121,19 @@ export function CompactFeatureCard({
                 src={image.src}
                 alt={image.alt}
                 fill
-                sizes="(max-width: 768px) 92vw, 28vw"
+                sizes="(max-width: 768px) 92vw, (max-width: 1280px) 42vw, 520px"
                 className="object-cover object-center"
               />
             </div>
           </div>
-        ) : null}
+        ) : (
+          <div className="px-5 pb-5 md:px-8 md:py-8">
+            <Link href={href} className={ctaClass}>
+              {cta}
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </div>
+        )}
       </div>
     </article>
   );
@@ -147,7 +162,7 @@ export function CompactPathTile({
           src={image.src}
           alt={image.alt}
           fill
-          sizes="(max-width: 768px) 92vw, 30vw"
+          sizes="(max-width: 768px) 92vw, (max-width: 1280px) 32vw, 420px"
           className="object-cover object-center"
         />
       </div>

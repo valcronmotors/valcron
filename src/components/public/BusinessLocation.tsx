@@ -73,7 +73,7 @@ function GoogleBusinessMap({
   const frame =
     variant === "compact"
       ? "h-[180px] w-full min-w-0 sm:h-[200px] lg:h-[190px] lg:max-w-[360px]"
-      : "h-[320px] w-full min-w-0 sm:h-[360px] lg:h-[480px]";
+      : "h-[280px] w-full min-w-0 sm:h-[320px] lg:h-[380px] lg:max-w-[42rem]";
 
   return (
     <div
@@ -136,7 +136,10 @@ export function BusinessLocation({
 
   return (
     <section className={light ? "section-light bg-[#faf9f6]" : "bg-[#050608]"}>
-      <div className="mx-auto grid w-full max-w-7xl min-w-0 gap-8 px-5 py-14 lg:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] lg:items-center lg:gap-12 lg:px-8 lg:py-20">
+      <div
+        className="mx-auto grid w-full max-w-[var(--content-max)] min-w-0 gap-8 py-14 lg:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] lg:items-center lg:gap-12 lg:py-16"
+        style={{ paddingInline: "var(--page-gutter)" }}
+      >
         <div className="min-w-0">
           <p className="kicker">{heading ?? "Visítanos"}</p>
           <h2

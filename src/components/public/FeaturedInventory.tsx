@@ -40,14 +40,16 @@ export function FeaturedInventory({
 
         {empty ? (
           <div
-            className="mt-4 border border-[#e4e6ea] bg-[#f7f8fa] px-4 py-4 text-center sm:px-5 sm:py-5"
+            className="mt-4 flex flex-col items-start justify-between gap-4 border border-[#e4e6ea] bg-[#f7f8fa] px-5 py-5 text-left sm:px-6 sm:py-6 md:flex-row md:items-center md:px-8 md:py-7"
             style={{ borderRadius: "var(--radius-card)" }}
           >
-            <p className="font-display text-sm font-semibold text-[#08090b] sm:text-base">
-              {PUBLIC_INVENTORY_EMPTY.title}
-            </p>
-            <p className="mt-1 text-sm text-[#676a70]">¿Buscas algo específico?</p>
-            <Link href="/solicitar-vehiculo" className="btn-primary mt-3 h-10 px-4 text-sm">
+            <div>
+              <p className="font-display text-base font-semibold text-[#08090b] sm:text-lg">
+                {PUBLIC_INVENTORY_EMPTY.title}
+              </p>
+              <p className="mt-1 text-sm text-[#676a70]">¿Buscas algo específico?</p>
+            </div>
+            <Link href="/solicitar-vehiculo" className="btn-primary h-11 shrink-0 px-5 text-sm">
               Solicitar vehículo
             </Link>
           </div>

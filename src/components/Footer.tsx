@@ -22,7 +22,7 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
   return (
     <footer className="site-footer relative mt-auto overflow-hidden">
       <div
-        className="relative mx-auto w-full max-w-[var(--content-max)] py-14 md:py-20"
+        className="relative mx-auto w-full max-w-[var(--content-wide)] py-14 md:py-16 lg:py-20"
         style={{ paddingInline: "var(--page-gutter)" }}
       >
         <div className="text-center md:text-left">
@@ -37,7 +37,7 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
 
         <nav
           aria-label="Navegación del pie de página"
-          className="mt-12 grid grid-cols-2 gap-x-8 gap-y-10 md:mt-14 md:grid-cols-4"
+          className="mt-12 grid grid-cols-2 gap-x-8 gap-y-10 md:mt-14 lg:grid-cols-4"
         >
           <FooterColumn title="Servicios" items={FOOTER_SERVICES.slice(0, 4)} />
           <FooterColumn
@@ -92,7 +92,7 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
         className="border-t border-white/10 py-6"
         style={{ paddingInline: "var(--page-gutter)" }}
       >
-        <div className="mx-auto flex max-w-[var(--content-max)] flex-col items-center gap-3 text-center text-xs text-white/45 sm:flex-row sm:justify-between sm:text-left">
+        <div className="mx-auto flex max-w-[var(--content-wide)] flex-col items-center gap-3 text-center text-xs text-white/45 sm:flex-row sm:justify-between sm:text-left">
           <p>
             © {year} {SITE.legalName}. Todos los derechos reservados.
           </p>

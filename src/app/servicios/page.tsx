@@ -69,7 +69,7 @@ export default function ServiciosPage() {
       <Section className="section-light bg-[#f7f8fa]" tight>
         <PageContainer>
           <SectionHeader kicker="Servicios" title="Elige tu camino" />
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {SERVICES.map((service) => (
               <CompactPathTile key={service.title} {...service} />
             ))}

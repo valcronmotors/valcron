@@ -12,12 +12,20 @@ export function HomeFaqPreview() {
   return (
     <Section className="section-light bg-white" id="preguntas" tight>
       <PageContainer>
-        <div className="mx-auto max-w-[40rem]">
-          <h2 className="display-lg text-center text-[#08090b]">
-            Preguntas
-            <span className="block">frecuentes</span>
-          </h2>
-          <div className="mt-8 space-y-3 md:mt-10">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start lg:gap-16">
+          <div>
+            <h2 className="display-lg text-[#08090b]">
+              Preguntas
+              <span className="block">frecuentes</span>
+            </h2>
+            <Link
+              href="/preguntas-frecuentes"
+              className="mt-6 hidden text-sm font-semibold text-[#08090b] underline-offset-4 hover:underline lg:inline-flex"
+            >
+              Ver todas
+            </Link>
+          </div>
+          <div className="space-y-3">
             {faqs.map((item, index) => {
               const active = open === index;
               return (
@@ -45,14 +53,14 @@ export function HomeFaqPreview() {
                 </div>
               );
             })}
-          </div>
-          <div className="mt-6 text-center">
-            <Link
-              href="/preguntas-frecuentes"
-              className="text-sm font-semibold text-[#08090b] underline-offset-4 hover:underline"
-            >
-              Ver todas
-            </Link>
+            <div className="pt-3 text-center lg:hidden">
+              <Link
+                href="/preguntas-frecuentes"
+                className="text-sm font-semibold text-[#08090b] underline-offset-4 hover:underline"
+              >
+                Ver todas
+              </Link>
+            </div>
           </div>
         </div>
       </PageContainer>

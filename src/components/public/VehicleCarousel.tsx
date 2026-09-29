@@ -1,8 +1,12 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { useRef, type ReactNode } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 /**
- * Premium auto-advancing horizontal vehicle rail.
- * CSS transform loop on fine pointers; touch/coarse + reduced-motion → native snap scroll.
+ * Premium horizontal vehicle rail.
+ * CSS transform loop on fine pointers; touch + reduced-motion → native snap.
+ * Desktop (xl+) with pointer: native scroller + previous/next.
  */
 export function VehicleCarousel({
   children,
@@ -10,35 +14,79 @@ export function VehicleCarousel({
   className = "",
 }: {
   children: ReactNode;
-  /** Full loop duration; auctions can use a slightly different cadence. */
   speedSeconds?: number;
   className?: string;
 }) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
   const items = Array.isArray(children) ? children : [children];
   const count = items.filter(Boolean).length;
-  const canLoop = count >= 3;
+  const canLoop = count >= 4;
+  const few = count > 0 && count <= 3;
 
-  if (!canLoop) {
+  function scrollByCard(direction: -1 | 1) {
+    const root = scrollerRef.current;
+    if (!root) return;
+    const card = root.querySelector<HTMLElement>(".vehicle-carousel-item");
+    const width = card?.getBoundingClientRect().width ?? 360;
+    root.scrollBy({ left: direction * (width + 16), behavior: "smooth" });
+  }
+
+  if (few) {
     return (
       <div
-        className={`vehicle-carousel-static flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${className}`}
+        className={`grid gap-4 ${
+          count === 1 ? "max-w-md" : count === 2 ? "max-w-4xl sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3"
+        } ${className}`}
       >
         {items.map((child, index) => (
-          <div key={index} className="vehicle-carousel-item w-[min(78vw,19rem)] shrink-0 snap-start sm:w-[min(46vw,20.5rem)] xl:w-[min(22rem,100%)]">
-            {child}
-          </div>
+          <div key={index}>{child}</div>
         ))}
       </div>
     );
   }
 
-  return (
-    <div className={`vehicle-carousel ${className}`}>
-      <div className="vehicle-carousel-viewport">
+  const rail = (
+    <div
+      ref={scrollerRef}
+      className="flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-4"
+    >
+      {items.map((child, index) => (
         <div
-          className="vehicle-carousel-track"
-          style={{ animationDuration: `${speedSeconds}s` }}
+          key={`s-${index}`}
+          className="vehicle-carousel-item w-[min(78vw,19rem)] shrink-0 snap-start sm:w-[min(46vw,20.5rem)] md:w-[min(44vw,21.25rem)] lg:w-[min(31vw,22rem)] xl:w-[22.5rem] min-[1600px]:w-[21.25rem]"
         >
+          {child}
+        </div>
+      ))}
+    </div>
+  );
+
+  if (!canLoop) {
+    return <div className={`vehicle-carousel-static ${className}`}>{rail}</div>;
+  }
+
+  return (
+    <div className={`vehicle-carousel has-controls relative ${className}`}>
+      <div className="vehicle-carousel-controls pointer-events-none absolute inset-y-0 -left-1 -right-1 z-10 items-center justify-between">
+        <button
+          type="button"
+          className="pointer-events-auto ml-0 inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#e4e6ea] bg-white/95 text-[#08090b] shadow-[0_8px_20px_rgba(8,9,11,0.08)]"
+          aria-label="Anterior"
+          onClick={() => scrollByCard(-1)}
+        >
+          <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          className="pointer-events-auto mr-0 inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#e4e6ea] bg-white/95 text-[#08090b] shadow-[0_8px_20px_rgba(8,9,11,0.08)]"
+          aria-label="Siguiente"
+          onClick={() => scrollByCard(1)}
+        >
+          <ChevronRight className="h-5 w-5" aria-hidden="true" />
+        </button>
+      </div>
+      <div className="vehicle-carousel-viewport">
+        <div className="vehicle-carousel-track" style={{ animationDuration: `${speedSeconds}s` }}>
           <div className="vehicle-carousel-group">
             {items.map((child, index) => (
               <div key={`a-${index}`} className="vehicle-carousel-item">
@@ -54,18 +102,7 @@ export function VehicleCarousel({
             ))}
           </div>
         </div>
-        <div className="vehicle-carousel-static">
-          <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {items.map((child, index) => (
-              <div
-                key={`s-${index}`}
-                className="vehicle-carousel-item w-[min(78vw,19rem)] shrink-0 snap-start sm:w-[min(46vw,20.5rem)]"
-              >
-                {child}
-              </div>
-            ))}
-          </div>
-        </div>
+        <div className="vehicle-carousel-static">{rail}</div>
       </div>
     </div>
   );

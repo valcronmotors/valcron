@@ -21,28 +21,30 @@ export function InventoryEmptyState({
     <div
       className={
         light
-          ? "border border-[#e4e6ea] bg-[#f7f8fa] px-5 py-8 text-center md:px-10 md:py-10"
-          : "gloss-panel px-5 py-8 text-center md:px-10 md:py-10"
+          ? "flex flex-col items-start justify-between gap-5 border border-[#e4e6ea] bg-[#f7f8fa] px-5 py-6 text-left sm:px-7 sm:py-7 md:flex-row md:items-center md:px-8 md:py-8"
+          : "gloss-panel flex flex-col items-start justify-between gap-5 px-5 py-6 text-left sm:px-7 sm:py-7 md:flex-row md:items-center md:px-8 md:py-8"
       }
       style={{ borderRadius: "var(--radius-card)" }}
     >
-      <p
-        className={`font-display text-lg font-semibold md:text-xl ${
-          light ? "text-[#08090b]" : "text-white"
-        }`}
-      >
-        {title}
-      </p>
-      {copy ? (
+      <div>
         <p
-          className={`mx-auto mt-2 max-w-md text-sm leading-relaxed ${
-            light ? "text-[#676a70]" : "text-[#d4d4d4]"
+          className={`font-display text-lg font-semibold md:text-xl ${
+            light ? "text-[#08090b]" : "text-white"
           }`}
         >
-          {copy}
+          {title}
         </p>
-      ) : null}
-      <div className="mt-5 flex flex-wrap justify-center gap-3">
+        {copy ? (
+          <p
+            className={`mt-2 max-w-md text-sm leading-relaxed ${
+              light ? "text-[#676a70]" : "text-[#d4d4d4]"
+            }`}
+          >
+            {copy}
+          </p>
+        ) : null}
+      </div>
+      <div className="flex shrink-0 flex-wrap gap-3">
         {onClear ? (
           <button type="button" onClick={onClear} className="btn-secondary">
             Limpiar filtros

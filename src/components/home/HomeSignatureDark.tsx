@@ -9,14 +9,14 @@ export function HomeSignatureDark() {
   return (
     <Section className="section-light bg-[#f7f8fa]" tight>
       <PageContainer>
-        <div className="mx-auto max-w-[34rem] text-center">
+        <div className="max-w-[36rem] md:max-w-none md:text-left">
           <h2 className="display-lg text-balance text-[#08090b]">
             Más formas de
             <span className="block">encontrar tu vehículo.</span>
           </h2>
         </div>
 
-        <div className="mt-8 grid gap-3 sm:mt-10 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-8 grid gap-3 sm:mt-10 sm:grid-cols-2 lg:grid-cols-3">
           <CompactPathTile
             title="Inventario"
             copy="Vehículos publicados por Valcron."
@@ -38,7 +38,7 @@ export function HomeSignatureDark() {
             cta="Conocer el proceso"
             image={{ src: EDITORIAL.processBrowse.src, alt: EDITORIAL.processBrowse.alt }}
           />
-          <div className="sm:col-span-2 xl:col-span-3">
+          <div className="sm:col-span-2 lg:col-span-3">
             <CompactFeatureCard
               tone="light"
               kicker="Importación"

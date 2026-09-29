@@ -14,7 +14,7 @@ export function BrandLogo({
     <span
       className={`brand-logo relative inline-flex items-center overflow-visible bg-transparent ${
         isHeader
-          ? "h-9 w-[168px] sm:h-10 sm:w-[188px] min-[1440px]:h-11 min-[1440px]:w-[210px]"
+          ? "h-10 w-[188px] sm:h-11 sm:w-[210px] lg:h-12 lg:w-[228px] xl:h-[3.25rem] xl:w-[248px]"
           : "h-12 w-[232px]"
       }`}
     >
@@ -23,7 +23,7 @@ export function BrandLogo({
         alt={SITE.brand}
         fill
         priority={isHeader}
-        sizes={isHeader ? "210px" : "232px"}
+        sizes={isHeader ? "248px" : "232px"}
         className="object-contain object-left"
         style={
           tone === "onLight"

@@ -56,7 +56,7 @@ export function VehicleCard({
         <VehiclePhoto
           src={cover}
           alt={vehicleImageAlt(vehicle)}
-          sizes="(min-width: 1280px) 25vw, (min-width: 768px) 50vw, 50vw"
+          sizes="(min-width: 1600px) 20vw, (min-width: 1280px) 24vw, (min-width: 1024px) 31vw, (min-width: 768px) 45vw, 85vw"
           className="object-contain object-center p-2 sm:p-3"
         />
         {showBadge ? (

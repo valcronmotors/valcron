@@ -64,7 +64,7 @@ export function VisualStepSequence({
   const dark = tone === "dark";
 
   return (
-    <ol className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+    <ol className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {steps.map((item) => (
         <li
           key={item.step}
@@ -76,7 +76,7 @@ export function VisualStepSequence({
           <VisualMedia
             asset={item.image}
             aspect="2/1"
-            sizes="(max-width: 768px) 92vw, 30vw"
+            sizes="(max-width: 768px) 92vw, (max-width: 1280px) 32vw, 420px"
           />
           <div className="p-4 sm:p-5">
             <p

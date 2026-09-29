@@ -4,14 +4,22 @@ export function PageContainer({
   children,
   className = "",
   narrow = false,
+  wide = false,
 }: {
   children: ReactNode;
   className?: string;
   narrow?: boolean;
+  wide?: boolean;
 }) {
+  const maxWidth = narrow
+    ? "max-w-[var(--content-reading)]"
+    : wide
+      ? "max-w-[var(--content-wide)]"
+      : "max-w-[var(--content-max)]";
+
   return (
     <div
-      className={`mx-auto w-full ${narrow ? "max-w-[42rem]" : "max-w-[var(--content-max)]"} ${className}`}
+      className={`mx-auto w-full ${maxWidth} ${className}`}
       style={{ paddingInline: "var(--page-gutter)" }}
     >
       {children}

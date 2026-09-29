@@ -87,7 +87,7 @@ export default function ImportacionPage() {
           <div className="mt-8">
             <VisualFlowDiagram
               label="Flujo de importación"
-              nodes={["EE.UU.", "Compra", "Transporte", "República Dominicana", "Coordinación"]}
+              nodes={["Selección", "Compra", "Transporte", "RD", "Coordinación"]}
             />
           </div>
         </PageContainer>
