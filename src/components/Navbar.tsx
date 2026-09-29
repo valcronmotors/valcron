@@ -33,6 +33,7 @@ const DESKTOP_NAV_PRIMARY = PUBLIC_NAV_PRIMARY.filter((item) => item.href !== "/
 export function Navbar() {
   const pathname = usePathname();
   const resourcesRef = useRef<HTMLDivElement>(null);
+  const resourcesButtonRef = useRef<HTMLButtonElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
@@ -82,9 +83,12 @@ export function Navbar() {
       }
     }
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setResourcesOpen(false);
-        setOpen(false);
+      if (event.key !== "Escape") return;
+      const resourcesExpanded = resourcesButtonRef.current?.getAttribute("aria-expanded") === "true";
+      setResourcesOpen(false);
+      setOpen(false);
+      if (resourcesExpanded) {
+        resourcesButtonRef.current?.focus();
       }
     }
     document.addEventListener("mousedown", onPointerDown);
@@ -113,7 +117,7 @@ export function Navbar() {
           </Link>
 
           <nav
-            className="hidden min-w-0 flex-1 items-center justify-center gap-1 overflow-hidden xl:flex"
+            className="hidden min-w-0 flex-1 items-center justify-center gap-1 overflow-visible xl:flex"
             aria-label="Principal"
           >
             {DESKTOP_NAV_PRIMARY.map((item) => {
@@ -129,8 +133,9 @@ export function Navbar() {
                 </Link>
               );
             })}
-            <div className="relative shrink-0" ref={resourcesRef}>
+            <div className="relative z-20 shrink-0" ref={resourcesRef}>
               <button
+                ref={resourcesButtonRef}
                 type="button"
                 className={`${navLinkClass} inline-flex min-h-11 items-center gap-1 ${resourcesActive ? navActiveClass : ""}`}
                 aria-expanded={resourcesOpen}
@@ -147,7 +152,7 @@ export function Navbar() {
                 <div
                   id={menuId}
                   role="menu"
-                  className="absolute right-0 top-full z-30 mt-2 min-w-[12.5rem] border border-[#e4e6ea] bg-white p-1.5 shadow-[0_16px_40px_rgba(8,9,11,0.1)]"
+                  className="absolute right-0 top-full z-50 mt-1 min-w-[14.5rem] border border-[#e4e6ea] bg-white p-1.5 shadow-[0_16px_40px_rgba(8,9,11,0.12)]"
                   style={{ borderRadius: "var(--radius-lg)" }}
                 >
                   {RESOURCE_NAV.map((item) => (
@@ -155,7 +160,7 @@ export function Navbar() {
                       key={item.href}
                       href={item.href}
                       role="menuitem"
-                      className={`block min-h-11 rounded-[0.75rem] px-3 py-2.5 text-sm transition-colors duration-180 hover:bg-[#f5f6f7] ${
+                      className={`block min-h-11 rounded-[0.75rem] px-3 py-2.5 text-sm font-medium transition-colors duration-180 hover:bg-[#f5f6f7] focus-visible:bg-[#f5f6f7] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#2b6cff] ${
                         isActivePath(pathname, item.href) ? "text-[#2b6cff]" : "text-[#08090b]"
                       }`}
                       onClick={() => setResourcesOpen(false)}
