@@ -174,7 +174,7 @@ describe("Vercel image optimizer", () => {
   it("skips Next/Image transformations for vehicle proxy URLs", () => {
     expect(shouldUseNextImageOptimizer(vehicleImagePublicPath(PATH))).toBe(false);
     expect(shouldUseNextImageOptimizer(vehicleImageAdminPath(PATH))).toBe(false);
-    expect(shouldUseNextImageOptimizer("/logo-mark.png")).toBe(true);
+    expect(shouldUseNextImageOptimizer("/branding/valcron-logo-light.webp")).toBe(true);
     expect(shouldUseNextImageOptimizer("https://images.unsplash.com/photo.jpg")).toBe(true);
   });
 });

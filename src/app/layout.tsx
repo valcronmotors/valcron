@@ -28,6 +28,13 @@ export const metadata: Metadata = {
     "importación de vehículos RD",
     "dealer Santo Domingo Este",
   ],
+  icons: {
+    icon: [
+      { url: "/branding/valcron-favicon.png", type: "image/png", sizes: "256x256" },
+      { url: "/favicon.ico", sizes: "48x48" },
+    ],
+    apple: [{ url: "/branding/valcron-apple-touch-icon.png", sizes: "180x180" }],
+  },
   openGraph: {
     locale: "es_DO",
     type: "website",

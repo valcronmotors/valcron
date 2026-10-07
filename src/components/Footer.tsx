@@ -26,8 +26,8 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
         style={{ paddingInline: "var(--page-gutter)" }}
       >
         <div className="text-center md:text-left">
-          <Link href="/" aria-label={SITE.brand} className="inline-flex scale-110 origin-center md:origin-left">
-            <BrandLogo size="footer" tone="onDark" />
+          <Link href="/" aria-label={SITE.brand} className="inline-flex origin-center md:origin-left">
+            <BrandLogo size="footer" tone="onDark" variant="full" />
           </Link>
           <p className="mx-auto mt-6 max-w-md text-base leading-relaxed text-white/55 md:mx-0">
             Dealer en Santo Domingo Este. Inventario local, búsqueda personalizada y

@@ -53,12 +53,12 @@ export function AdminSidebar({
           aria-label="Website Admin"
         >
           {collapsed ? (
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/8 text-[11px] font-semibold tracking-[0.12em] text-[var(--admin-brand)]">
-              VM
+            <span className="inline-flex h-11 w-[3.25rem] items-center justify-center rounded-lg bg-white px-1">
+              <BrandLogo size="admin" tone="onLight" variant="mark" />
             </span>
           ) : (
             <span className="block">
-              <BrandLogo size="header" tone="onDark" />
+              <BrandLogo size="admin" tone="onDark" variant="full" />
               <span className="mt-2 block text-[11px] font-medium tracking-[0.14em] text-[var(--admin-nav-muted)]">
                 Website Admin
               </span>
