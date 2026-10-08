@@ -32,7 +32,7 @@ export const SITE = {
   whatsappDigits: "18293211271",
   whatsappDisplay: "(829) 321-1271",
   whatsappUrl: "https://wa.me/18293211271",
-  instagramUrl: "https://www.instagram.com/valcronmotors",
+  instagramUrl: "https://www.instagram.com/valcronmotors/",
   instagramHandle: "@valcronmotors",
   facebookUrl: "https://www.facebook.com/people/Valcron-Motors-Group/61584457784163/",
   facebookDisplay: "Valcron Motors Group",

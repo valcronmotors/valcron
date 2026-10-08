@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/public/BrandLogo";
 import { BusinessLocation } from "@/components/public/BusinessLocation";
+import { FooterPartners } from "@/components/public/FooterPartners";
 import { FooterSocialIcons } from "@/components/shared/SocialLinks";
 import {
   FOOTER_COMPANY,
@@ -52,6 +53,8 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
           <FooterColumn title="Empresa" items={FOOTER_COMPANY} />
           <FooterColumn title="Recursos" items={FOOTER_RESOURCES} />
         </nav>
+
+        <FooterPartners />
 
         <div className="mt-12 grid gap-8 border-t border-white/10 pt-10 md:grid-cols-[1.2fr_0.8fr] md:items-start">
           <div>
