@@ -36,7 +36,8 @@ export function BrandLogo({
       ? // Dimensions live in globals.css (.brand-logo--header) for reliable breakpoints
         "brand-logo--header"
       : size === "footer"
-        ? "h-[7.5rem] w-[7.4rem] sm:h-[8.25rem] sm:w-[8.15rem] lg:h-[9rem] lg:w-[8.9rem]"
+        ? // Compact enterprise footer lockup — still dominant over partner marks
+          "h-[5.75rem] w-[5.7rem] sm:h-[6.25rem] sm:w-[6.2rem] lg:h-[6.75rem] lg:w-[6.7rem]"
         : size === "admin"
           ? "h-[5.75rem] w-[5.7rem]"
           : // auth / login
@@ -47,7 +48,7 @@ export function BrandLogo({
     : size === "header"
       ? "(max-width: 767px) 48px, (max-width: 1279px) 54px, (max-width: 1535px) 60px, 64px"
       : size === "footer"
-        ? "(max-width: 640px) 120px, 145px"
+        ? "(max-width: 640px) 96px, 112px"
         : size === "admin"
           ? "96px"
           : "160px";

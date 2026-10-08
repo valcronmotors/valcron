@@ -86,7 +86,7 @@ export function SocialLinks({
 
 /** Footer social row — equal 44px targets, sharp SVG brand marks, gloss-black contrast. */
 const footerSocialClass =
-  "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/[0.07] text-white transition duration-200 hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/[0.12] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white motion-reduce:transform-none";
+  "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-white/12 bg-white/[0.06] text-white transition duration-200 hover:border-white/25 hover:bg-white/[0.1] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
 
 export function FooterSocialIcons({ className = "" }: { className?: string }) {
   const gradientId = `footer-ig-${useId().replace(/:/g, "")}`;
