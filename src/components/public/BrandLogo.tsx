@@ -45,7 +45,7 @@ export function BrandLogo({
   const sizesAttr = isMark
     ? "48px"
     : size === "header"
-      ? "(max-width: 639px) 110px, (max-width: 767px) 130px, (max-width: 1023px) 140px, (max-width: 1279px) 165px, (max-width: 1535px) 175px, (max-width: 1919px) 195px, 220px"
+      ? "(max-width: 767px) 48px, (max-width: 1279px) 54px, (max-width: 1535px) 60px, 64px"
       : size === "footer"
         ? "(max-width: 640px) 120px, 145px"
         : size === "admin"
