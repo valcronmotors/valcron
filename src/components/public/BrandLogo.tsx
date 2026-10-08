@@ -8,7 +8,7 @@ type BrandLogoVariant = "full" | "mark";
 
 /**
  * Official Valcron Motors Group logo.
- * Header uses the VM symbol so the stacked corporate lockup stays legible elsewhere.
+ * Header always shows the complete stacked lockup (symbol + VALCRON + MOTORS GROUP).
  * Orange appears only inside the artwork — never restyled via CSS filters.
  */
 export function BrandLogo({
@@ -18,11 +18,11 @@ export function BrandLogo({
 }: {
   size?: BrandLogoSize;
   tone?: BrandLogoTone;
-  /** Override auto variant (header/admin → mark, footer/auth → full). */
+  /** Override auto variant (admin mark when collapsed; header/footer/auth → full). */
   variant?: BrandLogoVariant;
 }) {
   const resolved: BrandLogoVariant =
-    variant ?? (size === "header" || size === "admin" ? "mark" : "full");
+    variant ?? (size === "admin" ? "mark" : "full");
   const isMark = resolved === "mark";
   const src = isMark
     ? BRAND_ASSETS.symbol
@@ -30,24 +30,22 @@ export function BrandLogo({
       ? BRAND_ASSETS.logoDark
       : BRAND_ASSETS.logoLight;
 
-  const box =
-    resolved === "mark"
-      ? size === "admin"
-        ? "h-8 w-[2.95rem]"
-        : // Header mark — fits approved header height; width follows symbol aspect
-          "h-9 w-[3.35rem] sm:h-10 sm:w-[3.7rem] lg:h-11 lg:w-[4.05rem] min-[1600px]:h-11 min-[1600px]:w-[4.15rem]"
+  const box = isMark
+    ? "h-8 w-[2.95rem]"
+    : size === "header"
+      ? // Dimensions live in globals.css (.brand-logo--header) for reliable breakpoints
+        "brand-logo--header"
       : size === "footer"
         ? "h-[7.5rem] w-[7.4rem] sm:h-[8.25rem] sm:w-[8.15rem] lg:h-[9rem] lg:w-[8.9rem]"
         : size === "admin"
           ? "h-[5.75rem] w-[5.7rem]"
-          : // auth / login — full lockup with room to breathe
+          : // auth / login
             "h-[8.5rem] w-[8.4rem] sm:h-[9.5rem] sm:w-[9.4rem]";
 
-  const sizesAttr =
-    resolved === "mark"
-      ? size === "admin"
-        ? "48px"
-        : "66px"
+  const sizesAttr = isMark
+    ? "48px"
+    : size === "header"
+      ? "(max-width: 639px) 110px, (max-width: 767px) 130px, (max-width: 1023px) 140px, (max-width: 1279px) 165px, (max-width: 1535px) 175px, (max-width: 1919px) 195px, 220px"
       : size === "footer"
         ? "(max-width: 640px) 120px, 145px"
         : size === "admin"
@@ -55,7 +53,9 @@ export function BrandLogo({
           : "160px";
 
   return (
-    <span className={`brand-logo relative inline-flex shrink-0 items-center justify-center overflow-visible bg-transparent ${box}`}>
+    <span
+      className={`brand-logo relative inline-flex shrink-0 items-center justify-center overflow-visible bg-transparent ${box}`}
+    >
       <Image
         src={src}
         alt={SITE.brand}

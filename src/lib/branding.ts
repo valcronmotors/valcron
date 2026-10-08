@@ -9,8 +9,8 @@ export const BRAND_ASSETS = {
   appleTouchIcon: "/branding/valcron-apple-touch-icon.png",
 } as const;
 
-/** Full stacked logo intrinsic ratio (cropped artwork ≈ square). */
-export const BRAND_LOGO_ASPECT = 833 / 842;
+/** Full stacked logo intrinsic ratio (tight-cropped artwork ≈ square). */
+export const BRAND_LOGO_ASPECT = 829 / 838;
 
 /** VM symbol intrinsic ratio. */
 export const BRAND_SYMBOL_ASPECT = 640 / 430;

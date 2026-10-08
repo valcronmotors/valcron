@@ -109,7 +109,7 @@ export function Navbar() {
           style={{ paddingInline: "var(--page-gutter)" }}
         >
           <Link href="/" aria-label={SITE.brand} className="relative z-10 shrink-0" onClick={() => setOpen(false)}>
-            <BrandLogo size="header" tone="onLight" />
+            <BrandLogo size="header" tone="onLight" variant="full" />
           </Link>
 
           <nav
