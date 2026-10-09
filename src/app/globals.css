@@ -85,8 +85,8 @@
   --content-reading: 42rem;
   --content-narrow: 42rem;
   --card-padding: clamp(1.25rem, 2.4vw, 2rem);
-  /* Compact automotive header — full stacked lockup (~48px logo) */
-  --header-height: 4.5rem;
+  /* Automotive header — complete stacked lockup (~76px logo on mobile) */
+  --header-height: 5.75rem;
   --stack-xs: 0.5rem;
   --stack-sm: 0.75rem;
   --stack-md: 1.25rem;
@@ -446,39 +446,54 @@ h3 {
 
 /*
  * Complete stacked header lockup (symbol + VALCRON + MOTORS GROUP).
- * Height-capped; width follows natural ~1:1 aspect (829/838). object-fit:contain.
+ * Height-capped; width follows natural ~1:1 aspect (817/826). object-fit:contain.
  */
 .brand-logo--header {
-  height: 3rem; /* 48px mobile */
-  width: calc(3rem * 829 / 838);
+  height: 4.75rem; /* 76px mobile — recognizable full lockup */
+  width: calc(4.75rem * 817 / 826);
 }
 
 @media (min-width: 768px) {
   .public-site {
-    --header-height: 4.75rem; /* 76px tablet */
+    --header-height: 6.25rem; /* 100px tablet */
   }
 
   .brand-logo--header {
-    height: 3.375rem; /* 54px */
-    width: calc(3.375rem * 829 / 838);
+    height: 5.25rem; /* 84px */
+    width: calc(5.25rem * 817 / 826);
+  }
+}
+
+@media (min-width: 1024px) {
+  .public-site {
+    --header-height: 6.75rem; /* 108px laptop */
+  }
+
+  .brand-logo--header {
+    height: 5.875rem; /* 94px */
+    width: calc(5.875rem * 817 / 826);
   }
 }
 
 @media (min-width: 1280px) {
   .public-site {
-    --header-height: 5rem; /* 80px laptop/desktop */
+    --header-height: 7rem; /* 112px desktop nav */
   }
 
   .brand-logo--header {
-    height: 3.75rem; /* 60px */
-    width: calc(3.75rem * 829 / 838);
+    height: 6.125rem; /* 98px */
+    width: calc(6.125rem * 817 / 826);
   }
 }
 
 @media (min-width: 1536px) {
+  .public-site {
+    --header-height: 7.5rem; /* 120px */
+  }
+
   .brand-logo--header {
-    height: 4rem; /* 64px desktop / large desktop */
-    width: calc(4rem * 829 / 838);
+    height: 6.5rem; /* 104px — under 110px max */
+    width: calc(6.5rem * 817 / 826);
   }
 }
 

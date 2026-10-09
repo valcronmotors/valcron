@@ -10,7 +10,7 @@ export const BRAND_ASSETS = {
 } as const;
 
 /** Full stacked logo intrinsic ratio (tight-cropped artwork ≈ square). */
-export const BRAND_LOGO_ASPECT = 829 / 838;
+export const BRAND_LOGO_ASPECT = 817 / 826;
 
 /** VM symbol intrinsic ratio. */
 export const BRAND_SYMBOL_ASPECT = 640 / 430;
