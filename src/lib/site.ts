@@ -257,6 +257,8 @@ export const PUBLIC_PATHS = [
   "/preguntas-frecuentes",
   "/calculadoras",
   "/mapa-del-sitio",
+  "/robots.txt",
+  "/sitemap.xml",
   "/api/public",
   "/vehiculos",
   "/repuestos",
