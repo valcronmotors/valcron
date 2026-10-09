@@ -1,10 +1,28 @@
 /** Home hero — self-hosted, Unsplash-licensed (see public/marketing/IMAGE-LICENSES.md). */
 export const HOME_HERO_IMAGE = {
-  src: "/marketing/home-hero.jpg",
-  width: 2400,
-  height: 1400,
-  alt: "Honda CR-V en carretera abierta, fotografía ilustrativa de opciones de vehículos SUV",
-  unsplashPhotoId: "photo-1519641471654-76ce0107ad1b",
+  src: "/marketing/home-hero-crossover-urbano.jpg",
+  width: 1600,
+  height: 1000,
+  alt: "Crossover Honda blanco estacionado junto a un edificio urbano con palmeras, fotografía ilustrativa. No es inventario de Valcron.",
+  unsplashPhotoId: "photo-1704246125646-cfdf0cb6d2b8",
+} as const;
+
+/** Home editorial banner — Pexels License. Different vehicle from the hero. */
+export const HOME_BANNER_IMAGE = {
+  src: "/marketing/banner-suv-tropical.jpg",
+  alt: "SUV Mazda blanco en un entorno tropical, fotografía ilustrativa. No representa las instalaciones de Valcron.",
+} as const;
+
+/** Illustrative stock consultation. Not Valcron staff, customers, or a financing decision. */
+export const HOME_CONSULT_IMAGE = {
+  src: "/marketing/consulta-compra-vehiculo.jpg",
+  alt: "Asesor y cliente revisando documentos junto a un vehículo, fotografía de stock ilustrativa. No son personas de Valcron.",
+} as const;
+
+/** Vehicle carrier. Not a Valcron shipment. */
+export const HOME_CARRIER_IMAGE = {
+  src: "/marketing/portavehiculos-logistica.jpg",
+  alt: "Camión portavehículos con automóviles en tránsito, fotografía ilustrativa de logística. No es un embarque de Valcron.",
 } as const;
 
 /** Page heroes — editorial marketing photography, not inventory or premises. */

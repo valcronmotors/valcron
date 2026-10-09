@@ -11,15 +11,15 @@ import {
 } from "@/lib/site";
 
 const headingClass =
-  "mb-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white/45";
+  "mb-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-[#5c6370]";
 const linkClass =
-  "text-[0.875rem] leading-6 text-white/70 transition-colors duration-200 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff]";
+  "text-[0.875rem] leading-6 text-[#3d4148] transition-colors duration-200 hover:text-[#08090b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff]";
 
 const FOOTER_EXPLORE_V2 = [
   { href: "/", label: "Inicio" },
-  { href: "/inventario", label: "Inventario" },
+  { href: "/inventario", label: "Inventario Valcron" },
+  { href: "/subastas", label: "Oportunidades de Subasta" },
   { href: "/comprar", label: "Comprar" },
-  { href: "/subastas", label: "Subastas" },
 ] as const;
 
 const FOOTER_SERVICES_V2 = [
@@ -44,58 +44,47 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
   const year = new Date().getFullYear();
 
   return (
-    <footer className="site-footer relative mt-auto overflow-hidden">
+    <footer className="site-footer relative mt-auto border-t border-[#e6e8eb]">
       <div
-        className="relative mx-auto w-full max-w-[var(--content-wide)] py-10 md:py-12 lg:py-14"
+        className="relative mx-auto w-full max-w-[var(--content-wide)] py-8 md:py-10"
         style={{ paddingInline: "var(--page-gutter)" }}
       >
-        {/* Main enterprise grid */}
-        <div className="grid gap-9 lg:grid-cols-12 lg:gap-8 xl:gap-10">
-          {/* A — Corporate brand */}
-          <div className="text-center lg:col-span-3 lg:text-left">
-            <Link
-              href="/"
-              aria-label={SITE.brand}
-              className="inline-flex origin-center lg:origin-left"
-            >
-              <BrandLogo size="footer" tone="onDark" variant="full" />
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-10">
+          <div className="sm:col-span-2 lg:col-span-3">
+            <Link href="/" aria-label={SITE.brand} className="inline-flex">
+              <BrandLogo size="footer" tone="onLight" variant="full" />
             </Link>
-            <p className="mx-auto mt-4 max-w-xs text-[0.875rem] leading-relaxed text-white/55 lg:mx-0 lg:max-w-[16.5rem]">
+            <p className="mt-3 max-w-[16rem] text-[0.8125rem] leading-relaxed text-[#5c6370]">
               Venta de vehículos, oportunidades de subasta e importación en República
               Dominicana.
             </p>
+            <FooterSocialIcons className="mt-4" />
           </div>
 
-          {/* B — Navigation */}
           <nav
             aria-label="Navegación del pie de página"
-            className="grid grid-cols-2 gap-x-6 gap-y-8 sm:gap-x-8 lg:col-span-5 lg:grid-cols-2 xl:col-span-5"
+            className="grid grid-cols-2 gap-x-6 gap-y-7 sm:col-span-2 sm:grid-cols-4 lg:col-span-6 lg:gap-x-6"
           >
-            <div className="grid gap-8 content-start">
-              <FooterColumn title="Explorar" items={FOOTER_EXPLORE_V2} />
-              <FooterColumn title="Servicios" items={FOOTER_SERVICES_V2} />
-            </div>
-            <div className="grid gap-8 content-start">
-              <FooterColumn title="Empresa" items={FOOTER_COMPANY_V2} />
-              <FooterColumn title="Recursos" items={FOOTER_RESOURCES_V2} />
-            </div>
+            <FooterColumn title="Explorar" items={FOOTER_EXPLORE_V2} />
+            <FooterColumn title="Servicios" items={FOOTER_SERVICES_V2} />
+            <FooterColumn title="Empresa" items={FOOTER_COMPANY_V2} />
+            <FooterColumn title="Recursos" items={FOOTER_RESOURCES_V2} />
           </nav>
 
-          {/* D + E — Contact + social */}
-          <div className="lg:col-span-4 xl:col-span-4">
+          <div className="sm:col-span-2 lg:col-span-3">
             <h2 className={headingClass}>Contacto</h2>
-            <address className="not-italic text-[0.875rem] leading-6 text-white/70">
-              <p className="text-white/90">{SITE.address.full}</p>
+            <address className="not-italic text-[0.875rem] leading-6 text-[#3d4148]">
+              <p>{SITE.address.full}</p>
               <p className="mt-3">
                 Oficina{" "}
-                <a className="text-white hover:text-[#2b6cff]" href={officeTelHref()}>
+                <a className="font-medium text-[#08090b] hover:text-[#2b6cff]" href={officeTelHref()}>
                   {SITE.officePhoneDisplay}
                 </a>
               </p>
               <p>
                 WhatsApp{" "}
                 <a
-                  className="text-white hover:text-[#2b6cff]"
+                  className="font-medium text-[#08090b] hover:text-[#2b6cff]"
                   href={whatsappHref()}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -104,37 +93,29 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
                 </a>
               </p>
               <p className="mt-3">
-                <a
-                  className="text-white/80 hover:text-white"
-                  href={SITE.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a className="hover:text-[#08090b]" href={SITE.url}>
                   valcronmotors.com
                 </a>
               </p>
             </address>
-            <FooterSocialIcons className="mt-5" />
             {showCompactMap ? (
-              <div className="mt-6">
-                <BusinessLocation variant="compact" tone="dark" />
+              <div className="mt-5">
+                <BusinessLocation variant="compact" tone="light" />
               </div>
             ) : null}
           </div>
         </div>
 
-        {/* C — Associations strip */}
-        <div className="mt-9 md:mt-10">
+        <div className="mt-8 border-t border-[#e6e8eb] pt-5">
           <FooterPartners />
         </div>
       </div>
 
-      {/* F — Legal */}
       <div
-        className="border-t border-white/10 py-4 md:py-5"
+        className="border-t border-[#e6e8eb] bg-white py-3.5"
         style={{ paddingInline: "var(--page-gutter)" }}
       >
-        <div className="mx-auto flex max-w-[var(--content-wide)] flex-col items-center gap-2.5 text-center text-[0.6875rem] leading-5 text-white/40 sm:flex-row sm:justify-between sm:text-left">
+        <div className="mx-auto flex max-w-[var(--content-wide)] flex-col items-center gap-2 text-center text-[0.6875rem] leading-5 text-[#6b7280] sm:flex-row sm:justify-between sm:text-left">
           <p>
             © {year} {SITE.legalName}. Todos los derechos reservados.
           </p>
@@ -143,12 +124,12 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
               <Link
                 key={item.href}
                 href={item.href}
-                className="underline-offset-2 hover:text-white/70 hover:underline"
+                className="underline-offset-2 hover:text-[#08090b] hover:underline"
               >
                 {item.label}
               </Link>
             ))}
-            <p className="inline-flex items-center gap-1.5 uppercase tracking-[0.12em] text-white/45">
+            <p className="inline-flex items-center gap-1.5 uppercase tracking-[0.12em] text-[#5c6370]">
               <DominicanFlag />
               República Dominicana
             </p>
@@ -169,7 +150,7 @@ function FooterColumn({
   return (
     <div>
       <h2 className={headingClass}>{title}</h2>
-      <ul className="grid gap-1.5">
+      <ul className="grid gap-1">
         {items.map((item) => (
           <li key={`${item.href}-${item.label}`}>
             {item.href.startsWith("http") ? (

@@ -2,20 +2,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { PageContainer, Section } from "@/components/public/layout";
-import { EDITORIAL } from "@/lib/editorial-media";
+import { HOME_CARRIER_IMAGE, HOME_CONSULT_IMAGE } from "@/lib/hero-media";
 
 const CARDS = [
   {
     href: "/financiamiento",
     title: "Financiamiento",
     copy: "Escenarios con bancos locales. Sin aprobación prometida.",
-    image: EDITORIAL.processFinance,
+    image: HOME_CONSULT_IMAGE,
   },
   {
     href: "/importacion",
     title: "Importación",
     copy: "Transporte y llegada, confirmados para tu caso.",
-    image: EDITORIAL.carrier,
+    image: HOME_CARRIER_IMAGE,
   },
 ] as const;
 

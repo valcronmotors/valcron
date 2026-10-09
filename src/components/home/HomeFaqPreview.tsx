@@ -12,7 +12,7 @@ export function HomeFaqPreview() {
   return (
     <Section className="section-light bg-white" id="preguntas" tight>
       <PageContainer>
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start lg:gap-16">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-start lg:gap-12">
           <div>
             <h2 className="display-lg text-[#08090b]">
               Preguntas
@@ -25,7 +25,7 @@ export function HomeFaqPreview() {
               Ver todas
             </Link>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {faqs.map((item, index) => {
               const active = open === index;
               return (
@@ -36,7 +36,7 @@ export function HomeFaqPreview() {
                 >
                   <button
                     type="button"
-                    className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left"
+                    className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
                     aria-expanded={active}
                     onClick={() => setOpen(active ? -1 : index)}
                   >

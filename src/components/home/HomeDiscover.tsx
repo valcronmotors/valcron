@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { PageContainer, Section } from "@/components/public/layout";
 import { EDITORIAL } from "@/lib/editorial-media";
+import { HOME_CONSULT_IMAGE } from "@/lib/hero-media";
 
 const TABS = [
   {
@@ -41,7 +42,7 @@ const TABS = [
     copy: "La aprobación la define cada institución. Valcron no es un banco.",
     href: "/financiamiento",
     cta: "Ver financiamiento",
-    image: EDITORIAL.processFinance,
+    image: HOME_CONSULT_IMAGE,
   },
 ] as const;
 

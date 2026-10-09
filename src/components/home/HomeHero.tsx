@@ -19,7 +19,7 @@ export function HomeHero() {
         fetchPriority="high"
         quality={82}
         sizes="100vw"
-        className="object-cover object-[78%_62%] sm:object-[74%_55%] lg:object-[72%_48%]"
+        className="object-cover object-[62%_72%] sm:object-[58%_68%] lg:object-[54%_62%]"
       />
       <div
         className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#08090b_0%,rgba(8,9,11,0.82)_34%,rgba(8,9,11,0.28)_62%,transparent_100%)]"

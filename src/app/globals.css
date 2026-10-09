@@ -539,12 +539,11 @@ h3 {
   object-position: center;
 }
 
-/* —— Footer — enterprise dark with partner row —— */
+/* —— Footer — light corporate —— */
 .site-footer {
   isolation: isolate;
-  background-color: #08090b;
-  background-image: linear-gradient(180deg, #0e1014 0%, #08090b 55%, #050608 100%);
-  color: #a3a3a3;
+  background-color: #f6f7f8;
+  color: #3d4148;
 }
 
 .section-light,

@@ -7,31 +7,28 @@ import { FOOTER_PARTNERS } from "@/lib/partners";
  */
 export function FooterPartners() {
   return (
-    <section
-      aria-labelledby="footer-partners-heading"
-      className="border-t border-white/10 pt-7 md:pt-8"
-    >
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+    <section aria-labelledby="footer-partners-heading">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
         <h2
           id="footer-partners-heading"
-          className="shrink-0 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white/45"
+          className="shrink-0 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-[#5c6370]"
         >
           Asociaciones y plataformas
         </h2>
 
-        <ul className="grid min-w-0 flex-1 grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-stretch sm:justify-end sm:gap-2.5 lg:max-w-lg">
-          {FOOTER_PARTNERS.map((partner, index) => {
+        <ul className="grid min-w-0 grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-stretch sm:justify-end">
+          {FOOTER_PARTNERS.map((partner) => {
             const isAdeci = partner.id === "adeci";
             const surface = (
-              <span className="footer-partner-card flex h-[4.75rem] w-full flex-col items-center justify-center gap-1 rounded-md border border-white/[0.08] bg-[#eceef1] px-2 py-1.5 transition duration-200 hover:bg-[#f5f6f7] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff] sm:h-[5rem] sm:w-[9.75rem] sm:px-2.5 md:w-[10.25rem]">
+              <span className="footer-partner-card flex h-[4.25rem] w-full flex-col items-center justify-center gap-1 rounded-md border border-[#e4e6ea] bg-white px-2.5 py-1.5 transition duration-200 hover:border-[#d0d4da] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff] sm:h-[4.5rem] sm:w-[11.5rem]">
                 {isAdeci ? (
                   <Image
                     src={partner.src}
                     alt=""
                     width={partner.width}
                     height={partner.height}
-                    className="h-11 w-11 object-contain object-center sm:h-12 sm:w-12"
-                    sizes="48px"
+                    className="h-9 w-9 object-contain object-center"
+                    sizes="36px"
                   />
                 ) : (
                   <Image
@@ -39,8 +36,8 @@ export function FooterPartners() {
                     alt=""
                     width={partner.width}
                     height={partner.height}
-                    className="h-auto w-[6.75rem] max-w-full object-contain object-center sm:w-[7.5rem]"
-                    sizes="120px"
+                    className="h-auto w-[6.25rem] max-w-full object-contain object-center"
+                    sizes="100px"
                   />
                 )}
                 <span className="text-center text-[0.625rem] leading-tight text-[#5c6068]">
@@ -52,12 +49,6 @@ export function FooterPartners() {
 
             return (
               <li key={partner.id} className="relative min-w-0">
-                {index > 0 ? (
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute -left-1.5 top-1/2 hidden h-8 w-px -translate-y-1/2 bg-white/15 sm:block"
-                  />
-                ) : null}
                 {partner.href ? (
                   <a
                     href={partner.href}

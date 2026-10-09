@@ -1,17 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
-import { EDITORIAL } from "@/lib/editorial-media";
+import { HOME_BANNER_IMAGE } from "@/lib/hero-media";
 
 /** Full-width editorial close. Licensed photography, not a Valcron facility. */
 export function HomeLineup() {
   return (
     <section className="relative isolate min-h-[22rem] overflow-hidden md:min-h-[32rem] lg:min-h-[36rem]">
       <Image
-        src={EDITORIAL.sunsetSuv.src}
-        alt={EDITORIAL.sunsetSuv.alt}
+        src={HOME_BANNER_IMAGE.src}
+        alt={HOME_BANNER_IMAGE.alt}
         fill
         quality={72}
-        className="object-cover object-[center_40%]"
+        className="object-cover object-[72%_58%] sm:object-[68%_52%]"
         sizes="100vw"
       />
       <div className="absolute inset-0 bg-gradient-to-r from-[#08090b]/75 via-[#08090b]/40 to-[#08090b]/20" />
