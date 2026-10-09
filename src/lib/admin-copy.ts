@@ -20,7 +20,7 @@ export const INQUIRY_SOURCE_LABEL: Record<InquirySource, string> = {
 };
 
 export const PUBLIC_INVENTORY_EMPTY = {
-  title: "Estamos preparando nuevas unidades.",
+  title: "Próximamente nuevas unidades.",
   copy: "¿Buscas algo específico? Te ayudamos a encontrarlo.",
 };
 

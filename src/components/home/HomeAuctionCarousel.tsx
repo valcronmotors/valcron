@@ -24,9 +24,6 @@ export function HomeAuctionCarousel({
         <div className="mb-2 flex items-end justify-between gap-3">
           <div>
             <p className="kicker !text-[#676a70]">Oportunidades de subasta</p>
-            <p className="mt-1 max-w-[28rem] text-sm text-[#676a70]">
-              Más opciones seleccionadas por Valcron en Estados Unidos.
-            </p>
           </div>
           <Link
             href="/subastas"
@@ -39,18 +36,12 @@ export function HomeAuctionCarousel({
 
         {empty ? (
           <div
-            className="mt-4 border border-[#e4e6ea] bg-white px-5 py-5 sm:px-6 sm:py-6 md:px-8"
+            className="mt-4 flex flex-col items-start justify-between gap-4 border border-[#e4e6ea] bg-white px-5 py-4 sm:flex-row sm:items-center sm:px-6 sm:py-5"
             style={{ borderRadius: "var(--radius-card)" }}
           >
-            <p className="font-display text-base font-semibold text-[#08090b] sm:text-lg">
-              Catálogo de subastas en actualización
-            </p>
-            <p className="mt-2 max-w-[40rem] text-sm leading-relaxed text-[#676a70]">{AUCTION_SERVICE_COPY}</p>
-            <Link
-              href="/subastas"
-              className="mt-4 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-[#2b6cff]"
-            >
-              Conocer el servicio de subastas
+            <p className="max-w-[36rem] text-sm leading-relaxed text-[#676a70]">{AUCTION_SERVICE_COPY}</p>
+            <Link href="/subastas" className="btn-primary h-11 shrink-0 px-5 text-sm">
+              Explorar oportunidades
               <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
             </Link>
           </div>

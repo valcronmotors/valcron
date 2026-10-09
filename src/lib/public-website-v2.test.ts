@@ -190,7 +190,7 @@ describe("auction vs Valcron labels and CTAs", () => {
 
 describe("inventory empty states and filters", () => {
   it("uses customer-facing empty copy", () => {
-    expect(PUBLIC_INVENTORY_EMPTY.title).toMatch(/preparando nuevas unidades/i);
+    expect(PUBLIC_INVENTORY_EMPTY.title).toMatch(/próximamente nuevas unidades/i);
     expect(PUBLIC_INVENTORY_EMPTY.copy).toMatch(/buscas algo específico/i);
     expect(PUBLIC_INVENTORY_FILTER_EMPTY.title).toBe("No encontramos vehículos con estos filtros.");
   });
