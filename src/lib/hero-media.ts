@@ -1,6 +1,15 @@
 const unsplash = (id: string, width = 1600) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=72`;
 
+/** Home hero — self-hosted, Unsplash-licensed (see public/marketing/HOME-HERO-ATTRIBUTION.md). */
+export const HOME_HERO_IMAGE = {
+  src: "/marketing/home-hero.jpg",
+  width: 1920,
+  height: 1280,
+  alt: "SUV contemporáneo en fondo neutro, fotografía ilustrativa de compra de vehículo",
+  unsplashPhotoId: "photo-1533473359331-0135ef1b58bf",
+} as const;
+
 /** Page heroes — editorial marketing photography, not inventory. */
 export const PAGE_HERO_IMAGES = {
   inventario: unsplash("photo-1492144534655-ae79c964c9d7"),

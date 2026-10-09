@@ -9,13 +9,9 @@ export function HomeSignatureBlue() {
       <PageContainer>
         <CompactFeatureCard
           tone="blue"
-          kicker="Búsqueda personalizada"
-          title="Lo encontramos contigo"
-          steps={[
-            "Dinos marca y modelo",
-            "Revisamos opciones",
-            "Cotizamos el proceso",
-          ]}
+          kicker="Acompañamiento"
+          title="Lo encontramos contigo."
+          steps={["Buscar", "Evaluar", "Cotizar", "Coordinar", "Entregar"]}
           href="/solicitar-vehiculo"
           cta="Solicitar vehículo"
           image={{

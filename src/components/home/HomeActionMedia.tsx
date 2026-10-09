@@ -9,16 +9,16 @@ export function HomeActionMedia() {
       <PageContainer>
         <CompactFeatureCard
           tone="dark"
-          kicker="Proceso claro"
-          title="Más opciones. Un proceso más claro."
-          copy="Inventario, búsqueda, financiamiento y subastas — sin rodeos."
+          kicker="Cómo funciona Valcron"
+          title="De la idea al vehículo, paso a paso."
+          copy="Consulta, comparación de opciones y coordinación según el tipo de compra que elijas."
           steps={[
-            "Elige o solicita tu vehículo",
-            "Revisa opciones y cotización",
-            "Avanza con Valcron",
+            "Cuéntanos qué buscas o revisa inventario",
+            "Evaluamos disponibilidad y siguiente paso",
+            "Coordinamos cotización, trámite o entrega",
           ]}
           href="/comprar"
-          cta="Cómo comprar"
+          cta="Ver cómo comprar"
           image={{
             src: EDITORIAL.cityDrive.src,
             alt: EDITORIAL.cityDrive.alt,

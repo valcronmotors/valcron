@@ -27,7 +27,6 @@ export function FeaturedInventory({
         <div className="mb-2 flex items-end justify-between gap-3">
           <div>
             <p className="kicker !text-[#676a70]">Inventario Valcron</p>
-            <p className="mt-1 text-sm text-[#676a70]">Vehículos disponibles.</p>
           </div>
           <Link
             href="/inventario"
@@ -40,14 +39,14 @@ export function FeaturedInventory({
 
         {empty ? (
           <div
-            className="mt-4 flex flex-col items-start justify-between gap-4 border border-[#e4e6ea] bg-[#f7f8fa] px-5 py-5 text-left sm:px-6 sm:py-6 md:flex-row md:items-center md:px-8 md:py-7"
+            className="mt-4 flex flex-col items-start justify-between gap-4 border border-[#e4e6ea] bg-[#f7f8fa] px-5 py-4 text-left sm:px-6 sm:py-5 md:flex-row md:items-center md:px-7 md:py-6"
             style={{ borderRadius: "var(--radius-card)" }}
           >
             <div>
               <p className="font-display text-base font-semibold text-[#08090b] sm:text-lg">
                 {PUBLIC_INVENTORY_EMPTY.title}
               </p>
-              <p className="mt-1 text-sm text-[#676a70]">¿Buscas algo específico?</p>
+              <p className="mt-1 text-sm text-[#676a70]">{PUBLIC_INVENTORY_EMPTY.copy}</p>
             </div>
             <Link href="/solicitar-vehiculo" className="btn-primary h-11 shrink-0 px-5 text-sm">
               Solicitar vehículo

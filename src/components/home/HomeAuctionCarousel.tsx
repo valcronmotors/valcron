@@ -4,6 +4,7 @@ import { PageContainer, Section } from "@/components/public/layout";
 import { VehicleCard } from "@/components/public/VehicleCard";
 import { VehicleCarousel } from "@/components/public/VehicleCarousel";
 import { filterAuctionCatalogVehicles } from "@/lib/catalogs";
+import { AUCTION_SERVICE_COPY } from "@/lib/public-price-mode";
 import type { PublicVehicle } from "@/lib/public-catalog";
 
 /** Home Oportunidades de Subasta — auction-origin only; never local stock. */
@@ -15,9 +16,7 @@ export function HomeAuctionCarousel({
   error: string | null;
 }) {
   const auctions = filterAuctionCatalogVehicles(vehicles).slice(0, 8);
-  if (error || auctions.length === 0) {
-    return null;
-  }
+  const empty = error || auctions.length === 0;
 
   return (
     <Section className="section-light bg-[#f7f8fa] !py-8 md:!py-10">
@@ -37,19 +36,39 @@ export function HomeAuctionCarousel({
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>
         </div>
-        <div className="mt-4 -mx-[var(--page-gutter)] px-[var(--page-gutter)] xl:mx-0 xl:px-0">
-          <VehicleCarousel speedSeconds={72}>
-            {auctions.map((vehicle) => (
-              <VehicleCard
-                key={vehicle.id}
-                vehicle={vehicle}
-                tone="light"
-                compact
-                actionLabel="Ver oportunidad"
-              />
-            ))}
-          </VehicleCarousel>
-        </div>
+
+        {empty ? (
+          <div
+            className="mt-4 border border-[#e4e6ea] bg-white px-5 py-5 sm:px-6 sm:py-6 md:px-8"
+            style={{ borderRadius: "var(--radius-card)" }}
+          >
+            <p className="font-display text-base font-semibold text-[#08090b] sm:text-lg">
+              Catálogo de subastas en actualización
+            </p>
+            <p className="mt-2 max-w-[40rem] text-sm leading-relaxed text-[#676a70]">{AUCTION_SERVICE_COPY}</p>
+            <Link
+              href="/subastas"
+              className="mt-4 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-[#2b6cff]"
+            >
+              Conocer el servicio de subastas
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+            </Link>
+          </div>
+        ) : (
+          <div className="mt-4 -mx-[var(--page-gutter)] px-[var(--page-gutter)] xl:mx-0 xl:px-0">
+            <VehicleCarousel speedSeconds={72}>
+              {auctions.map((vehicle) => (
+                <VehicleCard
+                  key={vehicle.id}
+                  vehicle={vehicle}
+                  tone="light"
+                  compact
+                  actionLabel="Ver oportunidad"
+                />
+              ))}
+            </VehicleCarousel>
+          </div>
+        )}
       </PageContainer>
     </Section>
   );
