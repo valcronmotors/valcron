@@ -7,7 +7,7 @@ import { HOME_FAQS } from "@/lib/home-content";
 
 export function HomeFaqPreview() {
   const [open, setOpen] = useState(0);
-  const faqs = HOME_FAQS.slice(0, 6);
+  const faqs = HOME_FAQS.slice(0, 4);
 
   return (
     <Section className="section-light bg-white" id="preguntas" tight>

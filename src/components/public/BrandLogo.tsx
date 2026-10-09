@@ -1,35 +1,69 @@
 import Image from "next/image";
+import { BRAND_ASSETS } from "@/lib/branding";
 import { SITE } from "@/lib/site";
 
+type BrandLogoSize = "header" | "footer" | "auth" | "admin";
+type BrandLogoTone = "onLight" | "onDark";
+type BrandLogoVariant = "full" | "mark";
+
+/**
+ * Official Valcron Motors Group logo.
+ * Header always shows the complete stacked lockup (symbol + VALCRON + MOTORS GROUP).
+ * Orange appears only inside the artwork — never restyled via CSS filters.
+ */
 export function BrandLogo({
   size = "header",
   tone = "onLight",
+  variant,
 }: {
-  size?: "header" | "footer";
-  tone?: "onLight" | "onDark";
+  size?: BrandLogoSize;
+  tone?: BrandLogoTone;
+  /** Override auto variant (admin mark when collapsed; header/footer/auth → full). */
+  variant?: BrandLogoVariant;
 }) {
-  const isHeader = size === "header";
+  const resolved: BrandLogoVariant =
+    variant ?? (size === "admin" ? "mark" : "full");
+  const isMark = resolved === "mark";
+  const src = isMark
+    ? BRAND_ASSETS.symbol
+    : tone === "onDark"
+      ? BRAND_ASSETS.logoDark
+      : BRAND_ASSETS.logoLight;
+
+  const box = isMark
+    ? "h-8 w-[2.95rem]"
+    : size === "header"
+      ? // Dimensions live in globals.css (.brand-logo--header) for reliable breakpoints
+        "brand-logo--header"
+      : size === "footer"
+        ? // Compact enterprise footer lockup — still dominant over partner marks
+          "h-[5.75rem] w-[5.7rem] sm:h-[6.25rem] sm:w-[6.2rem] lg:h-[6.75rem] lg:w-[6.7rem]"
+        : size === "admin"
+          ? "h-[5.75rem] w-[5.7rem]"
+          : // auth / login
+            "h-[8.5rem] w-[8.4rem] sm:h-[9.5rem] sm:w-[9.4rem]";
+
+  const sizesAttr = isMark
+    ? "48px"
+    : size === "header"
+      ? "(max-width: 767px) 76px, (max-width: 1023px) 84px, (max-width: 1279px) 94px, (max-width: 1535px) 98px, 104px"
+      : size === "footer"
+        ? "(max-width: 640px) 96px, 112px"
+        : size === "admin"
+          ? "96px"
+          : "160px";
 
   return (
     <span
-      className={`brand-logo relative inline-flex items-center overflow-visible bg-transparent ${
-        isHeader
-          ? "h-10 w-[188px] sm:h-11 sm:w-[210px] lg:h-12 lg:w-[228px] xl:h-[3.25rem] xl:w-[248px]"
-          : "h-12 w-[232px]"
-      }`}
+      className={`brand-logo relative inline-flex shrink-0 items-center justify-center overflow-visible bg-transparent ${box}`}
     >
       <Image
-        src="/logo-mark.png"
+        src={src}
         alt={SITE.brand}
         fill
-        priority={isHeader}
-        sizes={isHeader ? "248px" : "232px"}
-        className="object-contain object-left"
-        style={
-          tone === "onLight"
-            ? { filter: "brightness(0)", mixBlendMode: "normal" }
-            : { filter: "none", mixBlendMode: "normal" }
-        }
+        priority={size === "header" || size === "auth"}
+        sizes={sizesAttr}
+        className="object-contain object-center"
       />
     </span>
   );

@@ -115,7 +115,7 @@ export function Navbar() {
           style={{ paddingInline: "var(--page-gutter)" }}
         >
           <Link href="/" aria-label={SITE.brand} className="relative z-10 shrink-0" onClick={() => { setOpen(false); setMegaId(null); }}>
-            <BrandLogo size="header" tone="onLight" />
+            <BrandLogo size="header" tone="onLight" variant="full" />
           </Link>
 
           <nav className="hidden min-w-0 flex-1 items-center justify-center gap-1 overflow-visible lg:flex" aria-label="Principal">

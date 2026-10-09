@@ -8,9 +8,9 @@ export const SITE = {
   legalName: "Valcron Motors Group, SRL",
   url: "https://valcronmotors.com",
   tagline: "Más opciones. Más cerca de ti.",
-  heroEyebrow: "Tu próximo vehículo",
+  heroEyebrow: "Valcron Motors Group",
   heroTitle: "Más opciones. Más cerca de ti.",
-  heroSubtitle: "Encuentra vehículos disponibles y nuevas opciones con Valcron Motors.",
+  heroSubtitle: "Encuentra tu próximo vehículo con Valcron Motors.",
   valueProposition:
     "Valcron Motors en Santo Domingo Este: vehículos disponibles, búsqueda personalizada, financiamiento con bancos locales y opciones de subasta e importación cuando aplica.",
   address: {
@@ -32,7 +32,7 @@ export const SITE = {
   whatsappDigits: "18293211271",
   whatsappDisplay: "(829) 321-1271",
   whatsappUrl: "https://wa.me/18293211271",
-  instagramUrl: "https://www.instagram.com/valcronmotors",
+  instagramUrl: "https://www.instagram.com/valcronmotors/",
   instagramHandle: "@valcronmotors",
   facebookUrl: "https://www.facebook.com/people/Valcron-Motors-Group/61584457784163/",
   facebookDisplay: "Valcron Motors Group",

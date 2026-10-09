@@ -44,7 +44,6 @@ export function FeaturedInventory({
               <p className="font-display text-base font-semibold text-[#08090b] sm:text-lg">
                 {PUBLIC_INVENTORY_EMPTY.title}
               </p>
-              <p className="mt-1 text-sm text-[#676a70]">¿Buscas algo específico?</p>
             </div>
             <Link href="/solicitar-vehiculo" className="btn-primary h-11 shrink-0 px-5 text-sm">
               Solicitar vehículo

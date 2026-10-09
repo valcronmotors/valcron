@@ -22,7 +22,7 @@ export default async function LoginPage({
     <main className="admin-console relative isolate flex flex-1 flex-col items-center justify-center overflow-hidden bg-[var(--admin-bg)] px-5 py-16">
       <div className="relative w-full max-w-[420px] rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] px-8 py-10 shadow-[var(--admin-shadow)] sm:px-10">
         <div className="flex flex-col items-center text-center">
-          <BrandLogo size="header" tone="onLight" />
+          <BrandLogo size="auth" tone="onLight" variant="full" />
           <h1 className="mt-8 font-display text-2xl font-semibold tracking-tight text-[var(--admin-text)]">
             Website Admin
           </h1>

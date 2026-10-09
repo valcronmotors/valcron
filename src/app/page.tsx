@@ -5,10 +5,14 @@ import { InventorySectionSkeleton } from "@/components/public/InventorySkeleton"
 import { HomeAuctionCarousel } from "@/components/home/HomeAuctionCarousel";
 import { HomeBrandCarousel } from "@/components/home/HomeBrandCarousel";
 import { HomeBuyGuide } from "@/components/home/HomeBuyGuide";
-import { HomeDiscover } from "@/components/home/HomeDiscover";
 import { HomeFaqPreview } from "@/components/home/HomeFaqPreview";
+import { HomeFinancingTeaser } from "@/components/home/HomeFinancingTeaser";
 import { HomeHero } from "@/components/home/HomeHero";
 import { HomeLineup } from "@/components/home/HomeLineup";
+import { HomePhotoServiceGrid } from "@/components/home/HomePhotoServiceGrid";
+import { HomeStories } from "@/components/home/HomeStories";
+import { HomeTrust } from "@/components/home/HomeTrust";
+import { HOME_HERO_IMAGE } from "@/lib/hero-media";
 import {
   loadAuctionCatalogVehicles,
   loadLocalStockVehicles,
@@ -28,7 +32,7 @@ export const metadata: Metadata = {
     title: "Más opciones. Más cerca de ti. | Valcron Motors",
     description: SITE.valueProposition,
     url: SITE.url,
-    images: [{ url: "/hero-luxury.png", alt: SITE.shortName }],
+    images: [{ url: HOME_HERO_IMAGE.src, alt: HOME_HERO_IMAGE.alt }],
   },
 };
 
@@ -56,10 +60,13 @@ export default function Home() {
           <HomeLocalInventoryBand />
         </Suspense>
         <HomeBuyGuide />
+        <HomePhotoServiceGrid />
         <Suspense fallback={null}>
           <HomeAuctionInventoryBand />
         </Suspense>
-        <HomeDiscover />
+        <HomeFinancingTeaser />
+        <HomeTrust />
+        <HomeStories />
         <HomeFaqPreview />
         <HomeLineup />
       </main>
