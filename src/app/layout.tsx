@@ -42,13 +42,18 @@ export const metadata: Metadata = {
     title: "Más opciones. Más cerca de ti. | Valcron Motors",
     description: SITE.valueProposition,
     url: SITE.url,
-    images: [{ url: "/hero-luxury.png", alt: SITE.shortName }],
+    images: [
+      {
+        url: "/marketing/home-hero.jpg",
+        alt: "Honda CR-V en carretera abierta, fotografía ilustrativa de opciones de vehículos SUV",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Más opciones. Más cerca de ti. | Valcron Motors",
     description: SITE.valueProposition,
-    images: ["/hero-luxury.png"],
+    images: ["/marketing/home-hero.jpg"],
   },
 };
 

@@ -115,8 +115,8 @@ export const GUIDE_ARTICLES: ContentArticle[] = [
     excerpt:
       "Comprar en subasta desde RD es un encadenamiento de cuenta, puja, yard y puerto. Esta guía ordena ese encadenamiento.",
     hero: {
-      src: EDITORIAL.yard.src,
-      alt: "Imagen ilustrativa de patio de inspección de vehículos",
+      src: EDITORIAL.processSearch.src,
+      alt: "Grupo de vehículos, fotografía ilustrativa de búsqueda de opciones de subasta",
     },
     blocks: [
       {
@@ -289,8 +289,8 @@ export const GUIDE_ARTICLES: ContentArticle[] = [
     excerpt:
       "El costo total no es un número mágico. Es una suma de partidas. Esta guía nombra las partidas y deja los gravámenes a la autoridad vigente.",
     hero: {
-      src: EDITORIAL.documents.src,
-      alt: "Imagen ilustrativa de planificación de costos sobre escritorio",
+      src: EDITORIAL.processFinance.src,
+      alt: "Escritorio de trabajo, fotografía ilustrativa de planificación de costos",
     },
     blocks: [
       {
@@ -373,7 +373,7 @@ export const GUIDE_ARTICLES: ContentArticle[] = [
       "Una compra usada se sostiene con lista, no con emoción. Este checklist cubre papeles, identidad y estado físico.",
     hero: {
       src: EDITORIAL.cabin.src,
-      alt: "Imagen ilustrativa del interior de un vehículo contemporáneo",
+      alt: "Detalle de carrocería de un vehículo, fotografía ilustrativa de inspección",
     },
     blocks: [
       {

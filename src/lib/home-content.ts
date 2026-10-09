@@ -48,8 +48,8 @@ export const HOME_ARTICLES = [
     title: "Checklist antes de comprar un usado",
     excerpt: "Qué revisar en la unidad, el historial y los costos antes de decidir.",
     image: {
-      src: "https://images.unsplash.com/photo-1489824904134-891ab64532f1?auto=format&fit=crop&w=1600&q=75",
-      alt: "Fotografía ilustrativa de un vehículo listo para inspección",
+      src: "/marketing/detalle-carroceria.jpg",
+      alt: "Detalle de carrocería de un vehículo, fotografía ilustrativa de inspección",
     },
   },
   {
@@ -58,8 +58,8 @@ export const HOME_ARTICLES = [
     title: "Subastas desde República Dominicana",
     excerpt: "Cómo leer opciones en plataformas como Copart e IAA antes de ofertar.",
     image: {
-      src: "https://images.unsplash.com/photo-1617469767053-d3b523a0b982?auto=format&fit=crop&w=1600&q=75",
-      alt: "SUV contemporáneo, fotografía ilustrativa",
+      src: "/marketing/seleccion-vehiculos.jpg",
+      alt: "Grupo de vehículos, fotografía ilustrativa de búsqueda de opciones",
     },
   },
   {
@@ -68,8 +68,8 @@ export const HOME_ARTICLES = [
     title: "Clean Title vs Salvage",
     excerpt: "Qué indica cada tipo de título y por qué importa antes de comprar.",
     image: {
-      src: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1600&q=75",
-      alt: "Interior automotriz ilustrativo",
+      src: "/marketing/planificacion-documentos.jpg",
+      alt: "Documentos sobre un escritorio, fotografía ilustrativa de revisión de título",
     },
   },
 ] as const;

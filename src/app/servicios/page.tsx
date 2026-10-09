@@ -54,7 +54,7 @@ const SERVICES = [
     copy: "Evalúa tu unidad como parte de la compra.",
     href: "/solicitar-vehiculo",
     cta: "Solicitar evaluación",
-    image: { src: EDITORIAL.cityDrive.src, alt: EDITORIAL.cityDrive.alt },
+    image: { src: EDITORIAL.processTradeIn.src, alt: EDITORIAL.processTradeIn.alt },
   },
 ] as const;
 
@@ -85,7 +85,7 @@ export default function ServiciosPage() {
               ]}
               href="/solicitar-vehiculo"
               cta="Solicitar vehículo"
-              image={{ src: EDITORIAL.processSearch.src, alt: EDITORIAL.processSearch.alt }}
+              image={{ src: EDITORIAL.familySedan.src, alt: EDITORIAL.familySedan.alt }}
             />
           </div>
           <div className="mt-8">

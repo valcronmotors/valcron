@@ -1,38 +1,34 @@
-const unsplash = (id: string, width = 1600) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=72`;
-
-/** Home hero — self-hosted, Unsplash-licensed (see public/marketing/HOME-HERO-ATTRIBUTION.md). */
+/** Home hero — self-hosted, Unsplash-licensed (see public/marketing/IMAGE-LICENSES.md). */
 export const HOME_HERO_IMAGE = {
   src: "/marketing/home-hero.jpg",
   width: 2400,
   height: 1400,
-  alt: "SUV familiar contemporáneo en paisaje abierto, fotografía ilustrativa",
+  alt: "Honda CR-V en carretera abierta, fotografía ilustrativa de opciones de vehículos SUV",
   unsplashPhotoId: "photo-1519641471654-76ce0107ad1b",
 } as const;
 
-/** Page heroes — editorial marketing photography, not inventory. */
+/** Page heroes — editorial marketing photography, not inventory or premises. */
 export const PAGE_HERO_IMAGES = {
-  inventario: unsplash("photo-1492144534655-ae79c964c9d7"),
-  importacion: unsplash("photo-1601584115197-04ecc0da31d7"),
-  financiamiento: unsplash("photo-1449965408869-eaa3f722e40d"),
-  nosotros: unsplash("photo-1519641471654-76ce0107ad1b"),
-  contacto: unsplash("photo-1489824904134-891ab64532f1"),
-  subastas: unsplash("photo-1617469767053-d3b523a0b982"),
-  servicios: unsplash("photo-1533473359331-0135ef1b58bf"),
+  inventario: "/marketing/seleccion-vehiculos.jpg",
+  importacion: "/marketing/transporte-terrestre-vehiculo.jpg",
+  financiamiento: "/marketing/planificacion-escritorio.jpg",
+  nosotros: "/marketing/suv-entorno-abierto.jpg",
+  contacto: "/marketing/detalle-faro-vehiculo.jpg",
+  subastas: "/marketing/patio-vehiculos-inspeccion.jpg",
+  servicios: "/marketing/suv-urbano-compra-vehiculos.jpg",
 } as const;
 
 export const PAGE_HERO_ALTS = {
-  inventario: "Vehículos disponibles para compra en República Dominicana",
-  importacion: "Transporte terrestre de un vehículo hacia su destino",
-  financiamiento: "Conducir en ciudad, contexto de compra y financiamiento",
-  nosotros: "Vehículo contemporáneo en entorno abierto",
-  contacto: "Detalle automotriz para atención al cliente",
-  subastas: "SUV contemporáneo, fotografía ilustrativa de búsqueda y subasta",
-  servicios: "SUV contemporáneo, fotografía ilustrativa de servicios",
+  inventario: "Grupo de vehículos, fotografía ilustrativa de selección. No es el inventario publicado.",
+  importacion: "Camión de carga en carretera, fotografía ilustrativa de transporte terrestre",
+  financiamiento: "Escritorio de trabajo, fotografía ilustrativa de planificación financiera",
+  nosotros: "SUV en un entorno abierto, fotografía ilustrativa. No representa las instalaciones de Valcron.",
+  contacto: "Detalle de faros de un vehículo, fotografía ilustrativa",
+  subastas: "Patio de vehículos en revisión, fotografía ilustrativa de búsqueda y subasta",
+  servicios: "SUV en un entorno urbano, fotografía ilustrativa de servicios automotrices",
 } as const;
 
-export const IMPORT_SCENE_IMAGE = unsplash("photo-1578575437130-527eed3abbec");
-export const IMPORT_SCENE_ALT =
-  "Transporte marítimo de carga hacia destino internacional";
+export const IMPORT_SCENE_IMAGE = "/marketing/logistica-maritima-puerto.jpg";
+export const IMPORT_SCENE_ALT = "Buque de carga, fotografía ilustrativa de logística marítima";
 
-export const NOSOTROS_GALLERY_IMAGE = unsplash("photo-1519641471654-76ce0107ad1b");
+export const NOSOTROS_GALLERY_IMAGE = "/marketing/suv-entorno-abierto.jpg";

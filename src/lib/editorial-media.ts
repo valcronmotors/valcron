@@ -1,147 +1,147 @@
-const unsplash = (id: string, width = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=70`;
+/** Self-hosted Unsplash License photography. See public/marketing/IMAGE-LICENSES.md. */
+const photo = (file: string) => `/marketing/${file}`;
 
 export const EDITORIAL = {
   suvNight: {
-    src: unsplash("photo-1519641471654-76ce0107ad1b"),
-    alt: "SUV premium en iluminación nocturna",
+    src: photo("home-hero.jpg"),
+    alt: "Honda CR-V en carretera abierta, fotografía ilustrativa de opciones de vehículos SUV",
   },
   sedan: {
-    src: unsplash("photo-1619767886558-efdc259cde1a"),
-    alt: "Sedán familiar contemporáneo, fotografía ilustrativa",
+    src: photo("sedan-familiar-compra.jpg"),
+    alt: "Sedán familiar en un entorno urbano, fotografía ilustrativa",
   },
   mustang: {
-    src: unsplash("photo-1519641471654-76ce0107ad1b"),
-    alt: "SUV familiar contemporáneo, fotografía ilustrativa",
+    src: photo("suv-contemporaneo-servicios.jpg"),
+    alt: "SUV contemporáneo, fotografía ilustrativa de opciones de vehículos",
   },
   muscle: {
-    src: unsplash("photo-1533473359331-0135ef1b58bf"),
-    alt: "SUV contemporáneo, fotografía ilustrativa",
+    src: photo("suv-entorno-abierto.jpg"),
+    alt: "SUV en un entorno abierto, fotografía ilustrativa",
   },
   cabin: {
-    src: unsplash("photo-1542362567-b07e54358753"),
-    alt: "Detalle editorial de un vehículo contemporáneo",
+    src: photo("detalle-carroceria.jpg"),
+    alt: "Detalle de carrocería de un vehículo, fotografía ilustrativa de inspección",
   },
   wheels: {
-    src: unsplash("photo-1617531653332-bd46c24f2068"),
-    alt: "Detalle de rueda y carrocería automotriz",
+    src: photo("detalle-rueda-vehiculo.jpg"),
+    alt: "Detalle de rueda y carrocería, fotografía ilustrativa",
   },
   headlights: {
-    src: unsplash("photo-1489824904134-891ab64532f1"),
-    alt: "Faros de un vehículo en contraluz",
+    src: photo("detalle-faro-vehiculo.jpg"),
+    alt: "Faros de un vehículo, fotografía ilustrativa",
   },
   pickup: {
-    src: unsplash("photo-1559416523-140ddc3d238c"),
-    alt: "Pickup contemporánea en entorno abierto",
+    src: photo("pickup-entorno-abierto.jpg"),
+    alt: "Pickup en un entorno abierto, fotografía ilustrativa",
   },
   highway: {
-    src: unsplash("photo-1449965408869-eaa3f722e40d"),
-    alt: "Tránsito en un entorno urbano",
+    src: photo("conduccion-urbana.jpg"),
+    alt: "Vehículo en tránsito urbano, fotografía ilustrativa",
   },
   carrier: {
-    src: unsplash("photo-1601584115197-04ecc0da31d7"),
-    alt: "Transporte terrestre de carga sobre carretera",
+    src: photo("transporte-terrestre-vehiculo.jpg"),
+    alt: "Camión de carga en carretera, fotografía ilustrativa de transporte terrestre",
   },
   port: {
-    src: unsplash("photo-1578575437130-527eed3abbec"),
-    alt: "Buque de carga y logística marítima",
+    src: photo("logistica-maritima-puerto.jpg"),
+    alt: "Buque de carga, fotografía ilustrativa de logística marítima",
   },
   ship: {
-    src: unsplash("photo-1605745341112-85968b19335b"),
-    alt: "Transporte marítimo de contenedores",
+    src: photo("contenedores-transporte-maritimo.jpg"),
+    alt: "Contenedores de transporte marítimo, fotografía ilustrativa",
   },
   yard: {
-    src: unsplash("photo-1486262715619-67b85e0b08d3"),
-    alt: "Patio de vehículos e inspección",
+    src: photo("patio-vehiculos-inspeccion.jpg"),
+    alt: "Patio de vehículos en revisión, fotografía ilustrativa",
   },
   coastal: {
-    src: unsplash("photo-1469854523086-cc02fe5d8800"),
-    alt: "Carretera costera como contexto de destino en el Caribe",
+    src: photo("carretera-destino.jpg"),
+    alt: "Carretera en un entorno abierto, fotografía ilustrativa",
   },
   documents: {
-    src: unsplash("photo-1554224155-6726b3ff858f"),
-    alt: "Documentación y planificación sobre escritorio",
+    src: photo("planificacion-documentos.jpg"),
+    alt: "Documentos y calculadora sobre un escritorio, fotografía ilustrativa",
   },
   interiorLeather: {
-    src: unsplash("photo-1549317661-bd32c8ce0db2"),
-    alt: "Interior automotriz con detalle de volante y tablero",
+    src: photo("interior-tablero-vehiculo.jpg"),
+    alt: "Volante y tablero de un vehículo, fotografía ilustrativa",
   },
   sunsetSuv: {
-    src: unsplash("photo-1533473359331-0135ef1b58bf"),
-    alt: "SUV premium en un entorno abierto al atardecer",
+    src: photo("suv-entorno-abierto.jpg"),
+    alt: "SUV en un entorno abierto al atardecer, fotografía ilustrativa",
   },
   cityDrive: {
-    src: unsplash("photo-1449965408869-eaa3f722e40d"),
-    alt: "Vehículo en entorno urbano contemporáneo",
+    src: photo("conduccion-urbana.jpg"),
+    alt: "Conducción en un entorno urbano, fotografía ilustrativa",
   },
   hybridEv: {
-    src: unsplash("photo-1593941707882-a5bba14938c7"),
-    alt: "Vehículo eléctrico en estación de carga",
+    src: photo("vehiculo-electrico-carga.jpg"),
+    alt: "Vehículo electrificado en una estación de carga, fotografía ilustrativa",
   },
   crossover: {
-    src: unsplash("photo-1632137924251-fcea5ff46035"),
-    alt: "SUV compacto contemporáneo, fotografía ilustrativa",
+    src: photo("crossover-compacto-inventario.jpg"),
+    alt: "Crossover compacto, fotografía ilustrativa",
   },
   familySedan: {
-    src: unsplash("photo-1619767886558-efdc259cde1a"),
-    alt: "Sedán familiar contemporáneo, fotografía ilustrativa",
+    src: photo("sedan-familiar-compra.jpg"),
+    alt: "Sedán familiar, fotografía ilustrativa de compra de vehículos",
   },
   compactSuv: {
-    src: unsplash("photo-1707070182914-fb69f596c98e"),
-    alt: "Crossover compacto contemporáneo, fotografía ilustrativa",
+    src: photo("crossover-compacto-inventario.jpg"),
+    alt: "Crossover compacto, fotografía ilustrativa de selección de vehículos",
   },
   citySuv: {
-    src: unsplash("photo-1704940225548-1420f7fed72f"),
-    alt: "SUV contemporáneo, fotografía ilustrativa",
+    src: photo("suv-urbano-compra-vehiculos.jpg"),
+    alt: "SUV en un entorno urbano, fotografía ilustrativa. No representa instalaciones de Valcron.",
   },
   silverSedan: {
-    src: unsplash("photo-1649921777129-a28a26031a03"),
-    alt: "SUV familiar contemporáneo, fotografía ilustrativa",
+    src: photo("sedan-familiar-compra.jpg"),
+    alt: "Sedán familiar, fotografía ilustrativa",
   },
-  /** Process storytelling — editorial, not Valcron inventory/customers. */
+  /** Process storytelling — editorial, not Valcron inventory, staff, or premises. */
   processSearch: {
-    src: unsplash("photo-1492144534655-ae79c964c9d7", 1400),
-    alt: "Selección visual de un vehículo contemporáneo",
+    src: photo("seleccion-vehiculos.jpg"),
+    alt: "Grupo de vehículos, fotografía ilustrativa de búsqueda de opciones",
     caption: "Proceso de búsqueda personalizada",
   },
   processBrowse: {
-    src: unsplash("photo-1486262715619-67b85e0b08d3", 1400),
-    alt: "Patio de vehículos para revisión de opciones",
+    src: photo("patio-vehiculos-inspeccion.jpg"),
+    alt: "Patio de vehículos para revisión de opciones, fotografía ilustrativa",
     caption: "Opciones mediante plataformas de subasta",
   },
   processQuote: {
-    src: unsplash("photo-1554224155-6726b3ff858f", 1400),
-    alt: "Documentación y planificación de costos",
+    src: photo("planificacion-documentos.jpg"),
+    alt: "Documentación y planificación de costos, fotografía ilustrativa",
     caption: "Preparación de cotización",
   },
   processSelect: {
-    src: unsplash("photo-1519641471654-76ce0107ad1b", 1400),
-    alt: "Vehículo contemporáneo listo para evaluación",
+    src: photo("suv-contemporaneo-servicios.jpg"),
+    alt: "SUV contemporáneo, fotografía ilustrativa de selección de unidad",
     caption: "Selección de unidad",
   },
   processLogistics: {
-    src: unsplash("photo-1601584115197-04ecc0da31d7", 1400),
-    alt: "Transporte terrestre de un vehículo",
+    src: photo("transporte-terrestre-vehiculo.jpg"),
+    alt: "Transporte terrestre de carga, fotografía ilustrativa",
     caption: "Coordinación del proceso contratado",
   },
   processFinance: {
-    src: unsplash("photo-1449965408869-eaa3f722e40d", 1400),
-    alt: "Conducción en ciudad como contexto de compra y financiamiento",
+    src: photo("planificacion-escritorio.jpg"),
+    alt: "Escritorio de trabajo, fotografía ilustrativa de planificación financiera",
     caption: "Orientación para financiamiento",
   },
   processImport: {
-    src: unsplash("photo-1578575437130-527eed3abbec", 1400),
-    alt: "Logística marítima hacia destino internacional",
+    src: photo("logistica-maritima-puerto.jpg"),
+    alt: "Logística marítima, fotografía ilustrativa de importación",
     caption: "Coordinación del proceso de importación",
   },
   processTradeIn: {
-    src: unsplash("photo-1559416523-140ddc3d238c", 1400),
-    alt: "Vehículo en entorno abierto para evaluación",
+    src: photo("pickup-entorno-abierto.jpg"),
+    alt: "Pickup en un entorno abierto, fotografía ilustrativa de evaluación",
     caption: "Evaluación de trade-in",
   },
   processDelivery: {
-    src: unsplash("photo-1469854523086-cc02fe5d8800", 1400),
-    alt: "Carretera como contexto de destino del vehículo",
+    src: photo("carretera-destino.jpg"),
+    alt: "Carretera en un entorno abierto, fotografía ilustrativa",
     caption: "Coordinación de entrega",
   },
 } as const;
