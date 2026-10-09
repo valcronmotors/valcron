@@ -4,47 +4,56 @@ import { ArrowRight } from "lucide-react";
 import { PageContainer, Section } from "@/components/public/layout";
 import { EDITORIAL } from "@/lib/editorial-media";
 
-/** One premium visual financing card — details live on /financiamiento. */
+const CARDS = [
+  {
+    href: "/financiamiento",
+    title: "Financiamiento",
+    copy: "Escenarios con bancos locales. Sin aprobación prometida.",
+    image: EDITORIAL.processFinance,
+  },
+  {
+    href: "/importacion",
+    title: "Importación",
+    copy: "Transporte y llegada, confirmados para tu caso.",
+    image: EDITORIAL.carrier,
+  },
+] as const;
+
+/** Compact service entries. The full process stays on each dedicated page. */
 export function HomeFinancingTeaser() {
   return (
     <Section className="section-light bg-white" tight>
-      <PageContainer>
-        <Link
-          href="/financiamiento"
-          className="group relative block overflow-hidden border border-[#e4e6ea] transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_rgba(8,9,11,0.35)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff]"
-          style={{ borderRadius: "var(--radius-card)" }}
-        >
-          <div className="relative aspect-[21/9] min-h-[11rem] sm:min-h-[12.5rem] lg:aspect-[3/1]">
-            <Image
-              src={EDITORIAL.documents.src}
-              alt={EDITORIAL.documents.alt}
-              fill
-              sizes="(max-width: 1280px) 94vw, 1120px"
-              className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.02]"
-            />
-            <div
-              className="absolute inset-0 bg-gradient-to-r from-[#08090b]/88 via-[#08090b]/55 to-[#08090b]/20"
-              aria-hidden="true"
-            />
-            <div className="absolute inset-0 flex items-end p-5 sm:items-center sm:p-8 lg:p-10">
-              <div className="max-w-[28rem]">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/70">
-                  Financiamiento
-                </p>
-                <h2 className="font-display mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl">
-                  Explora opciones con bancos locales.
-                </h2>
-                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-white">
-                  Conocer opciones
-                  <ArrowRight
-                    className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5"
-                    aria-hidden="true"
+      <PageContainer wide>
+        <ul className="grid gap-4 md:grid-cols-2 md:gap-5">
+          {CARDS.map((card) => (
+            <li key={card.href}>
+              <Link
+                href={card.href}
+                className="group grid overflow-hidden bg-[#f7f8fa] sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff]"
+              >
+                <span className="relative block min-h-[10rem] sm:min-h-[14rem]">
+                  <Image
+                    src={card.image.src}
+                    alt={card.image.alt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 28vw"
+                    className="object-cover object-center"
                   />
                 </span>
-              </div>
-            </div>
-          </div>
-        </Link>
+                <span className="flex flex-col justify-center px-5 py-6 sm:px-7">
+                  <span className="font-display text-2xl font-bold tracking-tight text-[#08090b]">
+                    {card.title}
+                  </span>
+                  <span className="mt-2 text-sm leading-relaxed text-[#676a70]">{card.copy}</span>
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#08090b]">
+                    Conocer
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                  </span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </PageContainer>
     </Section>
   );

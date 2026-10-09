@@ -209,20 +209,32 @@ h3 {
   letter-spacing: -0.04em;
 }
 
-/* V12 cinematic home banner — substantial without full-viewport takeover */
+/* Home banner: short on phones, wide and cinematic from tablet up. */
 .home-hero-cinematic {
-  min-height: clamp(33.75rem, 52vw, 40.625rem); /* ~540–650px mobile band */
+  height: 26.5rem;
 }
 
 @media (min-width: 768px) {
   .home-hero-cinematic {
-    min-height: clamp(34.375rem, 48vw, 42.5rem); /* ~550–680px tablet */
+    height: 32rem;
   }
 }
 
 @media (min-width: 1024px) {
   .home-hero-cinematic {
-    min-height: clamp(36.25rem, 38vw, 46.25rem); /* ~580–740px desktop */
+    height: 38rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .home-hero-cinematic {
+    height: 42rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  .home-hero-cinematic {
+    height: 46rem;
   }
 }
 

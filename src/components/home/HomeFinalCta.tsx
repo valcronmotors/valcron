@@ -1,26 +1,19 @@
-import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { PageContainer, Section } from "@/components/public/layout";
-import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
-import { whatsappHref } from "@/lib/site";
 
 export function HomeFinalCta() {
   return (
     <Section className="section-dark bg-[#08090b]" tight>
       <PageContainer>
-        <div className="mx-auto flex max-w-[36rem] flex-col items-center text-center">
-          <h2 className="display-lg text-balance text-white">
-            Tu próximo vehículo comienza aquí.
-          </h2>
-          <a
-            href={whatsappHref()}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-whatsapp mt-7 min-w-[14rem]"
+        <div className="mx-auto flex max-w-[40rem] flex-col items-center text-center">
+          <h2 className="display-lg text-balance text-white">Revisa las opciones publicadas.</h2>
+          <p className="mt-3 text-base text-white/70">Inventario local y búsqueda cuando no está en stock.</p>
+          <Link
+            href="/inventario"
+            className="mt-7 inline-flex h-12 min-w-[14rem] items-center justify-center rounded-full bg-white px-6 text-sm font-semibold text-[#08090b] transition-colors hover:bg-[#f3f4f6]"
           >
-            <WhatsAppIcon className="h-4 w-4" />
-            Hablar con Valcron
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </a>
+            Ver inventario
+          </Link>
         </div>
       </PageContainer>
     </Section>

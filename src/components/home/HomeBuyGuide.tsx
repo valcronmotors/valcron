@@ -1,52 +1,37 @@
 import Link from "next/link";
-import { Calculator, MapPin, Search, Warehouse } from "lucide-react";
+import { CarFront, Gavel, Landmark, Search } from "lucide-react";
 import { PageContainer, Section } from "@/components/public/layout";
 
-const TILES = [
-  {
-    href: "/solicitar-vehiculo",
-    label: "Solicitar vehículo",
-    icon: Search,
-  },
-  {
-    href: "/inventario",
-    label: "Inventario",
-    icon: Warehouse,
-  },
-  {
-    href: "/financiamiento",
-    label: "Financiamiento",
-    icon: Calculator,
-  },
-  {
-    href: "/contacto",
-    label: "Visítanos",
-    icon: MapPin,
-  },
+const TOOLS = [
+  { href: "/inventario", label: "Ver inventario", icon: CarFront },
+  { href: "/solicitar-vehiculo", label: "Solicitar vehículo", icon: Search },
+  { href: "/financiamiento", label: "Financiamiento", icon: Landmark },
+  { href: "/subastas", label: "Explorar subastas", icon: Gavel },
 ] as const;
 
 export function HomeBuyGuide() {
   return (
-    <Section className="section-light bg-white" tight>
-      <PageContainer>
+    <Section className="section-light bg-[#f7f8fa]" tight>
+      <PageContainer wide>
         <h2 className="text-center font-display text-3xl font-bold tracking-tight text-[#08090b] md:text-4xl">
-          Guía de compra
+          Tu compra, más sencilla.
         </h2>
-        <div className="mt-10 grid grid-cols-2 divide-x divide-y divide-[#e5e5e5] border border-[#e5e5e5] md:grid-cols-4 md:divide-y-0">
-          {TILES.map((tile) => {
-            const Icon = tile.icon;
+        <ul className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+          {TOOLS.map((tool) => {
+            const Icon = tool.icon;
             return (
-              <Link
-                key={tile.href}
-                href={tile.href}
-                className="flex min-h-[8.5rem] flex-col items-center justify-center gap-3 px-4 py-6 text-center transition-colors hover:bg-[#f7f7f8]"
-              >
-                <Icon className="h-6 w-6 text-[#08090b]" strokeWidth={1.5} aria-hidden="true" />
-                <span className="text-sm font-medium text-[#191919]">{tile.label}</span>
-              </Link>
+              <li key={tool.href}>
+                <Link
+                  href={tool.href}
+                  className="flex min-h-[8.5rem] flex-col items-center justify-center gap-3 bg-white px-4 py-6 text-center transition-colors hover:bg-[#eef0f3] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff]"
+                >
+                  <Icon className="h-7 w-7 text-[#08090b]" strokeWidth={1.4} aria-hidden="true" />
+                  <span className="text-sm font-semibold text-[#191919] md:text-base">{tool.label}</span>
+                </Link>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </PageContainer>
     </Section>
   );

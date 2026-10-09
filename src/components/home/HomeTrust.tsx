@@ -1,50 +1,29 @@
+import Link from "next/link";
 import { PageContainer, Section } from "@/components/public/layout";
+import { SITE } from "@/lib/site";
 
-const TRUST_POINTS = [
-  {
-    title: "Atención personalizada",
-    copy: "Comunicación directa para entender qué buscas.",
-  },
-  {
-    title: "Orientación en compra",
-    copy: "Acompañamiento claro desde la consulta hasta la decisión.",
-  },
-  {
-    title: "Opciones de subasta",
-    copy: "Oportunidades seleccionadas en Estados Unidos cuando aplican.",
-  },
-  {
-    title: "Importación coordinada",
-    copy: "Apoyo en el proceso contratado hacia República Dominicana.",
-  },
-] as const;
-
-/**
- * Factual trust strip — no fabricated reviews, ratings or delivery photos.
- * Hidden customer gallery remains in HomeStories until real assets exist.
- */
+/** Verified company facts only. No reviews, ratings, or delivery photos. */
 export function HomeTrust() {
   return (
     <Section className="section-light bg-[#f7f8fa]" tight>
-      <PageContainer>
-        <div className="max-w-[32rem]">
-          <p className="kicker !text-[#676a70]">Valcron Motors</p>
-          <h2 className="display-lg mt-2 text-balance text-[#08090b]">
-            Compra con información clara.
-          </h2>
+      <PageContainer wide>
+        <div className="grid gap-6 border border-[#e4e6ea] bg-white px-5 py-6 sm:px-8 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_auto] md:items-center">
+          <div>
+            <h2 className="font-display text-2xl font-bold tracking-tight text-[#08090b] md:text-3xl">
+              Valcron Motors
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-[#676a70]">
+              Dealer en {SITE.address.city}. Inventario publicado, búsqueda y orientación con bancos locales.
+            </p>
+          </div>
+          <p className="text-sm leading-relaxed text-[#3a3d42]">
+            {SITE.address.full}
+            <span className="mt-1 block font-semibold">{SITE.phoneOffice}</span>
+          </p>
+          <Link href="/contacto" className="btn-secondary h-11 w-fit px-5 text-sm">
+            Cómo llegar
+          </Link>
         </div>
-        <ul className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {TRUST_POINTS.map((item) => (
-            <li
-              key={item.title}
-              className="border border-[#e4e6ea] bg-white px-5 py-5"
-              style={{ borderRadius: "var(--radius-card)" }}
-            >
-              <h3 className="font-display text-base font-bold text-[#08090b]">{item.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-[#676a70]">{item.copy}</p>
-            </li>
-          ))}
-        </ul>
       </PageContainer>
     </Section>
   );
