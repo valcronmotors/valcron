@@ -11,7 +11,7 @@ import {
   formatCustomerFacingPrice,
 } from "@/lib/public-price-mode";
 import { vehicleJsonLd } from "@/lib/seo";
-import { PUBLIC_NAV, PUBLIC_NAV_PRIMARY, RESOURCE_NAV, MOBILE_NAV, SITE } from "@/lib/site";
+import { MEGA_NAV, PUBLIC_NAV, PUBLIC_NAV_PRIMARY, RESOURCE_NAV, MOBILE_NAV, SITE } from "@/lib/site";
 import { toPublicVehicle } from "@/lib/vehicles/normalizeVehicle";
 import { buildVehicleWhatsAppMessage, displayVehiclePrice, visibleVehicleSpecs } from "@/lib/vehicles/vehicle-formatters";
 import {
@@ -110,6 +110,8 @@ describe("public website v2 navigation", () => {
     ]);
     const labels: string[] = PUBLIC_NAV.map((item) => item.label);
     expect(labels).not.toContain("Importación");
+    expect(MEGA_NAV.map((item) => item.label)).toEqual(["Vehículos", "Compra", "Ayuda y servicio"]);
+    expect(MEGA_NAV.flatMap((item) => item.columns.flatMap((column) => column.links.map((link) => link.href)))).not.toContain("#");
   });
 
   it("keeps the verified Santo Domingo Este address", () => {

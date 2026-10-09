@@ -33,14 +33,14 @@ export function AdminShell({
           <button
             type="button"
             aria-label="Cerrar menú"
-            className="absolute inset-0 bg-[var(--admin-nav)]/50"
+            className="absolute inset-0 bg-[#08090b]/40"
             onClick={() => setMobileOpen(false)}
           />
           <div className="relative flex h-full w-[264px] flex-col bg-[var(--admin-nav)] shadow-2xl">
             <button
               type="button"
               onClick={() => setMobileOpen(false)}
-              className="absolute right-3 top-3 z-10 inline-flex h-10 w-10 items-center justify-center rounded-lg text-[var(--admin-nav-muted)] transition hover:bg-white/5 hover:text-white"
+              className="absolute right-3 top-3 z-10 inline-flex h-10 w-10 items-center justify-center rounded-md text-[var(--admin-nav-muted)] transition hover:bg-[var(--admin-nav-hover)] hover:text-[var(--admin-text)]"
               aria-label="Cerrar"
             >
               <X className="h-4 w-4" />

@@ -20,18 +20,18 @@ export function HomeAuctionCarousel({
   }
 
   return (
-    <Section className="section-light bg-[#f7f8fa] !py-8 md:!py-10">
+    <Section className="section-light bg-[#f7f7f8] !py-12 md:!py-16">
       <PageContainer>
-        <div className="mb-2 flex items-end justify-between gap-3">
-          <div>
-            <p className="kicker !text-[#676a70]">Oportunidades de subasta</p>
-            <p className="mt-1 max-w-[28rem] text-sm text-[#676a70]">
-              Más opciones seleccionadas por Valcron en Estados Unidos.
-            </p>
-          </div>
+        <div className="mb-8 flex flex-col items-center gap-3 text-center">
+          <h2 className="font-display text-3xl font-bold tracking-tight text-[#08090b] md:text-4xl">
+            Oportunidades de subasta
+          </h2>
+          <p className="max-w-[32rem] text-sm text-[#676a70]">
+            Más opciones seleccionadas por Valcron en Estados Unidos.
+          </p>
           <Link
             href="/subastas"
-            className="inline-flex min-h-11 shrink-0 items-center gap-1 text-sm font-semibold text-[#2b6cff]"
+            className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-[#08090b] underline-offset-4 hover:underline"
           >
             Explorar oportunidades
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />

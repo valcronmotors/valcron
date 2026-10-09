@@ -77,6 +77,109 @@ export const RESOURCE_NAV = [
 
 export const MOBILE_NAV = [...PUBLIC_NAV_PRIMARY, ...RESOURCE_NAV, PUBLIC_NAV_CONTACT] as const;
 
+export type MegaNavLink = { href: string; label: string };
+export type MegaNavColumn = { title: string; links: readonly MegaNavLink[] };
+export type MegaNavItem = {
+  id: string;
+  label: string;
+  href: string;
+  columns: readonly MegaNavColumn[];
+  featured: { title: string; copy: string; href: string; cta: string };
+};
+
+/** Desktop header is three OEM-style mega menus; all destinations already exist. */
+export const MEGA_NAV: readonly MegaNavItem[] = [
+  {
+    id: "vehiculos",
+    label: "Vehículos",
+    href: "/inventario",
+    columns: [
+      {
+        title: "Inventario",
+        links: [
+          { href: "/inventario", label: "Ver inventario" },
+          { href: "/solicitar-vehiculo", label: "Solicitar vehículo" },
+          { href: "/subastas", label: "Oportunidades de subasta" },
+        ],
+      },
+      {
+        title: "Opciones",
+        links: [
+          { href: "/comprar", label: "Cómo comprar" },
+          { href: "/importacion", label: "Importación" },
+          { href: "/financiamiento", label: "Financiamiento" },
+        ],
+      },
+    ],
+    featured: {
+      title: "Encuentra tu vehículo",
+      copy: "Inventario local en Santo Domingo Este y opciones de subasta cuando aplica.",
+      href: "/inventario",
+      cta: "Ver inventario",
+    },
+  },
+  {
+    id: "compra",
+    label: "Compra",
+    href: "/comprar",
+    columns: [
+      {
+        title: "Herramientas de compra",
+        links: [
+          { href: "/comprar", label: "Cómo comprar" },
+          { href: "/solicitar-vehiculo", label: "Solicitar vehículo" },
+          { href: "/guias", label: "Guías" },
+        ],
+      },
+      {
+        title: "Financiación e importación",
+        links: [
+          { href: "/financiamiento", label: "Financiamiento" },
+          { href: "/calculadoras", label: "Calculadoras" },
+          { href: "/calculadoras/financiamiento", label: "Calcula tu cuota" },
+          { href: "/importacion", label: "Importación" },
+        ],
+      },
+    ],
+    featured: {
+      title: "Te orientamos en el proceso",
+      copy: "Desde la unidad publicada hasta cotización, bancos locales e importación cuando aplica.",
+      href: "/solicitar-vehiculo",
+      cta: "Solicitar ahora",
+    },
+  },
+  {
+    id: "ayuda",
+    label: "Ayuda y servicio",
+    href: "/servicios",
+    columns: [
+      {
+        title: "Conoce Valcron",
+        links: [
+          { href: "/servicios", label: "Servicios" },
+          { href: "/nosotros", label: "Nosotros" },
+          { href: "/preguntas-frecuentes", label: "Preguntas frecuentes" },
+          { href: "/contacto", label: "Contacto" },
+        ],
+      },
+      {
+        title: "Recursos",
+        links: [
+          { href: "/blog", label: "Blog" },
+          { href: "/guias", label: "Guías" },
+          { href: "/calculadoras", label: "Calculadoras" },
+        ],
+      },
+    ],
+    featured: {
+      title: "Habla con el equipo",
+      copy: "Oficina en Santo Domingo Este. WhatsApp, llamada o visita.",
+      href: "/contacto",
+      cta: "Contactar",
+    },
+  },
+];
+
 export const FOOTER_INVENTORY = [
   { href: "/inventario", label: "Vehículos disponibles" },
   { href: "/contacto", label: "Solicitar vehículo" },

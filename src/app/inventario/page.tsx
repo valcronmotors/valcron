@@ -64,10 +64,10 @@ export default function InventarioPage({
   }>;
 }) {
   return (
-    <main className="section-light bg-[#f7f8fa]">
+    <main className="section-light bg-white">
       <PageContainer className="pb-14 pt-8 md:pb-16 md:pt-10">
-        <p className="kicker !text-[#676a70]">Inventario Valcron</p>
-        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-[#08090b] md:text-4xl lg:text-[2.5rem]">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8a8d91]">Inventario Valcron</p>
+        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-[#08090b] md:text-4xl lg:text-[2.75rem]">
           Vehículos disponibles
         </h1>
         <div className="mt-6 md:mt-8">

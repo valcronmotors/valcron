@@ -1,38 +1,39 @@
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { PageContainer } from "@/components/public/layout";
 
 /**
- * Clean light editorial home hero.
- * No vehicle photograph. One CTA only.
- * Desktop is a wider editorial composition, not a mobile block centered on a monitor.
+ * Full-bleed cinematic hero — OEM catalog language, Valcron copy.
  */
 export function HomeHero() {
   return (
-    <section className="relative bg-white">
-      <PageContainer className="pb-8 pt-8 text-center md:pb-9 md:pt-9 lg:pb-8 lg:pt-8 lg:text-left xl:pb-10 xl:pt-10">
-        <div className="mx-auto sm:max-w-[36rem] lg:mx-0 lg:max-w-[46rem] xl:max-w-[52rem]">
-          <p
-            className="inline-flex min-h-9 items-center border border-[#e4e6ea] bg-white px-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#3a3d42]"
-            style={{ borderRadius: "9999px" }}
-          >
-            Tu próximo vehículo
-          </p>
-          <h1 className="display-xl mt-5 text-balance text-[#08090b] sm:mt-6 lg:mt-6">
-            Más opciones.
-            <span className="mt-0 block lg:mt-1">
-              <span className="text-[#2b6cff]">Más cerca de ti.</span>
-            </span>
-          </h1>
-          <p className="mx-auto mt-4 max-w-[22rem] text-[length:var(--text-body-lg)] leading-[1.5] text-[#676a70] sm:max-w-[32rem] lg:mx-0 lg:mt-5 lg:max-w-[36rem]">
-            Encuentra vehículos disponibles y nuevas opciones con Valcron Motors.
-          </p>
-          <div className="mt-7 flex justify-center sm:mt-8 lg:mt-8 lg:justify-start">
-            <Link href="/inventario" className="btn-primary min-w-[12.5rem] lg:h-14 lg:min-w-[14.5rem] lg:px-8">
-              Ver inventario
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-          </div>
+    <section className="hero-on-dark relative isolate h-[72vh] overflow-hidden bg-[#0b0c10] md:h-[82vh]">
+      <Image
+        src="/hero-luxury.png"
+        alt="Vehículo destacado Valcron Motors"
+        fill
+        priority
+        fetchPriority="high"
+        quality={78}
+        className="object-cover object-[center_40%]"
+        sizes="100vw"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#08090b]/75 via-[#08090b]/20 to-[#08090b]/10" />
+      <PageContainer className="relative flex h-full flex-col items-center justify-end pb-12 pt-24 text-center md:pb-16">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/70">Valcron Motors</p>
+        <h1 className="display-xl mt-3 max-w-[18ch] text-balance text-white">
+          Más opciones. Más cerca de ti.
+        </h1>
+        <p className="mt-4 max-w-[28rem] text-[length:var(--text-body-lg)] text-white/80">
+          Inventario local en Santo Domingo Este y nuevas opciones cuando las necesitas.
+        </p>
+        <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center">
+          <Link href="/inventario" className="btn-primary min-w-[11rem]">
+            Ver inventario
+          </Link>
+          <Link href="/solicitar-vehiculo" className="btn-secondary min-w-[11rem]">
+            Solicitar vehículo
+          </Link>
         </div>
       </PageContainer>
     </section>

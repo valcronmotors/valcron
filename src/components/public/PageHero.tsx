@@ -27,13 +27,10 @@ export function PageHero({
       <section className={`relative bg-white ${className}`}>
         <PageContainer className="pb-8 pt-10 md:pb-10 md:pt-12 lg:pb-12 lg:pt-14">
           <div className="max-w-[36rem] lg:max-w-[46rem]">
-            <p
-              className="inline-flex min-h-9 items-center border border-[#e4e6ea] bg-white px-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#3a3d42]"
-              style={{ borderRadius: "9999px" }}
-            >
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8a8d91]">
               {kicker}
             </p>
-            <h1 className="display-xl mt-5 text-balance text-[#08090b]">{title}</h1>
+            <h1 className="display-xl mt-4 text-balance text-[#08090b]">{title}</h1>
             <p className="mt-4 max-w-[32rem] text-[length:var(--text-body-lg)] leading-[1.5] text-[#676a70]">
               {subtitle}
             </p>

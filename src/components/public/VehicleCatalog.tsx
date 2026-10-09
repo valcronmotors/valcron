@@ -215,7 +215,45 @@ export function VehicleCatalog({
   }, [filtersOpen]);
 
   return (
-    <div className="grid min-w-0 gap-4">
+    <div className="grid min-w-0 gap-6 lg:grid-cols-[13.5rem_minmax(0,1fr)] lg:items-start lg:gap-10">
+      <aside className="hidden lg:block">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8a8d91]">
+          {catalogKind === "auction" ? "Oportunidades" : "Todos los modelos"}
+        </p>
+        <nav className="mt-4 grid" aria-label="Filtrar por marca">
+          <button
+            type="button"
+            className={`border-l-2 py-2 pl-3 text-left text-sm transition-colors ${
+              !marca ? "border-[#08090b] font-semibold text-[#08090b]" : "border-transparent text-[#58595b] hover:text-[#08090b]"
+            }`}
+            onClick={() => {
+              setMarca("");
+              setModelo("");
+            }}
+          >
+            Todos
+          </button>
+          {marcas.map((option) => (
+            <button
+              type="button"
+              key={option}
+              className={`border-l-2 py-2 pl-3 text-left text-sm transition-colors ${
+                marca === option
+                  ? "border-[#08090b] font-semibold text-[#08090b]"
+                  : "border-transparent text-[#58595b] hover:text-[#08090b]"
+              }`}
+              onClick={() => {
+                setMarca(option);
+                setModelo("");
+              }}
+            >
+              {option}
+            </button>
+          ))}
+        </nav>
+      </aside>
+
+      <div className="grid min-w-0 gap-4">
       <div className="grid gap-3">
         <p className="text-sm font-medium text-[#676a70]">
           {visible.length === 1 ? "1 vehículo" : `${visible.length} vehículos`}
@@ -281,12 +319,7 @@ export function VehicleCatalog({
         </div>
       ) : null}
 
-      <div
-        className="hidden border border-[#e4e6ea] bg-white p-5 lg:block"
-        style={{ borderRadius: "var(--radius-card)" }}
-      >
-        {filters}
-      </div>
+      <div className="hidden border-y border-[#e5e5e5] bg-white py-5 lg:block">{filters}</div>
 
       {filtersOpen ? (
         <div className="fixed inset-0 z-[90] lg:hidden">
@@ -321,7 +354,7 @@ export function VehicleCatalog({
           onClear={emptyCatalog ? undefined : clearFilters}
         />
       ) : (
-        <div className="grid min-w-0 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid min-w-0 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {visible.map((vehicle) => (
             <VehicleCard
               key={vehicle.id}
@@ -347,6 +380,7 @@ export function VehicleCatalog({
           </Link>
         </p>
       )}
+      </div>
     </div>
   );
 }

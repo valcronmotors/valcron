@@ -2,15 +2,13 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { FeaturedInventory } from "@/components/public/FeaturedInventory";
 import { InventorySectionSkeleton } from "@/components/public/InventorySkeleton";
-import { HomeActionMedia } from "@/components/home/HomeActionMedia";
 import { HomeAuctionCarousel } from "@/components/home/HomeAuctionCarousel";
 import { HomeBrandCarousel } from "@/components/home/HomeBrandCarousel";
+import { HomeBuyGuide } from "@/components/home/HomeBuyGuide";
+import { HomeDiscover } from "@/components/home/HomeDiscover";
 import { HomeFaqPreview } from "@/components/home/HomeFaqPreview";
-import { HomeFinalCta } from "@/components/home/HomeFinalCta";
 import { HomeHero } from "@/components/home/HomeHero";
-import { HomeSignatureBlue } from "@/components/home/HomeSignatureBlue";
-import { HomeSignatureDark } from "@/components/home/HomeSignatureDark";
-import { HomeStories } from "@/components/home/HomeStories";
+import { HomeLineup } from "@/components/home/HomeLineup";
 import {
   loadAuctionCatalogVehicles,
   loadLocalStockVehicles,
@@ -57,15 +55,13 @@ export default function Home() {
         <Suspense fallback={<InventorySectionSkeleton />}>
           <HomeLocalInventoryBand />
         </Suspense>
-        <HomeSignatureDark />
-        <HomeSignatureBlue />
+        <HomeBuyGuide />
         <Suspense fallback={null}>
           <HomeAuctionInventoryBand />
         </Suspense>
-        <HomeActionMedia />
-        <HomeStories />
+        <HomeDiscover />
         <HomeFaqPreview />
-        <HomeFinalCta />
+        <HomeLineup />
       </main>
     </>
   );

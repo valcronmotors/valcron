@@ -31,7 +31,6 @@
 
 /* —— Valcron Public Design System V7 — Reference-driven · Gloss Black —— */
 .public-site {
-  overflow-x: clip;
   font-size: 16px;
   line-height: 1.65;
 
@@ -68,38 +67,38 @@
   --header-bg: #ffffff;
   --header-bg-top: #ffffff;
   --header-bg-bottom: #f7f8fa;
-  --footer-bg: #08090b;
-  --footer: #08090b;
+  --footer-bg: #f5f5f5;
+  --footer: #f5f5f5;
   --brand-white: #ffffff;
   --brand-nav: #08090b;
   --brand-silver: #a3a3a3;
   --brand-champagne: #2b6cff;
   --brand-champagne-dark: #1f56e0;
 
-  /* Spacing — deliberate phone → desktop tokens */
-  --page-gutter: clamp(1.25rem, 0.85rem + 2.7vw, 6rem);
-  --section-space: clamp(3.25rem, 5.5vw, 6.25rem);
-  --section-space-tight: clamp(2.25rem, 3.8vw, 4.25rem);
+  /* Spacing — OEM-inspired air, controlled desktop maximum */
+  --page-gutter: clamp(1.25rem, 1rem + 3.2vw, 5rem);
+  --section-space: clamp(3.5rem, 6vw, 6.5rem);
+  --section-space-tight: clamp(2.5rem, 4vw, 4.5rem);
   --content-max: 90rem;
-  --content-wide: 100rem;
+  --content-wide: 96rem;
   --content-reading: 42rem;
   --content-narrow: 42rem;
-  --card-padding: clamp(1.25rem, 2.4vw, 2rem);
-  --header-height: 4.25rem;
+  --card-padding: clamp(1.15rem, 2vw, 1.75rem);
+  --header-height: 4rem;
   --stack-xs: 0.5rem;
   --stack-sm: 0.75rem;
   --stack-md: 1.25rem;
   --stack-lg: 2rem;
   --stack-xl: 3rem;
 
-  /* Radius — large editorial cards */
-  --radius-sm: 0.75rem;
-  --radius-md: 1rem;
-  --radius-lg: 1.5rem;
-  --radius-xl: 1.75rem;
-  --radius-card: 1.5rem;
+  /* Radius — tight catalog geometry, pill CTAs */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-card: 0.5rem;
   --radius-button: 9999px;
-  --radius-panel: 1.75rem;
+  --radius-panel: 0.75rem;
   --public-card-radius: var(--radius-card);
   --public-control-height: 3.25rem;
   --public-shadow: 0 10px 30px rgba(8, 9, 11, 0.06);
@@ -422,38 +421,29 @@ h3 {
   padding: var(--card-padding, 1.5rem);
 }
 
-/* —— Header — light premium bar —— */
+/* —— Header — sparse OEM bar —— */
 .site-header {
-  isolation: isolate;
-  height: var(--header-height, 3.75rem);
-  border-bottom: 1px solid transparent;
+  overflow: visible;
+  height: var(--header-height, 4rem);
+  border-bottom: 1px solid #e5e5e5;
   background-color: #ffffff;
   background-image: none;
   color: #08090b;
-  transition: height 180ms ease, box-shadow 180ms ease, background-color 180ms ease,
-    border-color 180ms ease;
+  transition: height 180ms ease, box-shadow 180ms ease;
 }
 
 .site-header.is-compact {
-  height: 3.25rem;
-  border-bottom-color: #e4e6ea;
-  background-color: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 6px 18px rgba(8, 9, 11, 0.05);
+  height: 3.5rem;
+  background-color: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
 }
 
 @media (min-width: 1024px) {
   .public-site {
-    --header-height: 4.75rem;
+    --header-height: 4.25rem;
   }
   .site-header.is-compact {
-    height: 4rem;
-  }
-}
-
-@media (min-width: 1280px) {
-  .public-site {
-    --header-height: 5rem;
+    height: 4.25rem;
   }
 }
 
@@ -462,16 +452,16 @@ h3 {
   filter: brightness(0);
 }
 
-/* —— Footer — gloss black —— */
+/* —— Footer — light OEM columns —— */
 .site-footer {
   isolation: isolate;
-  background-color: #08090b;
-  background-image: linear-gradient(180deg, #0e1014 0%, #08090b 55%, #050608 100%);
-  color: #a3a3a3;
+  background-color: #f5f5f5;
+  background-image: none;
+  color: #58595b;
 }
 
 .site-footer .brand-logo img {
-  filter: none;
+  filter: brightness(0);
   mix-blend-mode: normal;
 }
 
@@ -904,21 +894,22 @@ input[type="range"].luxury-range::-moz-range-thumb {
 
 /* Admin console — Valcron gloss black + electric blue accents */
 .admin-console {
-  --admin-bg: #f5f6f7;
+  --admin-bg: #f7f7f8;
   --admin-surface: #ffffff;
   --admin-surface-elevated: #ffffff;
-  --admin-surface-muted: #eef0f3;
-  --admin-border: #e4e6ea;
-  --admin-border-strong: #cfd3d8;
+  --admin-surface-muted: #f3f4f6;
+  --admin-border: #e5e5e5;
+  --admin-border-strong: #d4d4d4;
   --admin-text: #08090b;
-  --admin-text-secondary: #4a4f57;
+  --admin-text-secondary: #3a3d42;
   --admin-text-muted: #676a70;
   --admin-brand: #2b6cff;
   --admin-brand-hover: #1f56e0;
-  --admin-nav: #08090b;
-  --admin-nav-hover: #12141a;
-  --admin-nav-text: #f7f8fa;
-  --admin-nav-muted: #a3a3a3;
+  --admin-nav: #ffffff;
+  --admin-nav-hover: #f5f5f5;
+  --admin-nav-text: #08090b;
+  --admin-nav-muted: #676a70;
+  --admin-nav-border: #e5e5e5;
   --admin-success: #1f7a4d;
   --admin-success-bg: #e8f5ee;
   --admin-warning: #8a6414;
@@ -928,7 +919,7 @@ input[type="range"].luxury-range::-moz-range-thumb {
   --admin-info: #2b6cff;
   --admin-focus: #2b6cff;
   --admin-shadow: 0 1px 2px rgba(8, 9, 11, 0.04), 0 10px 28px rgba(8, 9, 11, 0.05);
-  --admin-radius: 1rem;
+  --admin-radius: 0.5rem;
   color: var(--admin-text);
   background: var(--admin-bg);
 }

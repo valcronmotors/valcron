@@ -35,12 +35,12 @@ export function AdminSidebar({
 
   return (
     <aside
-      className={`flex h-full flex-col bg-[var(--admin-nav)] text-[var(--admin-nav-text)] ${
+      className={`flex h-full flex-col border-r border-[var(--admin-nav-border)] bg-[var(--admin-nav)] text-[var(--admin-nav-text)] ${
         collapsed ? "w-[72px]" : "w-[264px]"
       }`}
     >
       <div
-        className={`flex border-b border-white/8 ${
+        className={`flex border-b border-[var(--admin-nav-border)] ${
           collapsed
             ? "flex-col items-center gap-2 px-2 py-4"
             : "items-start justify-between gap-2 px-4 py-5"
@@ -53,12 +53,12 @@ export function AdminSidebar({
           aria-label="Website Admin"
         >
           {collapsed ? (
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/8 text-[11px] font-semibold tracking-[0.12em] text-[var(--admin-brand)]">
+            <span className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--admin-nav-hover)] text-[11px] font-semibold tracking-[0.12em] text-[var(--admin-brand)]">
               VM
             </span>
           ) : (
             <span className="block">
-              <BrandLogo size="header" tone="onDark" />
+              <BrandLogo size="header" tone="onLight" />
               <span className="mt-2 block text-[11px] font-medium tracking-[0.14em] text-[var(--admin-nav-muted)]">
                 Website Admin
               </span>
@@ -68,7 +68,7 @@ export function AdminSidebar({
         <button
           type="button"
           onClick={onToggleCollapsed}
-          className={`inline-flex h-8 w-8 items-center justify-center rounded-md text-[var(--admin-nav-muted)] transition duration-200 hover:bg-white/6 hover:text-white ${
+          className={`inline-flex h-8 w-8 items-center justify-center rounded-md text-[var(--admin-nav-muted)] transition duration-200 hover:bg-[var(--admin-nav-hover)] hover:text-[var(--admin-text)] ${
             collapsed ? "" : "hidden lg:inline-flex"
           }`}
           aria-label={collapsed ? "Expandir menú" : "Colapsar menú"}
@@ -91,14 +91,14 @@ export function AdminSidebar({
         </ul>
       </nav>
 
-      <div className={`border-t border-white/8 ${collapsed ? "p-2" : "p-3"}`}>
+      <div className={`border-t border-[var(--admin-nav-border)] ${collapsed ? "p-2" : "p-3"}`}>
         <div className={`flex items-center gap-3 ${collapsed ? "justify-center" : "px-1"}`}>
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-[11px] font-semibold text-white">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#08090b] text-[11px] font-semibold text-white">
             {adminInitials(user.name)}
           </span>
           {collapsed ? null : (
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-white">{user.name}</p>
+              <p className="truncate text-sm font-medium text-[var(--admin-text)]">{user.name}</p>
               <p className="truncate text-xs text-[var(--admin-nav-muted)]">{user.email}</p>
             </div>
           )}
@@ -107,7 +107,7 @@ export function AdminSidebar({
           <Link
             href="/"
             onClick={onNavigate}
-            className={`inline-flex h-10 items-center gap-2 rounded-md text-[13px] text-[var(--admin-nav-muted)] transition duration-200 hover:bg-white/6 hover:text-white ${
+            className={`inline-flex h-10 items-center gap-2 rounded-md text-[13px] text-[var(--admin-nav-muted)] transition duration-200 hover:bg-[var(--admin-nav-hover)] hover:text-[var(--admin-text)] ${
               collapsed ? "w-full justify-center px-0" : "px-3"
             }`}
             title="Ver website"
@@ -118,7 +118,7 @@ export function AdminSidebar({
           <form action={signOut}>
             <button
               type="submit"
-              className={`inline-flex h-10 w-full items-center gap-2 rounded-md text-[13px] text-[var(--admin-nav-muted)] transition duration-200 hover:bg-white/6 hover:text-white ${
+              className={`inline-flex h-10 w-full items-center gap-2 rounded-md text-[13px] text-[var(--admin-nav-muted)] transition duration-200 hover:bg-[var(--admin-nav-hover)] hover:text-[var(--admin-text)] ${
                 collapsed ? "justify-center px-0" : "px-3"
               }`}
               title="Cerrar sesión"
@@ -151,8 +151,8 @@ function NavSection({
 
   const itemClass = `group flex items-center gap-3 rounded-md px-2.5 py-2 text-[13.5px] transition duration-200 ${
     active
-      ? "bg-white/7 text-white"
-      : "text-[var(--admin-nav-muted)] hover:bg-white/5 hover:text-white"
+      ? "bg-[var(--admin-nav-hover)] text-[var(--admin-text)]"
+      : "text-[var(--admin-nav-muted)] hover:bg-[var(--admin-nav-hover)] hover:text-[var(--admin-text)]"
   } ${collapsed ? "justify-center px-0" : ""}`;
 
   const iconMark = (
@@ -208,8 +208,8 @@ function NavSection({
         aria-expanded={open}
         className={`flex w-full cursor-pointer items-center gap-3 rounded-md px-2.5 py-2 text-left text-[13.5px] transition duration-200 ${
           active
-            ? "bg-white/7 text-white"
-            : "text-[var(--admin-nav-muted)] hover:bg-white/5 hover:text-white"
+            ? "bg-[var(--admin-nav-hover)] text-[var(--admin-text)]"
+            : "text-[var(--admin-nav-muted)] hover:bg-[var(--admin-nav-hover)] hover:text-[var(--admin-text)]"
         }`}
       >
         {iconMark}
@@ -217,7 +217,7 @@ function NavSection({
         <ChevronDown className={`h-3.5 w-3.5 transition ${open ? "rotate-180" : ""}`} />
       </button>
       {open ? (
-        <ul className="mt-1 ml-5 space-y-0.5 border-l border-white/10 py-1 pl-3">
+        <ul className="mt-1 ml-5 space-y-0.5 border-l border-[var(--admin-nav-border)] py-1 pl-3">
           {section.children?.map((child) => {
             const childActive = isAdminNavChildActive(
               pathname,
@@ -232,8 +232,8 @@ function NavSection({
                   aria-current={childActive ? "page" : undefined}
                   className={`block rounded-md px-2.5 py-1.5 text-[13px] leading-5 transition duration-200 ${
                     childActive
-                      ? "text-white"
-                      : "text-[var(--admin-nav-muted)] hover:text-white"
+                      ? "font-medium text-[var(--admin-text)]"
+                      : "text-[var(--admin-nav-muted)] hover:text-[var(--admin-text)]"
                   }`}
                 >
                   {child.label}

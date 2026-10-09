@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/public/BrandLogo";
-import { BusinessLocation } from "@/components/public/BusinessLocation";
 import { FooterSocialIcons } from "@/components/shared/SocialLinks";
 import {
   FOOTER_COMPANY,
@@ -12,97 +11,75 @@ import {
   whatsappHref,
 } from "@/lib/site";
 
-const headingClass = "mb-4 text-lg font-bold text-white md:text-xl";
+const headingClass =
+  "mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8a8d91]";
 const linkClass =
-  "text-[0.9375rem] leading-7 text-white/75 transition-colors duration-200 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff]";
+  "text-[13px] leading-7 text-[#191919] transition-colors duration-200 hover:text-[#2b6cff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff]";
 
 export function Footer({ showCompactMap = false }: { showCompactMap?: boolean }) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="site-footer relative mt-auto overflow-hidden">
+    <footer className="site-footer relative mt-auto">
       <div
-        className="relative mx-auto w-full max-w-[var(--content-wide)] py-14 md:py-16 lg:py-20"
+        className="relative mx-auto w-full max-w-[var(--content-wide)] py-14 md:py-16"
         style={{ paddingInline: "var(--page-gutter)" }}
       >
-        <div className="text-center md:text-left">
-          <Link href="/" aria-label={SITE.brand} className="inline-flex scale-110 origin-center md:origin-left">
-            <BrandLogo size="footer" tone="onDark" />
-          </Link>
-          <p className="mx-auto mt-6 max-w-md text-base leading-relaxed text-white/55 md:mx-0">
-            Dealer en Santo Domingo Este. Inventario local, búsqueda personalizada y
-            financiamiento con bancos locales.
-          </p>
-        </div>
-
-        <nav
-          aria-label="Navegación del pie de página"
-          className="mt-12 grid grid-cols-2 gap-x-8 gap-y-10 md:mt-14 lg:grid-cols-4"
-        >
-          <FooterColumn title="Servicios" items={FOOTER_SERVICES.slice(0, 4)} />
+        <nav aria-label="Navegación del pie de página" className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-3 lg:grid-cols-5">
+          <FooterColumn title="Guía de compras" items={FOOTER_SERVICES.slice(0, 5)} />
           <FooterColumn
-            title="Explorar"
+            title="Vehículos"
             items={[
-              { href: "/inventario", label: "Inventario" },
+              { href: "/inventario", label: "Inventario Valcron" },
               { href: "/subastas", label: "Subastas" },
+              { href: "/solicitar-vehiculo", label: "Solicitar vehículo" },
               { href: "/importacion", label: "Importación" },
-              { href: "/financiamiento", label: "Financiamiento" },
             ]}
           />
           <FooterColumn title="Empresa" items={FOOTER_COMPANY} />
           <FooterColumn title="Recursos" items={FOOTER_RESOURCES} />
-        </nav>
-
-        <div className="mt-12 grid gap-8 border-t border-white/10 pt-10 md:grid-cols-[1.2fr_0.8fr] md:items-start">
           <div>
             <h2 className={headingClass}>Contacto</h2>
-            <address className="not-italic text-[0.9375rem] leading-7 text-white/75">
-              <p className="text-white">{SITE.address.street}</p>
+            <address className="not-italic text-[13px] leading-7 text-[#191919]">
+              <p>{SITE.address.street}</p>
               <p>
                 {SITE.address.city}, {SITE.address.country}
               </p>
-              <p className="mt-4">
-                Oficina{" "}
-                <a className="text-[#2b6cff] hover:underline" href={officeTelHref()}>
+              <p className="mt-3">
+                <a className={linkClass} href={officeTelHref()}>
                   {SITE.officePhoneDisplay}
                 </a>
               </p>
               <p>
-                WhatsApp{" "}
-                <a
-                  className="text-[#2b6cff] hover:underline"
-                  href={whatsappHref()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {SITE.whatsappDisplay}
+                <a className={linkClass} href={whatsappHref()} target="_blank" rel="noopener noreferrer">
+                  WhatsApp {SITE.whatsappDisplay}
                 </a>
               </p>
             </address>
-            <Link href="/solicitar-vehiculo" className="btn-ghost-accent mt-7">
-              Solicitar vehículo
-            </Link>
-            <FooterSocialIcons className="mt-8" />
+            {showCompactMap ? (
+              <p className="mt-3 text-[13px] text-[#676a70]">Av Principal 20, Santo Domingo Este.</p>
+            ) : null}
           </div>
-          {showCompactMap ? <BusinessLocation variant="compact" tone="dark" /> : null}
-        </div>
-      </div>
+        </nav>
 
-      <div
-        className="border-t border-white/10 py-6"
-        style={{ paddingInline: "var(--page-gutter)" }}
-      >
-        <div className="mx-auto flex max-w-[var(--content-wide)] flex-col items-center gap-3 text-center text-xs text-white/45 sm:flex-row sm:justify-between sm:text-left">
-          <p>
-            © {year} {SITE.legalName}. Todos los derechos reservados.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+        <div className="mt-14 flex flex-col items-center gap-6 border-t border-[#e5e5e5] pt-10">
+          <Link href="/" aria-label={SITE.brand}>
+            <BrandLogo size="footer" tone="onLight" />
+          </Link>
+          <FooterSocialIcons className="text-[#191919]" />
+          <div className="flex flex-col items-center gap-3 text-center text-[12px] text-[#8a8d91] sm:flex-row sm:flex-wrap sm:justify-center">
+            <p>
+              © {year} {SITE.legalName}. Todos los derechos reservados.
+            </p>
+            <span className="hidden sm:inline" aria-hidden="true">
+              ·
+            </span>
             {LEGAL_NAV.map((item) => (
-              <Link key={item.href} href={item.href} className="underline-offset-2 hover:text-white hover:underline">
+              <Link key={item.href} href={item.href} className="underline-offset-2 hover:text-[#191919] hover:underline">
                 {item.label}
               </Link>
             ))}
-            <p className="inline-flex items-center gap-2 uppercase tracking-[0.14em] text-white/55">
+            <p className="inline-flex items-center gap-2 uppercase tracking-[0.14em]">
               <DominicanFlag />
               República Dominicana
             </p>
@@ -123,7 +100,7 @@ function FooterColumn({
   return (
     <div>
       <h2 className={headingClass}>{title}</h2>
-      <ul className="grid gap-1">
+      <ul className="grid gap-0.5">
         {items.map((item) => (
           <li key={`${item.href}-${item.label}`}>
             {item.href.startsWith("http") ? (
