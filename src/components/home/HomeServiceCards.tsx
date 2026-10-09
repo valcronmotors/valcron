@@ -25,8 +25,8 @@ const SERVICES = [
     Icon: Globe2,
   },
   {
-    title: "Financiamiento",
-    copy: "Conoce opciones de financiamiento con bancos locales.",
+    title: "Financiamiento con bancos locales",
+    copy: "Orientación sobre opciones disponibles; la aprobación depende de cada entidad.",
     href: "/financiamiento",
     cta: "Más información",
     Icon: Landmark,

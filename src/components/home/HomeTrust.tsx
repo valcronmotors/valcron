@@ -1,5 +1,5 @@
 import { PageContainer, Section } from "@/components/public/layout";
-import { MessageCircle, Route, Search, MapPin } from "lucide-react";
+import { Globe2, Gavel, MessageCircle, Phone, Route } from "lucide-react";
 
 const TRUST_POINTS = [
   {
@@ -8,19 +8,24 @@ const TRUST_POINTS = [
     Icon: MessageCircle,
   },
   {
-    title: "Proceso transparente",
-    copy: "Pasos claros desde la consulta hasta la entrega, sin promesas genéricas.",
+    title: "Orientación en compra",
+    copy: "Acompañamiento claro desde la consulta hasta la decisión de compra.",
     Icon: Route,
   },
   {
-    title: "Variedad de origen",
-    copy: "Inventario local, búsqueda a medida y oportunidades de subasta cuando aplica.",
-    Icon: Search,
+    title: "Opciones de subasta",
+    copy: "Oportunidades seleccionadas en Estados Unidos cuando aplican a tu búsqueda.",
+    Icon: Gavel,
   },
   {
-    title: "En Santo Domingo Este",
-    copy: "Operamos en República Dominicana con la información de contacto publicada en el sitio.",
-    Icon: MapPin,
+    title: "Coordinación de importación",
+    copy: "Apoyo en el proceso contratado de traer un vehículo a República Dominicana.",
+    Icon: Globe2,
+  },
+  {
+    title: "Comunicación directa",
+    copy: "Contacto por WhatsApp, teléfono u oficina en Santo Domingo Este.",
+    Icon: Phone,
   },
 ] as const;
 
@@ -35,7 +40,7 @@ export function HomeTrust() {
             <span className="block">y acompañamiento real.</span>
           </h2>
         </div>
-        <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
+        <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 lg:gap-4">
           {TRUST_POINTS.map(({ title, copy, Icon }) => (
             <li key={title}>
               <article
