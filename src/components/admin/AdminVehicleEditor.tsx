@@ -15,8 +15,9 @@ import {
   updateVehicle,
   updateVehiclePhoto,
 } from "@/app/actions/vehicles";
-import { AdminConfirmDialog } from "@/components/admin/AdminModal";
+import { AdminConfirmDialog, AdminModal } from "@/components/admin/AdminModal";
 import { AdminMediaPicker } from "@/components/admin/AdminMediaPicker";
+import { AdminSearchableSelect } from "@/components/admin/AdminSearchableSelect";
 import { AdminPublishBadge, AdminStatusBadge } from "@/components/admin/AdminBadges";
 import {
   AdminCard,
@@ -32,10 +33,18 @@ import {
 import {
   ADMIN_CONDITION_OPTIONS,
   ADMIN_DRIVETRAIN_OPTIONS,
+  ADMIN_EXTERIOR_COLOR_OPTIONS,
   ADMIN_FUEL_OPTIONS,
+  ADMIN_OTHER_SENTINEL,
   ADMIN_TRANSMISSION_OPTIONS,
   withCurrentOption,
 } from "@/lib/admin-field-options";
+import {
+  makeSelectState,
+  modelSelectState,
+  resolveSmartFieldValue,
+  smartFieldState,
+} from "@/lib/admin-smart-fields";
 import { vehicleLabel } from "@/lib/admin-metrics";
 import {
   formatCustomerFacingPrice,
@@ -66,6 +75,17 @@ import {
   type VehicleFormValues,
 } from "@/lib/vehicle-form-state";
 import { stashFailedVehiclePhotos, takeFailedVehiclePhotos } from "@/lib/vehicle-photo-retry";
+import {
+  OTHER_MAKE_LABEL,
+  OTHER_MAKE_VALUE,
+  OTHER_MODEL_LABEL,
+  OTHER_MODEL_VALUE,
+  VEHICLE_MAKE_OPTIONS,
+  makeChangeConflictsWithModel,
+  modelRequiresCustomInput,
+  modelsForMake,
+  yearOptions,
+} from "@/lib/vehicle-make-models";
 import {
   VEHICLE_SOURCE_TYPES,
   type VehicleRow,
@@ -178,12 +198,52 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
     | { type: "delete" }
     | { type: "photo"; id: string; storagePath: string }
     | { type: "sold" }
+    | { type: "make-change"; nextMake: string }
     | null
   >(null);
+  const [publicLink, setPublicLink] = useState<string | null>(null);
+  const [forceOtherYear, setForceOtherYear] = useState(() => {
+    const year = vehicle?.year != null ? String(vehicle.year) : "";
+    return Boolean(year && !yearOptions().some((option) => String(option) === year));
+  });
+  const [forceOtherMake, setForceOtherMake] = useState(
+    () => makeSelectState(vehicle?.make ?? "").isOther,
+  );
+  const [forceOtherModel, setForceOtherModel] = useState(
+    () => modelSelectState(vehicle?.make ?? "", vehicle?.model ?? "").isOther,
+  );
+  const [customMake, setCustomMake] = useState(() => makeSelectState(vehicle?.make ?? "").customValue);
+  const [customModel, setCustomModel] = useState(() =>
+    modelSelectState(vehicle?.make ?? "", vehicle?.model ?? "").customValue,
+  );
+  const [forceOtherExterior, setForceOtherExterior] = useState(
+    () => smartFieldState(ADMIN_EXTERIOR_COLOR_OPTIONS, vehicle?.exterior_color ?? "").isOther,
+  );
+  const [customExteriorColor, setCustomExteriorColor] = useState(
+    () => smartFieldState(ADMIN_EXTERIOR_COLOR_OPTIONS, vehicle?.exterior_color ?? "").customValue,
+  );
+  const [forceOtherTransmission, setForceOtherTransmission] = useState(
+    () => smartFieldState(ADMIN_TRANSMISSION_OPTIONS, vehicle?.transmission ?? "").isOther,
+  );
+  const [customTransmission, setCustomTransmission] = useState(
+    () => smartFieldState(ADMIN_TRANSMISSION_OPTIONS, vehicle?.transmission ?? "").customValue,
+  );
+  const [forceOtherDrivetrain, setForceOtherDrivetrain] = useState(
+    () => smartFieldState(ADMIN_DRIVETRAIN_OPTIONS, vehicle?.drivetrain ?? "").isOther,
+  );
+  const [customDrivetrain, setCustomDrivetrain] = useState(
+    () => smartFieldState(ADMIN_DRIVETRAIN_OPTIONS, vehicle?.drivetrain ?? "").customValue,
+  );
+  const [forceOtherFuel, setForceOtherFuel] = useState(
+    () => smartFieldState(ADMIN_FUEL_OPTIONS, vehicle?.fuel ?? "").isOther,
+  );
+  const [customFuel, setCustomFuel] = useState(
+    () => smartFieldState(ADMIN_FUEL_OPTIONS, vehicle?.fuel ?? "").customValue,
+  );
   const submitLock = useRef(false);
-  const yearRef = useRef<HTMLInputElement>(null);
-  const makeRef = useRef<HTMLInputElement>(null);
-  const modelRef = useRef<HTMLInputElement>(null);
+  const yearRef = useRef<HTMLButtonElement>(null);
+  const makeRef = useRef<HTMLDivElement>(null);
+  const modelRef = useRef<HTMLDivElement>(null);
   const vinRef = useRef<HTMLInputElement>(null);
   const priceRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
@@ -227,17 +287,146 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
   const requiredChecks = checks.filter((check) => check.required);
   const requiredDone = requiredChecks.filter((check) => check.ok).length;
   const blockers = publicationBlockers(checks);
+  const makeOptions = useMemo(
+    () => VEHICLE_MAKE_OPTIONS.map((make) => ({ value: make, label: make })),
+    [],
+  );
+  const makeState = useMemo(() => {
+    const derived = makeSelectState(values.make);
+    if (forceOtherMake) {
+      return { selectValue: OTHER_MAKE_VALUE, customValue: customMake || derived.customValue, isOther: true };
+    }
+    return derived;
+  }, [customMake, forceOtherMake, values.make]);
+  const modelState = useMemo(() => {
+    const derived = modelSelectState(values.make, values.model);
+    if (forceOtherModel) {
+      return { selectValue: OTHER_MODEL_VALUE, customValue: customModel || derived.customValue, isOther: true };
+    }
+    return derived;
+  }, [customModel, forceOtherModel, values.make, values.model]);
+  const modelOptions = useMemo(() => {
+    const base = modelsForMake(values.make).map((model) => ({ value: model, label: model }));
+    const current = values.model.trim();
+    if (current && !modelState.isOther && !base.some((option) => option.value === current)) {
+      return [{ value: current, label: current }, ...base];
+    }
+    return base;
+  }, [modelState.isOther, values.make, values.model]);
+  const exteriorColorState = useMemo(() => {
+    const derived = smartFieldState(ADMIN_EXTERIOR_COLOR_OPTIONS, values.exterior_color);
+    if (forceOtherExterior) {
+      return {
+        selectValue: ADMIN_OTHER_SENTINEL,
+        customValue: customExteriorColor || derived.customValue,
+        isOther: true,
+      };
+    }
+    return derived;
+  }, [customExteriorColor, forceOtherExterior, values.exterior_color]);
+  const transmissionState = useMemo(() => {
+    const derived = smartFieldState(ADMIN_TRANSMISSION_OPTIONS, values.transmission);
+    if (forceOtherTransmission) {
+      return {
+        selectValue: ADMIN_OTHER_SENTINEL,
+        customValue: customTransmission || derived.customValue,
+        isOther: true,
+      };
+    }
+    return derived;
+  }, [customTransmission, forceOtherTransmission, values.transmission]);
+  const drivetrainState = useMemo(() => {
+    const derived = smartFieldState(ADMIN_DRIVETRAIN_OPTIONS, values.drivetrain);
+    if (forceOtherDrivetrain) {
+      return {
+        selectValue: ADMIN_OTHER_SENTINEL,
+        customValue: customDrivetrain || derived.customValue,
+        isOther: true,
+      };
+    }
+    return derived;
+  }, [customDrivetrain, forceOtherDrivetrain, values.drivetrain]);
+  const fuelState = useMemo(() => {
+    const derived = smartFieldState(ADMIN_FUEL_OPTIONS, values.fuel);
+    if (forceOtherFuel) {
+      return { selectValue: ADMIN_OTHER_SENTINEL, customValue: customFuel || derived.customValue, isOther: true };
+    }
+    return derived;
+  }, [customFuel, forceOtherFuel, values.fuel]);
 
   function patchValues(patch: Partial<VehicleFormValues>) {
     setValues((current) => ({ ...current, ...patch }));
     setDirty(true);
   }
 
+  function syncCustomFieldsFromValues(next: VehicleFormValues) {
+    const nextMake = makeSelectState(next.make);
+    const nextModel = modelSelectState(next.make, next.model);
+    const nextColor = smartFieldState(ADMIN_EXTERIOR_COLOR_OPTIONS, next.exterior_color);
+    const nextTransmission = smartFieldState(ADMIN_TRANSMISSION_OPTIONS, next.transmission);
+    const nextDrivetrain = smartFieldState(ADMIN_DRIVETRAIN_OPTIONS, next.drivetrain);
+    const nextFuel = smartFieldState(ADMIN_FUEL_OPTIONS, next.fuel);
+    setForceOtherYear(Boolean(next.year && !yearOptions().some((year) => String(year) === next.year)));
+    setForceOtherMake(nextMake.isOther);
+    setCustomMake(nextMake.customValue);
+    setForceOtherModel(nextModel.isOther);
+    setCustomModel(nextModel.customValue);
+    setForceOtherExterior(nextColor.isOther);
+    setCustomExteriorColor(nextColor.customValue);
+    setForceOtherTransmission(nextTransmission.isOther);
+    setCustomTransmission(nextTransmission.customValue);
+    setForceOtherDrivetrain(nextDrivetrain.isOther);
+    setCustomDrivetrain(nextDrivetrain.customValue);
+    setForceOtherFuel(nextFuel.isOther);
+    setCustomFuel(nextFuel.customValue);
+  }
+
+  function requestMakeChange(nextSelect: string) {
+    if (!nextSelect) {
+      setForceOtherMake(false);
+      setCustomMake("");
+      patchValues({ make: "" });
+      return;
+    }
+    if (nextSelect === OTHER_MAKE_VALUE) {
+      setForceOtherMake(true);
+      patchValues({ make: customMake });
+      return;
+    }
+    if (makeChangeConflictsWithModel(values.make, nextSelect, values.model)) {
+      setConfirm({ type: "make-change", nextMake: nextSelect });
+      return;
+    }
+    setForceOtherMake(false);
+    setCustomMake("");
+    const keepAsCustom = modelRequiresCustomInput(nextSelect, values.model);
+    setForceOtherModel(keepAsCustom);
+    setCustomModel(keepAsCustom ? values.model : "");
+    patchValues({ make: nextSelect });
+  }
+
+  function commitMakeChange(nextMake: string, clearModel: boolean) {
+    setForceOtherMake(false);
+    setCustomMake("");
+    if (clearModel) {
+      setForceOtherModel(false);
+      setCustomModel("");
+      patchValues({ make: nextMake, model: "" });
+      return;
+    }
+    setForceOtherModel(true);
+    setCustomModel(values.model);
+    patchValues({ make: nextMake });
+  }
+
   function goToCheck(check: PublicationCheck) {
     const target = CHECK_STEP[check.id] ?? 0;
     setStep(target);
     window.setTimeout(() => {
-      if (check.id === "identity") yearRef.current?.focus();
+      if (check.id === "identity") {
+        yearRef.current?.focus();
+        makeRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
       if (check.id === "price") priceRef.current?.focus();
       if (check.id === "description") descriptionRef.current?.focus();
       if (check.id === "cover") {
@@ -261,6 +450,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
       const draft = readVehicleDraft(window.localStorage);
       if (draft) {
         setValues(draft);
+        syncCustomFieldsFromValues(draft);
         setDraftRecovered(true);
         setNotice("Borrador recuperado en este dispositivo.");
       }
@@ -504,27 +694,23 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
     }
   }
 
-  function saveDraft(options?: { advance?: boolean; afterSave?: () => void }) {
-    if (saving || uploading || !beginVehicleSubmit(submitLock)) {
+  function saveDraft(options?: { advance?: boolean; afterSave?: (id?: string) => void }) {
+    if (saving || uploading || publishing || !beginVehicleSubmit(submitLock)) {
       return;
     }
     setError(null);
+    setPublicLink(null);
     const validation = validateVehicleFormValues(values);
     if (!validation.ok) {
       setFieldErrors(validation.fieldErrors);
       setError(validation.fieldErrors._form ?? "Completa año, marca y modelo para guardar.");
       setStep(0);
-      const focusMap = {
-        year: yearRef,
-        make: makeRef,
-        model: modelRef,
-        vin: vinRef,
-        price: priceRef,
-      } as const;
-      const target = validation.firstField ? focusMap[validation.firstField as keyof typeof focusMap] : null;
       window.setTimeout(() => {
-        target?.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-        target?.current?.focus();
+        if (validation.firstField === "year") yearRef.current?.focus();
+        if (validation.firstField === "make") makeRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (validation.firstField === "model") modelRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (validation.firstField === "vin") vinRef.current?.focus();
+        if (validation.firstField === "price") priceRef.current?.focus();
       }, 50);
       endVehicleSubmit(submitLock);
       return;
@@ -544,7 +730,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
         }
         setDirty(false);
         if (!saved && result.id) {
-          setNotice("Borrador guardado.");
+          setNotice("Borrador guardado correctamente");
           clearVehicleDraft(window.localStorage);
           setDraftRecovered(false);
           if (localPhotos.length > 0) {
@@ -554,14 +740,21 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
               return;
             }
           }
+          if (options?.afterSave) {
+            options.afterSave(result.id);
+            return;
+          }
           const nextPath = options?.advance
             ? `/admin/inventario/${result.id}?paso=${Math.min(step + 1, 3)}`
             : `/admin/inventario/${result.id}?creado=1`;
           router.replace(nextPath);
           return;
         }
-        setNotice(result.success ?? "Borrador guardado.");
-        options?.afterSave?.();
+        setNotice("Borrador guardado correctamente");
+        if (options?.afterSave) {
+          options.afterSave(vehicle?.id);
+          return;
+        }
         if (options?.advance && step < 3) {
           setStep((current) => (Math.min(current + 1, 3) as EditorStep));
         }
@@ -591,33 +784,79 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
     saveDraft();
   }
 
-  function applyPublished(next: boolean) {
-    if (next) {
-      if (!saved || !vehicle?.id) {
-        setError("Guarda el borrador antes de publicar.");
-        setConfirm(null);
-        return;
-      }
-      if (!canPublishVehicleListing(checks)) {
-        setError(`Falta completar: ${blockers.join(", ")}.`);
-        setConfirm(null);
-        setStep(3);
-        return;
-      }
-    }
-    setConfirm(null);
-    if (!saved || !vehicle?.id) return;
+  function buildPublicHref(id: string) {
+    return vehiclePath(
+      buildVehicleSlug({
+        id,
+        year: Number(values.year) || vehicle?.year || 0,
+        make: values.make || vehicle?.make || "",
+        model: values.model || vehicle?.model || "",
+        trim: values.trim || vehicle?.trim,
+      }),
+    );
+  }
+
+  function runPublish(vehicleId: string, next: boolean) {
     setPublishing(true);
-    void setVehiclePublished(vehicle.id, next).then((result) => {
+    setError(null);
+    void setVehiclePublished(vehicleId, next).then((result) => {
       setPublishing(false);
       if (result.error) {
         setError(result.error);
+        setPublicLink(null);
         return;
       }
       setPublished(next);
-      setNotice(next ? "Publicado correctamente. Ya puede aparecer en el website." : "Publicación retirada.");
+      if (next) {
+        const href = buildPublicHref(vehicleId);
+        setPublicLink(href);
+        setNotice("Publicado correctamente. Ya puede aparecer en el website.");
+      } else {
+        setPublicLink(null);
+        setNotice("Publicación retirada.");
+      }
       router.refresh();
     });
+  }
+
+  function applyPublished(next: boolean) {
+    setConfirm(null);
+    if (next) {
+      if (!canPublishVehicleListing(checks)) {
+        setError(`Falta completar: ${blockers.join(", ")}.`);
+        setStep(3);
+        return;
+      }
+      if (!saved || !vehicle?.id) {
+        saveDraft({
+          afterSave: (id) => {
+            if (!id) {
+              setError("No se pudo guardar antes de publicar.");
+              return;
+            }
+            runPublish(id, true);
+            router.replace(`/admin/inventario/${id}?paso=3`);
+          },
+        });
+        return;
+      }
+      if (dirty) {
+        saveDraft({
+          afterSave: (id) => {
+            if (!id) {
+              setError("No se pudo guardar antes de publicar.");
+              return;
+            }
+            runPublish(id, true);
+          },
+        });
+        return;
+      }
+      runPublish(vehicle.id, true);
+      return;
+    }
+    if (!saved || !vehicle?.id) return;
+    runPublish(vehicle.id, false);
   }
 
   const auctionOrigin = isAuctionOriginSource(values.source_type);
@@ -688,9 +927,13 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
             type="button"
             onClick={() => {
               clearVehicleDraft(window.localStorage);
-              setValues(emptyVehicleFormValues());
+              const empty = emptyVehicleFormValues();
+              setValues(empty);
+              syncCustomFieldsFromValues(empty);
+              setForceOtherYear(false);
               setDraftRecovered(false);
               setNotice(null);
+              setPublicLink(null);
               setFieldErrors({});
               setDirty(false);
             }}
@@ -706,7 +949,17 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
           role="status"
           className="rounded-lg border border-[var(--admin-success)]/15 bg-[var(--admin-success-bg)] px-4 py-3 text-sm text-[var(--admin-success)]"
         >
-          {notice}
+          <p>{notice}</p>
+          {publicLink ? (
+            <a
+              href={publicLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-flex font-semibold underline-offset-2 hover:underline"
+            >
+              Ver página pública del vehículo
+            </a>
+          ) : null}
         </div>
       ) : null}
 
@@ -747,43 +1000,115 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
         <FormSection title="Información del vehículo" hint="Datos básicos para identificar la unidad.">
           <div className="grid gap-4 sm:grid-cols-2">
             <AdminField label="Año" required error={fieldErrors.year}>
-              <AdminInput
-                ref={yearRef}
+              <AdminSearchableSelect
                 name="year"
-                type="number"
-                min={1980}
-                max={2100}
+                value={
+                  forceOtherYear ||
+                  (values.year && !yearOptions().some((year) => String(year) === values.year))
+                    ? ADMIN_OTHER_SENTINEL
+                    : values.year
+                }
+                options={yearOptions().map((year) => ({ value: String(year), label: String(year) }))}
+                emptyLabel="Seleccionar año"
+                placeholder="Buscar año…"
                 inputMode="numeric"
-                value={values.year}
-                onChange={(event) => patchValues({ year: event.target.value })}
+                allowCustom
+                otherValue={ADMIN_OTHER_SENTINEL}
+                otherLabel="Otro año"
+                customValue={
+                  forceOtherYear ||
+                  (values.year && !yearOptions().some((year) => String(year) === values.year))
+                    ? values.year
+                    : ""
+                }
+                onValueChange={(next) => {
+                  if (!next) {
+                    setForceOtherYear(false);
+                    patchValues({ year: "" });
+                    return;
+                  }
+                  if (next === ADMIN_OTHER_SENTINEL) {
+                    setForceOtherYear(true);
+                    return;
+                  }
+                  setForceOtherYear(false);
+                  patchValues({ year: next });
+                }}
+                onCustomChange={(next) => {
+                  setForceOtherYear(true);
+                  patchValues({ year: next.replace(/[^\d]/g, "").slice(0, 4) });
+                }}
+                aria-label="Año"
               />
+              <button ref={yearRef} type="button" tabIndex={-1} className="sr-only" aria-hidden>
+                Año
+              </button>
             </AdminField>
             <AdminField label="Marca" required error={fieldErrors.make}>
-              <AdminInput
-                ref={makeRef}
-                name="make"
-                value={values.make}
-                onChange={(event) => patchValues({ make: event.target.value })}
-                placeholder="Toyota"
-                autoComplete="off"
-              />
+              <div ref={makeRef}>
+                <AdminSearchableSelect
+                  name="make"
+                  value={makeState.selectValue}
+                  options={makeOptions}
+                  emptyLabel="Seleccionar marca"
+                  placeholder="Buscar marca…"
+                  allowCustom
+                  otherValue={OTHER_MAKE_VALUE}
+                  otherLabel={OTHER_MAKE_LABEL}
+                  customValue={customMake}
+                  onValueChange={requestMakeChange}
+                  onCustomChange={(next) => {
+                    setForceOtherMake(true);
+                    setCustomMake(next);
+                    patchValues({ make: next });
+                  }}
+                  aria-label="Marca"
+                />
+              </div>
             </AdminField>
             <AdminField label="Modelo" required error={fieldErrors.model}>
-              <AdminInput
-                ref={modelRef}
-                name="model"
-                value={values.model}
-                onChange={(event) => patchValues({ model: event.target.value })}
-                placeholder="RAV4"
-                autoComplete="off"
-              />
+              <div ref={modelRef}>
+                <AdminSearchableSelect
+                  name="model"
+                  value={modelState.selectValue}
+                  options={modelOptions}
+                  emptyLabel="Seleccionar modelo"
+                  placeholder="Buscar modelo…"
+                  allowCustom
+                  otherValue={OTHER_MODEL_VALUE}
+                  otherLabel={OTHER_MODEL_LABEL}
+                  customValue={customModel}
+                  onValueChange={(next) => {
+                    if (!next) {
+                      setForceOtherModel(false);
+                      setCustomModel("");
+                      patchValues({ model: "" });
+                      return;
+                    }
+                    if (next === OTHER_MODEL_VALUE) {
+                      setForceOtherModel(true);
+                      patchValues({ model: customModel });
+                      return;
+                    }
+                    setForceOtherModel(false);
+                    setCustomModel("");
+                    patchValues({ model: next });
+                  }}
+                  onCustomChange={(next) => {
+                    setForceOtherModel(true);
+                    setCustomModel(next);
+                    patchValues({ model: next });
+                  }}
+                  aria-label="Modelo"
+                />
+              </div>
             </AdminField>
             <AdminField label="Versión / Trim">
               <AdminInput
                 name="trim"
                 value={values.trim}
                 onChange={(event) => patchValues({ trim: event.target.value })}
-                placeholder="XLE"
+                placeholder="SX Prestige"
               />
             </AdminField>
             <AdminField label="VIN" hint="17 caracteres. Opcional." error={fieldErrors.vin}>
@@ -1135,10 +1460,37 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
           </AdminField>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <AdminField label="Color exterior">
-              <AdminInput
+              <AdminSearchableSelect
                 name="exterior_color"
-                value={values.exterior_color}
-                onChange={(event) => patchValues({ exterior_color: event.target.value })}
+                value={exteriorColorState.selectValue}
+                options={ADMIN_EXTERIOR_COLOR_OPTIONS.filter((option) => option.value !== "Otro")}
+                emptyLabel="Seleccionar color"
+                placeholder="Buscar color…"
+                allowCustom
+                otherValue={ADMIN_OTHER_SENTINEL}
+                otherLabel="Otro"
+                customValue={customExteriorColor}
+                onValueChange={(next) => {
+                  if (!next) {
+                    setForceOtherExterior(false);
+                    setCustomExteriorColor("");
+                    patchValues({ exterior_color: "" });
+                    return;
+                  }
+                  if (next === ADMIN_OTHER_SENTINEL) {
+                    setForceOtherExterior(true);
+                    patchValues({ exterior_color: customExteriorColor });
+                    return;
+                  }
+                  setForceOtherExterior(false);
+                  setCustomExteriorColor("");
+                  patchValues({ exterior_color: next });
+                }}
+                onCustomChange={(next) => {
+                  setForceOtherExterior(true);
+                  setCustomExteriorColor(next);
+                  patchValues({ exterior_color: next });
+                }}
               />
             </AdminField>
             <AdminField label="Color interior">
@@ -1156,46 +1508,106 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
               />
             </AdminField>
             <AdminField label="Transmisión">
-              <AdminSelect
+              <AdminSearchableSelect
                 name="transmission"
-                value={values.transmission}
-                onChange={(event) => patchValues({ transmission: event.target.value })}
-              >
-                <option value="">Seleccionar</option>
-                {withCurrentOption(ADMIN_TRANSMISSION_OPTIONS, values.transmission).map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </AdminSelect>
+                value={transmissionState.selectValue}
+                options={ADMIN_TRANSMISSION_OPTIONS.filter((option) => option.value !== "Otra")}
+                emptyLabel="Seleccionar"
+                placeholder="Buscar transmisión…"
+                allowCustom
+                otherValue={ADMIN_OTHER_SENTINEL}
+                otherLabel="Otra"
+                customValue={customTransmission}
+                onValueChange={(next) => {
+                  if (!next) {
+                    setForceOtherTransmission(false);
+                    setCustomTransmission("");
+                    patchValues({ transmission: "" });
+                    return;
+                  }
+                  if (next === ADMIN_OTHER_SENTINEL) {
+                    setForceOtherTransmission(true);
+                    patchValues({ transmission: customTransmission });
+                    return;
+                  }
+                  setForceOtherTransmission(false);
+                  setCustomTransmission("");
+                  patchValues({ transmission: next });
+                }}
+                onCustomChange={(next) => {
+                  setForceOtherTransmission(true);
+                  setCustomTransmission(next);
+                  patchValues({ transmission: resolveSmartFieldValue(ADMIN_OTHER_SENTINEL, next, ADMIN_OTHER_SENTINEL, "Otra") });
+                }}
+              />
             </AdminField>
             <AdminField label="Tracción">
-              <AdminSelect
+              <AdminSearchableSelect
                 name="drivetrain"
-                value={values.drivetrain}
-                onChange={(event) => patchValues({ drivetrain: event.target.value })}
-              >
-                <option value="">Seleccionar</option>
-                {withCurrentOption(ADMIN_DRIVETRAIN_OPTIONS, values.drivetrain).map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </AdminSelect>
+                value={drivetrainState.selectValue}
+                options={ADMIN_DRIVETRAIN_OPTIONS.filter((option) => option.value !== "Otro")}
+                emptyLabel="Seleccionar"
+                placeholder="Buscar tracción…"
+                allowCustom
+                otherValue={ADMIN_OTHER_SENTINEL}
+                otherLabel="Otro"
+                customValue={customDrivetrain}
+                onValueChange={(next) => {
+                  if (!next) {
+                    setForceOtherDrivetrain(false);
+                    setCustomDrivetrain("");
+                    patchValues({ drivetrain: "" });
+                    return;
+                  }
+                  if (next === ADMIN_OTHER_SENTINEL) {
+                    setForceOtherDrivetrain(true);
+                    patchValues({ drivetrain: customDrivetrain });
+                    return;
+                  }
+                  setForceOtherDrivetrain(false);
+                  setCustomDrivetrain("");
+                  patchValues({ drivetrain: next });
+                }}
+                onCustomChange={(next) => {
+                  setForceOtherDrivetrain(true);
+                  setCustomDrivetrain(next);
+                  patchValues({ drivetrain: next });
+                }}
+              />
             </AdminField>
             <AdminField label="Combustible">
-              <AdminSelect
+              <AdminSearchableSelect
                 name="fuel"
-                value={values.fuel}
-                onChange={(event) => patchValues({ fuel: event.target.value })}
-              >
-                <option value="">Seleccionar</option>
-                {withCurrentOption(ADMIN_FUEL_OPTIONS, values.fuel).map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </AdminSelect>
+                value={fuelState.selectValue}
+                options={ADMIN_FUEL_OPTIONS.filter((option) => option.value !== "Otro")}
+                emptyLabel="Seleccionar"
+                placeholder="Buscar combustible…"
+                allowCustom
+                otherValue={ADMIN_OTHER_SENTINEL}
+                otherLabel="Otro"
+                customValue={customFuel}
+                onValueChange={(next) => {
+                  if (!next) {
+                    setForceOtherFuel(false);
+                    setCustomFuel("");
+                    patchValues({ fuel: "" });
+                    return;
+                  }
+                  if (next === ADMIN_OTHER_SENTINEL) {
+                    setForceOtherFuel(true);
+                    patchValues({ fuel: customFuel });
+                    return;
+                  }
+                  setForceOtherFuel(false);
+                  setCustomFuel("");
+                  patchValues({ fuel: next });
+                }}
+                onCustomChange={(next) => {
+                  setForceOtherFuel(true);
+                  setCustomFuel(next);
+                  patchValues({ fuel: next });
+                }}
+              />
             </AdminField>
             <AdminField label="Condición">
               <AdminSelect
@@ -1371,8 +1783,48 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
         onUnpublish={() => setConfirm({ type: "unpublish" })}
       />
 
+      <AdminModal
+        open={confirm?.type === "make-change"}
+        title="Cambiar marca"
+        subtitle={
+          confirm?.type === "make-change"
+            ? `El modelo «${values.model}» no está en la lista de ${confirm.nextMake}.`
+            : undefined
+        }
+        onClose={() => setConfirm(null)}
+        footer={
+          <div className="grid gap-2 sm:grid-cols-3">
+            <AdminSecondaryButton type="button" onClick={() => setConfirm(null)} className="w-full">
+              Cancelar
+            </AdminSecondaryButton>
+            <AdminSecondaryButton
+              type="button"
+              className="w-full"
+              onClick={() => {
+                if (confirm?.type !== "make-change") return;
+                commitMakeChange(confirm.nextMake, true);
+                setConfirm(null);
+              }}
+            >
+              Borrar modelo
+            </AdminSecondaryButton>
+            <AdminPrimaryButton
+              type="button"
+              className="w-full"
+              onClick={() => {
+                if (confirm?.type !== "make-change") return;
+                commitMakeChange(confirm.nextMake, false);
+                setConfirm(null);
+              }}
+            >
+              Conservar modelo
+            </AdminPrimaryButton>
+          </div>
+        }
+      />
+
       <AdminConfirmDialog
-        open={Boolean(confirm)}
+        open={Boolean(confirm) && confirm?.type !== "make-change"}
         title={
           confirm?.type === "delete"
             ? "Eliminar vehículo"
@@ -1382,7 +1834,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
                 ? "Retirar del website"
                 : confirm?.type === "sold"
                   ? "Marcar como vendido"
-                  : "Publicar en el website"
+                  : "Publicar vehículo"
         }
         description={
           confirm?.type === "delete"
@@ -1393,7 +1845,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
                 ? "La unidad dejará de aparecer en el inventario público."
                 : confirm?.type === "sold"
                   ? "El vehículo quedará como vendido."
-                  : "La unidad será visible en el website si cumple los requisitos."
+                  : "Se guardarán los cambios pendientes y la unidad quedará visible en el website si cumple los requisitos."
         }
         confirmLabel={
           confirm?.type === "delete"
@@ -1404,13 +1856,13 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
                 ? "Retirar"
                 : confirm?.type === "sold"
                   ? "Marcar vendido"
-                  : "Publicar"
+                  : "Publicar vehículo"
         }
         danger={confirm?.type === "delete" || confirm?.type === "photo" || confirm?.type === "unpublish"}
-        pending={pending || publishing}
+        pending={pending || publishing || saving}
         onClose={() => setConfirm(null)}
         onConfirm={() => {
-          if (!confirm) return;
+          if (!confirm || confirm.type === "make-change") return;
           if (confirm.type === "publish") {
             applyPublished(true);
             return;
@@ -1487,7 +1939,7 @@ function CompactReadiness({
     <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] px-4 py-3 shadow-[var(--admin-shadow)]">
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm font-semibold text-[var(--admin-text)]">
-          {requiredDone} de {requiredTotal} requisitos
+          Listo para publicar: {requiredDone}/{requiredTotal}
         </p>
         <div className="h-2 w-28 overflow-hidden rounded-full bg-[var(--admin-surface-muted)]">
           <div

@@ -179,6 +179,7 @@ function revalidateVehicles(id?: string) {
   revalidatePath("/admin");
   revalidatePath("/admin/inventario");
   revalidatePath("/inventario");
+  revalidatePath("/oportunidades");
   revalidatePath("/");
   revalidatePath("/sitemap.xml");
   if (id) {
@@ -327,7 +328,7 @@ export async function setVehiclePublished(vehicleId: string, published: boolean)
 
   const supabase = await createClient();
   const publicationSelect =
-    "id, year, make, model, description, price, public_price_mode, source_type, status, published_at, vehicle_photos ( id, is_cover )";
+    "id, year, make, model, description, price, public_price_mode, source_type, status, published_at, vehicle_photos ( id, is_cover, storage_path )";
   let { data, error: lookupError } = await supabase
     .from("vehicles")
     .select(publicationSelect)
@@ -360,18 +361,27 @@ export async function setVehiclePublished(vehicleId: string, published: boolean)
     if (blocked) {
       return { error: blocked };
     }
+    const cover = (vehicle.vehicle_photos ?? []).find((photo) => photo.is_cover);
+    if (!cover?.storage_path?.trim()) {
+      return { error: "La foto de portada no está disponible en el almacenamiento." };
+    }
   }
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from("vehicles")
     .update(
       published
         ? { published: true, published_at: vehicle.published_at ?? new Date().toISOString() }
         : { published: false },
     )
-    .eq("id", vehicleId);
+    .eq("id", vehicleId)
+    .select("id, published")
+    .maybeSingle();
   if (error) {
     return { error: publicActionError(error, "No se pudo actualizar la publicación.") };
+  }
+  if (!updated || updated.published !== published) {
+    return { error: "La publicación no se confirmó en la base de datos." };
   }
   revalidateVehicles(vehicleId);
   return { error: null };
