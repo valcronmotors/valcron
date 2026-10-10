@@ -63,7 +63,7 @@ export function AdminHeader({
         Website
       </Link>
       <span
-        className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--admin-nav)] text-[10px] font-semibold tracking-wide text-white"
+        className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--admin-text)] text-[10px] font-semibold tracking-wide text-white"
         title={user.name}
         aria-label={user.name}
       >

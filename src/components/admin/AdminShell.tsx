@@ -19,8 +19,8 @@ export function AdminShell({
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="admin-console flex h-screen w-full min-h-screen overflow-hidden bg-[var(--admin-bg)] text-[var(--admin-text)]">
-      <div className={`hidden h-screen shrink-0 lg:block ${collapsed ? "w-[72px]" : "w-[264px]"}`}>
+    <div className="admin-console flex h-dvh w-full min-h-dvh overflow-hidden bg-[var(--admin-bg)] text-[var(--admin-text)]">
+      <div className={`hidden h-dvh shrink-0 lg:block ${collapsed ? "w-[72px]" : "w-[264px]"}`}>
         <AdminSidebar
           user={user}
           collapsed={collapsed}
@@ -55,7 +55,7 @@ export function AdminShell({
         </div>
       ) : null}
 
-      <div className="flex h-screen min-h-0 min-w-0 flex-1 flex-col">
+      <div className="flex h-dvh min-h-0 min-w-0 flex-1 flex-col">
         <AdminHeader user={user} onMenu={() => setMobileOpen(true)} />
         <main className="h-full min-h-0 w-full flex-1 overflow-y-auto px-4 py-5 md:px-6 md:py-6 lg:px-8 lg:py-7">
           <div className="mx-auto h-full min-h-full w-full max-w-[1280px]">{children}</div>
