@@ -1,19 +1,22 @@
 import Link from "next/link";
 import { Globe, Star } from "lucide-react";
-import { AdminCard, AdminEmptyState, AdminPageHeader, AdminPrimaryButton, AdminSecondaryButton } from "@/components/admin/ui";
+import { AdminCard, AdminEmptyState, AdminError, AdminPageHeader, AdminPrimaryButton, AdminSecondaryButton } from "@/components/admin/ui";
 import { formatAdminDate } from "@/lib/admin-copy";
 import { vehicleLabel } from "@/lib/admin-metrics";
 import { SITE } from "@/lib/site";
 import { canPublishVehicleListing, vehiclePublicationChecks } from "@/lib/publication-readiness";
-import type { InquiryRow, VehicleRow } from "@/lib/website-schema";
+import { opportunityWebsiteState, type LinkedVehicleSummary } from "@/lib/auctions/opportunity-admin";
+import type { AuctionOpportunityRow, InquiryRow, VehicleRow } from "@/lib/website-schema";
 
 export function AdminWebsiteView({
   vehicles,
-  auctionVehicles = [],
+  auctionOpportunities = [],
+  error,
   inquiries,
 }: {
   vehicles: VehicleRow[];
-  auctionVehicles?: VehicleRow[];
+  auctionOpportunities?: Array<AuctionOpportunityRow & { linked_vehicle?: LinkedVehicleSummary | null }>;
+  error?: string | null;
   inquiries: Array<Pick<InquiryRow, "id" | "name" | "created_at" | "status">>;
 }) {
   const published = vehicles.filter((row) => row.published);
@@ -26,27 +29,17 @@ export function AdminWebsiteView({
         model: row.model,
         description: row.description,
         price: row.price,
+        source_type: row.source_type,
+        public_price_mode: row.public_price_mode,
         status: row.status,
         photos: row.vehicle_photos,
       }),
     ),
   );
   const unpublishedReady = ready.filter((row) => !row.published);
-  const publishedAuctions = auctionVehicles.filter((row) => row.published);
-  const readyAuctions = auctionVehicles.filter((row) =>
-    canPublishVehicleListing(
-      vehiclePublicationChecks({
-        year: row.year,
-        make: row.make,
-        model: row.model,
-        description: row.description,
-        price: row.price,
-        status: row.status,
-        photos: row.vehicle_photos,
-        source_type: row.source_type,
-        public_price_mode: row.public_price_mode,
-      }),
-    ),
+  const publishedAuctions = auctionOpportunities.filter((row) => row.linked_vehicle?.published);
+  const readyAuctions = auctionOpportunities.filter(
+    (row) => row.status !== "archived" && opportunityWebsiteState(row, row.linked_vehicle) === "ready",
   );
 
   return (
@@ -68,6 +61,8 @@ export function AdminWebsiteView({
           </>
         }
       />
+
+      {error ? <AdminError message={error} /> : null}
 
       <section className="grid gap-4 lg:grid-cols-2">
         <AdminCard>
@@ -101,7 +96,7 @@ export function AdminWebsiteView({
             <div>
               <dt className="text-xs text-[var(--admin-text-muted)]">Listas</dt>
               <dd className="mt-1 font-display text-3xl font-semibold tabular-nums">
-                {readyAuctions.filter((row) => !row.published).length}
+                {readyAuctions.length}
               </dd>
             </div>
           </dl>

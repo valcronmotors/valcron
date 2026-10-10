@@ -1339,9 +1339,9 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
                   >
                     <div className="relative">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={src} alt="" className="h-44 w-full object-cover" />
+                      <img src={src} alt={`${values.year} ${values.make} ${values.model} · Foto ${index + 1}`} className="h-44 w-full object-cover" />
                       {isCover ? (
-                        <span className="absolute left-2 top-2 rounded-md bg-[var(--admin-nav)] px-2 py-1 text-[10px] font-semibold tracking-[0.12em] text-white">
+                        <span className="absolute left-2 top-2 rounded-md bg-[var(--admin-text)] px-2 py-1 text-[10px] font-semibold tracking-[0.12em] text-white">
                           PORTADA
                         </span>
                       ) : null}

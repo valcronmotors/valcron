@@ -17,7 +17,7 @@ export default async function AdminLayout({
   const user = await getAdminProfile();
 
   return (
-    <div className="admin-console h-screen w-full min-h-screen overflow-hidden">
+    <div className="admin-console h-dvh w-full min-h-dvh overflow-hidden">
       <AdminShell user={user}>{children}</AdminShell>
     </div>
   );

@@ -1,9 +1,9 @@
 import { AdminWebsiteView } from "@/components/admin/AdminWebsiteView";
 import {
   getAdminInquiries,
-  getAuctionCatalogVehiclesAdmin,
   getValcronVehicles,
 } from "@/lib/admin-data";
+import { listAuctionOpportunities } from "@/app/actions/auctions";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -13,13 +13,14 @@ export const metadata: Metadata = {
 export default async function AdminWebsitePage() {
   const [local, auctions, inquiries] = await Promise.all([
     getValcronVehicles(),
-    getAuctionCatalogVehiclesAdmin(),
+    listAuctionOpportunities(),
     getAdminInquiries(),
   ]);
   return (
     <AdminWebsiteView
       vehicles={local.vehicles}
-      auctionVehicles={auctions.vehicles}
+      auctionOpportunities={auctions.opportunities}
+      error={local.error ?? auctions.error ?? inquiries.error}
       inquiries={inquiries.inquiries}
     />
   );

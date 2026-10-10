@@ -3,7 +3,7 @@ import type { AuctionOpportunityStatus, InquirySource, InquiryStatus } from "@/l
 export const AUCTION_STATUS_LABEL: Record<AuctionOpportunityStatus, string> = {
   draft: "Borrador",
   review: "En revisión",
-  published: "Preparada",
+  published: "Publicada",
   archived: "Archivada",
 };
 

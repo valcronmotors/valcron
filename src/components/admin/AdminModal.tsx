@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, type ReactNode } from "react";
+import { useEffect, useEffectEvent, useId, useRef, type ReactNode } from "react";
 import {
   AdminDangerButton,
   AdminPrimaryButton,
@@ -25,12 +25,35 @@ export function AdminModal({
   const titleId = useId();
   const descriptionId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
+  const closeFromKeyboard = useEffectEvent(onClose);
 
   useEffect(() => {
     if (!open) return;
 
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeFromKeyboard();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const panel = panelRef.current;
+      if (!panel) return;
+      const controls = [...panel.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]',
+      )].filter((element) => element.offsetParent !== null);
+      const first = controls[0];
+      const last = controls.at(-1);
+      if (!first || !last) {
+        event.preventDefault();
+        panel.focus();
+      } else if (event.shiftKey && (document.activeElement === first || document.activeElement === panel)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || document.activeElement === panel)) {
+        event.preventDefault();
+        first.focus();
+      }
     }
 
     const previous = document.body.style.overflow;
@@ -42,15 +65,15 @@ export function AdminModal({
     return () => {
       document.body.style.overflow = previous;
       window.removeEventListener("keydown", onKeyDown);
-      previousFocus?.focus();
+      if (previousFocus?.isConnected) previousFocus.focus();
     };
-  }, [onClose, open]);
+  }, [open]);
 
   if (!open) return null;
 
   return (
     <div
-      className="fixed inset-0 z-[90] flex items-end justify-center bg-[var(--admin-nav)]/50 sm:items-center sm:px-4 sm:py-6"
+      className="fixed inset-0 z-[90] flex items-end justify-center bg-[var(--admin-text)]/50 sm:items-center sm:px-4 sm:py-6"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <button type="button" aria-label="Cerrar" className="absolute inset-0" onClick={onClose} />

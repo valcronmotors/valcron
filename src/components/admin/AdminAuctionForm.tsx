@@ -371,7 +371,7 @@ export function AdminAuctionForm({
   const [notice, setNotice] = useState<string | null>(() =>
     !saved && recoveredDraft ? "Borrador local recuperado. Guarda para persistirlo en el servidor." : null,
   );
-  const [publicPath, setPublicPath] = useState<string | null>(null);
+  const [publicPath, setPublicPath] = useState<string | null>(linkedVehicle?.published ? `/inventario/${linkedVehicle.id}` : null);
   const [pending, startTransition] = useTransition();
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -678,6 +678,7 @@ export function AdminAuctionForm({
       return;
     }
     setPublished(false);
+    setPublicPath(null);
     setNotice(result.success ?? "Despublicado.");
     router.refresh();
   }
@@ -1278,9 +1279,14 @@ export function AdminAuctionForm({
               Guardar borrador
             </AdminSecondaryButton>
             {vehicleId || opportunity?.linked_vehicle_id ? (
-              <AdminSecondaryButton type="button" onClick={() => setStep(4)}>
+              <Link
+                href={`/admin/inventario/${vehicleId ?? opportunity?.linked_vehicle_id}/vista-previa`}
+                target="_blank"
+                className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--admin-border)] px-4 text-sm font-medium text-[var(--admin-text)] hover:bg-[var(--admin-surface-muted)]"
+                title="Vista previa de la última versión guardada"
+              >
                 Vista previa
-              </AdminSecondaryButton>
+              </Link>
             ) : null}
             {step < 4 ? (
               <AdminPrimaryButton
