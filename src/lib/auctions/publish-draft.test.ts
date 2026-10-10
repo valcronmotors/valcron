@@ -23,6 +23,22 @@ describe("admin auction publication workflow", () => {
     expect(publish).toHaveBeenCalledTimes(1);
   });
 
+  it.each(["1", "4T1***", "5FNRL", "7FARS6H97TE******"])("publishes allowed incomplete VIN %s", async (vin) => {
+    const publish = vi.fn(async () => ({ error: null }));
+    const result = await publishAuctionDraft({ ...eligible, vin }, async () => ({ error: null, id: "draft" }), publish);
+    expect(result.error).toBeNull();
+    expect(publish).toHaveBeenCalledWith("draft");
+  });
+
+  it.each(["2HG***", "JHM", ""])("blocks VIN %s before saving", async (vin) => {
+    const save = vi.fn();
+    const publish = vi.fn();
+    const result = await publishAuctionDraft({ ...eligible, vin }, save, publish);
+    expect(result.error).toMatch(/no comienza con 1, 4, 5 o 7/i);
+    expect(save).not.toHaveBeenCalled();
+    expect(publish).not.toHaveBeenCalled();
+  });
+
   it("never publishes stale data when saving fails", async () => {
     const publish = vi.fn();
     const result = await publishAuctionDraft(eligible, async () => ({ error: "Falló el guardado", id: "old-record" }), publish);

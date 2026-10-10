@@ -43,18 +43,25 @@ describe("VIN eligibility", () => {
     expect(result.reason).toMatch(/no comienza con 1, 4, 5 o 7/i);
   });
 
-  it("requires review for masked, short, or invalid VINs", () => {
-    expect(evaluateVinEligibility("7FARS6H97TE******").verdict).toBe("review");
-    expect(evaluateVinEligibility("7FARS6H97TE******").reason).toMatch(/VIN incompleto/i);
-    expect(evaluateVinEligibility("1HGCM82633").verdict).toBe("review");
-    expect(evaluateVinEligibility("").verdict).toBe("review");
-    expect(evaluateVinEligibility("1HGCM82633A00435I").verdict).toBe("review"); // I illegal
+  it("approves incomplete allowed VINs with a non-blocking completion notice", () => {
+    for (const vin of ["1", "4T1BF", "5FNR***", "7FARS6H97TE******", " 7far-s6 ", "1HGCM82633A00435I"]) {
+      const result = evaluateVinEligibility(vin);
+      expect(result.verdict).toBe("approved");
+      expect(result.reason).toMatch(/Puedes publicar y completar el VIN/i);
+    }
   });
 
-  it("requires review when check digit fails", () => {
+  it("blocks missing and disallowed prefixes even on incomplete or masked VINs", () => {
+    for (const vin of ["", null, undefined, "2", "3ABC***", "6ABC", "8", "9", "JHM***", "WBA***", "***7FAR"]) {
+      expect(evaluateVinEligibility(vin).verdict).toBe("blocked");
+    }
+  });
+
+  it("keeps check-digit verification as an advisory for an allowed prefix", () => {
     const bad = "1HGCM82633A004353";
     expect(vinCheckDigitValid(bad)).toBe(false);
-    expect(evaluateVinEligibility(bad).verdict).toBe("review");
+    expect(evaluateVinEligibility(bad).verdict).toBe("approved");
+    expect(evaluateVinEligibility(bad).reason).toMatch(/dígito de control/i);
   });
 });
 
@@ -157,7 +164,7 @@ describe("run and drive eligibility", () => {
 });
 
 describe("overall eligibility", () => {
-  it("marks Honda CR-V masked VIN fixture as REVIEW REQUIRED even with Normal Wear + R&D", () => {
+  it("allows Honda CR-V masked VIN fixture with Normal Wear + R&D", () => {
     const result = evaluateAuctionEligibility({
       vin: "7FARS6H97TE******",
       title_status: "TX — Salvage Vehicle Title",
@@ -166,10 +173,10 @@ describe("overall eligibility", () => {
       secondary_damage: "Not Reported",
       run_and_drive: "Reported Run and Drive",
     });
-    expect(result.overall).toBe("review_required");
-    expect(result.canPublish).toBe(false);
-    expect(result.checks.find((check) => check.id === "vin")?.verdict).toBe("review");
-    expect(result.overallLabel).toBe("REQUIERE REVISIÓN");
+    expect(result.overall).toBe("eligible");
+    expect(result.canPublish).toBe(true);
+    expect(result.checks.find((check) => check.id === "vin")?.verdict).toBe("approved");
+    expect(result.overallLabel).toBe("APROBADO");
   });
 
   it("is eligible only when every check is approved", () => {

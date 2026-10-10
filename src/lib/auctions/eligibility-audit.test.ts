@@ -40,6 +40,7 @@ describe("published auction eligibility audit", () => {
   it("flags publicly advertised opportunities that fail Valcron policy without deleting them", () => {
     const report = auditPublishedAuctionOpportunities([
       opportunity({
+        vin: "JHM***",
         linked_vehicle: { published: true, id: "22222222-2222-4222-8222-222222222222" },
       }),
       opportunity({
@@ -52,8 +53,8 @@ describe("published auction eligibility audit", () => {
 
     expect(report.totalPublishedWebsite).toBe(1);
     expect(report.failingPublic).toHaveLength(1);
-    expect(report.failingPublic[0]?.overall).toBe("review_required");
-    expect(report.failingPublic[0]?.reasons.join(" ")).toMatch(/VIN incompleto/i);
+    expect(report.failingPublic[0]?.overall).toBe("blocked");
+    expect(report.failingPublic[0]?.reasons.join(" ")).toMatch(/no comienza con 1, 4, 5 o 7/i);
   });
 
   it("does not treat local inventory rows as auction audit targets", () => {
