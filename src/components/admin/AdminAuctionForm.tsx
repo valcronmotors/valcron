@@ -682,8 +682,13 @@ export function AdminAuctionForm({
       router.replace(`/admin/subastas/${savedDraft.id}?paso=4`);
       return;
     }
-    await saveDraft();
-    const result = await publishAuctionOpportunity(opportunity.id);
+    // Never publish stale data if the current edits failed to persist.
+    const savedDraft = await saveDraft();
+    if (savedDraft.error || !savedDraft.id) {
+      setError(savedDraft.error ?? "No se pudo guardar el borrador. Reintenta antes de publicar.");
+      return;
+    }
+    const result = await publishAuctionOpportunity(savedDraft.id);
     if (result.error) {
       setError(result.error);
       return;
