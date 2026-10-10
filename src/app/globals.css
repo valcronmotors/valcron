@@ -819,46 +819,56 @@ h3 {
   }
 }
 
-/* Vehicle inventory carousels — native scroll-snap + JS card auto-advance */
+/* Vehicle inventory carousels — one full card on mobile, native scroll-snap */
 .public-site .vehicle-carousel-scroller {
   width: 100%;
   -webkit-overflow-scrolling: touch;
-  touch-action: manipulation;
+  touch-action: pan-x;
   overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
 }
 
 .public-site .vehicle-carousel-item {
-  width: min(78vw, 19rem);
+  /* One complete card per mobile viewport (~content width inside page gutters) */
+  width: calc(100vw - (2 * var(--page-gutter)));
+  max-width: 100%;
   flex-shrink: 0;
+  scroll-snap-align: center;
+}
+
+.public-site .vehicle-carousel-item--solo {
+  width: 100%;
+  max-width: none;
 }
 
 @media (min-width: 640px) {
   .public-site .vehicle-carousel-item {
-    width: min(46vw, 20.5rem);
+    width: min(46vw, 22rem);
+    scroll-snap-align: start;
   }
 }
 
 @media (min-width: 768px) {
   .public-site .vehicle-carousel-item {
-    width: min(44vw, 21.25rem);
+    width: min(42vw, 22.5rem);
   }
 }
 
 @media (min-width: 1024px) {
   .public-site .vehicle-carousel-item {
-    width: min(31vw, 22rem);
+    width: min(31vw, 23rem);
   }
 }
 
 @media (min-width: 1280px) {
   .public-site .vehicle-carousel-item {
-    width: 22.5rem;
+    width: 22.75rem;
   }
 }
 
 @media (min-width: 1600px) {
   .public-site .vehicle-carousel-item {
-    width: 21.25rem;
+    width: 22rem;
   }
 }
 

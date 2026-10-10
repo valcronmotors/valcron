@@ -56,14 +56,14 @@ export function VehicleCard({
     >
       <Link
         href={href}
-        className={`vehicle-card-media relative block aspect-[16/10] overflow-hidden ${
+        className={`vehicle-card-media relative block aspect-[5/3] overflow-hidden sm:aspect-[16/10] ${
           light ? "bg-[#f3f4f6]" : "bg-[#12141a]"
         }`}
       >
         <VehiclePhoto
           src={cover}
           alt={vehicleImageAlt(vehicle)}
-          sizes="(min-width: 1600px) 20vw, (min-width: 1280px) 24vw, (min-width: 1024px) 31vw, (min-width: 768px) 45vw, 92vw"
+          sizes="(min-width: 1600px) 20vw, (min-width: 1280px) 24vw, (min-width: 1024px) 31vw, (min-width: 768px) 45vw, 96vw"
           className="object-contain object-center"
         />
         {showBadge ? (
@@ -80,7 +80,7 @@ export function VehicleCard({
       </Link>
 
       <div
-        className={`flex flex-1 flex-col text-center ${compact ? "px-4 pb-4 pt-4" : "px-5 pb-5 pt-5"} ${
+        className={`flex flex-1 flex-col text-center ${compact ? "px-4 pb-4 pt-3.5" : "px-5 pb-5 pt-4"} ${
           light ? "text-[#08090b]" : "text-white"
         }`}
       >
@@ -95,8 +95,8 @@ export function VehicleCard({
         ) : null}
 
         <h3
-          className={`mt-1 font-display font-bold leading-[1.15] tracking-tight ${
-            compact ? "text-[1.15rem] sm:text-xl" : "text-xl sm:text-[1.35rem]"
+          className={`mt-1 font-display font-bold leading-[1.12] tracking-tight ${
+            compact ? "text-[1.25rem] sm:text-xl" : "text-[1.35rem] sm:text-[1.45rem]"
           }`}
         >
           <Link href={href} className="transition-opacity hover:opacity-80">
@@ -109,10 +109,10 @@ export function VehicleCard({
         ) : null}
 
         {price.primary ? (
-          <div className="mt-3">
+          <div className="mt-2.5">
             <p
               className={`font-display font-bold tracking-tight ${
-                compact ? "text-xl sm:text-2xl" : "text-2xl"
+                compact ? "text-[1.35rem] sm:text-2xl" : "text-2xl"
               }`}
             >
               {price.primary}
@@ -127,19 +127,19 @@ export function VehicleCard({
 
         {specs.length ? (
           <p
-            className={`mt-3 text-[11px] leading-5 ${light ? "text-[#8a8d91]" : "text-[#a8abb0]"}`}
+            className={`mt-2 text-[11px] leading-5 ${light ? "text-[#8a8d91]" : "text-[#a8abb0]"}`}
           >
             {specs.join(" · ")}
           </p>
         ) : null}
 
-        <div className={`mt-auto grid gap-2.5 ${compact ? "pt-4" : "pt-5"}`}>
+        <div className={`mt-auto grid gap-2.5 ${compact ? "pt-3.5" : "pt-4"}`}>
           <Link
             href={href}
             className={
               light
-                ? "inline-flex min-h-12 items-center justify-center rounded-xl bg-[#08090b] px-4 text-sm font-semibold text-white transition hover:bg-[#191919]"
-                : "inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-4 text-sm font-semibold text-[#08090b] transition hover:bg-[#ececec]"
+                ? "inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-[#08090b] px-4 text-sm font-semibold text-white transition hover:bg-[#191919]"
+                : "inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-white px-4 text-sm font-semibold text-[#08090b] transition hover:bg-[#ececec]"
             }
           >
             {primaryLabel}
@@ -150,8 +150,8 @@ export function VehicleCard({
             rel="noopener noreferrer"
             className={
               light
-                ? "inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[#d8dbe0] bg-white px-4 text-sm font-semibold text-[#08090b] transition hover:border-[#08090b]"
-                : "inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/30 px-4 text-sm font-semibold text-white transition hover:border-white"
+                ? "inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#d8dbe0] bg-white px-4 text-sm font-semibold text-[#08090b] transition hover:border-[#08090b]"
+                : "inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/30 px-4 text-sm font-semibold text-white transition hover:border-white"
             }
           >
             <WhatsAppIcon className="h-4 w-4" />

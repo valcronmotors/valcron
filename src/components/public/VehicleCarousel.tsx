@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const ADVANCE_MS = 4200;
 const RESUME_MS = 2800;
+
+/** Mobile: one full-width card. sm+: ~2. lg+: ~3 with capped max width. */
+const ITEM_CLASS =
+  "vehicle-carousel-item w-[calc(100vw-2*var(--page-gutter))] max-w-none shrink-0 snap-center sm:w-[min(46vw,22rem)] sm:snap-start md:w-[min(42vw,22.5rem)] lg:w-[min(31vw,23rem)] xl:w-[22.75rem] min-[1600px]:w-[22rem]";
 
 /**
  * Horizontal vehicle rail: native scroll-snap (iOS swipe) + gentle auto-advance.
@@ -27,6 +31,7 @@ export function VehicleCarousel({
   const resumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const interactingRef = useRef(false);
   const visibleRef = useRef(false);
+  const [active, setActive] = useState(0);
 
   const items = Array.isArray(children) ? children : [children];
   const count = items.filter(Boolean).length;
@@ -52,6 +57,15 @@ export function VehicleCarousel({
     const styles = getComputedStyle(root);
     const gap = Number.parseFloat(styles.columnGap || styles.gap || "12") || 12;
     return width + gap;
+  }
+
+  function syncActiveFromScroll() {
+    const root = scrollerRef.current;
+    if (!root) return;
+    const step = cardStep(root);
+    if (step <= 0) return;
+    const next = Math.round(root.scrollLeft / step);
+    setActive(Math.max(0, Math.min(count - 1, next)));
   }
 
   function advance() {
@@ -105,6 +119,27 @@ export function VehicleCarousel({
     root.scrollBy({ left: direction * cardStep(root), behavior: "smooth" });
     resumeAfterInteraction();
   }
+
+  function scrollToIndex(index: number) {
+    const root = scrollerRef.current;
+    if (!root) return;
+    pauseForInteraction();
+    root.scrollTo({ left: index * cardStep(root), behavior: "smooth" });
+    setActive(index);
+    resumeAfterInteraction();
+  }
+
+  useEffect(() => {
+    const root = scrollerRef.current;
+    if (!root) return;
+
+    const onScroll = () => syncActiveFromScroll();
+    root.addEventListener("scroll", onScroll, { passive: true });
+    syncActiveFromScroll();
+
+    return () => root.removeEventListener("scroll", onScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- bind to this scroller
+  }, [count]);
 
   useEffect(() => {
     const root = scrollerRef.current;
@@ -165,26 +200,26 @@ export function VehicleCarousel({
 
   if (count === 1) {
     return (
-      <div className={`mx-auto max-w-md ${className}`}>
-        <div className="vehicle-carousel-item">{items[0]}</div>
+      <div className={`mx-auto w-full max-w-[34rem] ${className}`}>
+        <div className="vehicle-carousel-item vehicle-carousel-item--solo">{items[0]}</div>
       </div>
     );
   }
 
   if (count === 2) {
     return (
-      <div
-        ref={scrollerRef}
-        className={`vehicle-carousel-scroller flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-auto sm:grid sm:max-w-3xl sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:snap-none ${className}`}
-      >
-        {items.map((child, index) => (
-          <div
-            key={index}
-            className="vehicle-carousel-item w-[min(86vw,21rem)] shrink-0 snap-center sm:w-auto sm:max-w-none sm:snap-start"
-          >
-            {child}
-          </div>
-        ))}
+      <div className={className}>
+        <div
+          ref={scrollerRef}
+          className="vehicle-carousel-scroller flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-auto sm:grid sm:max-w-3xl sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:snap-none md:gap-5"
+        >
+          {items.map((child, index) => (
+            <div key={index} className={ITEM_CLASS}>
+              {child}
+            </div>
+          ))}
+        </div>
+        <CarouselDots count={count} active={active} onSelect={scrollToIndex} />
       </div>
     );
   }
@@ -211,17 +246,51 @@ export function VehicleCarousel({
       </div>
       <div
         ref={scrollerRef}
-        className="vehicle-carousel-scroller flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-5"
+        className="vehicle-carousel-scroller flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-5"
       >
         {items.map((child, index) => (
-          <div
-            key={index}
-            className="vehicle-carousel-item w-[min(86vw,21.5rem)] shrink-0 snap-center sm:w-[min(46vw,22rem)] sm:snap-start md:w-[min(42vw,22.5rem)] lg:w-[min(31vw,23rem)] xl:w-[22.75rem] min-[1600px]:w-[22rem]"
-          >
+          <div key={index} className={ITEM_CLASS}>
             {child}
           </div>
         ))}
       </div>
+      <CarouselDots count={count} active={active} onSelect={scrollToIndex} />
+    </div>
+  );
+}
+
+function CarouselDots({
+  count,
+  active,
+  onSelect,
+}: {
+  count: number;
+  active: number;
+  onSelect: (index: number) => void;
+}) {
+  if (count < 2) return null;
+  return (
+    <div
+      className="mt-4 flex items-center justify-center gap-2 sm:hidden"
+      role="tablist"
+      aria-label="Paginación del carrusel"
+    >
+      {Array.from({ length: count }, (_, index) => {
+        const current = index === active;
+        return (
+          <button
+            key={index}
+            type="button"
+            role="tab"
+            aria-selected={current}
+            aria-label={`Vehículo ${index + 1}`}
+            onClick={() => onSelect(index)}
+            className={`h-2 rounded-full transition-all ${
+              current ? "w-6 bg-[#08090b]" : "w-2 bg-[#c9ccd1]"
+            }`}
+          />
+        );
+      })}
     </div>
   );
 }
