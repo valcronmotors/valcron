@@ -7,7 +7,7 @@ import { HOME_FAQS } from "@/lib/home-content";
 
 export function HomeFaqPreview() {
   const [open, setOpen] = useState(0);
-  const faqs = HOME_FAQS.slice(0, 3);
+  const faqs = HOME_FAQS.slice(0, 4);
 
   return (
     <Section className="section-light bg-white" id="preguntas" tight>
@@ -41,7 +41,7 @@ export function HomeFaqPreview() {
                     onClick={() => setOpen(active ? -1 : index)}
                   >
                     <span className="text-base font-semibold text-[#08090b]">{item.q}</span>
-                    <span className="shrink-0 text-2xl font-light text-[#2b6cff]" aria-hidden="true">
+                    <span className="shrink-0 text-2xl font-light text-[#111111]" aria-hidden="true">
                       {active ? "−" : "+"}
                     </span>
                   </button>

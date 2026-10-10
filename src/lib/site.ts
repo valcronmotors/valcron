@@ -87,7 +87,10 @@ export type MegaNavItem = {
   featured: { title: string; copy: string; href: string; cta: string };
 };
 
-/** Desktop header is three OEM-style mega menus; all destinations already exist. */
+/**
+ * V18 enterprise mega menus — Toyota-inspired information architecture.
+ * All hrefs map to existing public routes (no dead links).
+ */
 export const MEGA_NAV: readonly MegaNavItem[] = [
   {
     id: "vehiculos",
@@ -95,90 +98,110 @@ export const MEGA_NAV: readonly MegaNavItem[] = [
     href: "/inventario",
     columns: [
       {
-        title: "Inventario",
+        title: "Catálogos",
         links: [
-          { href: "/inventario", label: "Ver inventario" },
-          { href: "/solicitar-vehiculo", label: "Solicitar vehículo" },
-          { href: "/subastas", label: "Oportunidades de subasta" },
+          { href: "/inventario", label: "Inventario Valcron" },
+          { href: "/subastas", label: "Oportunidades de Subasta" },
         ],
       },
       {
-        title: "Opciones",
+        title: "Explorar por tipo",
         links: [
-          { href: "/comprar", label: "Cómo comprar" },
-          { href: "/importacion", label: "Importación" },
-          { href: "/financiamiento", label: "Financiamiento" },
+          { href: "/inventario?search=SUV", label: "SUV y Crossovers" },
+          { href: "/inventario?search=Sedan", label: "Sedanes" },
+          { href: "/inventario?search=Camioneta", label: "Camionetas" },
+          { href: "/inventario?search=Hibrido", label: "Híbridos" },
+          { href: "/inventario?search=Electrico", label: "Eléctricos" },
         ],
       },
     ],
     featured: {
-      title: "Encuentra tu vehículo",
-      copy: "Inventario local en Santo Domingo Este y opciones de subasta cuando aplica.",
+      title: "Inventario Valcron",
+      copy: "Unidades publicadas en Santo Domingo Este. Sin listados inventados.",
       href: "/inventario",
       cta: "Ver inventario",
     },
   },
   {
-    id: "compra",
-    label: "Compra",
+    id: "comprar",
+    label: "Comprar",
     href: "/comprar",
     columns: [
       {
-        title: "Herramientas de compra",
+        title: "Herramientas",
         links: [
-          { href: "/comprar", label: "Cómo comprar" },
+          { href: "/inventario", label: "Explorar inventario" },
           { href: "/solicitar-vehiculo", label: "Solicitar vehículo" },
-          { href: "/guias", label: "Guías" },
+          { href: "/financiamiento", label: "Financiamiento" },
         ],
       },
       {
-        title: "Financiación e importación",
+        title: "Proceso",
         links: [
-          { href: "/financiamiento", label: "Financiamiento" },
-          { href: "/calculadoras", label: "Calculadoras" },
-          { href: "/calculadoras/financiamiento", label: "Calcula tu cuota" },
-          { href: "/importacion", label: "Importación" },
+          { href: "/comprar", label: "Cómo comprar" },
+          { href: "/calculadoras", label: "Cotizaciones" },
+          { href: "/contacto?asunto=trade-in", label: "Entrega como parte de pago" },
         ],
       },
     ],
     featured: {
-      title: "Te orientamos en el proceso",
-      copy: "Desde la unidad publicada hasta cotización, bancos locales e importación cuando aplica.",
+      title: "Te acompañamos en la compra",
+      copy: "Desde la unidad publicada hasta bancos locales e importación cuando aplica.",
       href: "/solicitar-vehiculo",
-      cta: "Solicitar ahora",
+      cta: "Solicitar vehículo",
     },
   },
   {
-    id: "ayuda",
-    label: "Ayuda y servicio",
+    id: "servicios",
+    label: "Servicios",
     href: "/servicios",
     columns: [
       {
-        title: "Conoce Valcron",
+        title: "Servicios Valcron",
         links: [
-          { href: "/servicios", label: "Servicios" },
-          { href: "/nosotros", label: "Nosotros" },
-          { href: "/preguntas-frecuentes", label: "Preguntas frecuentes" },
-          { href: "/contacto", label: "Contacto" },
+          { href: "/subastas", label: "Subastas" },
+          { href: "/importacion", label: "Importación" },
+          { href: "/financiamiento", label: "Financiamiento" },
+          { href: "/comprar", label: "Asesoría de compra" },
         ],
       },
+    ],
+    featured: {
+      title: "Servicios claros",
+      copy: "Subastas, importación y financiamiento con información verificable.",
+      href: "/servicios",
+      cta: "Ver servicios",
+    },
+  },
+  {
+    id: "recursos",
+    label: "Recursos",
+    href: "/guias",
+    columns: [
       {
-        title: "Recursos",
+        title: "Aprende y calcula",
         links: [
           { href: "/blog", label: "Blog" },
           { href: "/guias", label: "Guías" },
           { href: "/calculadoras", label: "Calculadoras" },
+          { href: "/preguntas-frecuentes", label: "Preguntas frecuentes" },
         ],
       },
     ],
     featured: {
-      title: "Habla con el equipo",
-      copy: "Oficina en Santo Domingo Este. WhatsApp, llamada o visita.",
-      href: "/contacto",
-      cta: "Contactar",
+      title: "Recursos útiles",
+      copy: "Guías, calculadoras y respuestas antes de decidir.",
+      href: "/guias",
+      cta: "Ver guías",
     },
   },
 ];
+
+/** Direct header links (no mega panel) — OEM-style secondary destinations. */
+export const HEADER_DIRECT_LINKS = [
+  { href: "/nosotros", label: "Nosotros" },
+  { href: "/contacto", label: "Contacto" },
+] as const;
 
 export const FOOTER_INVENTORY = [
   { href: "/inventario", label: "Vehículos disponibles" },

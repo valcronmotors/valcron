@@ -35,8 +35,11 @@ function HomeVehicleCard({ vehicle }: { vehicle: PublicVehicle }) {
 
   return (
     <article className="flex h-full flex-col bg-white">
-      <Link href={href} className="group flex h-full flex-col focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#2b6cff]">
-        <span className="relative block aspect-[16/10] overflow-hidden bg-[#f4f5f7]">
+      <Link
+        href={href}
+        className="group flex h-full flex-col border border-[#E5E7EB] bg-white p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#111111]"
+      >
+        <span className="relative block aspect-[16/10] overflow-hidden bg-[#F5F5F5]">
           <VehiclePhoto
             src={vehicle.images[0]?.url}
             alt={vehicleImageAlt(vehicle)}
@@ -44,20 +47,20 @@ function HomeVehicleCard({ vehicle }: { vehicle: PublicVehicle }) {
             className="object-contain object-center p-3 transition-transform duration-300 group-hover:scale-[1.02]"
           />
           {badge?.label ? (
-            <span className="absolute left-3 top-3 bg-white/95 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#191919]">
+            <span className="absolute left-3 top-3 bg-white/95 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#111111]">
               {badge.label}
             </span>
           ) : null}
         </span>
         <span className="flex flex-1 flex-col px-1 pb-1 pt-4">
-          {year ? <span className="text-xs text-[#8a8d91]">{year}</span> : null}
-          <span className="mt-1 font-display text-lg font-bold tracking-tight text-[#08090b] md:text-xl">
+          {year ? <span className="text-xs text-[#6b7280]">{year}</span> : null}
+          <span className="mt-1 font-display text-lg font-bold tracking-tight text-[#111111] md:text-xl">
             {title}
           </span>
-          {trim ? <span className="mt-0.5 text-sm text-[#676a70]">{trim}</span> : null}
+          {trim ? <span className="mt-0.5 text-sm text-[#3B3B3B]">{trim}</span> : null}
           <span className="mt-3 flex items-end justify-between gap-3">
-            <span className="font-display text-base font-bold text-[#08090b]">{price.primary}</span>
-            {mileage ? <span className="text-xs text-[#8a8d91]">{mileage}</span> : null}
+            <span className="font-display text-base font-bold text-[#111111]">{price.primary}</span>
+            {mileage ? <span className="text-xs text-[#6b7280]">{mileage}</span> : null}
           </span>
         </span>
       </Link>
@@ -88,11 +91,16 @@ export function HomeExplore({
   }
 
   return (
-    <Section className="section-light bg-white" id="inventario">
+    <Section className="section-light bg-white" id="explorar">
       <PageContainer wide>
-        <h2 className="text-center font-display text-[2rem] font-bold tracking-tight text-[#08090b] md:text-5xl">
-          Explora los vehículos
-        </h2>
+        <div className="mx-auto max-w-[40rem] text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6b7280]">
+            Explorar
+          </p>
+          <h2 className="mt-2 font-display text-[2rem] font-bold tracking-tight text-[#111111] md:text-5xl">
+            Explora los vehículos
+          </h2>
+        </div>
         <div
           className="mt-8 flex gap-6 overflow-x-auto border-b border-[#e5e5e5] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="tablist"

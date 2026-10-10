@@ -7,19 +7,22 @@ import { HOME_CARRIER_IMAGE, HOME_CONSULT_IMAGE } from "@/lib/hero-media";
 const CARDS = [
   {
     href: "/financiamiento",
-    title: "Financiamiento",
-    copy: "Escenarios con bancos locales. Sin aprobación prometida.",
+    kicker: "Financiamiento",
+    title: "Opciones con bancos locales.",
+    copy: "Orientación clara. La aprobación la define cada institución.",
+    cta: "Conocer opciones",
     image: HOME_CONSULT_IMAGE,
   },
   {
     href: "/importacion",
-    title: "Importación",
-    copy: "Transporte y llegada, confirmados para tu caso.",
+    kicker: "Importación",
+    title: "Coordinamos tu importación.",
+    copy: "Transporte y llegada confirmados para tu caso. Sin costos fijos inventados.",
+    cta: "Ver importación",
     image: HOME_CARRIER_IMAGE,
   },
 ] as const;
 
-/** Compact service entries. The full process stays on each dedicated page. */
 export function HomeFinancingTeaser() {
   return (
     <Section className="section-light bg-white" tight>
@@ -29,25 +32,33 @@ export function HomeFinancingTeaser() {
             <li key={card.href}>
               <Link
                 href={card.href}
-                className="group grid overflow-hidden bg-[#f7f8fa] sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff]"
+                className="group relative block min-h-[14rem] overflow-hidden border border-[#E5E7EB] sm:min-h-[16rem] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111111]"
               >
-                <span className="relative block min-h-[10rem] sm:min-h-[14rem]">
-                  <Image
-                    src={card.image.src}
-                    alt={card.image.alt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 28vw"
-                    className="object-cover object-center"
-                  />
-                </span>
-                <span className="flex flex-col justify-center px-5 py-6 sm:px-7">
-                  <span className="font-display text-2xl font-bold tracking-tight text-[#08090b]">
+                <Image
+                  src={card.image.src}
+                  alt={card.image.alt}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 48vw"
+                  className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.03]"
+                />
+                <span
+                  className="absolute inset-0 bg-gradient-to-t from-[#111111]/90 via-[#111111]/45 to-[#111111]/15"
+                  aria-hidden="true"
+                />
+                <span className="absolute inset-0 flex flex-col justify-end p-5 sm:p-7">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/70">
+                    {card.kicker}
+                  </span>
+                  <span className="mt-2 font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
                     {card.title}
                   </span>
-                  <span className="mt-2 text-sm leading-relaxed text-[#676a70]">{card.copy}</span>
-                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#08090b]">
-                    Conocer
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                  <span className="mt-2 max-w-[28rem] text-sm leading-relaxed text-white/85">{card.copy}</span>
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-white">
+                    {card.cta}
+                    <ArrowRight
+                      className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+                      aria-hidden="true"
+                    />
                   </span>
                 </span>
               </Link>

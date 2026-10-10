@@ -11,9 +11,9 @@ import {
 } from "@/lib/site";
 
 const headingClass =
-  "mb-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-[#5c6370]";
+  "mb-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-[#6b7280]";
 const linkClass =
-  "text-[0.875rem] leading-6 text-[#3d4148] transition-colors duration-200 hover:text-[#08090b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff]";
+  "text-[0.875rem] leading-6 text-[#3B3B3B] transition-colors duration-200 hover:text-[#111111] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111111]";
 
 const FOOTER_EXPLORE_V2 = [
   { href: "/", label: "Inicio" },
@@ -44,9 +44,9 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
   const year = new Date().getFullYear();
 
   return (
-    <footer className="site-footer relative mt-auto border-t border-[#e6e8eb]">
+    <footer className="site-footer relative mt-auto border-t border-[#E5E7EB] bg-[#F5F5F5]">
       <div
-        className="relative mx-auto w-full max-w-[var(--content-wide)] py-8 md:py-10"
+        className="relative mx-auto w-full max-w-[var(--content-wide)] py-10 md:py-12"
         style={{ paddingInline: "var(--page-gutter)" }}
       >
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-10">
@@ -54,8 +54,8 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
             <Link href="/" aria-label={SITE.brand} className="inline-flex">
               <BrandLogo size="footer" tone="onLight" variant="full" />
             </Link>
-            <p className="mt-3 max-w-[16rem] text-[0.8125rem] leading-relaxed text-[#5c6370]">
-              Venta de vehículos, oportunidades de subasta e importación en República
+            <p className="mt-3 max-w-[16rem] text-[0.8125rem] leading-relaxed text-[#3B3B3B]">
+              Valcron Motors Group, SRL — vehículos, subastas e importación en República
               Dominicana.
             </p>
             <FooterSocialIcons className="mt-4" />
@@ -77,14 +77,14 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
               <p>{SITE.address.full}</p>
               <p className="mt-3">
                 Oficina{" "}
-                <a className="font-medium text-[#08090b] hover:text-[#2b6cff]" href={officeTelHref()}>
+                <a className="font-medium text-[#111111] hover:text-[var(--brand-orange,#e85d04)]" href={officeTelHref()}>
                   {SITE.officePhoneDisplay}
                 </a>
               </p>
               <p>
                 WhatsApp{" "}
                 <a
-                  className="font-medium text-[#08090b] hover:text-[#2b6cff]"
+                  className="font-medium text-[#111111] hover:text-[var(--brand-orange,#e85d04)]"
                   href={whatsappHref()}
                   target="_blank"
                   rel="noopener noreferrer"

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { PageContainer, Section } from "@/components/public/layout";
 import { VehicleCard } from "@/components/public/VehicleCard";
 import { VehicleCarousel } from "@/components/public/VehicleCarousel";
@@ -21,36 +22,37 @@ export function FeaturedInventory({
   const empty = visible.length === 0 || Boolean(error);
 
   return (
-    <Section className="section-light bg-white !py-12 md:!py-16" id="inventario">
-      <PageContainer>
-        <div className="text-center">
-          <h2 className="font-display text-3xl font-bold tracking-tight text-[#08090b] md:text-4xl">
-            Explora los vehículos
-          </h2>
-          <div className="mt-6 flex justify-center gap-8 border-b border-[#e5e5e5]">
-            <span className="relative -mb-px pb-3 text-sm font-medium text-[#08090b]">
+    <Section className="section-light bg-[#F5F5F5] !py-10 md:!py-14" id="inventario-valcron">
+      <PageContainer wide>
+        <div className="mb-6 flex items-end justify-between gap-3">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6b7280]">
               Inventario Valcron
-              <span className="absolute inset-x-0 bottom-0 h-[2px] bg-[#08090b]" />
-            </span>
-            <Link href="/subastas" className="pb-3 text-sm font-medium text-[#8a8d91] transition-colors hover:text-[#191919]">
-              Subastas
-            </Link>
+            </p>
+            <h2 className="mt-1 font-display text-2xl font-bold tracking-tight text-[#111111] md:text-3xl">
+              Disponibles en República Dominicana
+            </h2>
           </div>
+          <Link
+            href="/inventario"
+            className="inline-flex min-h-11 shrink-0 items-center gap-1 text-sm font-semibold text-[#111111] underline-offset-4 hover:underline"
+          >
+            Ver todos
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
         </div>
 
         {empty ? (
-          <div className="mt-8 flex flex-col items-start justify-between gap-4 border border-[#e5e5e5] bg-[#f7f7f8] px-5 py-6 text-left md:flex-row md:items-center md:px-8">
-            <div>
-              <p className="font-display text-base font-semibold text-[#08090b] sm:text-lg">
-                {PUBLIC_INVENTORY_EMPTY.title}
-              </p>
-            </div>
+          <div className="flex flex-col items-start justify-between gap-4 border border-[#E5E7EB] bg-white px-5 py-5 text-left sm:flex-row sm:items-center sm:px-7">
+            <p className="font-display text-base font-semibold text-[#111111] sm:text-lg">
+              {PUBLIC_INVENTORY_EMPTY.title}
+            </p>
             <Link href="/solicitar-vehiculo" className="btn-primary h-11 shrink-0 px-5 text-sm">
               Solicitar vehículo
             </Link>
           </div>
         ) : (
-          <div className="mt-8 -mx-[var(--page-gutter)] px-[var(--page-gutter)] xl:mx-0 xl:px-0">
+          <div className="-mx-[var(--page-gutter)] px-[var(--page-gutter)] xl:mx-0 xl:px-0">
             <VehicleCarousel speedSeconds={64}>
               {visible.map((vehicle) => (
                 <VehicleCard key={vehicle.id} vehicle={vehicle} tone="light" compact />
@@ -58,12 +60,6 @@ export function FeaturedInventory({
             </VehicleCarousel>
           </div>
         )}
-
-        <div className="mt-8 flex justify-center">
-          <Link href="/inventario" className="btn-secondary h-11 px-5 text-sm">
-            Ver todo el inventario
-          </Link>
-        </div>
       </PageContainer>
     </Section>
   );

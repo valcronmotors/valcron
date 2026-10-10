@@ -53,9 +53,14 @@ export function HomeDiscover() {
   return (
     <Section className="section-light bg-white">
       <PageContainer wide>
-        <h2 className="text-center font-display text-3xl font-bold tracking-tight text-[#08090b] md:text-5xl">
-          Descubre Valcron
-        </h2>
+        <div className="mx-auto max-w-[36rem] text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6b7280]">
+            Descubre Valcron
+          </p>
+          <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-[#111111] md:text-5xl">
+            El camino que mejor te sirve
+          </h2>
+        </div>
         <div
           className="mt-8 flex justify-start gap-6 overflow-x-auto border-b border-[#e5e5e5] md:justify-center [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="tablist"
