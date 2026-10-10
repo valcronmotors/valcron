@@ -313,58 +313,43 @@ export function AdminAuctionForm({
     if (paso >= 0 && paso <= 4) return paso as EditorStep;
     return 0;
   });
-  const [values, setValues] = useState<FormState>(() =>
-    opportunity ? formFromOpportunity(opportunity) : emptyForm(),
-  );
-  const [customMake, setCustomMake] = useState("");
-  const [customModel, setCustomModel] = useState("");
-  const [makeSelect, setMakeSelect] = useState(() =>
-    makeSelectState(opportunity?.make ?? "").selectValue,
-  );
-  const [modelSelect, setModelSelect] = useState(() =>
-    modelSelectState(opportunity?.make ?? "", opportunity?.model ?? "").selectValue,
-  );
+  const recoveredDraft = useMemo(() => {
+    if (saved || typeof window === "undefined") return null;
+    try {
+      const raw = window.localStorage.getItem(DRAFT_KEY);
+      if (!raw) return null;
+      return JSON.parse(raw) as FormState;
+    } catch {
+      return null;
+    }
+  }, [saved]);
+
+  const [values, setValues] = useState<FormState>(() => {
+    if (opportunity) return formFromOpportunity(opportunity);
+    return recoveredDraft ? { ...emptyForm(), ...recoveredDraft } : emptyForm();
+  });
+  const initialMake = opportunity?.make ?? recoveredDraft?.make ?? "";
+  const initialModel = opportunity?.model ?? recoveredDraft?.model ?? "";
+  const [customMake, setCustomMake] = useState(() => makeSelectState(initialMake).customValue);
+  const [customModel, setCustomModel] = useState(() => modelSelectState(initialMake, initialModel).customValue);
+  const [makeSelect, setMakeSelect] = useState(() => makeSelectState(initialMake).selectValue);
+  const [modelSelect, setModelSelect] = useState(() => modelSelectState(initialMake, initialModel).selectValue);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(() =>
+    !saved && recoveredDraft ? "Borrador local recuperado. Guarda para persistirlo en el servidor." : null,
+  );
   const [publicPath, setPublicPath] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [localPhotos, setLocalPhotos] = useState<LocalPhoto[]>([]);
+  const [localPhotos] = useState<LocalPhoto[]>([]);
   const [vehicleId, setVehicleId] = useState<string | null>(opportunity?.linked_vehicle_id ?? linkedVehicle?.id ?? null);
   const [published, setPublished] = useState(Boolean(linkedVehicle?.published));
-  const [photos, setPhotos] = useState(linkedVehicle?.vehicle_photos ?? []);
+  const photos = linkedVehicle?.vehicle_photos ?? [];
   const [confirm, setConfirm] = useState<"publish" | "unpublish" | null>(null);
-  const [draftReady, setDraftReady] = useState(saved);
 
   useEffect(() => {
-    if (saved) {
-      setDraftReady(true);
-      return;
-    }
-    try {
-      const raw = window.localStorage.getItem(DRAFT_KEY);
-      if (!raw) {
-        setDraftReady(true);
-        return;
-      }
-      const parsed = JSON.parse(raw) as FormState;
-      setValues((current) => ({ ...current, ...parsed }));
-      const makeState = makeSelectState(parsed.make ?? "");
-      const modelState = modelSelectState(parsed.make ?? "", parsed.model ?? "");
-      setMakeSelect(makeState.selectValue);
-      setCustomMake(makeState.customValue);
-      setModelSelect(modelState.selectValue);
-      setCustomModel(modelState.customValue);
-      setNotice("Borrador local recuperado. Guarda para persistirlo en el servidor.");
-    } catch {
-      /* ignore corrupt draft */
-    }
-    setDraftReady(true);
-  }, [saved]);
-
-  useEffect(() => {
-    if (!draftReady || saved) return;
+    if (saved) return;
     const timer = window.setTimeout(() => {
       try {
         window.localStorage.setItem(DRAFT_KEY, JSON.stringify(values));
@@ -373,7 +358,7 @@ export function AdminAuctionForm({
       }
     }, 400);
     return () => window.clearTimeout(timer);
-  }, [values, draftReady, saved]);
+  }, [values, saved]);
 
   const makeState = useMemo(() => {
     if (makeSelect === OTHER_MAKE_VALUE) {
@@ -646,7 +631,7 @@ export function AdminAuctionForm({
         })}
       </nav>
 
-      {error ? <AdminError>{error}</AdminError> : null}
+      {error ? <AdminError message={error} /> : null}
       {notice ? (
         <p className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] px-4 py-3 text-sm text-[var(--admin-text-secondary)]">
           {notice}
@@ -763,7 +748,8 @@ export function AdminAuctionForm({
                     patch("make", customMake);
                     return;
                   }
-                  const conflicts = makeChangeConflictsWithModel(next, values.model);
+                  const previousMake = values.make;
+                  const conflicts = makeChangeConflictsWithModel(previousMake, next, values.model);
                   patch("make", next);
                   if (conflicts) {
                     setModelSelect(OTHER_MODEL_VALUE);

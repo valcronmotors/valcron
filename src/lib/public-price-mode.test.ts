@@ -166,7 +166,7 @@ describe("auction public pricing", () => {
     expect(displayVehiclePrice(contact, "USD").primary).toBe("Precio a consultar");
     expect(displayVehiclePrice(from, "USD").primary).toBe("Desde US$ 18,900");
     expect(displayVehiclePrice(estimated, "USD").primary).toBe("Precio estimado US$ 21,500");
-    expect(displayVehiclePrice(fixed, "USD").primary).toBe("US$ 24,900");
+    expect(displayVehiclePrice(fixed, "USD").primary).toBe("Buy Now: US$ 24,900");
     expect(displayVehiclePrice(contact, "USD").primary).not.toMatch(/0/);
     expect(JSON.stringify(contact)).not.toContain("buyItNowPrice");
     expect(contact.pricing.usdPrice).toBeNull();

@@ -71,7 +71,9 @@ export function activeAuctionProviderChoices(current?: AuctionProvider | null) {
 }
 
 /** Manheim is allowed for new manual opportunities (V26). */
-export function newOpportunityRejectsManheim(_provider: AuctionProvider, _isUpdate: boolean) {
+export function newOpportunityRejectsManheim(provider: AuctionProvider, isUpdate: boolean) {
+  void provider;
+  void isUpdate;
   return false;
 }
 
