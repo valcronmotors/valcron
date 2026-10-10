@@ -1,4 +1,4 @@
-import { matchesCompany, type Company } from "@/lib/companies";
+import { COMPANIES, type Company } from "@/lib/companies";
 import { createClient } from "@/utils/supabase/server";
 
 export type EmpresaRecord = {
@@ -6,6 +6,10 @@ export type EmpresaRecord = {
   nombre: string;
 };
 
+/**
+ * Legacy empresa record wrapper.
+ * New code should use companies.ts directly.
+ */
 export async function listEmpresas() {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -26,6 +30,7 @@ export async function getEmpresaIdByCompany(company: Company) {
     return { id: null as string | null, error };
   }
 
+  const { matchesCompany } = await import("@/lib/companies");
   const match = data.find((empresa) => matchesCompany(empresa.nombre, company));
   return { id: match?.id ?? null, error: null };
 }
