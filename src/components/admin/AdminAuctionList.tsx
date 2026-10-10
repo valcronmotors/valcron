@@ -43,6 +43,7 @@ import {
   AUCTION_SALE_STATUS_OPTIONS,
   readAuctionMetadata,
 } from "@/lib/auction-admin-fields";
+import { auditPublishedAuctionOpportunities } from "@/lib/auctions/eligibility-audit";
 import type { AuctionOpportunityRow, AuctionOpportunityStatus, AuctionProvider } from "@/lib/website-schema";
 
 function formatDamage(value: string | null | undefined) {
@@ -105,6 +106,10 @@ export function AdminAuctionList({
   const [pending, startTransition] = useTransition();
 
   const metrics = useMemo(() => opportunityPublicationMetrics(opportunities), [opportunities]);
+  const eligibilityAudit = useMemo(
+    () => auditPublishedAuctionOpportunities(opportunities),
+    [opportunities],
+  );
 
   const filtered = useMemo(
     () =>
@@ -246,6 +251,30 @@ export function AdminAuctionList({
           </div>
         ))}
       </section>
+
+      {eligibilityAudit.failingPublic.length > 0 ? (
+        <div className="rounded-xl border border-[var(--admin-warning)]/25 bg-[var(--admin-warning-bg)] px-4 py-3 text-sm text-[var(--admin-warning)]">
+          <p className="font-medium">
+            Auditoría Verificación Valcron: {eligibilityAudit.failingPublic.length} oportunidad
+            {eligibilityAudit.failingPublic.length === 1 ? "" : "es"} publicada no cumple la política.
+          </p>
+          <ul className="mt-2 grid gap-1 text-xs leading-5">
+            {eligibilityAudit.failingPublic.slice(0, 6).map((row) => (
+              <li key={row.opportunityId}>
+                <Link href={`/admin/subastas/${row.opportunityId}`} className="underline underline-offset-2">
+                  {row.title}
+                </Link>
+                {" — "}
+                {row.overallLabel}
+                {row.reasons[0] ? `: ${row.reasons[0]}` : ""}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-xs opacity-90">
+            No se eliminaron registros. Abre cada oportunidad, corrige o despublica de forma controlada.
+          </p>
+        </div>
+      ) : null}
 
       <label className="block">
         <span className="sr-only">Buscar vehículo, VIN o lote</span>

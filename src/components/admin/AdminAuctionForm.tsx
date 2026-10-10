@@ -65,10 +65,14 @@ import {
   readAuctionMetadata,
   type AuctionAdminPriceMode,
 } from "@/lib/auction-admin-fields";
+import { AdminAuctionEligibilityPanel } from "@/components/admin/AdminAuctionEligibilityPanel";
 import {
   auctionPublicationBlockMessage,
   auctionPublicationChecks,
+  auctionPublishButtonLabel,
+  canAttemptAuctionPublish,
 } from "@/lib/auctions/auction-publication";
+import { evaluateAuctionEligibility } from "@/lib/auctions/eligibility";
 import {
   activeAuctionProviderChoices,
   historicalProviderLabel,
@@ -280,17 +284,20 @@ function SmartSelectField({
   value,
   onChange,
   required,
+  id,
 }: {
   label: string;
   options: { value: string; label: string }[];
   value: string;
   onChange: (next: string) => void;
   required?: boolean;
+  id?: string;
 }) {
   const state = smartFieldState(options, value);
   return (
     <AdminField label={label} required={required}>
       <AdminSelect
+        id={id}
         value={state.selectValue}
         onChange={(event) => {
           const next = event.target.value;
@@ -435,22 +442,41 @@ export function AdminAuctionForm({
     setStep(0);
   }
 
-  const publishBlockers = useMemo(
-    () =>
-      auctionPublicationChecks({
-        provider: values.provider,
-        provider_lot_id: values.provider_lot_id,
-        year: values.year,
-        make: values.make,
-        model: values.model,
-        location: values.location,
-        price_mode: values.price_mode,
-        buy_now_usd: values.buy_now_usd ? Number(values.buy_now_usd) : null,
-        hasCoverPhoto: (photos?.length ?? 0) > 0,
-        photoCount: photos?.length ?? 0,
-      }),
+  const publicationInput = useMemo(
+    () => ({
+      provider: values.provider,
+      provider_lot_id: values.provider_lot_id,
+      year: values.year,
+      make: values.make,
+      model: values.model,
+      location: values.location,
+      price_mode: values.price_mode,
+      buy_now_usd: values.buy_now_usd ? Number(values.buy_now_usd) : null,
+      hasCoverPhoto: (photos?.length ?? 0) > 0,
+      photoCount: photos?.length ?? 0,
+      vin: values.vin,
+      title_status: values.title_status,
+      odometer_status: values.odometer_status,
+      primary_damage: values.primary_damage,
+      secondary_damage: values.secondary_damage,
+      run_and_drive: values.run_and_drive,
+    }),
     [values, photos],
   );
+
+  const publishBlockers = useMemo(() => auctionPublicationChecks(publicationInput), [publicationInput]);
+  const eligibility = useMemo(() => evaluateAuctionEligibility(publicationInput), [publicationInput]);
+  const publishEnabled = canAttemptAuctionPublish(publicationInput);
+  const publishLabel = auctionPublishButtonLabel(publicationInput);
+
+  function jumpToField(nextStep: EditorStep, anchor: string) {
+    setStep(nextStep);
+    window.setTimeout(() => {
+      const el = document.getElementById(anchor);
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (el instanceof HTMLElement) el.focus();
+    }, 80);
+  }
 
   function buildFormData(id?: string) {
     const make = resolveMakeValue(makeSelect === OTHER_MAKE_VALUE ? OTHER_MAKE_VALUE : makeState.selectValue, customMake || values.make);
@@ -937,9 +963,12 @@ export function AdminAuctionForm({
             </AdminField>
             <AdminField label="VIN">
               <AdminInput
+                id="vin"
                 value={values.vin}
                 onChange={(event) => patch("vin", event.target.value.toUpperCase())}
-                maxLength={17}
+                maxLength={24}
+                placeholder="VIN completo de 17 caracteres"
+                autoCapitalize="characters"
               />
             </AdminField>
             <AdminField label="Kilometraje">
@@ -1016,20 +1045,30 @@ export function AdminAuctionForm({
 
       {step === 2 ? (
         <FormSection title="Condición y daños" hint="Usa la terminología exacta de la subasta cuando esté disponible. Run and Drive no es una garantía mecánica.">
+          <div className="mb-4">
+            <AdminAuctionEligibilityPanel
+              result={eligibility}
+              compact
+              onJump={(nextStep, anchor) => jumpToField(nextStep, anchor)}
+            />
+          </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <SmartSelectField
+              id="primary_damage"
               label="Daño principal"
               options={optionsFrom(AUCTION_DAMAGE_OPTIONS)}
               value={values.primary_damage}
               onChange={(next) => patch("primary_damage", next)}
             />
             <SmartSelectField
+              id="secondary_damage"
               label="Daño secundario"
               options={optionsFrom(AUCTION_SECONDARY_DAMAGE_OPTIONS)}
               value={values.secondary_damage}
               onChange={(next) => patch("secondary_damage", next)}
             />
             <SmartSelectField
+              id="run_and_drive"
               label="Run and Drive"
               options={optionsFrom(AUCTION_RUN_DRIVE_OPTIONS)}
               value={values.run_and_drive}
@@ -1046,6 +1085,7 @@ export function AdminAuctionForm({
             </AdminField>
             <AdminField label="Estado del odómetro">
               <AdminSelect
+                id="odometer_status"
                 value={values.odometer_status}
                 onChange={(event) => patch("odometer_status", event.target.value)}
               >
@@ -1057,6 +1097,7 @@ export function AdminAuctionForm({
               </AdminSelect>
             </AdminField>
             <SmartSelectField
+              id="title_status"
               label="Tipo de título / documento"
               options={optionsFrom(AUCTION_TITLE_OPTIONS)}
               value={values.title_status}
@@ -1207,13 +1248,20 @@ export function AdminAuctionForm({
             />
             Destacar en carrusel de subastas
           </label>
+          <div className="mt-6">
+            <AdminAuctionEligibilityPanel
+              result={eligibility}
+              onJump={(nextStep, anchor) => jumpToField(nextStep, anchor)}
+            />
+          </div>
           <div className="mt-6 flex flex-wrap gap-2">
             <AdminPrimaryButton
               type="button"
-              disabled={pending || saving}
+              disabled={pending || saving || !publishEnabled}
               onClick={() => setConfirm("publish")}
+              title={publishEnabled ? "Publicar oportunidad" : auctionPublicationBlockMessage(publicationInput) ?? publishLabel}
             >
-              Publicar oportunidad
+              {publishLabel}
             </AdminPrimaryButton>
             {published ? (
               <AdminSecondaryButton type="button" disabled={pending} onClick={() => setConfirm("unpublish")}>
@@ -1230,13 +1278,13 @@ export function AdminAuctionForm({
       ) : null}
 
       <div className="sticky bottom-0 z-30 -mx-1 border-t border-[var(--admin-border)] bg-white px-2 pt-3 shadow-[0_-8px_24px_rgba(8,9,11,0.08)] pb-[max(1rem,env(safe-area-inset-bottom))]">
-        {step === 4 && publishBlockers.some((check) => check.required && !check.ok) ? (
+        {step === 4 && !publishEnabled ? (
           <p className="mb-2 text-xs text-[var(--admin-warning)]">
-            Falta:{" "}
-            {publishBlockers
-              .filter((check) => check.required && !check.ok)
-              .map((check) => check.label)
-              .join(", ")}
+            {auctionPublicationBlockMessage(publicationInput) ??
+              `Falta: ${publishBlockers
+                .filter((check) => check.required && !check.ok)
+                .map((check) => check.label)
+                .join(", ")}`}
           </p>
         ) : null}
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -1269,18 +1317,15 @@ export function AdminAuctionForm({
             ) : (
               <AdminPrimaryButton
                 type="button"
-                disabled={pending || saving || publishBlockers.some((check) => check.required && !check.ok)}
+                disabled={pending || saving || !publishEnabled}
                 onClick={() => setConfirm("publish")}
                 title={
-                  publishBlockers.some((check) => check.required && !check.ok)
-                    ? `Completa: ${publishBlockers
-                        .filter((check) => check.required && !check.ok)
-                        .map((check) => check.label)
-                        .join(", ")}`
-                    : "Publicar oportunidad"
+                  publishEnabled
+                    ? "Publicar oportunidad"
+                    : auctionPublicationBlockMessage(publicationInput) ?? publishLabel
                 }
               >
-                Publicar oportunidad
+                {publishLabel}
               </AdminPrimaryButton>
             )}
           </div>
@@ -1290,7 +1335,7 @@ export function AdminAuctionForm({
       <AdminConfirmDialog
         open={confirm === "publish"}
         title="Publicar oportunidad"
-        description="Se validarán los campos requeridos y la foto de portada. La unidad aparecerá solo en Oportunidades de Subasta."
+        description="Se validarán los campos requeridos, la foto de portada y la Verificación Valcron. La unidad aparecerá solo en Oportunidades de Subasta."
         confirmLabel="Publicar"
         pending={pending || saving}
         onConfirm={() => {

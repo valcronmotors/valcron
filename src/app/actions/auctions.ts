@@ -30,6 +30,10 @@ import { COPART_LOOKUP_SUCCESS_MESSAGE } from "@/lib/auction-providers/copart/lo
 import { normalizeCopartLotNumber } from "@/lib/auction-providers/copart/urls";
 import { auctionPublicationBlockMessage } from "@/lib/auctions/auction-publication";
 import {
+  evaluateOpportunityEligibility,
+  eligibilitySnapshot,
+} from "@/lib/auctions/eligibility-audit";
+import {
   isAuctionProvider,
   type AuctionOpportunityRow,
   type AuctionOpportunityStatus,
@@ -55,7 +59,6 @@ export type AuctionActionState = {
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const VIN_RE = /^[A-HJ-NPR-Z0-9]{17}$/;
 
 function text(formData: FormData, key: string) {
   const value = String(formData.get(key) ?? "").trim();
@@ -154,7 +157,9 @@ function parseMetadata(formData: FormData): AuctionAdminMetadata {
 function parseOpportunity(formData: FormData) {
   const providerRaw = String(formData.get("provider") ?? "other");
   const provider = isAuctionProvider(providerRaw) ? providerRaw : null;
-  const vin = text(formData, "vin")?.toUpperCase() ?? null;
+  // Preserve raw VIN text for drafts (masked/incomplete allowed until publish).
+  const vinRaw = text(formData, "vin");
+  const vin = vinRaw ? vinRaw.toUpperCase().replace(/[\s-]+/g, "") : null;
   const year = intOrNull(formData, "year");
   const statusRaw = String(formData.get("status") ?? "").trim();
 
@@ -167,9 +172,6 @@ function parseOpportunity(formData: FormData) {
   const sourceUrl = text(formData, "source_url");
   if (sourceUrl && !isSafeHttpUrl(sourceUrl)) {
     return { data: null, error: "El enlace de origen debe comenzar con http:// o https://.", metadata: null };
-  }
-  if (vin && !VIN_RE.test(vin)) {
-    return { data: null, error: "El VIN debe tener 17 caracteres válidos.", metadata: null };
   }
   if (
     statusRaw &&
@@ -338,13 +340,22 @@ export async function createAuctionOpportunity(
     return { error: COPART_DUPLICATE_LOT_MESSAGE, id: copartDup };
   }
 
-  const auction_metadata = mergeAuctionMetadata(copartMeta ?? {}, parsed.metadata);
+  const draftRow = {
+    ...payload,
+    status: "draft" as const,
+    auction_metadata: mergeAuctionMetadata(copartMeta ?? {}, parsed.metadata),
+  };
+  const eligibility = evaluateOpportunityEligibility(draftRow as AuctionOpportunityRow);
+  const auction_metadata = mergeAuctionMetadata(draftRow.auction_metadata, {
+    ...parsed.metadata,
+    ...eligibilitySnapshot(eligibility),
+  } as never);
 
   const { data, error } = await supabase
     .from("auction_opportunities")
     .insert({
       ...payload,
-      status: parsed.data.status ?? "draft",
+      status: "draft",
       auction_metadata,
     })
     .select("id")
@@ -392,22 +403,51 @@ export async function updateAuctionOpportunity(
     return { error: COPART_DUPLICATE_LOT_MESSAGE, id: copartDup };
   }
 
-  const auction_metadata = mergeAuctionMetadata(
-    mergeAuctionMetadata((existing as AuctionOpportunityRow).auction_metadata, copartMeta ?? {}),
+  const existingRow = existing as AuctionOpportunityRow;
+  const mergedMeta = mergeAuctionMetadata(
+    mergeAuctionMetadata(existingRow.auction_metadata, copartMeta ?? {}),
     parsed.metadata,
   );
+  const nextOpportunity = {
+    ...existingRow,
+    ...payload,
+    auction_metadata: mergedMeta,
+  } as AuctionOpportunityRow;
+  const eligibility = evaluateOpportunityEligibility(nextOpportunity);
+  const auction_metadata = mergeAuctionMetadata(mergedMeta, {
+    ...parsed.metadata,
+    ...eligibilitySnapshot(eligibility),
+  } as never);
+
+  let nextStatus = parsed.data.status ?? existingRow.status;
+  let policyNote: string | null = null;
+  // Keeping a public listing requires current eligibility; otherwise demote audibly.
+  if ((nextStatus === "published" || existingRow.status === "published") && !eligibility.canPublish) {
+    nextStatus = "review";
+    policyNote =
+      "Guardado. La oportunidad dejó de estar publicada porque no cumple la Verificación Valcron.";
+    if (existingRow.linked_vehicle_id) {
+      await supabase
+        .from("vehicles")
+        .update({ published: false })
+        .eq("id", existingRow.linked_vehicle_id);
+    }
+  } else if (nextStatus === "published" && eligibility.canPublish) {
+    // Status "published" may only be retained when already published via publishAuctionOpportunity.
+    nextStatus = existingRow.status === "published" ? "published" : "draft";
+  }
 
   const { error } = await supabase
     .from("auction_opportunities")
-    .update({ ...payload, auction_metadata })
+    .update({ ...payload, status: nextStatus, auction_metadata })
     .eq("id", id);
   if (error) {
     return { error: publicActionError(error, "No se pudo actualizar la oportunidad.") };
   }
 
   const opportunity = {
-    ...(existing as AuctionOpportunityRow),
-    ...payload,
+    ...nextOpportunity,
+    status: nextStatus,
     auction_metadata,
   } as AuctionOpportunityRow;
 
@@ -417,7 +457,12 @@ export async function updateAuctionOpportunity(
   }
 
   revalidateAuctions(id);
-  return { error: null, success: "Borrador guardado.", id, vehicleId: sync.vehicleId ?? undefined };
+  return {
+    error: null,
+    success: policyNote ?? "Borrador guardado.",
+    id,
+    vehicleId: sync.vehicleId ?? undefined,
+  };
 }
 
 export async function prepareAuctionForWebsite(opportunityId: string): Promise<AuctionActionState> {
@@ -560,9 +605,49 @@ export async function publishAuctionOpportunity(opportunityId: string): Promise<
     buy_now_usd: meta.buy_now_usd,
     hasCoverPhoto: hasCover,
     photoCount: photos.length,
+    vin: opportunity.vin,
+    title_status: opportunity.title_status,
+    odometer_status: meta.odometer_status,
+    primary_damage: opportunity.primary_damage,
+    secondary_damage: meta.secondary_damage,
+    run_and_drive: meta.run_and_drive,
   });
   if (blocked) {
+    const eligibility = evaluateOpportunityEligibility(opportunity);
+    await supabase
+      .from("auction_opportunities")
+      .update({
+        auction_metadata: mergeAuctionMetadata(opportunity.auction_metadata, {
+          ...meta,
+          ...eligibilitySnapshot(eligibility),
+        } as never),
+      })
+      .eq("id", opportunityId);
     return { error: blocked, id: opportunityId, vehicleId };
+  }
+
+  const eligibility = evaluateOpportunityEligibility(opportunity);
+  if (!eligibility.canPublish) {
+    return {
+      error: auctionPublicationBlockMessage({
+        provider: opportunity.provider,
+        provider_lot_id: opportunity.provider_lot_id,
+        year: opportunity.year,
+        make: opportunity.make,
+        model: opportunity.model,
+        price_mode: meta.price_mode ?? "contact",
+        buy_now_usd: meta.buy_now_usd,
+        hasCoverPhoto: hasCover,
+        vin: opportunity.vin,
+        title_status: opportunity.title_status,
+        odometer_status: meta.odometer_status,
+        primary_damage: opportunity.primary_damage,
+        secondary_damage: meta.secondary_damage,
+        run_and_drive: meta.run_and_drive,
+      }),
+      id: opportunityId,
+      vehicleId,
+    };
   }
 
   // Auction publish path: set available + published without local inventory status rules.
@@ -585,7 +670,16 @@ export async function publishAuctionOpportunity(opportunityId: string): Promise<
     };
   }
 
-  await supabase.from("auction_opportunities").update({ status: "published" }).eq("id", opportunityId);
+  await supabase
+    .from("auction_opportunities")
+    .update({
+      status: "published",
+      auction_metadata: mergeAuctionMetadata(opportunity.auction_metadata, {
+        ...meta,
+        ...eligibilitySnapshot(eligibility),
+      } as never),
+    })
+    .eq("id", opportunityId);
   revalidateAuctions(opportunityId);
   revalidatePath("/inventario");
   revalidatePath("/subastas");
@@ -643,6 +737,11 @@ export async function setAuctionOpportunityStatus(
   await requireAdmin();
   if (!UUID_RE.test(opportunityId) || !(AUCTION_OPPORTUNITY_STATUSES as readonly string[]).includes(status)) {
     return { error: "Oportunidad inválida." };
+  }
+  if (status === "published") {
+    return {
+      error: "La publicación debe pasar por Publicar oportunidad y la Verificación Valcron.",
+    };
   }
   const supabase = await createClient();
   if (status === "archived") {
