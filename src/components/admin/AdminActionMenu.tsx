@@ -99,7 +99,6 @@ export function AdminActionMenu({
       window.removeEventListener("scroll", onReposition, true);
       window.cancelAnimationFrame(frame);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- place/close use refs
   }, [open]);
 
   function onMenuKeyDown(event: KeyboardEvent<HTMLDivElement>) {

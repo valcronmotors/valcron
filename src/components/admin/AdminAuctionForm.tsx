@@ -370,7 +370,7 @@ export function AdminAuctionForm({
   const [localPhotos] = useState<LocalPhoto[]>([]);
   const [vehicleId, setVehicleId] = useState<string | null>(opportunity?.linked_vehicle_id ?? linkedVehicle?.id ?? null);
   const [published, setPublished] = useState(Boolean(linkedVehicle?.published));
-  const photos = linkedVehicle?.vehicle_photos ?? [];
+  const photos = useMemo(() => linkedVehicle?.vehicle_photos ?? [], [linkedVehicle?.vehicle_photos]);
   const [confirm, setConfirm] = useState<"publish" | "unpublish" | null>(null);
 
   useEffect(() => {
