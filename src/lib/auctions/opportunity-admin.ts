@@ -1,7 +1,7 @@
 import { copartCardImageUrl } from "@/lib/auction-providers/copart/images";
 import { AUCTION_STATUS_LABEL } from "@/lib/admin-copy";
 import { readAuctionMetadata } from "@/lib/auction-admin-fields";
-import { canPublishVehicleListing, vehiclePublicationChecks } from "@/lib/publication-readiness";
+import { canPublishAuctionOpportunity, auctionPublicationChecks } from "@/lib/auctions/auction-publication";
 import type { PublicPriceMode } from "@/lib/public-price-mode";
 import { isSafeHttpUrl } from "@/lib/safe-url";
 import { vehicleImageAdminPath } from "@/lib/storage";
@@ -185,31 +185,32 @@ export function opportunityThumbnailUrl(
 }
 
 export function opportunityWebsiteState(
-  row: Pick<AuctionOpportunityRow, "linked_vehicle_id">,
+  row: Pick<AuctionOpportunityRow, "linked_vehicle_id"> &
+    Partial<
+      Pick<
+        AuctionOpportunityRow,
+        "provider" | "provider_lot_id" | "year" | "make" | "model" | "location" | "auction_metadata"
+      >
+    >,
   vehicle?: LinkedVehicleSummary | null,
 ): OpportunityWebsiteState {
   if (!row.linked_vehicle_id) return "unprepared";
   if (!vehicle) return "draft";
   if (vehicle.published) return "published";
-  const ready = canPublishVehicleListing(
-    vehiclePublicationChecks({
-      year: vehicle.year,
-      make: vehicle.make,
-      model: vehicle.model,
-      description: vehicle.description,
-      price: vehicle.price,
-      public_price_mode: vehicle.public_price_mode,
-      source_type: vehicle.source_type,
-      status: vehicle.status,
-      photos: (vehicle.vehicle_photos ?? []).map((photo) => ({
-        id: photo.id,
-        vehicle_id: vehicle.id,
-        storage_path: photo.storage_path ?? "",
-        sort_order: 0,
-        is_cover: photo.is_cover,
-        alt_text: null,
-        created_at: "",
-      })),
+  const meta = readAuctionMetadata(row.auction_metadata);
+  const photos = vehicle.vehicle_photos ?? [];
+  const ready = canPublishAuctionOpportunity(
+    auctionPublicationChecks({
+      provider: row.provider ?? "other",
+      provider_lot_id: row.provider_lot_id ?? "pending",
+      year: row.year ?? vehicle.year,
+      make: row.make ?? vehicle.make,
+      model: row.model ?? vehicle.model,
+      location: row.location,
+      price_mode: meta.price_mode ?? (vehicle.public_price_mode === "fixed" ? "buy_now" : "contact"),
+      buy_now_usd: meta.buy_now_usd ?? (vehicle.public_price_mode === "fixed" ? vehicle.price : null),
+      hasCoverPhoto: photos.some((photo) => photo.is_cover) || photos.length > 0,
+      photoCount: photos.length,
     }),
   );
   return ready ? "ready" : "draft";

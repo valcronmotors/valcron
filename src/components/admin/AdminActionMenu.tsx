@@ -35,6 +35,7 @@ export function AdminActionMenu({
   const onOpenChangeRef = useRef(onOpenChange);
   const menuId = useId();
   const [coords, setCoords] = useState<ReturnType<typeof positionAdminMenu> | null>(null);
+  const mounted = typeof document !== "undefined";
 
   useEffect(() => {
     itemsRef.current = items;
@@ -44,11 +45,11 @@ export function AdminActionMenu({
   function place() {
     const trigger = triggerRef.current?.getBoundingClientRect();
     if (!trigger) return;
-    const estimatedHeight = Math.min(itemsRef.current.length * 44 + 24, 420);
+    const estimatedHeight = Math.min(itemsRef.current.length * 48 + 72, 420);
     setCoords(
       positionAdminMenu({
         trigger,
-        menu: { width: 240, height: estimatedHeight },
+        menu: { width: 260, height: estimatedHeight },
         viewport: { width: window.innerWidth, height: window.innerHeight },
       }),
     );
@@ -66,6 +67,7 @@ export function AdminActionMenu({
 
   useEffect(() => {
     if (!open) return;
+    place();
 
     function onKey(event: globalThis.KeyboardEvent) {
       if (event.key === "Escape") {
@@ -84,7 +86,9 @@ export function AdminActionMenu({
     window.addEventListener("resize", onReposition);
     window.addEventListener("scroll", onReposition, true);
     const frame = window.requestAnimationFrame(() => {
-      const itemsEls = menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]:not([aria-disabled="true"])');
+      const itemsEls = menuRef.current?.querySelectorAll<HTMLElement>(
+        '[role="menuitem"]:not([aria-disabled="true"])',
+      );
       itemsEls?.[0]?.focus();
     });
 
@@ -99,7 +103,9 @@ export function AdminActionMenu({
 
   function onMenuKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     const nodes = [
-      ...(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]:not([aria-disabled="true"])') ?? []),
+      ...(menuRef.current?.querySelectorAll<HTMLElement>(
+        '[role="menuitem"]:not([aria-disabled="true"])',
+      ) ?? []),
     ];
     const index = nodes.indexOf(document.activeElement as HTMLElement);
     if (event.key === "ArrowDown") {
@@ -124,7 +130,7 @@ export function AdminActionMenu({
     }
   }
 
-  const sheet = coords?.mode === "sheet";
+  const sheet = coords?.mode === "sheet" || (open && typeof window !== "undefined" && window.innerWidth < 1024);
   const normalItems = items.filter((item) => !item.danger);
   const dangerItems = items.filter((item) => item.danger);
 
@@ -138,7 +144,7 @@ export function AdminActionMenu({
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
         disabled={disabled}
-        className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-[var(--admin-text-secondary)] transition hover:bg-[var(--admin-surface-muted)] hover:text-[var(--admin-text)] disabled:opacity-60"
+        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-[var(--admin-text-secondary)] transition hover:bg-[var(--admin-surface-muted)] hover:text-[var(--admin-text)] disabled:opacity-60"
         onPointerDown={(event) => event.stopPropagation()}
         onClick={(event) => {
           event.preventDefault();
@@ -152,12 +158,14 @@ export function AdminActionMenu({
       >
         <MoreHorizontal className="h-4 w-4" />
       </button>
-      {open && coords && typeof document !== "undefined"
+      {open && mounted
         ? createPortal(
-            <div className="fixed inset-0 z-[100] overflow-x-hidden overscroll-none" onClick={close}>
-              {sheet ? (
-                <div className="absolute inset-0 bg-[var(--admin-nav)]/45 backdrop-blur-[1px]" aria-hidden />
-              ) : null}
+            <div
+              className="fixed inset-0 z-[200] overflow-x-hidden overscroll-none"
+              onClick={close}
+              data-admin-action-overlay="true"
+            >
+              <div className="absolute inset-0 bg-[#08090b]/55 backdrop-blur-[2px]" aria-hidden />
               <div
                 ref={menuRef}
                 id={menuId}
@@ -168,24 +176,29 @@ export function AdminActionMenu({
                 onKeyDown={onMenuKeyDown}
                 className={
                   sheet
-                    ? "absolute inset-x-0 bottom-0 z-[101] max-h-[min(85vh,32rem)] overflow-x-hidden overflow-y-auto rounded-t-2xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-2 shadow-[var(--admin-shadow)]"
-                    : "absolute z-[101] overflow-x-hidden overflow-y-auto rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)] py-1 shadow-[var(--admin-shadow)]"
+                    ? "absolute inset-x-0 bottom-0 z-[201] max-h-[min(85vh,32rem)] overflow-x-hidden overflow-y-auto rounded-t-2xl border border-[var(--admin-border)] bg-white p-2 shadow-[0_-8px_40px_rgba(0,0,0,0.18)]"
+                    : "absolute z-[201] overflow-x-hidden overflow-y-auto rounded-lg border border-[var(--admin-border)] bg-white py-1 shadow-[0_12px_40px_rgba(0,0,0,0.16)]"
                 }
                 style={
                   sheet
-                    ? { paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }
+                    ? {
+                        paddingBottom: "max(1rem, env(safe-area-inset-bottom))",
+                      }
                     : {
-                        top: coords.top,
-                        left: coords.left,
-                        width: coords.width,
+                        top: coords?.top ?? 16,
+                        left: coords?.left ?? 16,
+                        width: coords?.width ?? 260,
                         maxHeight: "min(24rem, calc(100vh - 1rem))",
                       }
                 }
               >
                 {sheet ? (
-                  <p className="px-3 py-2 text-xs font-medium uppercase tracking-[0.12em] text-[var(--admin-text-muted)]">
-                    Acciones
-                  </p>
+                  <>
+                    <div className="mx-auto mb-2 mt-1 h-1.5 w-10 rounded-full bg-[#d4d4d4]" aria-hidden />
+                    <p className="px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--admin-text-muted)]">
+                      Acciones
+                    </p>
+                  </>
                 ) : null}
                 {normalItems.map((item) => (
                   <MenuRow key={item.id} item={item} onClose={close} />
@@ -197,6 +210,15 @@ export function AdminActionMenu({
                     ))}
                   </div>
                 ) : null}
+                {sheet ? (
+                  <button
+                    type="button"
+                    className="mt-2 flex min-h-11 w-full items-center justify-center rounded-xl bg-[#f3f4f6] text-sm font-medium text-[var(--admin-text)]"
+                    onClick={close}
+                  >
+                    Cancelar
+                  </button>
+                ) : null}
               </div>
             </div>,
             document.body,
@@ -207,7 +229,7 @@ export function AdminActionMenu({
 }
 
 function MenuRow({ item, onClose }: { item: AdminMenuItem; onClose: () => void }) {
-  const className = `flex min-h-11 w-full items-center px-3 text-left text-sm ${
+  const className = `flex min-h-12 w-full items-center rounded-lg px-3 text-left text-sm font-medium ${
     item.danger
       ? "text-[var(--admin-danger)] hover:bg-[var(--admin-danger-bg)]"
       : "text-[var(--admin-text)] hover:bg-[var(--admin-surface-muted)]"
