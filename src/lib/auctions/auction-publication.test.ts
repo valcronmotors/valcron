@@ -2,49 +2,67 @@ import { describe, expect, it } from "vitest";
 import {
   auctionPublicationBlockMessage,
   auctionPublicationChecks,
+  auctionPublishButtonLabel,
   canPublishAuctionOpportunity,
 } from "@/lib/auctions/auction-publication";
 import { vehiclePublicationChecks, canPublishVehicleListing } from "@/lib/publication-readiness";
 
+const ELIGIBLE_BASE = {
+  provider: "copart" as const,
+  provider_lot_id: "60659246",
+  year: 2026,
+  make: "Honda",
+  model: "CR-V",
+  location: "TN - MEMPHIS",
+  price_mode: "contact" as const,
+  hasCoverPhoto: true,
+  vin: "1HGCM82633A004352",
+  title_status: "Salvage Title",
+  odometer_status: "Actual",
+  primary_damage: "Normal Wear",
+  secondary_damage: "None",
+  run_and_drive: "Run and Drive",
+};
+
 describe("auction publication validation", () => {
   it("does not require local inventory availability status", () => {
-    const checks = auctionPublicationChecks({
-      provider: "copart",
-      provider_lot_id: "60659246",
-      year: 2026,
-      make: "Honda",
-      model: "CR-V",
-      location: "TN - MEMPHIS",
-      price_mode: "contact",
-      hasCoverPhoto: true,
-    });
+    const checks = auctionPublicationChecks(ELIGIBLE_BASE);
     expect(canPublishAuctionOpportunity(checks)).toBe(true);
     expect(checks.some((check) => /Disponible|reservado|vendido/i.test(check.label))).toBe(false);
-    expect(auctionPublicationBlockMessage({
-      provider: "copart",
-      provider_lot_id: "60659246",
-      year: 2026,
-      make: "Honda",
-      model: "CR-V",
-      price_mode: "contact",
-      hasCoverPhoto: true,
-    })).toBeNull();
+    expect(auctionPublicationBlockMessage(ELIGIBLE_BASE)).toBeNull();
   });
 
   it("blocks incomplete auction records without inventing values", () => {
     const message = auctionPublicationBlockMessage({
-      provider: "copart",
+      ...ELIGIBLE_BASE,
       provider_lot_id: "",
       year: null,
       make: "",
       model: "",
-      price_mode: "contact",
       hasCoverPhoto: false,
+      vin: "",
+      title_status: "",
+      odometer_status: "",
+      primary_damage: "",
+      run_and_drive: "",
     });
-    expect(message).toMatch(/Número de lote/i);
-    expect(message).toMatch(/Año, marca y modelo/i);
-    expect(message).toMatch(/Foto de portada/i);
+    expect(message).toMatch(/VIN incompleto|Completar revisión|Publicación bloqueada/i);
     expect(message).not.toMatch(/Disponible, reservado o vendido/i);
+  });
+
+  it("blocks direct publication when eligibility fails even if structural fields are complete", () => {
+    const message = auctionPublicationBlockMessage({
+      ...ELIGIBLE_BASE,
+      vin: "7FARS6H97TE******",
+    });
+    expect(message).toMatch(/VIN incompleto|Completar revisión/i);
+    expect(auctionPublishButtonLabel({ ...ELIGIBLE_BASE, vin: "7FARS6H97TE******" })).toBe(
+      "Completar revisión",
+    );
+    expect(auctionPublishButtonLabel({ ...ELIGIBLE_BASE, title_status: "Junk" })).toBe(
+      "Publicación bloqueada",
+    );
+    expect(auctionPublishButtonLabel(ELIGIBLE_BASE)).toBe("Publicar oportunidad");
   });
 
   it("keeps local inventory validation unchanged for stock vehicles", () => {

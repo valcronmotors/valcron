@@ -13,6 +13,7 @@ import {
   isPublicPriceMode,
   isVehicleSourceType,
   isVehicleStatus,
+  type AuctionOpportunityRow,
   type VehicleMileageUnit,
   type VehicleRow,
   type VehicleSourceType,
@@ -34,6 +35,8 @@ import {
   vehicleCreateDefaults,
   VEHICLE_FORM_ERRORS,
 } from "@/lib/vehicle-form-state";
+import { auctionPublicationBlockMessage } from "@/lib/auctions/auction-publication";
+import { readAuctionMetadata } from "@/lib/auction-admin-fields";
 import { createClient } from "@/utils/supabase/server";
 
 export type VehicleActionState = {
@@ -41,6 +44,42 @@ export type VehicleActionState = {
   success?: string | null;
   id?: string;
 };
+
+async function auctionEligibilityBlockForVehicle(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  vehicleId: string,
+  sourceType: string | null | undefined,
+) {
+  if (sourceType !== "other") return null;
+  const { data } = await supabase
+    .from("auction_opportunities")
+    .select("*")
+    .eq("linked_vehicle_id", vehicleId)
+    .maybeSingle();
+  if (!data) {
+    return "Las oportunidades de subasta solo pueden publicarse desde Admin → Subastas con Verificación Valcron.";
+  }
+  const opportunity = data as AuctionOpportunityRow;
+  const meta = readAuctionMetadata(opportunity.auction_metadata);
+  return auctionPublicationBlockMessage({
+    provider: opportunity.provider,
+    provider_lot_id: opportunity.provider_lot_id,
+    year: opportunity.year,
+    make: opportunity.make,
+    model: opportunity.model,
+    location: opportunity.location,
+    price_mode: meta.price_mode ?? "contact",
+    buy_now_usd: meta.buy_now_usd,
+    hasCoverPhoto: true,
+    photoCount: 1,
+    vin: opportunity.vin,
+    title_status: opportunity.title_status,
+    odometer_status: meta.odometer_status,
+    primary_damage: opportunity.primary_damage,
+    secondary_damage: meta.secondary_damage,
+    run_and_drive: meta.run_and_drive,
+  });
+}
 
 const VIN_RE = /^[A-HJ-NPR-Z0-9]{17}$/;
 const UUID_RE =
@@ -258,6 +297,14 @@ export async function updateVehicle(
               .maybeSingle()
           ).data
         : first.data;
+    const auctionBlocked = await auctionEligibilityBlockForVehicle(
+      supabase,
+      id,
+      parsed.data.source_type,
+    );
+    if (auctionBlocked) {
+      return { error: auctionBlocked };
+    }
     const blocked = publicationBlockMessage({
       year: parsed.data.year,
       make: parsed.data.make,
@@ -347,6 +394,14 @@ export async function setVehiclePublished(vehicleId: string, published: boolean)
   }
   const vehicle = data as VehicleRow;
   if (published) {
+    const auctionBlocked = await auctionEligibilityBlockForVehicle(
+      supabase,
+      vehicleId,
+      vehicle.source_type,
+    );
+    if (auctionBlocked) {
+      return { error: auctionBlocked };
+    }
     const blocked = publicationBlockMessage({
       year: vehicle.year,
       make: vehicle.make,
