@@ -7,12 +7,32 @@ import { DEFAULT_TASA_USD_DOP } from "@/lib/fx";
 import { sortVehiclePhotos, vehicleImageAdminPath, vehicleImagePublicPath } from "@/lib/storage";
 import { buildVehicleSlug } from "@/lib/vehicles/vehicle-slugs";
 import {
+  isAuctionOpportunitySource,
   listingKindFromAvailability,
   vehicleAvailabilityFromRow,
   vehicleSourceFromType,
 } from "@/lib/vehicles/vehicle-status";
-import type { PublicVehicle, VehicleImage } from "@/types/vehicle";
+import type { AuctionPlatform, PublicVehicle, VehicleImage, VehicleSource } from "@/types/vehicle";
 import type { VehiclePhotoRow, VehicleRow } from "@/lib/website-schema";
+
+function auctionHintsFromDescription(description: string | null | undefined) {
+  const text = description ?? "";
+  const providerMatch = text.match(/Oportunidad de subasta\s+(Copart|IAA|Manheim|Otro)/i);
+  const provider = providerMatch?.[1] ?? null;
+  let platform: AuctionPlatform = "other";
+  let source: VehicleSource = "manual";
+  if (provider?.toLowerCase() === "copart") {
+    platform = "copart";
+    source = "copart";
+  } else if (provider?.toLowerCase() === "iaa") {
+    platform = "iaai";
+    source = "iaai";
+  } else if (provider?.toLowerCase() === "manheim") {
+    platform = "manheim";
+    source = "manheim";
+  }
+  return { provider, platform, source };
+}
 
 function cleanText(value: string | null | undefined) {
   const trimmed = (value ?? "").trim();
@@ -52,12 +72,16 @@ export function toPublicVehicle(row: VehicleRow): PublicVehicle {
   const vin = cleanText(row.vin)?.toUpperCase() ?? "";
   const title = `${year} ${make} ${model}${trim ? ` ${trim}` : ""}`.replace(/\s+/g, " ").trim();
   const availability = vehicleAvailabilityFromRow(row);
-  const source = vehicleSourceFromType(row.source_type);
+  const auctionOrigin = isAuctionOpportunitySource(row.source_type);
+  const auctionHints = auctionOrigin ? auctionHintsFromDescription(row.description) : null;
+  const source = auctionHints?.source ?? vehicleSourceFromType(row.source_type);
   const listingKind = listingKindFromAvailability(availability);
   const images = photosToImages(row.vehicle_photos, title);
   const price = numberOrNull(row.price);
   const currency = row.currency === "DOP" ? "DOP" : "USD";
   const mode = resolvePublicPriceMode(row.source_type, row.public_price_mode);
+  const lotNumber = auctionOrigin ? cleanText(row.stock_number) : null;
+  const primaryDamage = auctionOrigin ? cleanText(row.condition) : null;
   const tasaUsdDop = DEFAULT_TASA_USD_DOP;
   const usdPrice =
     price == null
@@ -110,7 +134,7 @@ export function toPublicVehicle(row: VehicleRow): PublicVehicle {
     interiorColor: cleanText(row.interior_color),
     titleType: cleanText(row.title_status),
     condition: cleanText(row.condition),
-    primaryDamage: null,
+    primaryDamage,
     secondaryDamage: null,
     keysAvailable: null,
     runAndDrive: null,
@@ -123,15 +147,24 @@ export function toPublicVehicle(row: VehicleRow): PublicVehicle {
       rdPrice: numericRd,
       usdPrice: numericUsd,
       currentBid: null,
-      buyNowPrice: null,
+      buyNowPrice: auctionOrigin && mode === "fixed" ? price : null,
       estimatedPrice: mode === "estimated" && priceVisible ? price : null,
       priceVisible,
-      priceLabel: formatCustomerFacingPrice(mode, price, currency),
-      kind: publicPriceKind(mode),
+      priceLabel: formatCustomerFacingPrice(mode, price, currency, {
+        auctionBuyNow: auctionOrigin && mode === "fixed",
+      }),
+      kind: auctionOrigin && mode === "fixed" ? "buy_now" : publicPriceKind(mode),
       publicPriceMode: mode,
       exchangeRate: tasaUsdDop,
     },
-    auction: null,
+    auction: auctionOrigin
+      ? {
+          platform: auctionHints?.platform ?? "other",
+          lotNumber,
+          sourceUrl: null,
+          buyNowPrice: mode === "fixed" ? price : null,
+        }
+      : null,
     description: cleanText(row.description),
     features: [],
     published: row.published,
@@ -145,7 +178,7 @@ export function toPublicVehicle(row: VehicleRow): PublicVehicle {
     ano: year,
     fotosUrls: images.map((image) => image.url),
     estado,
-    fuenteSubasta: null,
+    fuenteSubasta: auctionHints?.provider ?? null,
     ubicacion: location ?? "",
     listingKind,
     precioVentaDop: numericRd ?? 0,
@@ -189,13 +222,12 @@ export function toAdminPreviewVehicle(row: VehicleRow): PublicVehicle {
 export const PUBLIC_VEHICLE_LIST_SELECT = `
   id, stock_number, vin, year, make, model, trim, mileage, mileage_unit,
   price, currency, public_price_mode, location, source_type, status, featured, published,
-  published_at, created_at, updated_at
+  published_at, created_at, updated_at, condition, title_status, description
 `.replace(/\s+/g, " ").trim();
 
 export const PUBLIC_VEHICLE_SELECT = `
   ${PUBLIC_VEHICLE_LIST_SELECT},
   exterior_color, interior_color, engine, transmission, drivetrain, fuel,
-  condition, title_status, description,
   vehicle_photos ( id, vehicle_id, storage_path, sort_order, is_cover, alt_text, created_at )
 `.replace(/\s+/g, " ").trim();
 

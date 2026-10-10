@@ -154,9 +154,9 @@ export function AdminActionMenu({
       </button>
       {open && coords && typeof document !== "undefined"
         ? createPortal(
-            <div className="fixed inset-0 z-[70] overflow-x-hidden" onClick={close}>
+            <div className="fixed inset-0 z-[100] overflow-x-hidden overscroll-none" onClick={close}>
               {sheet ? (
-                <div className="absolute inset-0 bg-[var(--admin-nav)]/40" />
+                <div className="absolute inset-0 bg-[var(--admin-nav)]/45 backdrop-blur-[1px]" aria-hidden />
               ) : null}
               <div
                 ref={menuRef}
@@ -168,12 +168,12 @@ export function AdminActionMenu({
                 onKeyDown={onMenuKeyDown}
                 className={
                   sheet
-                    ? "absolute inset-x-0 bottom-0 max-h-[85vh] overflow-x-hidden overflow-y-auto rounded-t-2xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[var(--admin-shadow)]"
-                    : "absolute overflow-x-hidden overflow-y-auto rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)] py-1 shadow-[var(--admin-shadow)]"
+                    ? "absolute inset-x-0 bottom-0 z-[101] max-h-[min(85vh,32rem)] overflow-x-hidden overflow-y-auto rounded-t-2xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-2 shadow-[var(--admin-shadow)]"
+                    : "absolute z-[101] overflow-x-hidden overflow-y-auto rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)] py-1 shadow-[var(--admin-shadow)]"
                 }
                 style={
                   sheet
-                    ? undefined
+                    ? { paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }
                     : {
                         top: coords.top,
                         left: coords.left,

@@ -211,9 +211,11 @@ describe("legacy isolation", () => {
     ]);
     expect(ADMIN_NAV.find((item) => item.id === "subastas")?.children?.map((c) => c.label)).toEqual([
       "Oportunidades",
-      "Buscar en Copart",
-      "IAA / Agregar manualmente",
+      "Agregar vehículo de subasta",
     ]);
+    expect(ADMIN_NAV.find((item) => item.id === "subastas")?.children?.map((c) => c.label).join(" ")).not.toMatch(
+      /Copart|CSV|Extract|Import/i,
+    );
   });
 });
 

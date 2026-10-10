@@ -1,8 +1,10 @@
 import { copartCardImageUrl } from "@/lib/auction-providers/copart/images";
 import { AUCTION_STATUS_LABEL } from "@/lib/admin-copy";
+import { readAuctionMetadata } from "@/lib/auction-admin-fields";
 import { canPublishVehicleListing, vehiclePublicationChecks } from "@/lib/publication-readiness";
 import type { PublicPriceMode } from "@/lib/public-price-mode";
 import { isSafeHttpUrl } from "@/lib/safe-url";
+import { vehicleImageAdminPath } from "@/lib/storage";
 import type {
   AuctionOpportunityRow,
   AuctionOpportunityStatus,
@@ -11,13 +13,14 @@ import type {
   VehicleStatus,
 } from "@/lib/website-schema";
 
-export const ACTIVE_AUCTION_PROVIDERS = ["copart", "iaa"] as const;
+export const ACTIVE_AUCTION_PROVIDERS = ["copart", "iaa", "manheim"] as const;
 export type ActiveAuctionProvider = (typeof ACTIVE_AUCTION_PROVIDERS)[number];
 
 export const ACTIVE_PROVIDER_FILTERS = [
   { id: "all" as const, label: "Todas" },
   { id: "copart" as const, label: "Copart" },
   { id: "iaa" as const, label: "IAA" },
+  { id: "manheim" as const, label: "Manheim" },
 ];
 
 export const OPPORTUNITY_STATUS_FILTERS = [
@@ -32,7 +35,7 @@ export type OpportunityWebsiteState = "unprepared" | "draft" | "ready" | "publis
 
 export const OPPORTUNITY_WEBSITE_STATE_LABEL: Record<OpportunityWebsiteState, string> = {
   unprepared: "No preparado",
-  draft: "Borrador creado",
+  draft: "Borrador",
   ready: "Listo para publicar",
   published: "Publicado",
 };
@@ -48,37 +51,82 @@ export type LinkedVehicleSummary = {
   price: number | null;
   public_price_mode?: PublicPriceMode | null;
   source_type: VehicleSourceType;
-  vehicle_photos?: { id: string; is_cover: boolean }[] | null;
+  vehicle_photos?: { id: string; is_cover: boolean; storage_path?: string | null }[] | null;
 };
 
 export function isActiveAuctionProvider(value: string | null | undefined): value is ActiveAuctionProvider {
-  return value === "copart" || value === "iaa";
+  return value === "copart" || value === "iaa" || value === "manheim";
 }
 
 export function activeAuctionProviderChoices(current?: AuctionProvider | null) {
   const choices: { id: AuctionProvider; label: string }[] = [
     { id: "copart", label: "Copart" },
-    { id: "iaa", label: "IAA — ingreso manual" },
+    { id: "iaa", label: "IAA" },
+    { id: "manheim", label: "Manheim" },
   ];
-  if (current === "manheim") {
-    choices.push({ id: "manheim", label: "Manheim" });
-  }
   if (current === "other") {
     choices.push({ id: "other", label: "Otro" });
   }
   return choices;
 }
 
+/** Manheim is allowed for new manual opportunities (V26). */
 export function newOpportunityRejectsManheim(provider: AuctionProvider, isUpdate: boolean) {
-  return !isUpdate && provider === "manheim";
+  void provider;
+  void isUpdate;
+  return false;
 }
 
 export function remapNewOpportunityProvider(provider: AuctionProvider): AuctionProvider {
-  return provider === "manheim" ? "other" : provider;
+  return provider;
 }
 
 export function opportunityCountLabel(count: number) {
   return count === 1 ? "1 oportunidad" : `${count} oportunidades`;
+}
+
+export function opportunityStatusMetrics(
+  rows: Array<Pick<AuctionOpportunityRow, "status">>,
+): Record<AuctionOpportunityStatus, number> {
+  const counts: Record<AuctionOpportunityStatus, number> = {
+    draft: 0,
+    review: 0,
+    published: 0,
+    archived: 0,
+  };
+  for (const row of rows) {
+    if (row.status in counts) {
+      counts[row.status] += 1;
+    }
+  }
+  return counts;
+}
+
+/** Publication metrics from linked website state (not invented). */
+export function opportunityPublicationMetrics(
+  rows: Array<AuctionOpportunityRow & { linked_vehicle?: LinkedVehicleSummary | null }>,
+) {
+  let publicados = 0;
+  let borradores = 0;
+  let enRevision = 0;
+  let archivados = 0;
+
+  for (const row of rows) {
+    if (row.status === "archived") {
+      archivados += 1;
+      continue;
+    }
+    const website = opportunityWebsiteState(row, row.linked_vehicle);
+    if (website === "published" || row.status === "published") {
+      publicados += 1;
+    } else if (row.status === "review" || website === "ready") {
+      enRevision += 1;
+    } else {
+      borradores += 1;
+    }
+  }
+
+  return { publicados, borradores, enRevision, archivados };
 }
 
 export function formatAuctionDisplayName(value: string | null | undefined) {
@@ -119,7 +167,16 @@ export function opportunityVehicleTrim(row: Pick<AuctionOpportunityRow, "trim">)
   return formatAuctionDisplayName(row.trim);
 }
 
-export function opportunityThumbnailUrl(row: Pick<AuctionOpportunityRow, "provider" | "auction_metadata">) {
+export function opportunityThumbnailUrl(
+  row: Pick<AuctionOpportunityRow, "provider" | "auction_metadata"> & {
+    linked_vehicle?: LinkedVehicleSummary | null;
+  },
+) {
+  const cover = row.linked_vehicle?.vehicle_photos?.find((photo) => photo.is_cover)
+    ?? row.linked_vehicle?.vehicle_photos?.[0];
+  if (cover?.storage_path) {
+    return vehicleImageAdminPath(String(cover.storage_path));
+  }
   if (row.provider !== "copart") return null;
   const meta = row.auction_metadata ?? {};
   const thumbnail = typeof meta.thumbnailUrl === "string" ? meta.thumbnailUrl : null;
@@ -147,7 +204,7 @@ export function opportunityWebsiteState(
       photos: (vehicle.vehicle_photos ?? []).map((photo) => ({
         id: photo.id,
         vehicle_id: vehicle.id,
-        storage_path: "",
+        storage_path: photo.storage_path ?? "",
         sort_order: 0,
         is_cover: photo.is_cover,
         alt_text: null,
@@ -185,43 +242,81 @@ export function filterOpportunities<T extends AuctionOpportunityRow>(
     provider?: "all" | ActiveAuctionProvider;
     status?: "all" | AuctionOpportunityStatus;
     query?: string;
+    make?: string;
+    model?: string;
+    year?: string | number | null;
+    priceMode?: "all" | "contact" | "buy_now";
+    auctionStatus?: string;
   },
 ) {
   const provider = input.provider ?? "all";
   const status = input.status ?? "all";
+  const make = (input.make ?? "").trim().toLowerCase();
+  const model = (input.model ?? "").trim().toLowerCase();
+  const year = input.year != null && String(input.year).trim() ? String(input.year).trim() : "";
+  const priceMode = input.priceMode ?? "all";
+  const auctionStatus = (input.auctionStatus ?? "").trim().toLowerCase();
+
   return rows.filter((row) => {
     if (provider !== "all" && row.provider !== provider) return false;
     if (status !== "all" && row.status !== status) return false;
+    if (make && !(row.make ?? "").toLowerCase().includes(make)) return false;
+    if (model && !(row.model ?? "").toLowerCase().includes(model)) return false;
+    if (year && String(row.year ?? "") !== year) return false;
+    const meta = readAuctionMetadata(row.auction_metadata);
+    if (priceMode !== "all" && (meta.price_mode ?? "contact") !== priceMode) return false;
+    if (auctionStatus && (meta.auction_sale_status ?? "").toLowerCase() !== auctionStatus) return false;
     return opportunityMatchesQuery(row, input.query ?? "");
   });
 }
 
 export type OpportunityOverflowActionId =
   | "view"
-  | "source"
-  | "prepare"
-  | "linked"
-  | "archive";
+  | "edit"
+  | "preview"
+  | "publish"
+  | "unpublish"
+  | "archive"
+  | "source";
 
-export function opportunityOverflowActions(row: Pick<AuctionOpportunityRow, "id" | "source_url" | "linked_vehicle_id" | "status">) {
-  const actions: { id: OpportunityOverflowActionId; label: string; href?: string; target?: string; danger?: boolean }[] = [
+export function opportunityOverflowActions(
+  row: Pick<AuctionOpportunityRow, "id" | "source_url" | "linked_vehicle_id" | "status">,
+  vehicle?: LinkedVehicleSummary | null,
+) {
+  const website = opportunityWebsiteState(row, vehicle);
+  const actions: {
+    id: OpportunityOverflowActionId;
+    label: string;
+    href?: string;
+    target?: string;
+    danger?: boolean;
+  }[] = [
     { id: "view", label: "Ver oportunidad", href: `/admin/subastas/${row.id}` },
+    { id: "edit", label: "Editar", href: `/admin/subastas/${row.id}` },
   ];
+
+  if (row.linked_vehicle_id) {
+    actions.push({
+      id: "preview",
+      label: "Vista previa",
+      href: `/admin/subastas/${row.id}?paso=4`,
+    });
+  }
+
+  if (website === "published") {
+    actions.push({ id: "unpublish", label: "Despublicar" });
+  } else if (row.status !== "archived") {
+    actions.push({ id: "publish", label: "Publicar" });
+  }
+
   if (row.source_url && isSafeHttpUrl(row.source_url)) {
     actions.push({ id: "source", label: "Abrir lote original", href: row.source_url, target: "_blank" });
   }
-  if (row.linked_vehicle_id) {
-    actions.push({
-      id: "linked",
-      label: "Ver vehículo vinculado",
-      href: `/admin/inventario/${row.linked_vehicle_id}`,
-    });
-  } else {
-    actions.push({ id: "prepare", label: "Preparar para website" });
-  }
+
   if (row.status !== "archived") {
     actions.push({ id: "archive", label: "Archivar", danger: true });
   }
+
   return actions;
 }
 
