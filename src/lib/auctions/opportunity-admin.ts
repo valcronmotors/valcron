@@ -293,17 +293,7 @@ export type OpportunityOverflowActionId =
   | "publish"
   | "unpublish"
   | "archive"
-  | "delete"
   | "source";
-
-/** Hard deletion is limited to unpublished, unlinked opportunities.
- * Linked website vehicles must be handled through the existing archive/unpublish workflow.
- */
-export function canDeleteAuctionOpportunity(
-  row: Pick<AuctionOpportunityRow, "linked_vehicle_id" | "status">,
-) {
-  return !row.linked_vehicle_id && row.status !== "published";
-}
 
 export function opportunityOverflowActions(
   row: Pick<AuctionOpportunityRow, "id" | "source_url" | "linked_vehicle_id" | "status">,
@@ -341,9 +331,6 @@ export function opportunityOverflowActions(
 
   if (row.status !== "archived") {
     actions.push({ id: "archive", label: "Archivar", danger: true });
-  }
-  if (canDeleteAuctionOpportunity(row)) {
-    actions.push({ id: "delete", label: "Eliminar definitivamente", danger: true });
   }
 
   return actions;
