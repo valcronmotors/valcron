@@ -1,17 +1,18 @@
 import { publicActionError } from "@/lib/action-errors";
 import { createClient } from "@/utils/supabase/client";
+import { preparePhoto } from "@/lib/prepare-photo";
 import {
   MAX_VEHICLE_PHOTOS,
   VEHICLE_PHOTOS_BUCKET,
   photoFolder,
   sanitizePhotoName,
   storagePathFromPublicUrl,
-  validatePhotoFile,
   vehicleImageAdminPath,
 } from "@/lib/storage";
 
 export type PhotoUploadResult = {
   paths: string[];
+  fileIndexes?: number[];
   urls: string[];
   error: string | null;
 };
@@ -37,37 +38,32 @@ export async function uploadVehiclePhotos(
   }
 
   const selected = files.slice(0, remaining);
-  for (const file of selected) {
-    const invalid = validatePhotoFile(file);
-    if (invalid) {
-      return { paths: [], urls: [], error: invalid };
-    }
-  }
-
   const supabase = createClient();
   const folder = photoFolder(options.vehicleId);
   const paths: string[] = [];
+  const errors: string[] = [];
+  const fileIndexes: number[] = [];
 
-  for (const file of selected) {
-    const path = `${folder}/${sanitizePhotoName(file)}`;
-    const { error } = await supabase.storage.from(VEHICLE_PHOTOS_BUCKET).upload(path, file, {
-      cacheControl: "3600",
-      upsert: false,
-      contentType: file.type,
-    });
-
-    if (error) {
-      return {
-        paths,
-        urls: paths.map(vehicleImageAdminPath),
-        error: publicActionError(error, "No se pudo subir la foto al almacenamiento."),
-      };
+  for (const [index, file] of selected.entries()) {
+    try {
+      const prepared = await preparePhoto(file);
+      const path = `${folder}/${sanitizePhotoName(prepared)}`;
+      const { error } = await supabase.storage.from(VEHICLE_PHOTOS_BUCKET).upload(path, prepared, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: prepared.type,
+      });
+      if (error) {
+        errors.push(`${file.name}: ${publicActionError(error, "No se pudo subir la foto. Revisa tu sesión y conexión.")}`);
+        continue;
+      }
+      paths.push(path);
+      fileIndexes.push(index);
+    } catch {
+      errors.push(`${file.name}: no se pudo procesar o subir esta foto. Reintenta con el archivo original.`);
     }
-
-    paths.push(path);
   }
-
-  return { paths, urls: paths.map(vehicleImageAdminPath), error: null };
+  return { paths, fileIndexes, urls: paths.map(vehicleImageAdminPath), error: errors.length ? errors.join(" ") : null };
 }
 
 export async function removeStoredPhoto(storagePathOrUrl: string) {

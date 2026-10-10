@@ -10,16 +10,32 @@ import {
 } from "@/lib/vehicle-image-delivery";
 
 export const VEHICLE_PHOTOS_BUCKET = "vehicle-images";
-export const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
+export const MAX_PHOTO_BYTES = 50 * 1024 * 1024;
 export const MAX_VEHICLE_PHOTOS = 40;
 
-export const ALLOWED_PHOTO_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
+export const ALLOWED_PHOTO_MIME_TYPES = [
+  "image/jpeg", "image/png", "image/webp", "image/avif", "image/gif",
+  "image/bmp", "image/heic", "image/heif", "image/tiff",
+] as const;
 
-/** HTML accept attribute for gallery/file pickers. HEIC/HEIF are not converted in this pipeline. */
-export const PHOTO_FILE_ACCEPT = ALLOWED_PHOTO_MIME_TYPES.join(",");
+const PHOTO_EXTENSIONS: Record<string, string> = {
+  jpg: "image/jpeg", jpeg: "image/jpeg", pjg: "image/jpeg", jfif: "image/jpeg",
+  png: "image/png", webp: "image/webp", avif: "image/avif", gif: "image/gif",
+  bmp: "image/bmp", heic: "image/heic", heif: "image/heif", tif: "image/tiff", tiff: "image/tiff",
+};
 
+export const PHOTO_FILE_ACCEPT = [...ALLOWED_PHOTO_MIME_TYPES, ...Object.keys(PHOTO_EXTENSIONS).map((ext) => `.${ext}`)].join(",");
 export const PHOTO_FORMAT_HINT =
-  "JPG, PNG o WebP · máx. 8 MB. HEIC/HEIF de iPhone no están compatibles: exporta como JPG desde Fotos.";
+  "JPG, PNG, WebP, AVIF, GIF, BMP, HEIC/HEIF y TIFF · hasta 50 MB por foto · hasta 40 fotos. Se optimizan automáticamente.";
+
+export function photoMimeType(file: Pick<File, "type"> & { name?: string }) {
+  const type = file.type.toLowerCase().split(";")[0].trim();
+  const aliases: Record<string, string> = { "image/jpg": "image/jpeg", "image/pjpeg": "image/jpeg", "image/x-png": "image/png", "image/x-ms-bmp": "image/bmp", "image/x-tiff": "image/tiff" };
+  const normalized = aliases[type] ?? type;
+  if (ALLOWED_PHOTO_MIME_TYPES.includes(normalized as (typeof ALLOWED_PHOTO_MIME_TYPES)[number])) return normalized;
+  if (!type || type === "application/octet-stream") return PHOTO_EXTENSIONS[file.name?.split(".").pop()?.toLowerCase() ?? ""] ?? "";
+  return "";
+}
 
 export {
   canPublicReadPhoto,
@@ -68,13 +84,10 @@ export function photoFolder(vehicleId: string) {
   return vehicleId;
 }
 
-export function validatePhotoFile(file: Pick<File, "type" | "size">) {
-  if (!ALLOWED_PHOTO_MIME_TYPES.includes(file.type as (typeof ALLOWED_PHOTO_MIME_TYPES)[number])) {
-    return "Solo se permiten imágenes JPEG, PNG o WebP.";
-  }
-  if (file.size > MAX_PHOTO_BYTES) {
-    return "Cada foto debe pesar menos de 8 MB.";
-  }
+export function validatePhotoFile(file: Pick<File, "type" | "size"> & { name?: string }) {
+  if (!photoMimeType(file)) return "Selecciona una foto JPG, PNG, WebP, AVIF, GIF, BMP, HEIC/HEIF o TIFF.";
+  if (!file.size) return "La foto está vacía. Selecciona el archivo original.";
+  if (file.size > MAX_PHOTO_BYTES) return "Cada foto puede pesar hasta 50 MB.";
   return null;
 }
 
