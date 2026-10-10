@@ -106,54 +106,29 @@ export function vinCheckDigitValid(vin: string) {
 
 export function evaluateVinEligibility(raw: string | null | undefined): EligibilityCheckResult {
   const label = "VIN";
-  const original = String(raw ?? "");
   const vin = normalizeVin(raw);
-  if (!vin) {
-    return {
-      id: "vin",
-      label,
-      verdict: "review",
-      reason: "VIN incompleto. Introduce y verifica el VIN completo para continuar.",
-    };
-  }
-  // Masked / placeholder characters must never pass (e.g. 7FARS6H97TE******).
-  if (/[*_?]/.test(original) || /\*{2,}|\.{3,}|_{2,}/.test(original) || /[*_?]/.test(vin)) {
-    return {
-      id: "vin",
-      label,
-      verdict: "review",
-      reason: "VIN incompleto. Introduce y verifica el VIN completo para continuar.",
-      detected: vin,
-    };
-  }
-  if (vin.length !== 17 || !VIN_RE.test(vin)) {
-    return {
-      id: "vin",
-      label,
-      verdict: "review",
-      reason: "VIN incompleto. Introduce y verifica el VIN completo para continuar.",
-      detected: vin,
-    };
-  }
-  if (!VIN_ALLOWED_PREFIXES.has(vin[0]!)) {
+  // Publication eligibility follows Valcron's prefix policy even for masked VINs.
+  if (!VIN_ALLOWED_PREFIXES.has(vin[0] ?? "")) {
     return {
       id: "vin",
       label,
       verdict: "blocked",
       reason: "Bloqueado por política Valcron: el VIN no comienza con 1, 4, 5 o 7.",
-      detected: vin,
+      detected: vin || null,
     };
   }
-  if (!vinCheckDigitValid(vin)) {
-    return {
-      id: "vin",
-      label,
-      verdict: "review",
-      reason: "VIN incompleto. Introduce y verifica el VIN completo para continuar.",
-      detected: vin,
-    };
-  }
-  return { id: "vin", label, verdict: "approved", reason: null, detected: vin };
+  const complete = VIN_RE.test(vin);
+  return {
+    id: "vin",
+    label,
+    verdict: "approved",
+    reason: !complete
+      ? "VIN incompleto. Puedes publicar y completar el VIN de 17 caracteres cuando esté disponible."
+      : !vinCheckDigitValid(vin)
+        ? "Puedes publicar por el prefijo permitido. Verifica el VIN: el dígito de control no coincide."
+        : null,
+    detected: vin,
+  };
 }
 
 type PhraseRule = { id: string; phrases: string[] };

@@ -179,6 +179,8 @@ describe("opportunity presentation", () => {
           ...row,
           linked_vehicle_id: "veh-1",
           vin: "7FARS6H97TE******",
+          title_status: "Salvage Title",
+          primary_damage: "Normal Wear",
           auction_metadata: {
             ...row.auction_metadata,
             odometer_status: "Actual",
@@ -201,7 +203,7 @@ describe("opportunity presentation", () => {
           vehicle_photos: [{ id: "p1", is_cover: true }],
         },
       ),
-    ).toBe("draft");
+    ).toBe("ready");
     expect(
       opportunityWebsiteState(
         { ...row, linked_vehicle_id: "veh-1" },

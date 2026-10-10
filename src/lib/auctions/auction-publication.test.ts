@@ -53,11 +53,11 @@ describe("auction publication validation", () => {
   it("blocks direct publication when eligibility fails even if structural fields are complete", () => {
     const message = auctionPublicationBlockMessage({
       ...ELIGIBLE_BASE,
-      vin: "7FARS6H97TE******",
+      vin: "JHM***",
     });
-    expect(message).toMatch(/VIN incompleto|Completar revisión/i);
+    expect(message).toMatch(/no comienza con 1, 4, 5 o 7/i);
     expect(auctionPublishButtonLabel({ ...ELIGIBLE_BASE, vin: "7FARS6H97TE******" })).toBe(
-      "Completar revisión",
+      "Publicar oportunidad",
     );
     expect(auctionPublishButtonLabel({ ...ELIGIBLE_BASE, title_status: "Junk" })).toBe(
       "Publicación bloqueada",
