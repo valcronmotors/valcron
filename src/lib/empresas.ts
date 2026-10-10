@@ -6,6 +6,10 @@ export type EmpresaRecord = {
   nombre: string;
 };
 
+/**
+ * Legacy empresa record wrapper.
+ * New code should use companies.ts directly.
+ */
 export async function listEmpresas() {
   const supabase = await createClient();
   const { data, error } = await supabase

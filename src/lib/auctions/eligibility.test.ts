@@ -83,6 +83,8 @@ describe("title eligibility", () => {
   it("requires review for missing or unknown titles", () => {
     expect(evaluateTitleEligibility("").verdict).toBe("review");
     expect(evaluateTitleEligibility("Unknown").verdict).toBe("review");
+    expect(evaluateTitleEligibility("Unrecognized Title XYZ").verdict).toBe("review");
+    expect(evaluateTitleEligibility("Unknown Export Document").verdict).toBe("review");
   });
 });
 
@@ -134,6 +136,9 @@ describe("run and drive eligibility", () => {
   it("requires explicit Run and Drive", () => {
     expect(evaluateRunAndDriveEligibility("Reported Run and Drive").verdict).toBe("approved");
     expect(evaluateRunAndDriveEligibility("Run and Drive").verdict).toBe("approved");
+    expect(evaluateRunAndDriveEligibility("Not Run and Drive").verdict).toBe("blocked");
+    expect(evaluateRunAndDriveEligibility("Run and Drive: No").verdict).toBe("blocked");
+    expect(evaluateRunAndDriveEligibility("Run and Drive Not Verified").verdict).toBe("blocked");
   });
 
   it("blocks missing, unknown, not running, and partial mechanical flags", () => {
