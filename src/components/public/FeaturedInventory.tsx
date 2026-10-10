@@ -26,15 +26,20 @@ export function FeaturedInventory({
   if (visible.length === 0) return null;
 
   return (
-    <Section className="section-light bg-[#F5F5F5] !py-10 md:!py-14" id="inventario-valcron">
+    <Section className="section-light bg-[#f5f6f7] !py-12 md:!py-16" id="inventario-valcron">
       <PageContainer wide>
-        <div className="mb-6 flex flex-col items-center gap-3 text-center sm:mb-8 sm:flex-row sm:items-end sm:justify-between sm:text-left">
-          <h2 className="font-display text-2xl font-bold tracking-tight text-[#111111] md:text-3xl">
-            Nuestros vehículos
-          </h2>
+        <div className="mb-7 flex flex-col items-center gap-3 text-center sm:mb-9 sm:flex-row sm:items-end sm:justify-between sm:text-left">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8a8d91]">
+              Inventario Valcron
+            </p>
+            <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-[#111111] md:text-4xl">
+              Nuestros vehículos
+            </h2>
+          </div>
           <Link
             href="/inventario"
-            className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-[#111111] underline-offset-4 hover:underline"
+            className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-[#111111] underline-offset-4 hover:underline"
           >
             Ver inventario
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />

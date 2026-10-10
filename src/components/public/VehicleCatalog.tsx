@@ -354,7 +354,7 @@ export function VehicleCatalog({
           onClear={emptyCatalog ? undefined : clearFilters}
         />
       ) : (
-        <div className="grid min-w-0 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid min-w-0 gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {visible.map((vehicle) => (
             <VehicleCard
               key={vehicle.id}

@@ -165,7 +165,7 @@ export function VehicleCarousel({
 
   if (count === 1) {
     return (
-      <div className={`max-w-md ${className}`}>
+      <div className={`mx-auto max-w-md ${className}`}>
         <div className="vehicle-carousel-item">{items[0]}</div>
       </div>
     );
@@ -175,12 +175,12 @@ export function VehicleCarousel({
     return (
       <div
         ref={scrollerRef}
-        className={`vehicle-carousel-scroller flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-4 sm:grid sm:max-w-4xl sm:grid-cols-2 sm:overflow-visible sm:snap-none ${className}`}
+        className={`vehicle-carousel-scroller flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-auto sm:grid sm:max-w-3xl sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:snap-none ${className}`}
       >
         {items.map((child, index) => (
           <div
             key={index}
-            className="vehicle-carousel-item w-[min(78vw,19rem)] shrink-0 snap-start sm:w-auto sm:max-w-none"
+            className="vehicle-carousel-item w-[min(86vw,21rem)] shrink-0 snap-center sm:w-auto sm:max-w-none sm:snap-start"
           >
             {child}
           </div>
@@ -211,12 +211,12 @@ export function VehicleCarousel({
       </div>
       <div
         ref={scrollerRef}
-        className="vehicle-carousel-scroller flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-4"
+        className="vehicle-carousel-scroller flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-5"
       >
         {items.map((child, index) => (
           <div
             key={index}
-            className="vehicle-carousel-item w-[min(78vw,19rem)] shrink-0 snap-start sm:w-[min(46vw,20.5rem)] md:w-[min(44vw,21.25rem)] lg:w-[min(31vw,22rem)] xl:w-[22.5rem] min-[1600px]:w-[21.25rem]"
+            className="vehicle-carousel-item w-[min(86vw,21.5rem)] shrink-0 snap-center sm:w-[min(46vw,22rem)] sm:snap-start md:w-[min(42vw,22.5rem)] lg:w-[min(31vw,23rem)] xl:w-[22.75rem] min-[1600px]:w-[22rem]"
           >
             {child}
           </div>

@@ -724,20 +724,21 @@ h3 {
   border: 1px solid rgba(212, 212, 212, 0.14);
 }
 
-/* Vehicle card hover */
+/* Vehicle card hover — premium showcase */
 @media (hover: hover) and (pointer: fine) {
   .public-site .vehicle-card-media img {
-    transition: transform 320ms ease;
+    transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   .public-site .group:hover .vehicle-card-media img {
-    transform: scale(1.03);
+    transform: scale(1.035);
   }
   .public-site .vehicle-card {
-    transition: border-color 180ms ease, box-shadow 180ms ease;
+    transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
   }
   .public-site .vehicle-card:hover {
-    border-color: color-mix(in srgb, var(--border) 35%, #08090b);
-    box-shadow: 0 16px 36px rgba(8, 9, 11, 0.08);
+    border-color: #d0d3d8;
+    box-shadow: 0 18px 40px rgba(8, 9, 11, 0.09);
+    transform: translateY(-2px);
   }
 }
 

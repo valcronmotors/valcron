@@ -55,14 +55,19 @@ export function PublicVehicleDetail({
   const priceNote = auctionListing ? auctionPublicPriceDisclaimer(priceMode) : null;
   const canFinance = !sold && financeAmount > 0 && dealer;
   const primaryCta = publicVehicleInquiryLabel(vehicle);
-  const facts = [mileage, vehicle.transmission, vehicle.drivetrain, vehicle.fuelType, vehicle.engine]
-    .map((value) => (typeof value === "string" ? value.trim() : value))
-    .filter(Boolean);
+  const highlightSpecs = [
+    { label: "Kilometraje", value: mileage },
+    { label: "Transmisión", value: vehicle.transmission?.trim() || null },
+    { label: "Tracción", value: vehicle.drivetrain?.trim() || null },
+    { label: "Combustible", value: vehicle.fuelType?.trim() || null },
+    { label: "Motor", value: vehicle.engine?.trim() || null },
+    { label: "Exterior", value: vehicle.exteriorColor?.trim() || null },
+  ].filter((item): item is { label: string; value: string } => Boolean(item.value));
 
   return (
-    <article className="section-light bg-[#f5f6f7] pb-28 text-[#08090b] lg:pb-16">
+    <article className="section-light bg-[#f5f6f7] pb-[calc(5.5rem+env(safe-area-inset-bottom))] text-[#08090b] lg:pb-16">
       <div
-        className="mx-auto w-full max-w-[var(--content-max)] py-8 lg:py-14"
+        className="mx-auto w-full max-w-[var(--content-max)] py-6 lg:py-12"
         style={{ paddingInline: "var(--page-gutter)" }}
       >
         <nav aria-label="Migas de pan" className="text-sm text-[#676a70]">
@@ -85,86 +90,123 @@ export function PublicVehicleDetail({
               )}
             </li>
             <li aria-hidden>/</li>
-            <li className="min-w-0 break-words text-[#08090b]">{title}</li>
+            <li className="min-w-0 break-words font-medium text-[#08090b]">
+              {year} {make} {model}
+            </li>
           </ol>
         </nav>
 
-        <div className="mt-6 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)] lg:items-start lg:gap-12">
+        <div className="mt-5 grid min-w-0 gap-6 lg:mt-8 lg:grid-cols-[minmax(0,1.55fr)_minmax(20rem,0.95fr)] lg:items-start lg:gap-10">
           <VehicleGallery photos={photos} title={title} />
 
-          <div
-            className="min-w-0 border border-[#e4e6ea] bg-white p-5 md:p-6 lg:sticky lg:top-[calc(var(--header-height)+1rem)]"
-            style={{ borderRadius: "var(--radius-card)" }}
+          <aside
+            className="min-w-0 border border-[#e8eaed] bg-white p-5 shadow-[0_10px_30px_rgba(8,9,11,0.04)] sm:p-6 lg:sticky lg:top-[calc(var(--header-height)+1rem)]"
+            style={{ borderRadius: "1rem" }}
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p
-                className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${badge.className}`}
+                className={`rounded-md border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${badge.className}`}
               >
                 {badge.label}
               </p>
               <CurrencySwitch compact tone="light" />
             </div>
-            <h1 className="mt-4 break-words font-display text-[2rem] font-bold leading-[1.08] tracking-[-0.035em] text-[#08090b] sm:text-4xl lg:text-[2.75rem]">
-              {year} {make} {model}
+
+            <p className="mt-5 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#8a8d91]">
+              {year}
+            </p>
+            <h1 className="mt-1 break-words font-display text-[1.85rem] font-bold leading-[1.08] tracking-[-0.03em] text-[#08090b] sm:text-[2.35rem]">
+              {make} {model}
             </h1>
-            {vehicle.trim ? <p className="mt-2 text-base text-[#676a70]">{vehicle.trim}</p> : null}
+            {vehicle.trim ? (
+              <p className="mt-2 text-base text-[#676a70] sm:text-lg">{vehicle.trim}</p>
+            ) : null}
 
             {sold ? (
               <p
-                className="mt-6 border border-[#e4e6ea] bg-[#f5f6f7] px-4 py-3 text-sm text-[#676a70]"
-                style={{ borderRadius: "var(--radius-lg)" }}
+                className="mt-5 border border-[#e8eaed] bg-[#f5f6f7] px-4 py-3 text-sm leading-relaxed text-[#676a70]"
+                style={{ borderRadius: "0.75rem" }}
               >
                 Esta unidad figura como vendida. Conservamos la ficha para consulta. Si buscas algo
                 similar, revisa el inventario o escríbenos por WhatsApp.
               </p>
             ) : null}
 
-            <div className="mt-6 border-t border-[#e4e6ea] pt-5">
-              <p className="text-[11px] uppercase tracking-[0.16em] text-[#676a70]">{price.label}</p>
-              <p className="mt-1 font-display text-[2rem] font-bold tracking-tight text-[#08090b] sm:text-4xl">
+            <div className="mt-6 border-t border-[#e8eaed] pt-5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8a8d91]">
+                {price.label}
+              </p>
+              <p className="mt-1 font-display text-[2rem] font-bold tracking-tight text-[#08090b] sm:text-[2.5rem]">
                 {price.primary}
               </p>
-              {price.secondary ? <p className="mt-1 text-sm text-[#676a70]">{price.secondary}</p> : null}
+              {price.secondary ? (
+                <p className="mt-1 text-sm text-[#676a70]">{price.secondary}</p>
+              ) : null}
               {priceNote ? (
-                <p className="mt-3 max-w-md text-sm leading-relaxed text-[#676a70]">{priceNote}</p>
+                <p className="mt-3 text-sm leading-relaxed text-[#676a70]">{priceNote}</p>
               ) : null}
               {auctionListing ? (
-                <p className="mt-3 max-w-md text-sm leading-relaxed text-[#676a70]">{AUCTION_SERVICE_COPY}</p>
+                <p className="mt-3 text-sm leading-relaxed text-[#676a70]">{AUCTION_SERVICE_COPY}</p>
               ) : null}
             </div>
 
-            {facts.length ? (
-              <p className="mt-4 text-sm leading-relaxed text-[#676a70]">{facts.join(" · ")}</p>
+            {highlightSpecs.length ? (
+              <dl className="mt-6 grid grid-cols-2 gap-3">
+                {highlightSpecs.map((item) => (
+                  <div
+                    key={item.label}
+                    className="rounded-xl border border-[#eef0f3] bg-[#f8f9fa] px-3 py-3 text-left"
+                  >
+                    <dt className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#8a8d91]">
+                      {item.label}
+                    </dt>
+                    <dd className="mt-1 break-words text-sm font-semibold text-[#08090b]">{item.value}</dd>
+                  </div>
+                ))}
+              </dl>
             ) : null}
 
-            <div className="mt-8 hidden flex-wrap gap-3 lg:flex">
+            <div className="mt-7 hidden flex-col gap-3 lg:flex">
               {!sold ? (
-                <a href="#consulta" className="btn-primary">
+                <a href="#consulta" className="btn-primary h-12 w-full rounded-xl">
                   {primaryCta}
                 </a>
               ) : null}
-              <a href={whatsapp} target="_blank" rel="noreferrer" className="btn-whatsapp">
+              <a
+                href={whatsapp}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#d8dbe0] bg-white text-sm font-semibold text-[#08090b] transition hover:border-[#08090b]"
+              >
                 <WhatsAppIcon className="h-4 w-4" />
-                WhatsApp
+                Consultar por WhatsApp
               </a>
               {canFinance ? (
-                <Link href={`/financiamiento?monto=${financeAmount}`} className="btn-secondary">
-                  Conocer opciones
+                <Link
+                  href={`/financiamiento?monto=${financeAmount}`}
+                  className="inline-flex h-12 w-full items-center justify-center rounded-xl border border-transparent text-sm font-semibold text-[#676a70] underline-offset-4 hover:underline"
+                >
+                  Conocer opciones de financiamiento
                 </Link>
               ) : null}
             </div>
-          </div>
+          </aside>
         </div>
 
         {specs.length ? (
-          <section className="mt-14">
-            <h2 className="font-display text-2xl font-bold text-[#08090b]">Ficha del vehículo</h2>
-            <dl className="mt-6 grid grid-cols-1 gap-px overflow-hidden border border-[#e4e6ea] bg-[#e4e6ea] sm:grid-cols-2 lg:grid-cols-3"
-              style={{ borderRadius: "var(--radius-card)" }}
+          <section className="mt-12 lg:mt-16">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-[#08090b]">
+              Especificaciones
+            </h2>
+            <dl
+              className="mt-5 grid grid-cols-1 gap-px overflow-hidden border border-[#e8eaed] bg-[#e8eaed] sm:grid-cols-2 lg:grid-cols-3"
+              style={{ borderRadius: "1rem" }}
             >
               {specs.map((item) => (
-                <div key={item.label} className="bg-white p-4">
-                  <dt className="text-[11px] uppercase tracking-[0.16em] text-[#676a70]">{item.label}</dt>
+                <div key={item.label} className="bg-white px-4 py-4">
+                  <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8a8d91]">
+                    {item.label}
+                  </dt>
                   <dd className="mt-1 break-words text-sm font-medium text-[#08090b]">{item.value}</dd>
                 </div>
               ))}
@@ -172,19 +214,17 @@ export function PublicVehicleDetail({
           </section>
         ) : null}
 
-        {description ? (
-          <section className="mt-12 max-w-3xl">
-            <h2 className="font-display text-2xl font-semibold text-[#08090b]">Descripción</h2>
-            <p className="mt-4 text-base leading-relaxed text-[#3a3d42]">{description}</p>
-          </section>
-        ) : null}
-
         {features.length ? (
           <section className="mt-12 max-w-3xl">
-            <h2 className="font-display text-2xl font-semibold text-[#08090b]">Características</h2>
-            <ul className="mt-4 grid gap-2 text-base text-[#3a3d42]">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-[#08090b]">
+              Características
+            </h2>
+            <ul className="mt-5 grid gap-2.5 sm:grid-cols-2">
               {features.map((feature) => (
-                <li key={feature} className="border-l-2 border-[#2b6cff] pl-4">
+                <li
+                  key={feature}
+                  className="rounded-xl border border-[#e8eaed] bg-white px-4 py-3 text-sm text-[#3a3d42]"
+                >
                   {feature}
                 </li>
               ))}
@@ -192,20 +232,40 @@ export function PublicVehicleDetail({
           </section>
         ) : null}
 
+        {description ? (
+          <section className="mt-12 max-w-3xl">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-[#08090b]">
+              Descripción
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-[#3a3d42]">{description}</p>
+          </section>
+        ) : null}
+
         {!sold ? (
           <section
             id="consulta"
-            className="mt-14 scroll-mt-28 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]"
+            className="mt-14 scroll-mt-28 grid min-w-0 gap-8 rounded-2xl border border-[#e8eaed] bg-white p-5 shadow-[0_10px_30px_rgba(8,9,11,0.03)] sm:p-7 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]"
           >
             <div className="min-w-0">
-              <h2 className="font-display text-2xl font-semibold text-[#08090b]">{primaryCta}</h2>
+              <h2 className="font-display text-2xl font-bold tracking-tight text-[#08090b]">
+                Solicitar información
+              </h2>
               <p className="mt-3 max-w-md text-base leading-relaxed text-[#676a70]">
-                Déjanos tus datos y un asesor te contacta sobre este {title}. También puedes
-                escribirnos por WhatsApp.
+                Déjanos tus datos y un asesor te contacta sobre este {year} {make} {model}. También
+                puedes escribirnos por WhatsApp.
               </p>
+              <a
+                href={whatsapp}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-5 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[#d8dbe0] px-5 text-sm font-semibold text-[#08090b] transition hover:border-[#08090b]"
+              >
+                <WhatsAppIcon className="h-4 w-4" />
+                Consultar por WhatsApp
+              </a>
             </div>
             <QuoteForm
-              submitLabel={primaryCta}
+              submitLabel="Solicitar información"
               vehicleId={vehicle.id}
               defaultVehicleInterest={title}
               defaultMessage={auctionListing ? AUCTION_QUOTE_PREFILL : undefined}
@@ -215,10 +275,20 @@ export function PublicVehicleDetail({
 
         {similar.length ? (
           <section className="mt-16">
-            <h2 className="font-display text-2xl font-semibold text-[#08090b]">Vehículos similares</h2>
-            <div className="mt-6 grid min-w-0 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+              <h2 className="font-display text-2xl font-bold tracking-tight text-[#08090b]">
+                Vehículos similares
+              </h2>
+              <Link
+                href={auctionListing ? "/subastas" : "/inventario"}
+                className="text-sm font-semibold text-[#08090b] underline-offset-4 hover:underline"
+              >
+                Ver más
+              </Link>
+            </div>
+            <div className="grid min-w-0 gap-5 sm:grid-cols-2 xl:grid-cols-4">
               {similar.map((item) => (
-                <VehicleCard key={item.id} vehicle={item} tone="light" />
+                <VehicleCard key={item.id} vehicle={item} tone="light" compact />
               ))}
             </div>
           </section>
@@ -228,15 +298,24 @@ export function PublicVehicleDetail({
       {!sold ? (
         <div
           data-sticky-cta
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-[#e4e6ea] bg-white/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-[#e8eaed] bg-white/95 px-3 pt-2.5 backdrop-blur-md lg:hidden"
+          style={{ paddingBottom: "max(0.65rem, env(safe-area-inset-bottom))" }}
         >
           <div className="mx-auto grid max-w-7xl grid-cols-2 gap-2">
-            <a href={whatsapp} target="_blank" rel="noreferrer" className="btn-whatsapp h-12">
-              <WhatsAppIcon className="h-4 w-4" />
+            <a
+              href={whatsapp}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-[#d8dbe0] bg-white px-3 text-[13px] font-semibold text-[#08090b]"
+            >
+              <WhatsAppIcon className="h-4 w-4 shrink-0" />
               WhatsApp
             </a>
-            <a href="#consulta" className="btn-primary h-12">
-              {auctionListing ? "Cotizar" : "Solicitar información"}
+            <a
+              href="#consulta"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#08090b] px-3 text-[13px] font-semibold text-white"
+            >
+              Solicitar información
             </a>
           </div>
         </div>
