@@ -32,7 +32,7 @@ export async function preparePhoto(file: File): Promise<File> {
   let width: number;
   let height: number;
   if (type === "image/tiff") {
-    const UTIF = await import("utif");
+    const { default: UTIF } = await import("utif");
     const buffer = await file.arrayBuffer();
     const ifd = UTIF.decode(buffer)[0];
     if (!ifd) throw new Error("No se pudo leer la foto TIFF.");
