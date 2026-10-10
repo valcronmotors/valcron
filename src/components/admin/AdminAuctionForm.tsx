@@ -535,13 +535,23 @@ export function AdminAuctionForm({
       setUploading(false);
       return;
     }
+    const hadPhotos = (photos?.length ?? 0) > 0;
     const result = await uploadVehiclePhotos(accepted, {
       vehicleId: id,
-      onUploaded: async ({ paths }) => {
-        const coverPath = !(photos?.length) && !localPhotos.length ? paths[0] : null;
-        return attachVehiclePhotos({ vehicleId: id, paths, coverPath });
-      },
+      currentCount: (photos?.length ?? 0) + localPhotos.length,
     });
+    if (result.paths.length > 0) {
+      const attached = await attachVehiclePhotos({
+        vehicleId: id,
+        paths: result.paths,
+        coverPath: !hadPhotos ? result.paths[0] : undefined,
+      });
+      if (attached.error) {
+        setUploading(false);
+        setError(attached.error);
+        return;
+      }
+    }
     setUploading(false);
     if (result.error) {
       setError(result.error);
