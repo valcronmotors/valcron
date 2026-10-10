@@ -17,7 +17,7 @@ export default function PrivacidadPage() {
       </p>
       <p>
         No vendemos tu información. Puedes pedir actualización o eliminación por WhatsApp al{" "}
-        {SITE.whatsappDisplay} o llamando a la oficina {SITE.officePhoneDisplay}.
+        {SITE.whatsappDisplay}.
       </p>
     </ContentPage>
   );

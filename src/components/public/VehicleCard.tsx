@@ -52,7 +52,7 @@ export function VehicleCard({
       <Link
         href={href}
         className={`vehicle-card-media relative aspect-[16/10] overflow-hidden ${
-          light ? "bg-white" : "bg-[#12141a]"
+          light ? "bg-[#F5F5F5]" : "bg-[#12141a]"
         }`}
       >
         <VehiclePhoto
@@ -62,7 +62,7 @@ export function VehicleCard({
           className="object-contain object-center p-3 sm:p-4"
         />
         {showBadge ? (
-          <span className="absolute left-3 top-3 rounded-sm bg-[#f3f4f6] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#191919]">
+          <span className="absolute left-3 top-3 rounded-sm bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#191919] ring-1 ring-[#E5E7EB]">
             {badge.label}
           </span>
         ) : null}
@@ -102,7 +102,7 @@ export function VehicleCard({
                 : "inline-flex h-10 items-center justify-center rounded-full bg-white px-3 text-xs font-semibold text-[#08090b] transition-colors hover:bg-[#ececec]"
             }
           >
-            {actionLabel ?? "Ver ficha"}
+            {actionLabel ?? "Ver detalles"}
           </Link>
           <a
             href={whatsapp}

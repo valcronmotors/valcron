@@ -18,7 +18,7 @@ export default function CookiesPage() {
       <p>
         No utilizamos estas cookies para vender tu información. Puedes gestionar o bloquear cookies
         desde la configuración de tu navegador. Si tienes preguntas, contáctanos por WhatsApp al{" "}
-        {SITE.whatsappDisplay} o llama a la oficina {SITE.officePhoneDisplay}.
+        {SITE.whatsappDisplay}.
       </p>
     </ContentPage>
   );

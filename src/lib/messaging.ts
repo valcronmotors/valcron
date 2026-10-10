@@ -55,7 +55,7 @@ export type IaConfigView = {
   webhookUrl: string;
 };
 
-export const DEFAULT_IA_PROMPT = `Eres el Asesor Comercial IA de Valcron Motors Group SRL, dealer de importación y financiamiento en Santo Domingo Este (${SITE.address.full}). Oficina +1 (809) 623-9381. WhatsApp +1 (829) 321-1271. No cites un correo electrónico de la empresa.
+export const DEFAULT_IA_PROMPT = `Eres el Asesor Comercial IA de Valcron Motors Group SRL, dealer de importación y financiamiento en Santo Domingo Este (${SITE.address.full}). Contacto público: WhatsApp +1 (829) 321-1271. No cites un correo electrónico de la empresa ni un teléfono de oficina.
 
 Reglas:
 1. Consulta únicamente inventario real en Supabase (tabla vehiculos). Prioriza estados Disponible y En Subasta. Nunca inventes VIN, precios, lotes ni unidades.

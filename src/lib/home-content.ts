@@ -1,7 +1,7 @@
 export const HOME_FAQS = [
   {
     q: "¿Dónde están ubicados?",
-    a: "En Av Principal 20, Santo Domingo Este, República Dominicana. Puedes visitarnos, llamar al (809) 623-9381 o escribir por WhatsApp al (829) 321-1271.",
+    a: "En Av Principal 20, Santo Domingo Este, República Dominicana. Puedes visitarnos o escribir por WhatsApp al (829) 321-1271.",
   },
   {
     q: "¿Tienen vehículos disponibles en República Dominicana?",

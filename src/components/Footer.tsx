@@ -6,7 +6,6 @@ import { FooterSocialIcons } from "@/components/shared/SocialLinks";
 import {
   LEGAL_NAV,
   SITE,
-  officeTelHref,
   whatsappHref,
 } from "@/lib/site";
 
@@ -76,12 +75,6 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
             <address className="not-italic text-[0.875rem] leading-6 text-[#3d4148]">
               <p>{SITE.address.full}</p>
               <p className="mt-3">
-                Oficina{" "}
-                <a className="font-medium text-[#111111] hover:text-[var(--brand-orange,#e85d04)]" href={officeTelHref()}>
-                  {SITE.officePhoneDisplay}
-                </a>
-              </p>
-              <p>
                 WhatsApp{" "}
                 <a
                   className="font-medium text-[#111111] hover:text-[var(--brand-orange,#e85d04)]"

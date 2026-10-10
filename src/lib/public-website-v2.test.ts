@@ -119,11 +119,36 @@ describe("public website v2 navigation", () => {
     expect(
       MEGA_NAV.flatMap((item) => item.columns.flatMap((column) => column.links.map((link) => link.href))),
     ).not.toContain("#");
+
+    const vehiculos = MEGA_NAV.find((item) => item.id === "vehiculos");
+    expect(vehiculos?.columns.flatMap((c) => c.links.map((l) => l.label))).toEqual([
+      "Inventario Valcron",
+      "Oportunidades de Subasta",
+    ]);
+
+    const comprar = MEGA_NAV.find((item) => item.id === "comprar");
+    expect(comprar?.columns.flatMap((c) => c.links.map((l) => l.label))).toEqual([
+      "Solicitar vehículo",
+      "Financiamiento",
+      "Cómo comprar",
+      "Cotizaciones",
+      "Entrega como parte de pago",
+    ]);
   });
 
   it("keeps the verified Santo Domingo Este address", () => {
     expect(SITE.address.full).toContain("Av Principal 20");
     expect(SITE.address.full).not.toMatch(/Brisa Oriental/i);
+  });
+
+  it("publishes WhatsApp as the only public phone number", () => {
+    expect(SITE.whatsappDisplay).toBe("(829) 321-1271");
+    expect(SITE.whatsappUrl).toBe("https://wa.me/18293211271");
+    expect(SITE.whatsappInternational).toBe("+18293211271");
+    expect(JSON.stringify(SITE)).not.toMatch(/809.?623.?9381|18096239381/);
+    for (const faq of HOME_FAQS) {
+      expect(`${faq.q} ${faq.a}`).not.toMatch(/809.?623.?9381/);
+    }
   });
 });
 

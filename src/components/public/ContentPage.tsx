@@ -22,7 +22,7 @@ export function ContentPage({
           <br />
           {SITE.address.full}
           <br />
-          Oficina {SITE.officePhoneDisplay} · WhatsApp {SITE.whatsappDisplay}
+          WhatsApp {SITE.whatsappDisplay}
         </p>
       </div>
     </main>

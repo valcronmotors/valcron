@@ -48,7 +48,7 @@ export default function SolicitarVehiculoPage() {
             defaultMessage="Marca, modelo, año, presupuesto:"
           />
           <p className="mt-6 text-center text-sm text-[#676a70]">
-            {SITE.address.street}, {SITE.address.city} · {SITE.officePhoneDisplay}
+            {SITE.address.street}, {SITE.address.city} · WhatsApp {SITE.whatsappDisplay}
           </p>
         </PageContainer>
       </Section>

@@ -20,7 +20,7 @@ export function HomeTrust() {
           </div>
           <p className="text-sm leading-relaxed text-[#3B3B3B]">
             {SITE.address.full}
-            <span className="mt-1 block font-semibold text-[#111111]">{SITE.phoneOffice}</span>
+            <span className="mt-1 block font-semibold text-[#111111]">WhatsApp {SITE.whatsappDisplay}</span>
           </p>
           <Link href="/contacto" className="btn-primary h-11 px-6 text-sm">
             Cómo llegar

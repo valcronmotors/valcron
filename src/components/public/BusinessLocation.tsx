@@ -1,4 +1,4 @@
-import { mapsDirectionsUrl, officeTelHref, SITE, whatsappHref } from "@/lib/site";
+import { mapsDirectionsUrl, SITE, whatsappHref } from "@/lib/site";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import { LazyMapEmbed } from "@/components/public/LazyMapEmbed";
 
@@ -39,9 +39,6 @@ function LocationActions({
 
   return (
     <div className={`flex flex-wrap gap-2 ${compact ? "mt-4" : "mt-6"}`}>
-      <a href={officeTelHref()} className={`${base} ${secondary}`}>
-        Llamar
-      </a>
       <a
         href={whatsappHref("Hola, quiero coordinar una visita a Valcron Motors.")}
         target="_blank"
@@ -151,12 +148,6 @@ export function BusinessLocation({
           </h2>
           <AddressBlock className={`mt-5 text-sm leading-relaxed ${light ? "text-[#404040]" : "text-[#D4D4D4]"}`} showName={false} />
           <p className={`mt-5 text-sm ${light ? "text-[#404040]" : "text-[#D4D4D4]"}`}>
-            Oficina{" "}
-            <a className={light ? "text-[#111] hover:underline" : "text-white hover:underline"} href={officeTelHref()}>
-              {SITE.officePhoneDisplay}
-            </a>
-          </p>
-          <p className={`mt-2 text-sm ${light ? "text-[#404040]" : "text-[#D4D4D4]"}`}>
             WhatsApp{" "}
             <a
               className={light ? "text-[#111] hover:underline" : "text-white hover:underline"}

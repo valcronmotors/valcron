@@ -22,11 +22,7 @@ export const SITE = {
     countryCode: "DO",
     full: "Av Principal 20, Santo Domingo Este, República Dominicana",
   },
-  phoneOffice: "(809) 623-9381",
-  officePhoneDisplay: "(809) 623-9381",
-  phoneOfficeInternational: "+18096239381",
-  officePhoneInternational: "+18096239381",
-  phoneOfficeDigits: "18096239381",
+  /** Public contact is WhatsApp-only. Office landline is not published on the website. */
   whatsapp: "(829) 321-1271",
   whatsappInternational: "+18293211271",
   whatsappDigits: "18293211271",
@@ -88,7 +84,7 @@ export type MegaNavItem = {
 };
 
 /**
- * V18 enterprise mega menus — Toyota-inspired information architecture.
+ * V20 mega menus — simplified customer journeys.
  * All hrefs map to existing public routes (no dead links).
  */
 export const MEGA_NAV: readonly MegaNavItem[] = [
@@ -104,20 +100,10 @@ export const MEGA_NAV: readonly MegaNavItem[] = [
           { href: "/subastas", label: "Oportunidades de Subasta" },
         ],
       },
-      {
-        title: "Explorar por tipo",
-        links: [
-          { href: "/inventario?search=SUV", label: "SUV y Crossovers" },
-          { href: "/inventario?search=Sedan", label: "Sedanes" },
-          { href: "/inventario?search=Camioneta", label: "Camionetas" },
-          { href: "/inventario?search=Hibrido", label: "Híbridos" },
-          { href: "/inventario?search=Electrico", label: "Eléctricos" },
-        ],
-      },
     ],
     featured: {
       title: "Inventario Valcron",
-      copy: "Unidades publicadas en Santo Domingo Este. Sin listados inventados.",
+      copy: "Unidades publicadas en Santo Domingo Este.",
       href: "/inventario",
       cta: "Ver inventario",
     },
@@ -128,16 +114,10 @@ export const MEGA_NAV: readonly MegaNavItem[] = [
     href: "/comprar",
     columns: [
       {
-        title: "Herramientas",
+        title: "Compra",
         links: [
-          { href: "/inventario", label: "Explorar inventario" },
           { href: "/solicitar-vehiculo", label: "Solicitar vehículo" },
           { href: "/financiamiento", label: "Financiamiento" },
-        ],
-      },
-      {
-        title: "Proceso",
-        links: [
           { href: "/comprar", label: "Cómo comprar" },
           { href: "/calculadoras", label: "Cotizaciones" },
           { href: "/contacto?asunto=trade-in", label: "Entrega como parte de pago" },
@@ -145,8 +125,8 @@ export const MEGA_NAV: readonly MegaNavItem[] = [
       },
     ],
     featured: {
-      title: "Te acompañamos en la compra",
-      copy: "Desde la unidad publicada hasta bancos locales e importación cuando aplica.",
+      title: "Solicita tu vehículo",
+      copy: "Cuéntanos qué buscas y te orientamos en el proceso.",
       href: "/solicitar-vehiculo",
       cta: "Solicitar vehículo",
     },
@@ -337,8 +317,9 @@ export function adminEntryHref() {
   return "/login";
 }
 
+/** @deprecated Public site uses WhatsApp only — prefer whatsappHref(). */
 export function officeTelHref() {
-  return `tel:${SITE.phoneOfficeInternational}`;
+  return whatsappHref();
 }
 
 export function whatsappHref(message?: string) {
@@ -387,7 +368,7 @@ export function autoDealerJsonLd() {
       alternateName: SITE.brand,
     },
     url: SITE.url,
-    telephone: "+1-809-623-9381",
+    telephone: SITE.whatsappInternational,
     address: {
       "@type": "PostalAddress",
       streetAddress: SITE.address.streetAddress,
