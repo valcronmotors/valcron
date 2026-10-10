@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
+import { AdminMediaPicker } from "@/components/admin/AdminMediaPicker";
 import { FormError } from "@/components/form-fields";
 import { isWorkshopPhoto } from "@/lib/storage";
 import {
@@ -21,7 +22,6 @@ export function VehicleGallery({
   allowUpload?: boolean;
   compact?: boolean;
 }) {
-  const inputRef = useRef<HTMLInputElement>(null);
   const [index, setIndex] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,22 +45,19 @@ export function VehicleGallery({
     setIndex((next + photos.length) % photos.length);
   }
 
-  async function handleFiles(fileList: FileList | null) {
-    if (!fileList || fileList.length === 0) {
+  async function handleFiles(fileList: FileList | File[]) {
+    const files = Array.from(fileList);
+    if (files.length === 0) {
       return;
     }
 
     setError(null);
     setUploading(true);
-    const result = await uploadVehiclePhotos(Array.from(fileList), {
+    const result = await uploadVehiclePhotos(files, {
       vehicleId,
       currentCount: photos.length,
     });
     setUploading(false);
-
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
 
     if (result.error) {
       setError(result.error);
@@ -92,27 +89,16 @@ export function VehicleGallery({
               : `${photos.length} fotos · ${auctionCount} de subasta · ${workshopCount} del taller`}
           </p>
         </div>
-        {allowUpload ? (
-          <div>
-            <input
-              ref={inputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif"
-              multiple
-              className="hidden"
-              onChange={(event) => void handleFiles(event.target.files)}
-            />
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
-              disabled={uploading}
-              className="inline-flex h-10 items-center justify-center rounded-full bg-white/5 px-4 text-sm font-semibold text-slate-100 ring-1 ring-white/10 hover:bg-white/10 disabled:opacity-60"
-            >
-              {uploading ? "Subiendo..." : "Subir fotos del taller"}
-            </button>
-          </div>
-        ) : null}
       </div>
+
+      {allowUpload ? (
+        <AdminMediaPicker
+          id="auction-workshop-media-picker"
+          tone="dark"
+          uploading={uploading}
+          onFiles={(files) => void handleFiles(files)}
+        />
+      ) : null}
 
       <FormError message={error} />
 

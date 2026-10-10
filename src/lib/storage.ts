@@ -15,6 +15,12 @@ export const MAX_VEHICLE_PHOTOS = 40;
 
 export const ALLOWED_PHOTO_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
 
+/** HTML accept attribute for gallery/file pickers. HEIC/HEIF are not converted in this pipeline. */
+export const PHOTO_FILE_ACCEPT = ALLOWED_PHOTO_MIME_TYPES.join(",");
+
+export const PHOTO_FORMAT_HINT =
+  "JPG, PNG o WebP · máx. 8 MB. HEIC/HEIF de iPhone no están compatibles: exporta como JPG desde Fotos.";
+
 export {
   canPublicReadPhoto,
   ADMIN_VEHICLE_IMAGE_ROUTE,

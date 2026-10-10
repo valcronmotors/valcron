@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Check, ChevronLeft, ChevronRight, ImagePlus, Star } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import {
   attachVehiclePhotos,
   createVehicle,
@@ -16,6 +16,7 @@ import {
   updateVehiclePhoto,
 } from "@/app/actions/vehicles";
 import { AdminConfirmDialog } from "@/components/admin/AdminModal";
+import { AdminMediaPicker } from "@/components/admin/AdminMediaPicker";
 import { AdminPublishBadge, AdminStatusBadge } from "@/components/admin/AdminBadges";
 import {
   AdminCard,
@@ -43,7 +44,7 @@ import {
   PUBLIC_PRICE_MODES,
   defaultPublicPriceMode,
 } from "@/lib/public-price-mode";
-import { MAX_VEHICLE_PHOTOS, vehicleImageAdminPath } from "@/lib/storage";
+import { MAX_VEHICLE_PHOTOS, validatePhotoFile, vehicleImageAdminPath } from "@/lib/storage";
 import { removeStoredPhoto, uploadVehiclePhotos } from "@/lib/vehicle-photos";
 import {
   canPublishVehicleListing,
@@ -179,7 +180,6 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
     | { type: "sold" }
     | null
   >(null);
-  const fileRef = useRef<HTMLInputElement>(null);
   const submitLock = useRef(false);
   const yearRef = useRef<HTMLInputElement>(null);
   const makeRef = useRef<HTMLInputElement>(null);
@@ -240,7 +240,12 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
       if (check.id === "identity") yearRef.current?.focus();
       if (check.id === "price") priceRef.current?.focus();
       if (check.id === "description") descriptionRef.current?.focus();
-      if (check.id === "cover") fileRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (check.id === "cover") {
+        document.getElementById("admin-vehicle-media-picker")?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
       if (check.id === "status") {
         document.getElementById("availability-selector")?.scrollIntoView({ behavior: "smooth", block: "center" });
       }
@@ -303,11 +308,26 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
 
   function addFiles(fileList: FileList | File[]) {
     const incoming = Array.from(fileList);
+    if (incoming.length === 0) return;
+
+    const invalid = incoming
+      .map((file) => ({ file, error: validatePhotoFile(file) }))
+      .find((item) => item.error);
+    if (invalid?.error) {
+      setError(
+        `${invalid.file.name}: ${invalid.error} Si la foto viene de un iPhone en HEIC, ábrela en Fotos y expórtala como JPG.`,
+      );
+      return;
+    }
+
     const room = MAX_VEHICLE_PHOTOS - (photos ?? []).length - localPhotos.length;
     const selected = incoming.slice(0, Math.max(room, 0));
     if (selected.length === 0) {
       setError(`Máximo ${MAX_VEHICLE_PHOTOS} fotos.`);
       return;
+    }
+    if (selected.length < incoming.length) {
+      setNotice(`Se agregaron ${selected.length} de ${incoming.length} fotos (límite ${MAX_VEHICLE_PHOTOS}).`);
     }
 
     if (saved) {
@@ -944,7 +964,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
       {step === 1 ? (
         <FormSection
           title="Fotos"
-          hint="Sube desde el teléfono. La portada es obligatoria para publicar."
+          hint="Elige galería, archivos o cámara. La portada es obligatoria para publicar."
         >
           {coverNotice ? (
             <div className="mb-4 rounded-lg border border-[var(--admin-brand)]/20 bg-[var(--admin-brand)]/8 px-4 py-3 text-sm text-[var(--admin-text)]">
@@ -958,36 +978,22 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
             }}
             onDragLeave={() => setDragOver(false)}
             onDrop={onDrop}
-            className={`rounded-xl border border-dashed px-4 py-8 text-center transition ${
+            className={`rounded-xl border border-dashed px-4 py-5 transition sm:py-6 ${
               dragOver
                 ? "border-[var(--admin-brand)] bg-[var(--admin-brand)]/8"
                 : "border-[var(--admin-border-strong)] bg-[var(--admin-surface-muted)]"
             }`}
           >
-            <ImagePlus className="mx-auto h-7 w-7 text-[var(--admin-text-muted)]" strokeWidth={1.6} />
-            <p className="mt-3 text-sm font-medium text-[var(--admin-text)]">
-              {saved ? "Toca para subir fotos" : "Elige fotos ahora; se suben al guardar"}
+            <p className="mb-4 text-center text-sm font-medium text-[var(--admin-text)]">
+              {saved
+                ? "Agrega fotos desde tu galería, archivos o cámara"
+                : "Puedes elegir fotos ahora; se suben al guardar el borrador"}
             </p>
-            <p className="mt-1 text-xs text-[var(--admin-text-muted)]">JPG, PNG o WebP · máx. 8 MB</p>
-            <AdminSecondaryButton
-              type="button"
-              className="mt-4"
-              onClick={() => fileRef.current?.click()}
-              disabled={uploading}
-            >
-              {uploading ? "Subiendo..." : "Seleccionar fotos"}
-            </AdminSecondaryButton>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              multiple
-              capture="environment"
-              className="hidden"
-              onChange={(event) => {
-                if (event.target.files) addFiles(event.target.files);
-                event.target.value = "";
-              }}
+            <AdminMediaPicker
+              id="admin-vehicle-media-picker"
+              onFiles={addFiles}
+              uploading={uploading}
+              disabled={saving || pending || publishing}
             />
           </div>
 
