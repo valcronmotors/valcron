@@ -200,6 +200,18 @@ export function evaluateTitleEligibility(raw: string | null | undefined): Eligib
       };
     }
   }
+  // Unknown document types require explicit review. Do not infer approval merely
+  // because the text is absent from the prohibited list.
+  const recognized = /^(?:(?:[a-z]{2}) )?(?:(?:clean|clear|salvage|rebuilt|reconstructed)(?: vehicle)?(?: title)?|(?:vehicle )?certificate of title|title clean|title salvage)$/;
+  if (!recognized.test(normalized)) {
+    return {
+      id: "title",
+      label,
+      verdict: "review",
+      reason: "Tipo de documento no reconocido. Verifica el título antes de publicar.",
+      detected: raw?.trim() || null,
+    };
+  }
   return { id: "title", label, verdict: "approved", reason: null, detected: raw?.trim() || null };
 }
 
@@ -343,11 +355,9 @@ export function evaluateRunAndDriveEligibility(raw: string | null | undefined): 
       detected: raw?.trim() || normalized,
     };
   }
-  if (
-    normalized === "run and drive" ||
-    normalized === "reported run and drive" ||
-    normalized.includes("run and drive")
-  ) {
+  // Accept only affirmative provider-reported labels. Free-text substring
+  // matching could approve "Not Run and Drive" or "Run and Drive: No".
+  if (normalized === "run and drive" || normalized === "reported run and drive") {
     return {
       id: "run_and_drive",
       label,
