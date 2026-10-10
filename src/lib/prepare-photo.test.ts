@@ -1,8 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { preparePhoto } from "./prepare-photo";
+vi.mock("utif", () => ({ default: {
+  decode: () => [{ width: 2, height: 2, t256: [2], t257: [2] }],
+  decodeImage: vi.fn(),
+  toRGBA8: () => new Uint8Array(16),
+} }));
+vi.mock("heic2any", () => ({ default: async () => new Blob(["converted"], { type: "image/jpeg" }) }));
 
 const drawImage = vi.fn();
-const canvas = { width: 0, height: 0, getContext: () => ({ fillRect: vi.fn(), fillStyle: "", drawImage }), toBlob: (fn: (blob: Blob) => void) => fn(new Blob(["jpeg"], { type: "image/jpeg" })) };
+const canvas = { width: 0, height: 0, getContext: () => ({ putImageData: vi.fn(), fillRect: vi.fn(), fillStyle: "", drawImage }), toBlob: (fn: (blob: Blob) => void) => fn(new Blob(["jpeg"], { type: "image/jpeg" })) };
 describe("photo preparation", () => {
   beforeEach(() => {
     vi.stubGlobal("Image", class { src = ""; naturalWidth = 1280; naturalHeight = 960; async decode() {} });
@@ -29,5 +35,18 @@ describe("photo preparation", () => {
   it("rejects undecodable files before they reach storage", async () => {
     vi.stubGlobal("Image", class { src = ""; async decode() { throw new Error("invalid image"); } });
     await expect(preparePhoto(new File(["broken"], "photo.png", { type: "image/png" }))).rejects.toThrow();
+  });
+  it("decodes TIFF through the decoder's CommonJS default export", async () => {
+    vi.stubGlobal("ImageData", class {});
+    const result = await preparePhoto(new File(["tiff"], "photo.tiff", { type: "image/tiff" }));
+    expect(result.type).toBe("image/jpeg");
+    expect(drawImage).toHaveBeenCalled();
+  });
+  it("converts HEIC when the browser cannot decode it natively", async () => {
+    let attempts = 0;
+    vi.stubGlobal("Image", class { src = ""; naturalWidth = 1280; naturalHeight = 960; async decode() { if (++attempts === 1) throw new Error("unsupported HEIC"); } });
+    const result = await preparePhoto(new File(["heic"], "photo.heic", { type: "image/heic" }));
+    expect(result.type).toBe("image/jpeg");
+    expect(attempts).toBe(2);
   });
 });
