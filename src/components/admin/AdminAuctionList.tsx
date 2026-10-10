@@ -496,7 +496,7 @@ export function AdminAuctionList({
                         <div className="flex items-center justify-end gap-1">
                           <Link
                             href={`/admin/subastas/${row.id}`}
-                            className="inline-flex min-h-10 items-center rounded-lg border border-[var(--admin-border)] px-3 text-sm font-medium text-[var(--admin-text)] hover:bg-[var(--admin-surface-muted)]"
+                            className="inline-flex min-h-11 items-center rounded-lg bg-[var(--admin-text)] px-3 text-sm font-semibold text-white hover:opacity-90"
                           >
                             Editar
                           </Link>
@@ -581,7 +581,7 @@ export function AdminAuctionList({
                       href={`/admin/subastas/${row.id}`}
                       className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-[var(--admin-text)] px-4 text-sm font-medium text-white"
                     >
-                      Editar
+                      Editar vehículo
                     </Link>
                   </div>
                 </article>

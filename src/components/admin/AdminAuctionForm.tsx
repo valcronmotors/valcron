@@ -72,6 +72,7 @@ import {
   auctionPublishButtonLabel,
   canAttemptAuctionPublish,
 } from "@/lib/auctions/auction-publication";
+import { publishAuctionDraft } from "@/lib/auctions/publish-draft";
 import { evaluateAuctionEligibility } from "@/lib/auctions/eligibility";
 import {
   activeAuctionProviderChoices,
@@ -534,10 +535,16 @@ export function AdminAuctionForm({
     }
     setSaving(true);
     const formData = buildFormData(opportunity?.id);
-    const result = saved
-      ? await updateAuctionOpportunity(null, formData)
-      : await createAuctionOpportunity(null, formData);
-    setSaving(false);
+    let result: AuctionActionState;
+    try {
+      result = saved
+        ? await updateAuctionOpportunity(null, formData)
+        : await createAuctionOpportunity(null, formData);
+    } catch {
+      return { error: "No se pudo guardar. Comprueba tu conexión y vuelve a intentar." };
+    } finally {
+      setSaving(false);
+    }
     if (!result.error && result.id) {
       try {
         window.localStorage.removeItem(DRAFT_KEY);
@@ -583,14 +590,13 @@ export function AdminAuctionForm({
   async function handleSave() {
     setError(null);
     setNotice(null);
-    startTransition(() => {
-      void saveDraft().then((result) => {
-        if (result.error) {
-          setError(result.error);
-          return;
-        }
-        setNotice(result.success ?? "Borrador guardado.");
-      });
+    startTransition(async () => {
+      const result = await saveDraft();
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      setNotice(result.success ?? "Borrador guardado.");
     });
   }
 
@@ -649,41 +655,7 @@ export function AdminAuctionForm({
   }
 
   async function handlePublish() {
-    const blocked = auctionPublicationBlockMessage({
-      provider: values.provider,
-      provider_lot_id: values.provider_lot_id,
-      year: values.year,
-      make: values.make,
-      model: values.model,
-      location: values.location,
-      price_mode: values.price_mode,
-      buy_now_usd: values.buy_now_usd ? Number(values.buy_now_usd) : null,
-      hasCoverPhoto: (photos?.length ?? 0) > 0,
-      photoCount: photos?.length ?? 0,
-    });
-    if (blocked) {
-      setError(blocked);
-      return;
-    }
-    if (!opportunity?.id) {
-      const savedDraft = await saveDraft();
-      if (savedDraft.error || !savedDraft.id) {
-        setError(savedDraft.error);
-        return;
-      }
-      const result = await publishAuctionOpportunity(savedDraft.id);
-      if (result.error) {
-        setError(result.error);
-        return;
-      }
-      setPublished(true);
-      setPublicPath(result.publicPath ?? null);
-      setNotice(result.success ?? "Publicado.");
-      router.replace(`/admin/subastas/${savedDraft.id}?paso=4`);
-      return;
-    }
-    await saveDraft();
-    const result = await publishAuctionOpportunity(opportunity.id);
+    const result = await publishAuctionDraft(publicationInput, saveDraft, publishAuctionOpportunity);
     if (result.error) {
       setError(result.error);
       return;
@@ -691,7 +663,11 @@ export function AdminAuctionForm({
     setPublished(true);
     setPublicPath(result.publicPath ?? null);
     setNotice(result.success ?? "Publicado.");
-    router.refresh();
+    if (!opportunity?.id) {
+      router.replace(`/admin/subastas/${result.id}?paso=4`);
+    } else {
+      router.refresh();
+    }
   }
 
   async function handleUnpublish() {
@@ -1257,14 +1233,14 @@ export function AdminAuctionForm({
           <div className="mt-6 flex flex-wrap gap-2">
             <AdminPrimaryButton
               type="button"
-              disabled={pending || saving || !publishEnabled}
+              disabled={pending || saving || uploading || !publishEnabled}
               onClick={() => setConfirm("publish")}
               title={publishEnabled ? "Publicar oportunidad" : auctionPublicationBlockMessage(publicationInput) ?? publishLabel}
             >
               {publishLabel}
             </AdminPrimaryButton>
             {published ? (
-              <AdminSecondaryButton type="button" disabled={pending} onClick={() => setConfirm("unpublish")}>
+              <AdminSecondaryButton type="button" disabled={pending || saving || uploading} onClick={() => setConfirm("unpublish")}>
                 Despublicar
               </AdminSecondaryButton>
             ) : null}
@@ -1298,7 +1274,7 @@ export function AdminAuctionForm({
             Anterior
           </AdminSecondaryButton>
           <div className="flex flex-wrap justify-end gap-2">
-            <AdminSecondaryButton type="button" disabled={pending || saving} onClick={() => void handleSave()}>
+            <AdminSecondaryButton type="button" disabled={pending || saving || uploading} onClick={() => void handleSave()}>
               Guardar borrador
             </AdminSecondaryButton>
             {vehicleId || opportunity?.linked_vehicle_id ? (
@@ -1317,7 +1293,7 @@ export function AdminAuctionForm({
             ) : (
               <AdminPrimaryButton
                 type="button"
-                disabled={pending || saving || !publishEnabled}
+                disabled={pending || saving || uploading || !publishEnabled}
                 onClick={() => setConfirm("publish")}
                 title={
                   publishEnabled
@@ -1340,8 +1316,14 @@ export function AdminAuctionForm({
         pending={pending || saving}
         onConfirm={() => {
           setConfirm(null);
-          startTransition(() => {
-            void handlePublish();
+          setError(null);
+          setNotice(null);
+          startTransition(async () => {
+            try {
+              await handlePublish();
+            } catch {
+              setError("No se pudo confirmar la publicación. Comprueba el estado antes de reintentar.");
+            }
           });
         }}
         onClose={() => setConfirm(null)}
@@ -1355,8 +1337,14 @@ export function AdminAuctionForm({
         danger
         onConfirm={() => {
           setConfirm(null);
-          startTransition(() => {
-            void handleUnpublish();
+          setError(null);
+          setNotice(null);
+          startTransition(async () => {
+            try {
+              await handleUnpublish();
+            } catch {
+              setError("No se pudo confirmar la despublicación. Comprueba el estado antes de reintentar.");
+            }
           });
         }}
         onClose={() => setConfirm(null)}
