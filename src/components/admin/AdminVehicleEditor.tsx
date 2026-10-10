@@ -505,7 +505,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
       .find((item) => item.error);
     if (invalid?.error) {
       setError(
-        `${invalid.file.name}: ${invalid.error} Si la foto viene de un iPhone en HEIC, ábrela en Fotos y expórtala como JPG.`,
+        `${invalid.file.name}: ${invalid.error}`,
       );
       return;
     }
@@ -551,34 +551,39 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
   async function uploadExisting(files: File[]) {
     if (!vehicle?.id) return;
     setUploading(true);
-    setError(null);
-    const hadPhotos = (photos ?? []).length > 0;
-    const result = await uploadVehiclePhotos(files, {
-      vehicleId: vehicle.id,
-      currentCount: (photos ?? []).length,
-    });
-    if (result.paths.length > 0) {
-      const attached = await attachVehiclePhotos({
+    try {
+      setError(null);
+      const hadPhotos = (photos ?? []).length > 0;
+      const result = await uploadVehiclePhotos(files, {
         vehicleId: vehicle.id,
-        paths: result.paths,
-        coverPath: !hadPhotos ? result.paths[0] : undefined,
+        currentCount: (photos ?? []).length,
       });
-      if (attached.error) {
-        setError(attached.error);
-      } else {
-        setNotice(
-          result.paths.length === 1 ? "Foto subida correctamente." : `${result.paths.length} fotos subidas.`,
-        );
-        if (!hadPhotos) {
-          setCoverNotice("La primera foto se designó como portada.");
+      if (result.paths.length > 0) {
+        const attached = await attachVehiclePhotos({
+          vehicleId: vehicle.id,
+          paths: result.paths,
+          coverPath: !hadPhotos ? result.paths[0] : undefined,
+        });
+        if (attached.error) {
+          setError(attached.error);
+        } else {
+          setNotice(
+            result.paths.length === 1 ? "Foto subida correctamente." : `${result.paths.length} fotos subidas.`,
+          );
+          if (!hadPhotos) {
+            setCoverNotice("La primera foto se designó como portada.");
+          }
+          router.refresh();
         }
-        router.refresh();
       }
+      if (result.error) {
+        setError(result.error);
+      }
+    } catch {
+      setError("No se pudieron subir las fotos. Comprueba tu conexión y vuelve a intentar.");
+    } finally {
+      setUploading(false);
     }
-    if (result.error) {
-      setError(result.error);
-    }
-    setUploading(false);
   }
 
   async function retryLocalUpload(vehicleId: string) {
@@ -586,59 +591,64 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
       return { failed: false as const };
     }
     setUploading(true);
-    setError(null);
-    const files = localPhotos.map((photo) => photo.file);
-    const result = await uploadVehiclePhotos(files, {
-      vehicleId,
-      currentCount: (photos ?? []).length,
-    });
-    const uploadedCount = result.paths.length;
-    if (uploadedCount > 0) {
-      const uploaded = localPhotos.slice(0, uploadedCount);
-      const coverPhoto = uploaded.find((photo) => photo.isCover);
-      const coverIndex = coverPhoto ? uploaded.indexOf(coverPhoto) : 0;
-      const attached = await attachVehiclePhotos({
+    try {
+      setError(null);
+      const files = localPhotos.map((photo) => photo.file);
+      const result = await uploadVehiclePhotos(files, {
         vehicleId,
-        paths: result.paths,
-        coverPath: result.paths[coverIndex] ?? result.paths[0],
-        altTexts: Object.fromEntries(result.paths.map((path, index) => [path, uploaded[index]?.alt ?? ""])),
+        currentCount: (photos ?? []).length,
       });
-      if (attached.error) {
-        setError(attached.error);
-        setUploading(false);
+      const uploadedCount = result.paths.length;
+      if (uploadedCount > 0) {
+        const uploaded = (result.fileIndexes ?? result.paths.map((_, index) => index)).map((index) => localPhotos[index]);
+        const coverPhoto = uploaded.find((photo) => photo.isCover);
+        const coverIndex = coverPhoto ? uploaded.indexOf(coverPhoto) : 0;
+        const attached = await attachVehiclePhotos({
+          vehicleId,
+          paths: result.paths,
+          coverPath: result.paths[coverIndex] ?? result.paths[0],
+          altTexts: Object.fromEntries(result.paths.map((path, index) => [path, uploaded[index]?.alt ?? ""])),
+        });
+        if (attached.error) {
+          setError(attached.error);
+          stashFailedVehiclePhotos(
+            vehicleId,
+            localPhotos.map((photo) => ({ file: photo.file, alt: photo.alt, isCover: photo.isCover })),
+          );
+          return { failed: true as const };
+        }
+      }
+      const uploadedIndexes = new Set(result.fileIndexes ?? result.paths.map((_, index) => index));
+      const remaining = localPhotos.filter((_, index) => !uploadedIndexes.has(index));
+      if (result.error || remaining.length > 0) {
+        remaining.forEach((photo) => {
+          if (photo.preview.startsWith("blob:")) URL.revokeObjectURL(photo.preview);
+        });
+        const kept = remaining.map((photo) => ({
+          ...photo,
+          preview: URL.createObjectURL(photo.file),
+        }));
+        setLocalPhotos(kept);
         stashFailedVehiclePhotos(
           vehicleId,
-          localPhotos.map((photo) => ({ file: photo.file, alt: photo.alt, isCover: photo.isCover })),
+          kept.map((photo) => ({ file: photo.file, alt: photo.alt, isCover: photo.isCover })),
+        );
+        setError(
+          result.error
+            ? `${result.error} El vehículo quedó creado. Reintenta las fotos pendientes.`
+            : "Algunas fotos no se subieron. Reintenta las pendientes.",
         );
         return { failed: true as const };
       }
-    }
-    const remaining = localPhotos.slice(uploadedCount);
-    if (result.error || remaining.length > 0) {
-      remaining.forEach((photo) => {
-        if (photo.preview.startsWith("blob:")) URL.revokeObjectURL(photo.preview);
-      });
-      const kept = remaining.map((photo) => ({
-        ...photo,
-        preview: URL.createObjectURL(photo.file),
-      }));
-      setLocalPhotos(kept);
-      stashFailedVehiclePhotos(
-        vehicleId,
-        kept.map((photo) => ({ file: photo.file, alt: photo.alt, isCover: photo.isCover })),
-      );
-      setError(
-        result.error
-          ? `${result.error} El vehículo quedó creado. Reintenta las fotos pendientes.`
-          : "Algunas fotos no se subieron. Reintenta las pendientes.",
-      );
-      setUploading(false);
+      setLocalPhotos([]);
+      stashFailedVehiclePhotos(vehicleId, []);
+      return { failed: false as const };
+    } catch {
+      setError("No se pudieron subir las fotos. Comprueba tu conexión y vuelve a intentar.");
       return { failed: true as const };
+    } finally {
+      setUploading(false);
     }
-    setLocalPhotos([]);
-    stashFailedVehiclePhotos(vehicleId, []);
-    setUploading(false);
-    return { failed: false as const };
   }
 
   function onDrop(event: React.DragEvent) {

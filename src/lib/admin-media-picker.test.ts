@@ -9,13 +9,20 @@ import {
 } from "@/lib/storage";
 
 describe("admin media picker upload policy", () => {
-  it("accepts only pipeline-supported image types (no HEIC)", () => {
-    expect(ALLOWED_PHOTO_MIME_TYPES).toEqual(["image/jpeg", "image/png", "image/webp"]);
-    expect(PHOTO_FILE_ACCEPT).toBe("image/jpeg,image/png,image/webp");
-    expect(PHOTO_FORMAT_HINT).toMatch(/HEIC/i);
-    expect(validatePhotoFile({ type: "image/jpeg", size: 1024 })).toBeNull();
-    expect(validatePhotoFile({ type: "image/heic", size: 1024 })).toMatch(/JPEG|PNG|WebP/i);
-    expect(validatePhotoFile({ type: "image/heif", size: 1024 })).toMatch(/JPEG|PNG|WebP/i);
+  it("accepts common camera formats, extension-only PNGs, and 50 MB inputs", () => {
+    for (const type of ALLOWED_PHOTO_MIME_TYPES) {
+      expect(validatePhotoFile({ type, size: 1024 })).toBeNull();
+    }
+    expect(PHOTO_FILE_ACCEPT).toContain(".png");
+    expect(PHOTO_FILE_ACCEPT).toContain(".heic");
+    expect(PHOTO_FORMAT_HINT).toMatch(/50 MB.*40 fotos/);
+    expect(validatePhotoFile({ type: "", name: "Photo.PNG", size: 12 * 1024 * 1024 })).toBeNull();
+    expect(validatePhotoFile({ type: "application/octet-stream", name: "Photo.jpg", size: 1024 })).toBeNull();
+    expect(validatePhotoFile({ type: "image/jpg", size: 1024 })).toBeNull();
+    expect(validatePhotoFile({ type: "image/png", size: 50 * 1024 * 1024 })).toBeNull();
+    expect(validatePhotoFile({ type: "image/png", size: 51 * 1024 * 1024 })).toMatch(/50 MB/);
+    expect(validatePhotoFile({ type: "image/png", size: 0 })).toMatch(/vacía/);
+    expect(validatePhotoFile({ type: "application/pdf", name: "photo.png", size: 1024 })).toBeTruthy();
   });
 
   it("keeps capture only on the camera input, not gallery or files", () => {

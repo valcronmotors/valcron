@@ -38,7 +38,7 @@ export function AdminMediaPicker({
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.files?.length) {
-      onFiles(event.target.files);
+      onFiles(Array.from(event.target.files));
     }
     event.target.value = "";
   }

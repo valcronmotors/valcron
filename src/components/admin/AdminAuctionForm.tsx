@@ -605,53 +605,55 @@ export function AdminAuctionForm({
     if (!files.length) return;
     setError(null);
     setUploading(true);
-    const id = await ensureVehicle();
-    if (!id) {
-      setUploading(false);
-      return;
-    }
-    const accepted: File[] = [];
-    for (const file of files) {
-      const invalid = validatePhotoFile(file);
-      if (invalid) {
-        setError(invalid);
-        continue;
-      }
-      accepted.push(file);
-    }
-    if (!accepted.length) {
-      setUploading(false);
-      return;
-    }
-    if ((photos?.length ?? 0) + localPhotos.length + accepted.length > MAX_VEHICLE_PHOTOS) {
-      setError(`Máximo ${MAX_VEHICLE_PHOTOS} fotos.`);
-      setUploading(false);
-      return;
-    }
-    const hadPhotos = (photos?.length ?? 0) > 0;
-    const result = await uploadVehiclePhotos(accepted, {
-      vehicleId: id,
-      currentCount: (photos?.length ?? 0) + localPhotos.length,
-    });
-    if (result.paths.length > 0) {
-      const attached = await attachVehiclePhotos({
-        vehicleId: id,
-        paths: result.paths,
-        coverPath: !hadPhotos ? result.paths[0] : undefined,
-      });
-      if (attached.error) {
-        setUploading(false);
-        setError(attached.error);
+    try {
+      const id = await ensureVehicle();
+      if (!id) {
         return;
       }
+      const accepted: File[] = [];
+      for (const file of files) {
+        const invalid = validatePhotoFile(file);
+        if (invalid) {
+          setError(invalid);
+          continue;
+        }
+        accepted.push(file);
+      }
+      if (!accepted.length) {
+        return;
+      }
+      if ((photos?.length ?? 0) + localPhotos.length + accepted.length > MAX_VEHICLE_PHOTOS) {
+        setError(`Máximo ${MAX_VEHICLE_PHOTOS} fotos.`);
+        return;
+      }
+      const hadPhotos = (photos?.length ?? 0) > 0;
+      const result = await uploadVehiclePhotos(accepted, {
+        vehicleId: id,
+        currentCount: (photos?.length ?? 0) + localPhotos.length,
+      });
+      if (result.paths.length > 0) {
+        const attached = await attachVehiclePhotos({
+          vehicleId: id,
+          paths: result.paths,
+          coverPath: !hadPhotos ? result.paths[0] : undefined,
+        });
+        if (attached.error) {
+          setError(attached.error);
+          return;
+        }
+      }
+      if (result.paths.length > 0) router.refresh();
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      setNotice(`${result.paths.length} fotos subidas.`);
+      router.refresh();
+    } catch {
+      setError("No se pudieron subir las fotos. Comprueba tu conexión y vuelve a intentar.");
+    } finally {
+      setUploading(false);
     }
-    setUploading(false);
-    if (result.error) {
-      setError(result.error);
-      return;
-    }
-    setNotice("Fotos subidas.");
-    router.refresh();
   }
 
   async function handlePublish() {
