@@ -318,6 +318,8 @@ export function AdminInventoryWorkspace({
                 menuOpen={openMenuId === vehicle.id}
                 items={menuItems(vehicle)}
                 onMenuOpenChange={(open) => setOpenMenuId(open ? vehicle.id : null)}
+                onPublish={() => handleInventoryAction("publish", vehicle)}
+                onUnpublish={() => handleInventoryAction("unpublish", vehicle)}
               />
             ))}
           </section>
@@ -449,13 +451,21 @@ function InventoryCard({
   menuOpen,
   items,
   onMenuOpenChange,
+  onPublish,
+  onUnpublish,
 }: {
   vehicle: VehicleRow;
   pending: boolean;
   menuOpen: boolean;
   items: AdminMenuItem[];
   onMenuOpenChange: (open: boolean) => void;
+  onPublish: () => void;
+  onUnpublish: () => void;
 }) {
+  const canPublish =
+    !vehicle.published &&
+    (vehicle.status === "available" || vehicle.status === "reserved" || vehicle.status === "sold");
+
   return (
     <article className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-4 shadow-[var(--admin-shadow)]">
       <div className="flex items-start justify-between gap-3">
@@ -478,13 +488,47 @@ function InventoryCard({
           <AdminPublishBadge published={vehicle.published} />
         </span>
       </div>
-      <div className="mt-4">
+      <div className="mt-4 grid grid-cols-2 gap-2">
         <Link
           href={`/admin/inventario/${vehicle.id}`}
-          className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-[var(--admin-text)] px-5 text-sm font-medium text-white transition duration-200 hover:bg-[#1c1f24]"
+          className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[var(--admin-text)] px-3 text-sm font-medium text-white"
         >
-          Editar vehículo
+          Editar
         </Link>
+        <a
+          href={`/admin/inventario/${vehicle.id}/vista-previa`}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--admin-border)] px-3 text-sm font-medium text-[var(--admin-text)]"
+        >
+          Vista previa
+        </a>
+        {vehicle.published ? (
+          <button
+            type="button"
+            disabled={pending}
+            onClick={onUnpublish}
+            className="col-span-2 inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--admin-border)] px-3 text-sm font-medium text-[var(--admin-text)] disabled:opacity-60"
+          >
+            Retirar
+          </button>
+        ) : canPublish ? (
+          <button
+            type="button"
+            disabled={pending}
+            onClick={onPublish}
+            className="col-span-2 inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--admin-text)] bg-[var(--admin-surface-muted)] px-3 text-sm font-semibold text-[var(--admin-text)] disabled:opacity-60"
+          >
+            Publicar
+          </button>
+        ) : (
+          <Link
+            href={`/admin/inventario/${vehicle.id}?paso=3`}
+            className="col-span-2 inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--admin-border)] px-3 text-sm font-medium text-[var(--admin-text-secondary)]"
+          >
+            Completar para publicar
+          </Link>
+        )}
       </div>
     </article>
   );

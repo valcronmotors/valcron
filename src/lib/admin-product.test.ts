@@ -144,7 +144,7 @@ describe("publication readiness", () => {
     expect(canPublishVehicleListing(checks)).toBe(true);
   });
 
-  it("blocks publish without a cover even when price and description exist", () => {
+  it("accepts any saved photo as cover readiness when is_cover flag is missing", () => {
     expect(
       canPublishVehicleListing(
         vehiclePublicationChecks({
@@ -165,6 +165,19 @@ describe("publication readiness", () => {
               created_at: "2026-01-01T00:00:00.000Z",
             },
           ],
+        }),
+      ),
+    ).toBe(true);
+    expect(
+      canPublishVehicleListing(
+        vehiclePublicationChecks({
+          year: 2021,
+          make: "Honda",
+          model: "Civic",
+          status: "available",
+          price: 18000,
+          description: "Unidad lista para entrega en Santo Domingo Este.",
+          photos: [],
         }),
       ),
     ).toBe(false);

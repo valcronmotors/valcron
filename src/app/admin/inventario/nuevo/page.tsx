@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { AdminVehicleEditor } from "@/components/admin/AdminVehicleEditor";
 import type { Metadata } from "next";
 
@@ -6,5 +7,9 @@ export const metadata: Metadata = {
 };
 
 export default function AdminNuevoVehiculoPage() {
-  return <AdminVehicleEditor />;
+  return (
+    <Suspense fallback={<p className="text-sm text-[var(--admin-text-muted)]">Cargando editor…</p>}>
+      <AdminVehicleEditor />
+    </Suspense>
+  );
 }

@@ -140,10 +140,10 @@ export function validateVehicleFormValues(values: VehicleFormValues): {
   };
 }
 
+/** Always create unpublished. Availability status comes from the form when set. */
 export function vehicleCreateDefaults() {
   return {
-    status: "draft" as const,
-    published: false,
+    published: false as const,
     published_at: null,
   };
 }

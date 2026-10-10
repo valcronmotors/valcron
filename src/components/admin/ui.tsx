@@ -59,14 +59,17 @@ export function AdminSelect(props: SelectHTMLAttributes<HTMLSelectElement>) {
   return <select {...props} className={`${adminFieldClass} ${props.className ?? ""}`} />;
 }
 
-export function AdminTextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return (
-    <textarea
-      {...props}
-      className={`mt-1.5 min-h-32 w-full rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)] px-3 py-2.5 text-sm leading-6 text-[var(--admin-text)] outline-none transition duration-200 placeholder:text-[var(--admin-text-muted)] focus:border-[var(--admin-brand)] focus:ring-2 focus:ring-[var(--admin-focus)]/25 ${props.className ?? ""}`}
-    />
-  );
-}
+export const AdminTextArea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(
+  function AdminTextArea(props, ref) {
+    return (
+      <textarea
+        ref={ref}
+        {...props}
+        className={`mt-1.5 min-h-32 w-full rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)] px-3 py-2.5 text-sm leading-6 text-[var(--admin-text)] outline-none transition duration-200 placeholder:text-[var(--admin-text-muted)] focus:border-[var(--admin-brand)] focus:ring-2 focus:ring-[var(--admin-focus)]/25 ${props.className ?? ""}`}
+      />
+    );
+  },
+);
 
 export function AdminPrimaryButton({
   children,

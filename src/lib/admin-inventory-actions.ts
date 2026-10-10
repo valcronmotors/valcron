@@ -66,7 +66,7 @@ function unique(ids: InventoryActionId[]) {
 
 export function inventoryActionHref(id: InventoryActionId, vehicleId: string) {
   if (id === "edit") return `/admin/inventario/${vehicleId}`;
-  if (id === "photos") return `/admin/inventario/${vehicleId}#fotos`;
+  if (id === "photos") return `/admin/inventario/${vehicleId}?paso=1`;
   if (id === "preview") return `/admin/inventario/${vehicleId}/vista-previa`;
   return null;
 }

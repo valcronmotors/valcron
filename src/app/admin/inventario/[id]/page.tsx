@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { AdminVehicleEditor } from "@/components/admin/AdminVehicleEditor";
 import { AdminSuccess } from "@/components/admin/ui";
@@ -13,7 +14,7 @@ export default async function AdminVehicleDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ creado?: string; fotos?: string }>;
+  searchParams: Promise<{ creado?: string; fotos?: string; paso?: string }>;
 }) {
   const { id } = await params;
   const query = await searchParams;
@@ -34,7 +35,9 @@ export default async function AdminVehicleDetailPage({
           {error}
         </p>
       ) : null}
-      <AdminVehicleEditor vehicle={vehicle} />
+      <Suspense fallback={<p className="text-sm text-[var(--admin-text-muted)]">Cargando editor…</p>}>
+        <AdminVehicleEditor vehicle={vehicle} />
+      </Suspense>
     </div>
   );
 }

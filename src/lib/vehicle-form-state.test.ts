@@ -39,9 +39,8 @@ function memoryStorage(initial: Record<string, string> = {}) {
 }
 
 describe("create vehicle defaults", () => {
-  it("defaults to draft and unpublished", () => {
+  it("defaults to unpublished without forcing draft status", () => {
     expect(vehicleCreateDefaults()).toEqual({
-      status: "draft",
       published: false,
       published_at: null,
     });

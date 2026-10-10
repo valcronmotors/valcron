@@ -33,7 +33,9 @@ export function vehiclePublicationChecks(input: {
   exterior_color?: string | null;
 }): PublicationCheck[] {
   const photos = input.photos ?? [];
-  const hasCover = photos.some((photo) => photo.is_cover);
+  // Prefer an explicit cover flag; any saved photo also counts so a missing
+  // is_cover bit never blocks publish after a successful upload.
+  const hasCover = photos.some((photo) => photo.is_cover) || photos.length > 0;
   const make = (input.make ?? "").trim();
   const model = (input.model ?? "").trim();
   const description = (input.description ?? "").trim();

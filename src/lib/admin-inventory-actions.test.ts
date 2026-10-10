@@ -86,7 +86,7 @@ describe("inventory row actions", () => {
     expect(isDestructiveInventoryAction("delete")).toBe(true);
     expect(isDestructiveInventoryAction("hide")).toBe(false);
     expect(inventoryActionHref("edit", "abc")).toBe("/admin/inventario/abc");
-    expect(inventoryActionHref("photos", "abc")).toBe("/admin/inventario/abc#fotos");
+    expect(inventoryActionHref("photos", "abc")).toBe("/admin/inventario/abc?paso=1");
     expect(inventoryActionHref("preview", "abc")).toBe("/admin/inventario/abc/vista-previa");
     expect(INVENTORY_DELETE_CONFIRMATION).toBe(
       "Se eliminará el vehículo y sus fotos. Esta acción no se puede deshacer.",

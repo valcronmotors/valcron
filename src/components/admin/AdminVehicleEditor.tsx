@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { ImagePlus, Star } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Check, ChevronLeft, ChevronRight, ImagePlus, Star } from "lucide-react";
 import {
   attachVehiclePhotos,
   createVehicle,
@@ -42,11 +42,15 @@ import {
   PUBLIC_PRICE_MODE_LABELS,
   PUBLIC_PRICE_MODES,
   defaultPublicPriceMode,
-  type PublicPriceMode,
 } from "@/lib/public-price-mode";
 import { MAX_VEHICLE_PHOTOS, vehicleImageAdminPath } from "@/lib/storage";
 import { removeStoredPhoto, uploadVehiclePhotos } from "@/lib/vehicle-photos";
-import { canPublishVehicleListing, vehiclePublicationChecks } from "@/lib/publication-readiness";
+import {
+  canPublishVehicleListing,
+  publicationBlockers,
+  vehiclePublicationChecks,
+  type PublicationCheck,
+} from "@/lib/publication-readiness";
 import {
   beginVehicleSubmit,
   clearVehicleDraft,
@@ -63,27 +67,13 @@ import {
 import { stashFailedVehiclePhotos, takeFailedVehiclePhotos } from "@/lib/vehicle-photo-retry";
 import {
   VEHICLE_SOURCE_TYPES,
-  VEHICLE_STATUSES,
   type VehicleRow,
   type VehicleStatus,
 } from "@/lib/website-schema";
 import { buildVehicleSlug, vehiclePath } from "@/lib/vehicles/vehicle-slugs";
 import { vehicleStatusLabel } from "@/lib/vehicles/vehicle-status";
 
-function statusActionLabel(status: VehicleStatus) {
-  switch (status) {
-    case "available":
-      return "Marcar disponible";
-    case "reserved":
-      return "Reservar";
-    case "sold":
-      return "Marcar vendido";
-    case "hidden":
-      return "Ocultar";
-    default:
-      return vehicleStatusLabel(status);
-  }
-}
+type EditorStep = 0 | 1 | 2 | 3;
 
 type LocalPhoto = {
   id: string;
@@ -93,6 +83,19 @@ type LocalPhoto = {
   isCover: boolean;
 };
 
+const STEPS = [
+  { id: 0 as const, label: "Vehículo", short: "1" },
+  { id: 1 as const, label: "Fotos", short: "2" },
+  { id: 2 as const, label: "Detalles", short: "3" },
+  { id: 3 as const, label: "Publicar", short: "4" },
+];
+
+const AVAILABILITY_OPTIONS: { value: VehicleStatus; label: string; hint: string }[] = [
+  { value: "available", label: "Disponible", hint: "Listo para venta" },
+  { value: "reserved", label: "Reservado", hint: "Con anticipo o apartado" },
+  { value: "sold", label: "Vendido", hint: "Ya no está a la venta" },
+];
+
 const SOURCE_LABEL: Record<(typeof VEHICLE_SOURCE_TYPES)[number], string> = {
   valcron_stock: "Stock Valcron",
   consignment: "Consignación",
@@ -100,55 +103,71 @@ const SOURCE_LABEL: Record<(typeof VEHICLE_SOURCE_TYPES)[number], string> = {
   other: "Otro",
 };
 
+const CHECK_STEP: Record<string, EditorStep> = {
+  identity: 0,
+  status: 0,
+  price: 0,
+  cover: 1,
+  description: 2,
+};
+
 function newLocalId() {
   return crypto.randomUUID();
 }
 
 function FormSection({
-  id,
-  index,
   title,
   hint,
   children,
 }: {
-  id?: string;
-  index: string;
   title: string;
-  hint: string;
+  hint?: string;
   children: React.ReactNode;
 }) {
   return (
-    <AdminCard id={id}>
-      <div className="mb-5 flex items-start gap-3">
-        <span className="mt-0.5 text-[11px] font-semibold tracking-[0.16em] text-[var(--admin-brand)]">
-          {index}
-        </span>
-        <div>
-          <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">{title}</h2>
+    <AdminCard>
+      <div className="mb-5">
+        <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">{title}</h2>
+        {hint ? (
           <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--admin-text-secondary)]">{hint}</p>
-        </div>
+        ) : null}
       </div>
       {children}
     </AdminCard>
   );
 }
 
+function initialStepFromSearch(search: URLSearchParams | null): EditorStep {
+  if (!search) return 0;
+  if (search.get("creado") === "1") return 1;
+  const paso = Number(search.get("paso"));
+  if (paso >= 0 && paso <= 3) return paso as EditorStep;
+  return 0;
+}
+
 export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const saved = Boolean(vehicle?.id);
+  const [step, setStep] = useState<EditorStep>(() => initialStepFromSearch(searchParams));
   const [values, setValues] = useState<VehicleFormValues>(() =>
     vehicle ? vehicleFormValuesFromRow(vehicle) : emptyVehicleFormValues(),
   );
   const [fieldErrors, setFieldErrors] = useState<VehicleFieldErrors>({});
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(() =>
+    searchParams.get("creado") === "1" ? "Borrador creado. Continúa con fotos y publicación." : null,
+  );
   const [draftRecovered, setDraftRecovered] = useState(false);
   const [draftReady, setDraftReady] = useState(saved);
+  const [dirty, setDirty] = useState(false);
   const [pending, startTransition] = useTransition();
   const [saving, setSaving] = useState(false);
+  const [publishing, setPublishing] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [localPhotos, setLocalPhotos] = useState<LocalPhoto[]>([]);
+  const [coverNotice, setCoverNotice] = useState<string | null>(null);
   const photos = vehicle?.vehicle_photos;
   const [published, setPublished] = useState(Boolean(vehicle?.published));
   const [status, setStatus] = useState<VehicleStatus>(vehicle?.status ?? "draft");
@@ -161,30 +180,71 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
     | null
   >(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const dragIndex = useRef<number | null>(null);
   const submitLock = useRef(false);
   const yearRef = useRef<HTMLInputElement>(null);
   const makeRef = useRef<HTMLInputElement>(null);
   const modelRef = useRef<HTMLInputElement>(null);
   const vinRef = useRef<HTMLInputElement>(null);
   const priceRef = useRef<HTMLInputElement>(null);
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
   const featured = values.featured;
   const price = values.price;
   const currency = values.currency;
-  const description = values.description;
-  const cover = [...(photos ?? [])].sort((a, b) => a.sort_order - b.sort_order).find((photo) => photo.is_cover)
-    ?? [...(photos ?? [])].sort((a, b) => a.sort_order - b.sort_order)[0];
+  const coverSrc = (() => {
+    const savedCover =
+      [...(photos ?? [])].sort((a, b) => a.sort_order - b.sort_order).find((photo) => photo.is_cover) ??
+      [...(photos ?? [])].sort((a, b) => a.sort_order - b.sort_order)[0];
+    if (savedCover) return vehicleImageAdminPath(savedCover.storage_path);
+    const localCover = localPhotos.find((photo) => photo.isCover) ?? localPhotos[0];
+    return localCover?.preview ?? null;
+  })();
 
-  const previewPhotos = useMemo(
-    () => {
-      const savedPhotos = saved ? [...(photos ?? [])].sort((a, b) => a.sort_order - b.sort_order) : [];
-      return saved ? [...savedPhotos, ...localPhotos] : localPhotos;
-    },
-    [localPhotos, photos, saved],
+  const previewPhotos = useMemo(() => {
+    const savedPhotos = saved ? [...(photos ?? [])].sort((a, b) => a.sort_order - b.sort_order) : [];
+    return saved ? [...savedPhotos, ...localPhotos] : localPhotos;
+  }, [localPhotos, photos, saved]);
+
+  const checks = useMemo(
+    () =>
+      vehiclePublicationChecks({
+        year: Number(values.year) || null,
+        make: values.make,
+        model: values.model,
+        description: values.description,
+        price: Number(values.price || 0),
+        public_price_mode: values.public_price_mode,
+        source_type: values.source_type,
+        status,
+        photos: vehicle?.vehicle_photos,
+        extraPhotoCount: localPhotos.length,
+        vin: values.vin,
+        mileage: Number(values.mileage) || null,
+        exterior_color: values.exterior_color,
+      }),
+    [localPhotos.length, status, values, vehicle?.vehicle_photos],
   );
+  const readyToPublish = canPublishVehicleListing(checks);
+  const requiredChecks = checks.filter((check) => check.required);
+  const requiredDone = requiredChecks.filter((check) => check.ok).length;
+  const blockers = publicationBlockers(checks);
 
   function patchValues(patch: Partial<VehicleFormValues>) {
     setValues((current) => ({ ...current, ...patch }));
+    setDirty(true);
+  }
+
+  function goToCheck(check: PublicationCheck) {
+    const target = CHECK_STEP[check.id] ?? 0;
+    setStep(target);
+    window.setTimeout(() => {
+      if (check.id === "identity") yearRef.current?.focus();
+      if (check.id === "price") priceRef.current?.focus();
+      if (check.id === "description") descriptionRef.current?.focus();
+      if (check.id === "cover") fileRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (check.id === "status") {
+        document.getElementById("availability-selector")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 50);
   }
 
   useEffect(() => {
@@ -197,7 +257,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
       if (draft) {
         setValues(draft);
         setDraftRecovered(true);
-        setNotice("Borrador recuperado");
+        setNotice("Borrador recuperado en este dispositivo.");
       }
       setDraftReady(true);
     }, 0);
@@ -226,9 +286,20 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
           isCover: photo.isCover,
         })),
       );
+      setNotice("Hay fotos pendientes de subir. Reinténtalas desde el paso Fotos.");
     }, 0);
     return () => window.clearTimeout(timer);
   }, [vehicle?.id]);
+
+  useEffect(() => {
+    function onBeforeUnload(event: BeforeUnloadEvent) {
+      if (!dirty && localPhotos.length === 0) return;
+      event.preventDefault();
+      event.returnValue = "";
+    }
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [dirty, localPhotos.length]);
 
   function addFiles(fileList: FileList | File[]) {
     const incoming = Array.from(fileList);
@@ -245,6 +316,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
     }
 
     setLocalPhotos((current) => {
+      const firstUpload = current.length === 0;
       const next = [
         ...current,
         ...selected.map((file, index) => ({
@@ -252,7 +324,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
           file,
           preview: URL.createObjectURL(file),
           alt: "",
-          isCover: current.length === 0 && index === 0,
+          isCover: firstUpload && index === 0,
         })),
       ];
       if (!next.some((photo) => photo.isCover) && next[0]) {
@@ -260,12 +332,17 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
       }
       return next;
     });
+    setDirty(true);
+    if (localPhotos.length === 0) {
+      setCoverNotice("La primera foto se designó como portada. Puedes cambiarla en cualquier momento.");
+    }
   }
 
   async function uploadExisting(files: File[]) {
     if (!vehicle?.id) return;
     setUploading(true);
     setError(null);
+    const hadPhotos = (photos ?? []).length > 0;
     const result = await uploadVehiclePhotos(files, {
       vehicleId: vehicle.id,
       currentCount: (photos ?? []).length,
@@ -274,11 +351,17 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
       const attached = await attachVehiclePhotos({
         vehicleId: vehicle.id,
         paths: result.paths,
+        coverPath: !hadPhotos ? result.paths[0] : undefined,
       });
       if (attached.error) {
         setError(attached.error);
       } else {
-        setNotice("Fotos subidas.");
+        setNotice(
+          result.paths.length === 1 ? "Foto subida correctamente." : `${result.paths.length} fotos subidas.`,
+        );
+        if (!hadPhotos) {
+          setCoverNotice("La primera foto se designó como portada.");
+        }
         router.refresh();
       }
     }
@@ -308,9 +391,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
         vehicleId,
         paths: result.paths,
         coverPath: result.paths[coverIndex] ?? result.paths[0],
-        altTexts: Object.fromEntries(
-          result.paths.map((path, index) => [path, uploaded[index]?.alt ?? ""]),
-        ),
+        altTexts: Object.fromEntries(result.paths.map((path, index) => [path, uploaded[index]?.alt ?? ""])),
       });
       if (attached.error) {
         setError(attached.error);
@@ -365,6 +446,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
       next.splice(to, 0, item);
       return next;
     });
+    setDirty(true);
   }
 
   async function moveSaved(from: number, to: number) {
@@ -380,8 +462,29 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
     router.refresh();
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function applyAvailability(next: VehicleStatus) {
+    if (next === "sold") {
+      setConfirm({ type: "sold" });
+      return;
+    }
+    setStatus(next);
+    setDirty(true);
+    if ((next === "draft" || next === "hidden") && published) {
+      setPublished(false);
+    }
+    if (vehicle?.id) {
+      void setVehicleStatus(vehicle.id, next).then((result) => {
+        if (result.error) {
+          setError(result.error);
+          return;
+        }
+        setNotice(`Disponibilidad: ${vehicleStatusLabel(next)}.`);
+        router.refresh();
+      });
+    }
+  }
+
+  function saveDraft(options?: { advance?: boolean; afterSave?: () => void }) {
     if (saving || uploading || !beginVehicleSubmit(submitLock)) {
       return;
     }
@@ -389,7 +492,8 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
     const validation = validateVehicleFormValues(values);
     if (!validation.ok) {
       setFieldErrors(validation.fieldErrors);
-      setError(validation.fieldErrors._form ?? null);
+      setError(validation.fieldErrors._form ?? "Completa año, marca y modelo para guardar.");
+      setStep(0);
       const focusMap = {
         year: yearRef,
         make: makeRef,
@@ -398,8 +502,10 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
         price: priceRef,
       } as const;
       const target = validation.firstField ? focusMap[validation.firstField as keyof typeof focusMap] : null;
-      target?.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-      target?.current?.focus();
+      window.setTimeout(() => {
+        target?.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        target?.current?.focus();
+      }, 50);
       endVehicleSubmit(submitLock);
       return;
     }
@@ -409,17 +515,16 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
       try {
         const formData = vehicleFormDataFromValues(
           values,
-          saved ? { id: vehicle?.id, status, published } : {},
+          saved ? { id: vehicle?.id, status, published } : { status, published: false },
         );
-        const result = saved
-          ? await updateVehicle(null, formData)
-          : await createVehicle(null, formData);
+        const result = saved ? await updateVehicle(null, formData) : await createVehicle(null, formData);
         if (result.error) {
           setError(result.error);
           return;
         }
+        setDirty(false);
         if (!saved && result.id) {
-          setNotice("Vehículo creado correctamente.");
+          setNotice("Borrador guardado.");
           clearVehicleDraft(window.localStorage);
           setDraftRecovered(false);
           if (localPhotos.length > 0) {
@@ -429,10 +534,17 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
               return;
             }
           }
-          router.replace(`/admin/inventario/${result.id}?creado=1`);
+          const nextPath = options?.advance
+            ? `/admin/inventario/${result.id}?paso=${Math.min(step + 1, 3)}`
+            : `/admin/inventario/${result.id}?creado=1`;
+          router.replace(nextPath);
           return;
         }
-        setNotice(result.success ?? "Guardado.");
+        setNotice(result.success ?? "Borrador guardado.");
+        options?.afterSave?.();
+        if (options?.advance && step < 3) {
+          setStep((current) => (Math.min(current + 1, 3) as EditorStep));
+        }
         router.refresh();
       } finally {
         setSaving(false);
@@ -441,38 +553,51 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
     });
   }
 
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    saveDraft();
+  }
+
+  function continueStep() {
+    if (step < 3) {
+      if (!saved && step === 0) {
+        saveDraft({ advance: true });
+        return;
+      }
+      setStep((current) => (Math.min(current + 1, 3) as EditorStep));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    saveDraft();
+  }
+
   function applyPublished(next: boolean) {
     if (next) {
-      const checks = vehiclePublicationChecks({
-        year: Number(values.year),
-        make: values.make,
-        model: values.model,
-        description: values.description,
-        price: Number(values.price || 0),
-        public_price_mode: values.public_price_mode,
-        source_type: values.source_type,
-        status,
-        photos: vehicle?.vehicle_photos,
-      });
-      if (!canPublishVehicleListing(checks)) {
-        setError("Completa los requisitos de publicación antes de publicar.");
+      if (!saved || !vehicle?.id) {
+        setError("Guarda el borrador antes de publicar.");
         setConfirm(null);
         return;
       }
+      if (!canPublishVehicleListing(checks)) {
+        setError(`Falta completar: ${blockers.join(", ")}.`);
+        setConfirm(null);
+        setStep(3);
+        return;
+      }
     }
-    setPublished(next);
     setConfirm(null);
-    if (saved && vehicle?.id) {
-      void setVehiclePublished(vehicle.id, next).then((result) => {
-        if (result.error) {
-          setError(result.error);
-          setPublished(!next);
-        } else {
-          setNotice(next ? "Publicado correctamente." : "Publicación retirada.");
-          router.refresh();
-        }
-      });
-    }
+    if (!saved || !vehicle?.id) return;
+    setPublishing(true);
+    void setVehiclePublished(vehicle.id, next).then((result) => {
+      setPublishing(false);
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      setPublished(next);
+      setNotice(next ? "Publicado correctamente. Ya puede aparecer en el website." : "Publicación retirada.");
+      router.refresh();
+    });
   }
 
   const auctionOrigin = isAuctionOriginSource(values.source_type);
@@ -483,497 +608,417 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
     Number(price || 0) > 0 ? Number(price) : null,
     currency,
   );
+  const busy = saving || pending || uploading || publishing;
+  const previewHref = vehicle?.id ? `/admin/inventario/${vehicle.id}/vista-previa` : null;
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-6" noValidate>
-
-      {saved && vehicle ? (
-        <header className="flex flex-wrap items-start justify-between gap-4 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-4 shadow-[var(--admin-shadow)] sm:p-5">
-          <div className="flex min-w-0 items-start gap-4">
-            {cover ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={vehicleImageAdminPath(cover.storage_path)}
-                alt=""
-                className="h-20 w-28 shrink-0 rounded-lg object-cover"
-              />
-            ) : (
-              <span className="flex h-20 w-28 shrink-0 items-center justify-center rounded-lg bg-[var(--admin-surface-muted)] text-xs text-[var(--admin-text-muted)]">
-                Sin portada
-              </span>
-            )}
-            <div className="min-w-0">
-              <h1 className="font-display text-xl font-semibold tracking-tight text-[var(--admin-text)] sm:text-2xl">
-                {vehicle.year} {vehicle.make} {vehicle.model}
-              </h1>
-              <p className="mt-1 text-sm text-[var(--admin-text-secondary)]">
-                {vehicle.trim || "Sin versión"}
-                {vehicle.stock_number ? ` · ${vehicle.stock_number}` : ""}
-                {vehicle.vin ? ` · ${vehicle.vin}` : ""}
-              </p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <AdminStatusBadge estado={status} />
-                <AdminPublishBadge published={published} />
-                {featured ? (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-[var(--admin-brand)]/30 bg-[var(--admin-brand)]/10 px-2.5 py-0.5 text-[11px] font-semibold text-[var(--admin-text)]">
-                    <Star className="h-3 w-3" /> Destacado
-                  </span>
-                ) : null}
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {vehicle.id ? (
-              <a href={`/admin/inventario/${vehicle.id}/vista-previa`} target="_blank" rel="noreferrer">
-                <AdminSecondaryButton type="button">Vista previa</AdminSecondaryButton>
-              </a>
-            ) : null}
-            {published ? (
-              <AdminSecondaryButton type="button" onClick={() => setConfirm({ type: "unpublish" })}>
-                Retirar
-              </AdminSecondaryButton>
-            ) : (
-              <AdminPrimaryButton type="button" onClick={() => setConfirm({ type: "publish" })}>
-                Publicar
-              </AdminPrimaryButton>
-            )}
-            <AdminSecondaryButton
-              type="button"
-              onClick={() => {
-                setStatus("reserved");
-                if (vehicle.id) void setVehicleStatus(vehicle.id, "reserved").then(() => router.refresh());
-              }}
-            >
-              Reservar
-            </AdminSecondaryButton>
-            <AdminSecondaryButton type="button" onClick={() => setConfirm({ type: "sold" })}>
-              Vendido
-            </AdminSecondaryButton>
-          </div>
-        </header>
-      ) : (
-        <header>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-[var(--admin-text)]">
-            Agregar vehículo
+    <form
+      onSubmit={handleSubmit}
+      className="relative grid gap-5 pb-[calc(6.5rem+env(safe-area-inset-bottom))] lg:pb-6"
+      noValidate
+    >
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="font-display text-xl font-semibold tracking-tight text-[var(--admin-text)] sm:text-2xl">
+            {saved && vehicle
+              ? `${vehicle.year} ${vehicle.make} ${vehicle.model}`
+              : "Agregar vehículo"}
           </h1>
-          <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--admin-text-secondary)]">
-            Completa la ficha y guarda. Se crea como borrador, sin publicar.
+          <p className="mt-1 text-sm text-[var(--admin-text-secondary)]">
+            {saved
+              ? "Completa los pasos y publica cuando esté listo."
+              : "Guía en 4 pasos. Puedes guardar borrador en cualquier momento."}
           </p>
-          {draftRecovered ? (
-            <div className="mt-4 flex flex-wrap items-center gap-3 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] px-4 py-3 text-sm text-[var(--admin-text-secondary)]">
-              <span>Borrador recuperado</span>
-              <AdminSecondaryButton
-                type="button"
-                onClick={() => {
-                  clearVehicleDraft(window.localStorage);
-                  setValues(emptyVehicleFormValues());
-                  setDraftRecovered(false);
-                  setNotice(null);
-                  setFieldErrors({});
-                }}
-              >
-                Descartar borrador
-              </AdminSecondaryButton>
+          {saved ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              <AdminStatusBadge estado={status} />
+              <AdminPublishBadge published={published} />
+              {featured ? (
+                <span className="inline-flex items-center gap-1 rounded-full border border-[var(--admin-brand)]/30 bg-[var(--admin-brand)]/10 px-2.5 py-0.5 text-[11px] font-semibold text-[var(--admin-text)]">
+                  <Star className="h-3 w-3" /> Destacado
+                </span>
+              ) : null}
             </div>
           ) : null}
-        </header>
-      )}
+        </div>
+        {saved && published && vehicle?.id ? (
+          <a
+            href={vehiclePath(
+              buildVehicleSlug({
+                id: vehicle.id,
+                year: vehicle.year ?? (Number(values.year) || 0),
+                make: vehicle.make ?? values.make,
+                model: vehicle.model ?? values.model,
+                trim: vehicle.trim,
+              }),
+            )}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden text-sm font-semibold text-[var(--admin-brand)] underline-offset-4 hover:underline sm:inline"
+          >
+            Ver en website
+          </a>
+        ) : null}
+      </header>
+
+      {draftRecovered ? (
+        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] px-4 py-3 text-sm text-[var(--admin-text-secondary)]">
+          <span>Borrador recuperado en este dispositivo</span>
+          <AdminSecondaryButton
+            type="button"
+            onClick={() => {
+              clearVehicleDraft(window.localStorage);
+              setValues(emptyVehicleFormValues());
+              setDraftRecovered(false);
+              setNotice(null);
+              setFieldErrors({});
+              setDirty(false);
+            }}
+          >
+            Descartar borrador
+          </AdminSecondaryButton>
+        </div>
+      ) : null}
 
       <AdminError message={error} />
       {notice ? (
         <div
           role="status"
-          className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--admin-success)]/15 bg-[var(--admin-success-bg)] px-4 py-3 text-sm text-[var(--admin-success)]"
+          className="rounded-lg border border-[var(--admin-success)]/15 bg-[var(--admin-success-bg)] px-4 py-3 text-sm text-[var(--admin-success)]"
         >
-          <p>{notice}</p>
-          {published && vehicle?.id ? (
-            <a
-              href={vehiclePath(
-                buildVehicleSlug({
-                  id: vehicle.id,
-                  year: vehicle.year ?? (Number(values.year) || 0),
-                  make: vehicle.make ?? values.make,
-                  model: vehicle.model ?? values.model,
-                  trim: vehicle.trim,
-                }),
-              )}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-10 items-center rounded-full bg-[var(--admin-text)] px-4 text-xs font-semibold text-white"
-            >
-              Ver en website
-            </a>
-          ) : null}
+          {notice}
         </div>
       ) : null}
 
-      <nav
-        aria-label="Flujo del vehículo"
-        className="grid gap-2 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-4 sm:grid-cols-3 lg:grid-cols-5"
-      >
-        {[
-          { href: "#step-vehiculo", label: "01 Vehículo" },
-          { href: "#step-especificaciones", label: "02 Especificaciones" },
-          { href: "#step-fotos", label: "03 Fotos" },
-          { href: "#step-precio", label: "04 Precio" },
-          { href: "#step-publicacion", label: "05 Publicación" },
-        ].map((step) => (
-          <a
-            key={step.href}
-            href={step.href}
-            className="rounded-lg bg-[var(--admin-surface-muted)] px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--admin-text-secondary)] transition hover:bg-[var(--admin-nav)] hover:text-[var(--admin-brand)]"
-          >
-            {step.label}
-          </a>
-        ))}
+      <nav aria-label="Pasos del vehículo" className="grid grid-cols-4 gap-2">
+        {STEPS.map((item) => {
+          const active = step === item.id;
+          const done = step > item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setStep(item.id)}
+              className={`rounded-xl border px-2 py-3 text-center transition ${
+                active
+                  ? "border-[var(--admin-text)] bg-[var(--admin-text)] text-white"
+                  : done
+                    ? "border-[var(--admin-success)]/30 bg-[var(--admin-success-bg)] text-[var(--admin-success)]"
+                    : "border-[var(--admin-border)] bg-[var(--admin-surface)] text-[var(--admin-text-secondary)]"
+              }`}
+            >
+              <span className="block text-[11px] font-semibold uppercase tracking-[0.08em]">
+                {done && !active ? <Check className="mx-auto h-3.5 w-3.5" /> : item.short}
+              </span>
+              <span className="mt-1 block text-[11px] font-medium sm:text-xs">{item.label}</span>
+            </button>
+          );
+        })}
       </nav>
 
-      <FormSection
-        id="step-vehiculo"
-        index="01"
-        title="Vehículo"
-        hint="Marca, modelo, año, trim y VIN. Año, marca y modelo son obligatorios."
-      >
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <AdminField label="Año" required error={fieldErrors.year}>
-            <AdminInput
-              ref={yearRef}
-              name="year"
-              type="number"
-              min={1980}
-              max={2100}
-              value={values.year}
-              onChange={(event) => patchValues({ year: event.target.value })}
-            />
-          </AdminField>
-          <AdminField label="Marca" required error={fieldErrors.make}>
-            <AdminInput
-              ref={makeRef}
-              name="make"
-              value={values.make}
-              onChange={(event) => patchValues({ make: event.target.value })}
-              placeholder="Toyota"
-            />
-          </AdminField>
-          <AdminField label="Modelo" required error={fieldErrors.model}>
-            <AdminInput
-              ref={modelRef}
-              name="model"
-              value={values.model}
-              onChange={(event) => patchValues({ model: event.target.value })}
-              placeholder="RAV4"
-            />
-          </AdminField>
-          <AdminField label="Versión" hint="Ejemplo: XLE, Limited.">
-            <AdminInput
-              name="trim"
-              value={values.trim}
-              onChange={(event) => patchValues({ trim: event.target.value })}
-              placeholder="XLE"
-            />
-          </AdminField>
-          <AdminField
-            label="VIN"
-            hint="17 caracteres. Ayuda a validar la unidad; opcional si aún no lo tienes."
-            error={fieldErrors.vin}
-          >
-            <AdminInput
-              ref={vinRef}
-              name="vin"
-              maxLength={17}
-              value={values.vin}
-              onChange={(event) => patchValues({ vin: event.target.value.toUpperCase() })}
-              className="font-mono uppercase"
-              placeholder="Opcional"
-            />
-          </AdminField>
-          <AdminField
-            label="Número de inventario"
-            hint="Stock interno (ej. VM-001). No aparece como marca o modelo."
-          >
-            <AdminInput
-              name="stock_number"
-              value={values.stock_number}
-              onChange={(event) => patchValues({ stock_number: event.target.value })}
-              placeholder="VM-001"
-            />
-          </AdminField>
-          <AdminField label="Origen">
-            <AdminSelect
-              name="source_type"
-              value={values.source_type}
-              onChange={(event) => {
-                const source_type = event.target.value as VehicleFormValues["source_type"];
-                patchValues({
-                  source_type,
-                  public_price_mode: isAuctionOriginSource(source_type)
-                    ? isAuctionOriginSource(values.source_type)
-                      ? values.public_price_mode
-                      : "contact"
-                    : "fixed",
-                });
-              }}
-            >
-              {VEHICLE_SOURCE_TYPES.map((value) => (
-                <option key={value} value={value}>
-                  {SOURCE_LABEL[value]}
-                </option>
-              ))}
-            </AdminSelect>
-          </AdminField>
-        </div>
-      </FormSection>
+      <CompactReadiness
+        requiredDone={requiredDone}
+        requiredTotal={requiredChecks.length}
+        checks={requiredChecks}
+        onSelect={goToCheck}
+      />
 
-      <FormSection
-        id="step-especificaciones"
-        index="02"
-        title="Especificaciones"
-        hint="Kilometraje, transmisión, motor, tracción, exterior e interior."
-      >
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <div className="sm:col-span-2 xl:col-span-1">
-            <p className="text-[13px] font-medium text-[var(--admin-text-secondary)]">Kilometraje</p>
-            <div className="mt-1.5 grid grid-cols-[minmax(0,1fr)_8.5rem] gap-2">
+      {step === 0 ? (
+        <FormSection title="Información del vehículo" hint="Datos básicos para identificar la unidad.">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <AdminField label="Año" required error={fieldErrors.year}>
               <AdminInput
-                name="mileage"
+                ref={yearRef}
+                name="year"
                 type="number"
-                min={0}
-                value={values.mileage}
-                onChange={(event) => patchValues({ mileage: event.target.value })}
-                className="mt-0"
+                min={1980}
+                max={2100}
+                inputMode="numeric"
+                value={values.year}
+                onChange={(event) => patchValues({ year: event.target.value })}
               />
-              <AdminSelect
-                name="mileage_unit"
-                value={values.mileage_unit}
-                onChange={(event) => patchValues({ mileage_unit: event.target.value === "km" ? "km" : "mi" })}
-                className="mt-0"
-              >
-                <option value="mi">Millas</option>
-                <option value="km">Kilómetros</option>
-              </AdminSelect>
+            </AdminField>
+            <AdminField label="Marca" required error={fieldErrors.make}>
+              <AdminInput
+                ref={makeRef}
+                name="make"
+                value={values.make}
+                onChange={(event) => patchValues({ make: event.target.value })}
+                placeholder="Toyota"
+                autoComplete="off"
+              />
+            </AdminField>
+            <AdminField label="Modelo" required error={fieldErrors.model}>
+              <AdminInput
+                ref={modelRef}
+                name="model"
+                value={values.model}
+                onChange={(event) => patchValues({ model: event.target.value })}
+                placeholder="RAV4"
+                autoComplete="off"
+              />
+            </AdminField>
+            <AdminField label="Versión / Trim">
+              <AdminInput
+                name="trim"
+                value={values.trim}
+                onChange={(event) => patchValues({ trim: event.target.value })}
+                placeholder="XLE"
+              />
+            </AdminField>
+            <AdminField label="VIN" hint="17 caracteres. Opcional." error={fieldErrors.vin}>
+              <AdminInput
+                ref={vinRef}
+                name="vin"
+                maxLength={17}
+                value={values.vin}
+                onChange={(event) => patchValues({ vin: event.target.value.toUpperCase() })}
+                className="font-mono uppercase"
+                placeholder="Opcional"
+              />
+            </AdminField>
+            <div>
+              <p className="text-[13px] font-medium text-[var(--admin-text-secondary)]">Kilometraje</p>
+              <div className="mt-1.5 grid grid-cols-[minmax(0,1fr)_7.5rem] gap-2">
+                <AdminInput
+                  name="mileage"
+                  type="number"
+                  min={0}
+                  inputMode="numeric"
+                  value={values.mileage}
+                  onChange={(event) => patchValues({ mileage: event.target.value })}
+                  className="mt-0"
+                />
+                <AdminSelect
+                  name="mileage_unit"
+                  value={values.mileage_unit}
+                  onChange={(event) => patchValues({ mileage_unit: event.target.value === "km" ? "km" : "mi" })}
+                  className="mt-0"
+                >
+                  <option value="mi">Millas</option>
+                  <option value="km">Km</option>
+                </AdminSelect>
+              </div>
+            </div>
+            <div className="sm:col-span-2">
+              {auctionOrigin ? (
+                <>
+                  <p className="text-[13px] font-medium text-[var(--admin-text-secondary)]">
+                    Precio público <span className="text-[var(--admin-brand)]">*</span>
+                  </p>
+                  <fieldset className="mt-2 grid gap-2 sm:grid-cols-2">
+                    <legend className="sr-only">Modo de precio público</legend>
+                    {PUBLIC_PRICE_MODES.map((value) => (
+                      <label
+                        key={value}
+                        className="flex min-h-11 items-center gap-2 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)] px-3 text-sm"
+                      >
+                        <input
+                          type="radio"
+                          name="public_price_mode"
+                          value={value}
+                          checked={mode === value}
+                          onChange={() => patchValues({ public_price_mode: value })}
+                        />
+                        {PUBLIC_PRICE_MODE_LABELS[value]}
+                      </label>
+                    ))}
+                  </fieldset>
+                </>
+              ) : (
+                <input type="hidden" name="public_price_mode" value="fixed" />
+              )}
+              {showAmount ? (
+                <div className="mt-3 grid grid-cols-[minmax(0,1fr)_7.5rem] gap-2">
+                  <AdminField label="Precio" required={false} error={fieldErrors.price}>
+                    <AdminInput
+                      ref={priceRef}
+                      name="price"
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      inputMode="decimal"
+                      value={values.price}
+                      onChange={(event) => patchValues({ price: event.target.value })}
+                      className="mt-0"
+                    />
+                  </AdminField>
+                  <AdminField label="Moneda">
+                    <AdminSelect
+                      name="currency"
+                      value={values.currency}
+                      onChange={(event) =>
+                        patchValues({ currency: event.target.value === "DOP" ? "DOP" : "USD" })
+                      }
+                      className="mt-0"
+                    >
+                      <option value="USD">USD</option>
+                      <option value="DOP">DOP</option>
+                    </AdminSelect>
+                  </AdminField>
+                </div>
+              ) : (
+                <>
+                  <input type="hidden" name="price" value="" />
+                  <input type="hidden" name="currency" value={values.currency} />
+                </>
+              )}
+              <p className="mt-2 text-sm text-[var(--admin-text-muted)]">
+                Vista cliente: <span className="font-semibold text-[var(--admin-text)]">{pricePreview}</span>
+              </p>
             </div>
           </div>
-          <AdminField label="Color exterior">
-            <AdminInput
-              name="exterior_color"
-              value={values.exterior_color}
-              onChange={(event) => patchValues({ exterior_color: event.target.value })}
-            />
-          </AdminField>
-          <AdminField label="Color interior">
-            <AdminInput
-              name="interior_color"
-              value={values.interior_color}
-              onChange={(event) => patchValues({ interior_color: event.target.value })}
-            />
-          </AdminField>
-          <AdminField label="Motor">
-            <AdminInput
-              name="engine"
-              value={values.engine}
-              onChange={(event) => patchValues({ engine: event.target.value })}
-            />
-          </AdminField>
-          <AdminField label="Transmisión">
-            <AdminSelect
-              name="transmission"
-              value={values.transmission}
-              onChange={(event) => patchValues({ transmission: event.target.value })}
-            >
-              <option value="">Seleccionar</option>
-              {withCurrentOption(ADMIN_TRANSMISSION_OPTIONS, values.transmission).map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </AdminSelect>
-          </AdminField>
-          <AdminField label="Tracción">
-            <AdminSelect
-              name="drivetrain"
-              value={values.drivetrain}
-              onChange={(event) => patchValues({ drivetrain: event.target.value })}
-            >
-              <option value="">Seleccionar</option>
-              {withCurrentOption(ADMIN_DRIVETRAIN_OPTIONS, values.drivetrain).map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </AdminSelect>
-          </AdminField>
-          <AdminField label="Combustible">
-            <AdminSelect
-              name="fuel"
-              value={values.fuel}
-              onChange={(event) => patchValues({ fuel: event.target.value })}
-            >
-              <option value="">Seleccionar</option>
-              {withCurrentOption(ADMIN_FUEL_OPTIONS, values.fuel).map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </AdminSelect>
-          </AdminField>
-          <AdminField label="Condición">
-            <AdminSelect
-              name="condition"
-              value={values.condition}
-              onChange={(event) => patchValues({ condition: event.target.value })}
-            >
-              <option value="">Seleccionar</option>
-              {withCurrentOption(ADMIN_CONDITION_OPTIONS, values.condition).map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </AdminSelect>
-          </AdminField>
-        </div>
-      </FormSection>
 
-      <FormSection
-        id="step-fotos"
-        index="03"
-        title="Fotos"
-        hint="JPG, PNG o WebP · máximo 8 MB. Principal, exterior, interior y detalles."
-      >
-        <div className="mb-4 grid gap-3 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] p-4 sm:grid-cols-2">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--admin-success)]">
-              Buenas fotos
+          <div id="availability-selector" className="mt-6">
+            <p className="text-[13px] font-medium text-[var(--admin-text-secondary)]">
+              Disponibilidad <span className="text-[var(--admin-brand)]">*</span>
             </p>
-            <ul className="mt-2 grid gap-1.5 text-sm text-[var(--admin-text-secondary)]">
-              <li>Vehículo completo visible</li>
-              <li>Buena iluminación</li>
-              <li>Encuadre limpio horizontal</li>
-              <li>Imagen nítida</li>
-            </ul>
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--admin-warning)]">
-              Evitar
+            <p className="mt-1 text-xs text-[var(--admin-text-muted)]">
+              Obligatorio para publicar. Un borrador no aparece en el website.
             </p>
-            <ul className="mt-2 grid gap-1.5 text-sm text-[var(--admin-text-secondary)]">
-              <li>Vehículo recortado</li>
-              <li>Foto oscura</li>
-              <li>Captura de pantalla / marca de agua</li>
-              <li>Recorte vertical extremo</li>
-            </ul>
+            <div className="mt-3 grid gap-2 sm:grid-cols-3">
+              {AVAILABILITY_OPTIONS.map((option) => {
+                const active = status === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => applyAvailability(option.value)}
+                    className={`rounded-xl border px-4 py-3 text-left transition ${
+                      active
+                        ? "border-[var(--admin-text)] bg-[var(--admin-text)] text-white"
+                        : "border-[var(--admin-border)] bg-[var(--admin-surface)] text-[var(--admin-text)] hover:bg-[var(--admin-surface-muted)]"
+                    }`}
+                  >
+                    <span className="block text-sm font-semibold">{option.label}</span>
+                    <span className={`mt-0.5 block text-xs ${active ? "text-white/70" : "text-[var(--admin-text-muted)]"}`}>
+                      {option.hint}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            {status === "draft" || status === "hidden" ? (
+              <p className="mt-2 text-xs text-[var(--admin-warning)]">
+                Estado actual: {vehicleStatusLabel(status)}. Elige Disponible, Reservado o Vendido para poder publicar.
+              </p>
+            ) : null}
           </div>
-        </div>
-        <p className="mb-4 text-sm text-[var(--admin-text-secondary)]">
-          {saved
-            ? "Arrastra para reordenar. La portada aparece primero en el website."
-            : "Puedes elegir fotos ahora. Se suben después de crear el vehículo."}
-        </p>
-        <div
-          onDragOver={(event) => {
-            event.preventDefault();
-            setDragOver(true);
-          }}
-          onDragLeave={() => setDragOver(false)}
-          onDrop={onDrop}
-          className={`rounded-xl border border-dashed px-4 py-10 text-center transition duration-200 ${
-            dragOver
-              ? "border-[var(--admin-brand)] bg-[var(--admin-brand)]/8"
-              : "border-[var(--admin-border-strong)] bg-[var(--admin-surface-muted)]"
-          }`}
+
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            <AdminField label="Número de inventario">
+              <AdminInput
+                name="stock_number"
+                value={values.stock_number}
+                onChange={(event) => patchValues({ stock_number: event.target.value })}
+                placeholder="VM-001"
+              />
+            </AdminField>
+            <AdminField label="Origen">
+              <AdminSelect
+                name="source_type"
+                value={values.source_type}
+                onChange={(event) => {
+                  const source_type = event.target.value as VehicleFormValues["source_type"];
+                  patchValues({
+                    source_type,
+                    public_price_mode: isAuctionOriginSource(source_type)
+                      ? isAuctionOriginSource(values.source_type)
+                        ? values.public_price_mode
+                        : "contact"
+                      : "fixed",
+                  });
+                }}
+              >
+                {VEHICLE_SOURCE_TYPES.map((value) => (
+                  <option key={value} value={value}>
+                    {SOURCE_LABEL[value]}
+                  </option>
+                ))}
+              </AdminSelect>
+            </AdminField>
+          </div>
+        </FormSection>
+      ) : null}
+
+      {step === 1 ? (
+        <FormSection
+          title="Fotos"
+          hint="Sube desde el teléfono. La portada es obligatoria para publicar."
         >
-          <ImagePlus className="mx-auto h-7 w-7 text-[var(--admin-text-muted)]" strokeWidth={1.6} />
-          <p className="mt-3 text-sm font-medium text-[var(--admin-text)]">Arrastra las fotos aquí</p>
-          <p className="mt-1 text-xs text-[var(--admin-text-muted)]">JPG, PNG o WebP · máximo 8 MB por imagen</p>
-          <AdminSecondaryButton
-            type="button"
-            className="mt-4"
-            onClick={() => fileRef.current?.click()}
-            disabled={uploading}
-          >
-            {uploading ? "Subiendo fotos..." : "Seleccionar fotos"}
-          </AdminSecondaryButton>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            multiple
-            className="hidden"
-            onChange={(event) => {
-              if (event.target.files) addFiles(event.target.files);
-              event.target.value = "";
+          {coverNotice ? (
+            <div className="mb-4 rounded-lg border border-[var(--admin-brand)]/20 bg-[var(--admin-brand)]/8 px-4 py-3 text-sm text-[var(--admin-text)]">
+              {coverNotice}
+            </div>
+          ) : null}
+          <div
+            onDragOver={(event) => {
+              event.preventDefault();
+              setDragOver(true);
             }}
-          />
-        </div>
-        {previewPhotos.length === 0 ? (
-          <p className="mt-4 rounded-xl border border-dashed border-[var(--admin-border)] px-4 py-8 text-center text-sm text-[var(--admin-text-muted)]">
-            Todavía no hay fotos. El catálogo se ve mejor con una portada clara.
-          </p>
-        ) : (
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {previewPhotos.map((photo, index) => {
-              const savedPhoto = "storage_path" in photo;
-              const src = savedPhoto
-                ? vehicleImageAdminPath(photo.storage_path)
-                : photo.preview;
-              const isCover = savedPhoto ? photo.is_cover : photo.isCover;
-              return (
-                <li
-                  key={photo.id}
-                  draggable
-                  onDragStart={() => {
-                    dragIndex.current = index;
-                  }}
-                  onDragOver={(event) => event.preventDefault()}
-                  onDrop={() => {
-                    const from = dragIndex.current;
-                    dragIndex.current = null;
-                    if (from == null || from === index) return;
-                    if (savedPhoto) {
-                      void moveSaved(from, index);
-                    } else {
-                      moveLocal(from, index);
-                    }
-                  }}
-                  className="overflow-hidden rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)]"
-                >
-                  <div className="relative">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={src} alt="" className="h-44 w-full object-cover" />
-                    {isCover ? (
-                      <span className="absolute left-2 top-2 rounded-md bg-[var(--admin-nav)] px-2 py-1 text-[10px] font-semibold tracking-[0.12em] text-white">
-                        PORTADA
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="grid gap-2 p-3">
-                    <input
-                      defaultValue={savedPhoto ? photo.alt_text ?? "" : photo.alt}
-                      onChange={(event) => {
-                        if (!savedPhoto) {
-                          const value = event.target.value;
-                          setLocalPhotos((current) =>
-                            current.map((item) =>
-                              item.id === photo.id ? { ...item, alt: value } : item,
-                            ),
-                          );
-                        }
-                      }}
-                      onBlur={(event) => {
-                        if (savedPhoto && vehicle?.id) {
-                          void updateVehiclePhoto({
-                            id: photo.id,
-                            vehicleId: vehicle.id,
-                            alt_text: event.target.value,
-                          });
-                        }
-                      }}
-                      placeholder="Descripción de la foto"
-                      className="h-10 rounded-lg border border-[var(--admin-border)] px-2 text-sm"
-                    />
-                    <div className="flex flex-wrap gap-2">
+            onDragLeave={() => setDragOver(false)}
+            onDrop={onDrop}
+            className={`rounded-xl border border-dashed px-4 py-8 text-center transition ${
+              dragOver
+                ? "border-[var(--admin-brand)] bg-[var(--admin-brand)]/8"
+                : "border-[var(--admin-border-strong)] bg-[var(--admin-surface-muted)]"
+            }`}
+          >
+            <ImagePlus className="mx-auto h-7 w-7 text-[var(--admin-text-muted)]" strokeWidth={1.6} />
+            <p className="mt-3 text-sm font-medium text-[var(--admin-text)]">
+              {saved ? "Toca para subir fotos" : "Elige fotos ahora; se suben al guardar"}
+            </p>
+            <p className="mt-1 text-xs text-[var(--admin-text-muted)]">JPG, PNG o WebP · máx. 8 MB</p>
+            <AdminSecondaryButton
+              type="button"
+              className="mt-4"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+            >
+              {uploading ? "Subiendo..." : "Seleccionar fotos"}
+            </AdminSecondaryButton>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              capture="environment"
+              className="hidden"
+              onChange={(event) => {
+                if (event.target.files) addFiles(event.target.files);
+                event.target.value = "";
+              }}
+            />
+          </div>
+
+          {previewPhotos.length === 0 ? (
+            <p className="mt-4 rounded-xl border border-dashed border-[var(--admin-border)] px-4 py-8 text-center text-sm text-[var(--admin-text-muted)]">
+              Todavía no hay fotos. Agrega al menos una para la portada.
+            </p>
+          ) : (
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {previewPhotos.map((photo, index) => {
+                const savedPhoto = "storage_path" in photo;
+                const src = savedPhoto ? vehicleImageAdminPath(photo.storage_path) : photo.preview;
+                const isCover = savedPhoto ? Boolean(photo.is_cover) : photo.isCover;
+                return (
+                  <li
+                    key={photo.id}
+                    className="overflow-hidden rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)]"
+                  >
+                    <div className="relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={src} alt="" className="h-44 w-full object-cover" />
+                      {isCover ? (
+                        <span className="absolute left-2 top-2 rounded-md bg-[var(--admin-nav)] px-2 py-1 text-[10px] font-semibold tracking-[0.12em] text-white">
+                          PORTADA
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="flex flex-wrap gap-2 p-3">
                       <button
                         type="button"
-                        className={`min-h-10 rounded-lg px-3 text-xs font-medium ${
+                        className={`min-h-11 flex-1 rounded-lg px-3 text-xs font-semibold ${
                           isCover
                             ? "bg-[var(--admin-text)] text-white"
                             : "border border-[var(--admin-border)]"
@@ -989,6 +1034,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
                                 setError(result.error);
                                 return;
                               }
+                              setCoverNotice("Portada actualizada.");
                               setNotice("Foto de portada actualizada.");
                               router.refresh();
                             });
@@ -996,244 +1042,56 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
                             setLocalPhotos((current) =>
                               current.map((item) => ({ ...item, isCover: item.id === photo.id })),
                             );
+                            setCoverNotice("Portada seleccionada.");
+                            setDirty(true);
                           }
                         }}
                       >
-                        {isCover ? "Portada" : "Hacer portada"}
+                        {isCover ? "Portada actual" : "Usar como portada"}
                       </button>
                       <button
                         type="button"
-                        className="min-h-10 rounded-lg border border-[var(--admin-danger)]/20 px-3 text-xs text-[var(--admin-danger)]"
+                        className="min-h-11 rounded-lg border border-[var(--admin-danger)]/20 px-3 text-xs text-[var(--admin-danger)]"
                         onClick={() => {
                           if (savedPhoto && vehicle?.id) {
                             setConfirm({ type: "photo", id: photo.id, storagePath: photo.storage_path });
                           } else {
                             setLocalPhotos((current) => current.filter((item) => item.id !== photo.id));
+                            setDirty(true);
                           }
                         }}
                       >
                         Eliminar
                       </button>
+                      {savedPhoto ? (
+                        <button
+                          type="button"
+                          className="min-h-11 rounded-lg border border-[var(--admin-border)] px-3 text-xs"
+                          disabled={index === 0}
+                          onClick={() => void moveSaved(index, Math.max(0, index - 1))}
+                        >
+                          Subir
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="min-h-11 rounded-lg border border-[var(--admin-border)] px-3 text-xs"
+                          disabled={index === 0}
+                          onClick={() => moveLocal(index, Math.max(0, index - 1))}
+                        >
+                          Subir
+                        </button>
+                      )}
                     </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </FormSection>
-
-      <FormSection
-        id="step-precio"
-        index="04"
-        title="Precio"
-        hint="Fijo, desde, estimado o consultar. El precio público aparece en la ficha."
-      >
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
-          <div>
-            {auctionOrigin ? (
-              <>
-                <p className="text-[13px] font-medium text-[var(--admin-text-secondary)]">
-                  Precio público <span className="text-[var(--admin-brand)]">*</span>
-                </p>
-                <p className="mt-1 text-xs font-normal text-[var(--admin-text-muted)]">
-                  Precio fijo, desde, o “consultar precio”. Los valores de subasta no se copian como
-                  precio Valcron. “Disponible mediante subasta” es el origen, no el precio.
-                </p>
-                <fieldset className="mt-3 grid gap-2">
-                  <legend className="sr-only">Modo de precio público</legend>
-                  {PUBLIC_PRICE_MODES.map((value) => (
-                    <label key={value} className="flex min-h-10 items-center gap-2 text-sm text-[var(--admin-text)]">
-                      <input
-                        type="radio"
-                        name="public_price_mode"
-                        value={value}
-                        checked={mode === value}
-                        onChange={() => patchValues({ public_price_mode: value })}
-                      />
-                      {PUBLIC_PRICE_MODE_LABELS[value]}
-                    </label>
-                  ))}
-                </fieldset>
-              </>
-            ) : (
-              <>
-                <input type="hidden" name="public_price_mode" value="fixed" />
-                <p className="text-[13px] font-medium text-[var(--admin-text-secondary)]">
-                  Precio <span className="text-[var(--admin-brand)]">*</span>
-                </p>
-                <p className="mt-1 text-xs font-normal text-[var(--admin-text-muted)]">
-                  Obligatorio para publicar. Opcional al guardar el borrador.
-                </p>
-              </>
-            )}
-            {showAmount ? (
-              <div className="mt-3 grid grid-cols-[minmax(0,1fr)_7.5rem] gap-2">
-                <AdminInput
-                  ref={priceRef}
-                  name="price"
-                  type="number"
-                  min={0}
-                  step="0.01"
-                  value={values.price}
-                  onChange={(event) => patchValues({ price: event.target.value })}
-                  className="mt-0"
-                  aria-invalid={Boolean(fieldErrors.price)}
-                />
-                <AdminSelect
-                  name="currency"
-                  value={values.currency}
-                  onChange={(event) => patchValues({ currency: event.target.value === "DOP" ? "DOP" : "USD" })}
-                  className="mt-0"
-                >
-                  <option value="USD">USD</option>
-                  <option value="DOP">DOP</option>
-                </AdminSelect>
-              </div>
-            ) : (
-              <>
-                <input type="hidden" name="price" value="" />
-                <input type="hidden" name="currency" value={values.currency} />
-              </>
-            )}
-            {fieldErrors.price ? (
-              <p role="alert" className="mt-1.5 text-xs text-[var(--admin-danger)]">
-                {fieldErrors.price}
-              </p>
-            ) : null}
-            <p className="mt-2 text-sm text-[var(--admin-text-muted)]">Vista para el cliente</p>
-            <p className="mt-1 text-lg font-semibold tabular-nums text-[var(--admin-text)]">{pricePreview}</p>
-          </div>
-          <AdminField
-            label="Descripción"
-            hint={
-              values.description.trim().length < 20
-                ? "Obligatorio para publicar: al menos 20 caracteres."
-                : `${values.description.trim().length} caracteres`
-            }
-          >
-            <AdminTextArea
-              name="description"
-              value={values.description}
-              onChange={(event) => patchValues({ description: event.target.value })}
-            />
-          </AdminField>
-        </div>
-      </FormSection>
-
-      <FormSection
-        id="step-publicacion"
-        index="05"
-        title="Publicación"
-        hint={
-          saved
-            ? "Descripción, destacado, vista previa y publicar. Publicado = visible en el website."
-            : "Guarda como borrador, completa fotos y precio, vista previa, luego publica."
-        }
-      >
-        <PublicationPanel
-          vehicle={vehicle}
-          year={Number(values.year) || null}
-          make={values.make}
-          model={values.model}
-          vin={values.vin}
-          mileage={Number(values.mileage) || null}
-          exteriorColor={values.exterior_color}
-          status={status}
-          published={published}
-          featured={featured}
-          saved={saved}
-          price={Number(price || 0)}
-          description={description}
-          extraPhotoCount={localPhotos.length}
-          sourceType={values.source_type}
-          publicPriceMode={values.public_price_mode}
-          onFeatured={(next) => {
-            patchValues({ featured: next });
-            if (saved && vehicle?.id) {
-              void setVehicleFeatured(vehicle.id, next).then((result) => {
-                if (result.error) {
-                  setError(result.error);
-                  patchValues({ featured: !next });
-                  return;
-                }
-                setNotice(next ? "Unidad destacada en portada." : "Ya no aparece como destacada.");
-                router.refresh();
-              });
-            }
-          }}
-          onPublish={() => setConfirm({ type: "publish" })}
-          onUnpublish={() => setConfirm({ type: "unpublish" })}
-        />
-        {saved ? (
-          <div className="mt-5">
-            {status === "draft" ? (
-              <p className="mb-3 text-sm text-[var(--admin-text-secondary)]">
-                Siguiente paso: marcar disponible, luego vista previa y publicar en el website.
-              </p>
-            ) : null}
-            <p className="mb-2 text-[13px] font-medium text-[var(--admin-text-secondary)]">Estado de la unidad</p>
-            <div className="flex flex-wrap gap-2">
-              {VEHICLE_STATUSES.map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  className={`min-h-10 rounded-lg px-3 text-sm font-medium transition duration-200 ${
-                    status === value
-                      ? "bg-[var(--admin-text)] text-white"
-                      : "border border-[var(--admin-border)] text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface-muted)]"
-                  }`}
-                  onClick={() => {
-                    if (value === "sold") {
-                      setConfirm({ type: "sold" });
-                      return;
-                    }
-                    setStatus(value);
-                    if ((value === "draft" || value === "hidden") && published) {
-                      setPublished(false);
-                    }
-                    if (vehicle?.id) {
-                      void setVehicleStatus(vehicle.id, value).then((result) => {
-                        if (result.error) {
-                          setError(result.error);
-                          return;
-                        }
-                        setNotice(
-                          value === "reserved"
-                            ? "Unidad marcada como reservada."
-                            : value === "available"
-                              ? "Unidad marcada como disponible."
-                              : value === "hidden"
-                                ? "Unidad oculta."
-                                : "Estado actualizado.",
-                        );
-                        router.refresh();
-                      });
-                    }
-                  }}
-                >
-                  {statusActionLabel(value)}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <p className="mt-5 text-sm text-[var(--admin-text-secondary)]">
-            El vehículo se creará como borrador y no aparecerá en el website hasta que lo publiques.
-          </p>
-        )}
-        <div className="mt-6 flex flex-wrap gap-3">
-          <AdminPrimaryButton type="submit" disabled={saving || pending || uploading}>
-            {saving || pending ? "Guardando..." : saved ? "Guardar cambios" : "Guardar vehículo"}
-          </AdminPrimaryButton>
-          {saved && vehicle?.id ? (
-            <a href={`/admin/inventario/${vehicle.id}/vista-previa`} target="_blank" rel="noreferrer">
-              <AdminSecondaryButton type="button">Vista previa</AdminSecondaryButton>
-            </a>
-          ) : null}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
           {saved && localPhotos.length > 0 ? (
             <AdminSecondaryButton
               type="button"
+              className="mt-4"
               onClick={() => {
                 void retryLocalUpload(vehicle!.id).then((result) => {
                   if (!result.failed) {
@@ -1244,18 +1102,268 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
               }}
               disabled={uploading}
             >
-              {uploading ? "Subiendo fotos..." : "Reintentar fotos"}
+              {uploading ? "Subiendo fotos..." : "Reintentar fotos pendientes"}
             </AdminSecondaryButton>
           ) : null}
-        </div>
-        {saved ? (
-          <div className="mt-8 border-t border-[var(--admin-border)] pt-4">
-            <AdminDangerButton type="button" disabled={saving || pending} onClick={() => setConfirm({ type: "delete" })}>
-              Eliminar vehículo
-            </AdminDangerButton>
+        </FormSection>
+      ) : null}
+
+      {step === 2 ? (
+        <FormSection title="Detalles" hint="Descripción y especificaciones para la ficha pública.">
+          <AdminField
+            label="Descripción"
+            required
+            hint={
+              values.description.trim().length < 20
+                ? "Mínimo 20 caracteres para publicar."
+                : `${values.description.trim().length} caracteres`
+            }
+          >
+            <AdminTextArea
+              ref={descriptionRef}
+              name="description"
+              value={values.description}
+              onChange={(event) => patchValues({ description: event.target.value })}
+              placeholder="Describe la unidad, estado y puntos clave para el cliente."
+            />
+          </AdminField>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <AdminField label="Color exterior">
+              <AdminInput
+                name="exterior_color"
+                value={values.exterior_color}
+                onChange={(event) => patchValues({ exterior_color: event.target.value })}
+              />
+            </AdminField>
+            <AdminField label="Color interior">
+              <AdminInput
+                name="interior_color"
+                value={values.interior_color}
+                onChange={(event) => patchValues({ interior_color: event.target.value })}
+              />
+            </AdminField>
+            <AdminField label="Motor">
+              <AdminInput
+                name="engine"
+                value={values.engine}
+                onChange={(event) => patchValues({ engine: event.target.value })}
+              />
+            </AdminField>
+            <AdminField label="Transmisión">
+              <AdminSelect
+                name="transmission"
+                value={values.transmission}
+                onChange={(event) => patchValues({ transmission: event.target.value })}
+              >
+                <option value="">Seleccionar</option>
+                {withCurrentOption(ADMIN_TRANSMISSION_OPTIONS, values.transmission).map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </AdminSelect>
+            </AdminField>
+            <AdminField label="Tracción">
+              <AdminSelect
+                name="drivetrain"
+                value={values.drivetrain}
+                onChange={(event) => patchValues({ drivetrain: event.target.value })}
+              >
+                <option value="">Seleccionar</option>
+                {withCurrentOption(ADMIN_DRIVETRAIN_OPTIONS, values.drivetrain).map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </AdminSelect>
+            </AdminField>
+            <AdminField label="Combustible">
+              <AdminSelect
+                name="fuel"
+                value={values.fuel}
+                onChange={(event) => patchValues({ fuel: event.target.value })}
+              >
+                <option value="">Seleccionar</option>
+                {withCurrentOption(ADMIN_FUEL_OPTIONS, values.fuel).map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </AdminSelect>
+            </AdminField>
+            <AdminField label="Condición">
+              <AdminSelect
+                name="condition"
+                value={values.condition}
+                onChange={(event) => patchValues({ condition: event.target.value })}
+              >
+                <option value="">Seleccionar</option>
+                {withCurrentOption(ADMIN_CONDITION_OPTIONS, values.condition).map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </AdminSelect>
+            </AdminField>
           </div>
-        ) : null}
-      </FormSection>
+        </FormSection>
+      ) : null}
+
+      {step === 3 ? (
+        <FormSection title="Revisar y publicar" hint="Confirma la ficha antes de hacerla visible.">
+          <div className="grid gap-4 sm:grid-cols-[8.5rem_minmax(0,1fr)]">
+            {coverSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={coverSrc} alt="" className="h-28 w-full rounded-lg object-cover sm:h-24" />
+            ) : (
+              <div className="flex h-28 items-center justify-center rounded-lg bg-[var(--admin-surface-muted)] text-xs text-[var(--admin-text-muted)] sm:h-24">
+                Sin portada
+              </div>
+            )}
+            <div className="min-w-0">
+              <p className="font-display text-lg font-semibold text-[var(--admin-text)]">
+                {values.year || "—"} {values.make || "—"} {values.model || "—"}
+              </p>
+              <p className="mt-1 text-sm text-[var(--admin-text-secondary)]">
+                {values.trim || "Sin versión"} · {vehicleStatusLabel(status)} · {pricePreview}
+              </p>
+              <p className="mt-2 line-clamp-3 text-sm text-[var(--admin-text-muted)]">
+                {values.description.trim() || "Sin descripción todavía."}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+              Destacar en portada
+            </p>
+            <label className="mt-3 flex min-h-12 cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                checked={featured}
+                onChange={(event) => {
+                  const next = event.target.checked;
+                  patchValues({ featured: next });
+                  if (saved && vehicle?.id) {
+                    void setVehicleFeatured(vehicle.id, next).then((result) => {
+                      if (result.error) {
+                        setError(result.error);
+                        patchValues({ featured: !next });
+                        return;
+                      }
+                      setNotice(next ? "Marcado para destacar en Home (solo si está publicado)." : "Ya no está destacado.");
+                      router.refresh();
+                    });
+                  }
+                }}
+                className="mt-1 h-4 w-4 accent-[var(--admin-brand)]"
+              />
+              <span className="text-sm leading-5 text-[var(--admin-text)]">
+                Destacar en la página de inicio
+                <span className="mt-1 block text-xs text-[var(--admin-text-muted)]">
+                  No publica el vehículo. Solo resalta unidades ya publicadas en Home.
+                </span>
+              </span>
+            </label>
+          </div>
+
+          {!readyToPublish ? (
+            <div className="mt-4 rounded-xl border border-[var(--admin-warning)]/25 bg-[var(--admin-warning)]/8 px-4 py-3 text-sm text-[var(--admin-text)]">
+              <p className="font-semibold">Aún no se puede publicar</p>
+              <ul className="mt-2 grid gap-1.5">
+                {requiredChecks
+                  .filter((check) => !check.ok)
+                  .map((check) => (
+                    <li key={check.id}>
+                      <button
+                        type="button"
+                        className="text-left font-medium text-[var(--admin-brand)] underline-offset-2 hover:underline"
+                        onClick={() => goToCheck(check)}
+                      >
+                        {check.label}
+                      </button>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          ) : (
+            <p className="mt-4 rounded-xl border border-[var(--admin-success)]/20 bg-[var(--admin-success-bg)] px-4 py-3 text-sm text-[var(--admin-success)]">
+              Requisitos completos. Puedes publicar este vehículo.
+            </p>
+          )}
+
+          <div className="mt-5 hidden flex-wrap gap-3 lg:flex">
+            <AdminSecondaryButton type="button" onClick={() => saveDraft()} disabled={busy}>
+              {busy && saving ? "Guardando..." : "Guardar borrador"}
+            </AdminSecondaryButton>
+            {previewHref ? (
+              <a href={previewHref} target="_blank" rel="noreferrer">
+                <AdminSecondaryButton type="button">Vista previa</AdminSecondaryButton>
+              </a>
+            ) : null}
+            {published ? (
+              <AdminSecondaryButton type="button" onClick={() => setConfirm({ type: "unpublish" })} disabled={busy}>
+                Retirar del website
+              </AdminSecondaryButton>
+            ) : (
+              <AdminPrimaryButton
+                type="button"
+                onClick={() => setConfirm({ type: "publish" })}
+                disabled={busy || !saved || !readyToPublish}
+              >
+                {publishing ? "Publicando..." : "Publicar vehículo"}
+              </AdminPrimaryButton>
+            )}
+          </div>
+
+          {saved ? (
+            <div className="mt-8 border-t border-[var(--admin-border)] pt-4">
+              <AdminDangerButton type="button" disabled={busy} onClick={() => setConfirm({ type: "delete" })}>
+                Eliminar vehículo
+              </AdminDangerButton>
+            </div>
+          ) : null}
+        </FormSection>
+      ) : null}
+
+      {/* Desktop step actions */}
+      <div className="hidden items-center justify-between gap-3 lg:flex">
+        <AdminSecondaryButton
+          type="button"
+          disabled={step === 0 || busy}
+          onClick={() => setStep((current) => (Math.max(0, current - 1) as EditorStep))}
+        >
+          <ChevronLeft className="mr-1 h-4 w-4" />
+          Atrás
+        </AdminSecondaryButton>
+        <div className="flex flex-wrap gap-2">
+          <AdminSecondaryButton type="button" onClick={() => saveDraft()} disabled={busy}>
+            {saving ? "Guardando..." : "Guardar borrador"}
+          </AdminSecondaryButton>
+          {step < 3 ? (
+            <AdminPrimaryButton type="button" onClick={continueStep} disabled={busy}>
+              Continuar
+              <ChevronRight className="ml-1 h-4 w-4" />
+            </AdminPrimaryButton>
+          ) : null}
+        </div>
+      </div>
+
+      <StickyActionBar
+        step={step}
+        busy={busy}
+        saving={saving}
+        publishing={publishing}
+        saved={saved}
+        published={published}
+        readyToPublish={readyToPublish}
+        previewHref={previewHref}
+        onBack={() => setStep((current) => (Math.max(0, current - 1) as EditorStep))}
+        onSave={() => saveDraft()}
+        onContinue={continueStep}
+        onPublish={() => setConfirm({ type: "publish" })}
+        onUnpublish={() => setConfirm({ type: "unpublish" })}
+      />
 
       <AdminConfirmDialog
         open={Boolean(confirm)}
@@ -1293,7 +1401,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
                   : "Publicar"
         }
         danger={confirm?.type === "delete" || confirm?.type === "photo" || confirm?.type === "unpublish"}
-        pending={pending}
+        pending={pending || publishing}
         onClose={() => setConfirm(null)}
         onConfirm={() => {
           if (!confirm) return;
@@ -1308,6 +1416,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
           if (confirm.type === "sold") {
             setStatus("sold");
             setConfirm(null);
+            setDirty(true);
             if (saved && vehicle?.id) {
               void setVehicleStatus(vehicle.id, "sold").then((result) => {
                 if (result.error) {
@@ -1356,142 +1465,167 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
   );
 }
 
-function PublicationPanel({
-  vehicle,
-  year,
-  make,
-  model,
-  vin,
-  mileage,
-  exteriorColor,
-  status,
-  published,
-  featured,
+function CompactReadiness({
+  requiredDone,
+  requiredTotal,
+  checks,
+  onSelect,
+}: {
+  requiredDone: number;
+  requiredTotal: number;
+  checks: PublicationCheck[];
+  onSelect: (check: PublicationCheck) => void;
+}) {
+  const missing = checks.filter((check) => !check.ok);
+  return (
+    <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] px-4 py-3 shadow-[var(--admin-shadow)]">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-sm font-semibold text-[var(--admin-text)]">
+          {requiredDone} de {requiredTotal} requisitos
+        </p>
+        <div className="h-2 w-28 overflow-hidden rounded-full bg-[var(--admin-surface-muted)]">
+          <div
+            className="h-full rounded-full bg-[var(--admin-success)] transition-all"
+            style={{ width: `${requiredTotal ? (requiredDone / requiredTotal) * 100 : 0}%` }}
+          />
+        </div>
+      </div>
+      {missing.length > 0 ? (
+        <ul className="mt-2 flex flex-wrap gap-2">
+          {missing.map((check) => (
+            <li key={check.id}>
+              <button
+                type="button"
+                onClick={() => onSelect(check)}
+                className="rounded-full border border-[var(--admin-warning)]/30 bg-[var(--admin-warning)]/10 px-3 py-1 text-xs font-medium text-[var(--admin-text)]"
+              >
+                {check.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-2 text-xs text-[var(--admin-success)]">Listo para publicar.</p>
+      )}
+    </div>
+  );
+}
+
+function StickyActionBar({
+  step,
+  busy,
+  saving,
+  publishing,
   saved,
-  price,
-  description,
-  extraPhotoCount,
-  sourceType,
-  publicPriceMode,
-  onFeatured,
+  published,
+  readyToPublish,
+  previewHref,
+  onBack,
+  onSave,
+  onContinue,
   onPublish,
   onUnpublish,
 }: {
-  vehicle?: VehicleRow | null;
-  year?: number | null;
-  make?: string;
-  model?: string;
-  vin?: string;
-  mileage?: number | null;
-  exteriorColor?: string;
-  status: VehicleStatus;
-  published: boolean;
-  featured: boolean;
+  step: EditorStep;
+  busy: boolean;
+  saving: boolean;
+  publishing: boolean;
   saved: boolean;
-  price: number;
-  description: string;
-  extraPhotoCount: number;
-  sourceType: VehicleFormValues["source_type"];
-  publicPriceMode: PublicPriceMode;
-  onFeatured: (next: boolean) => void;
+  published: boolean;
+  readyToPublish: boolean;
+  previewHref: string | null;
+  onBack: () => void;
+  onSave: () => void;
+  onContinue: () => void;
   onPublish: () => void;
   onUnpublish: () => void;
 }) {
-  const checks = vehiclePublicationChecks({
-    year: year ?? vehicle?.year,
-    make: make ?? vehicle?.make,
-    model: model ?? vehicle?.model,
-    description,
-    price,
-    public_price_mode: publicPriceMode,
-    source_type: sourceType,
-    status,
-    photos: vehicle?.vehicle_photos,
-    extraPhotoCount,
-    vin: vin ?? vehicle?.vin,
-    mileage: mileage ?? vehicle?.mileage,
-    exterior_color: exteriorColor ?? vehicle?.exterior_color,
-  });
-  const ready = canPublishVehicleListing(checks);
-
   return (
-    <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] p-5">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
-            Visibilidad
-          </p>
-          <p className="mt-1 font-display text-lg font-semibold text-[var(--admin-text)]">
-            {published ? "Visible en el website" : ready ? "Lista para publicar" : "Aún no está lista"}
-          </p>
-          <p className="mt-1 text-sm text-[var(--admin-text-secondary)]">
-            {vehicleStatusLabel(status)} · {featured ? "Destacada en portada" : "No destacada"}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {published ? (
-            <AdminSecondaryButton type="button" onClick={onUnpublish}>
-              Retirar
-            </AdminSecondaryButton>
-          ) : (
-            <AdminPrimaryButton type="button" onClick={onPublish} disabled={!saved}>
-              Publicar
-            </AdminPrimaryButton>
-          )}
-        </div>
-      </div>
-      <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
-        Obligatorio
-      </p>
-      <ul className="mt-2 grid gap-2 text-sm">
-        {checks.filter((check) => check.required).map((check) => (
-          <li key={check.id} className="flex items-center justify-between gap-3">
-            <span className={check.ok ? "text-[var(--admin-text)]" : "text-[var(--admin-text-secondary)]"}>
-              {check.label}
-            </span>
-            <span
-              className={`text-xs font-medium ${
-                check.ok ? "text-[var(--admin-success)]" : "text-[var(--admin-warning)]"
-              }`}
+    <div
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--admin-border)] bg-[var(--admin-surface)]/95 px-3 pt-3 backdrop-blur lg:hidden"
+      style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+    >
+      <div className="mx-auto flex max-w-[1280px] flex-col gap-2">
+        {step === 3 ? (
+          <>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={onSave}
+                disabled={busy}
+                className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[var(--admin-border)] bg-white px-3 text-sm font-semibold text-[var(--admin-text)] disabled:opacity-60"
+              >
+                {saving ? "Guardando..." : "Guardar borrador"}
+              </button>
+              {previewHref ? (
+                <a
+                  href={previewHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[var(--admin-border)] bg-white px-3 text-sm font-semibold text-[var(--admin-text)]"
+                >
+                  Vista previa
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[var(--admin-border)] bg-white px-3 text-sm font-semibold text-[var(--admin-text-muted)]"
+                >
+                  Vista previa
+                </button>
+              )}
+            </div>
+            {published ? (
+              <button
+                type="button"
+                onClick={onUnpublish}
+                disabled={busy}
+                className="inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-[var(--admin-border)] bg-white px-4 text-sm font-semibold text-[var(--admin-text)] disabled:opacity-60"
+              >
+                Retirar del website
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onPublish}
+                disabled={busy || !saved || !readyToPublish}
+                className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-[var(--admin-text)] px-4 text-sm font-semibold text-white disabled:opacity-50"
+              >
+                {publishing ? "Publicando..." : "Publicar vehículo"}
+              </button>
+            )}
+          </>
+        ) : (
+          <div className="grid grid-cols-[auto_1fr_1fr] gap-2">
+            <button
+              type="button"
+              onClick={onBack}
+              disabled={step === 0 || busy}
+              className="inline-flex min-h-12 w-12 items-center justify-center rounded-xl border border-[var(--admin-border)] bg-white text-[var(--admin-text)] disabled:opacity-40"
+              aria-label="Atrás"
             >
-              {check.ok ? "Listo" : "Obligatorio"}
-            </span>
-          </li>
-        ))}
-      </ul>
-      <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
-        Recomendado
-      </p>
-      <ul className="mt-2 grid gap-2 text-sm">
-        {checks.filter((check) => !check.required).map((check) => (
-          <li key={check.id} className="flex items-center justify-between gap-3">
-            <span className={check.ok ? "text-[var(--admin-text)]" : "text-[var(--admin-text-secondary)]"}>
-              {check.label}
-            </span>
-            <span className={`text-xs font-medium ${check.ok ? "text-[var(--admin-success)]" : "text-[var(--admin-text-muted)]"}`}>
-              {check.ok ? "Listo" : "Recomendado"}
-            </span>
-          </li>
-        ))}
-      </ul>
-      <label className="mt-5 flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-lg border border-[var(--admin-border)] bg-[var(--admin-surface)] px-4">
-        <span className="text-sm text-[var(--admin-text)]">Destacar en portada</span>
-        <input
-          type="checkbox"
-          checked={featured}
-          onChange={(event) => onFeatured(event.target.checked)}
-          className="h-4 w-4 accent-[var(--admin-brand)]"
-        />
-      </label>
-      {!saved ? (
-        <p className="mt-3 text-xs text-[var(--admin-text-muted)]">
-          Flujo recomendado: guardar vehículo → vista previa → publicar.
-        </p>
-      ) : (
-        <p className="mt-3 text-xs text-[var(--admin-text-muted)]">
-          Flujo recomendado: guardar cambios → vista previa → publicar.
-        </p>
-      )}
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              onClick={onSave}
+              disabled={busy}
+              className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[var(--admin-border)] bg-white px-3 text-sm font-semibold text-[var(--admin-text)] disabled:opacity-60"
+            >
+              {saving ? "Guardando..." : "Guardar borrador"}
+            </button>
+            <button
+              type="button"
+              onClick={onContinue}
+              disabled={busy}
+              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[var(--admin-text)] px-3 text-sm font-semibold text-white disabled:opacity-60"
+            >
+              Continuar
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

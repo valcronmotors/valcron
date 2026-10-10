@@ -201,6 +201,10 @@ export async function createVehicle(
   const payload = {
     ...omitUnusedVehicleColumns(parsed.data),
     ...vehicleCreateDefaults(),
+    // Preserve availability chosen in the form; never auto-publish on create.
+    status: parsed.data.status || "draft",
+    published: false,
+    published_at: null,
   };
   let { data, error } = await supabase.from("vehicles").insert(payload).select("id").single();
   if (error && isMissingPublicPriceModeColumn(error)) {
