@@ -18,51 +18,52 @@ export function HomeAuctionCarousel({
   const empty = error || auctions.length === 0;
 
   return (
-    <Section className="section-dark bg-[#101114] !py-14 md:!py-20">
+    <Section className="section-light bg-[#F5F5F5] !py-10 md:!py-14">
       <PageContainer wide>
-        <div className="mb-8 flex flex-col items-center gap-3 text-center">
-          <h2 className="font-display text-3xl font-bold tracking-tight text-white md:text-5xl">
-            Oportunidades de Subasta
-          </h2>
-          <p className="max-w-[34rem] text-sm text-white/70 md:text-base">
-            Unidades que Valcron publica desde plataformas de Estados Unidos.
+        <div className="mb-6 flex flex-col items-center gap-2 text-center sm:mb-8">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6b7280]">
+            Oportunidades de subasta
           </p>
-          <Link
-            href="/subastas"
-            className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-white underline-offset-4 hover:underline"
-          >
-            Explorar oportunidades
-            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-          </Link>
+          <h2 className="font-display text-2xl font-bold tracking-tight text-[#111111] md:text-3xl">
+            Seleccionadas por Valcron
+          </h2>
         </div>
 
         {empty ? (
-          <div
-            className="mt-2 flex flex-col items-start justify-between gap-4 border border-white/10 bg-white px-5 py-5 sm:flex-row sm:items-center sm:px-6"
-            style={{ borderRadius: "var(--radius-card)" }}
-          >
-            <p className="max-w-[36rem] text-sm leading-relaxed text-[#3a3d42]">
-              Cuando haya oportunidades publicadas, aparecerán en este carrusel. También puedes pedir una búsqueda.
+          <div className="mx-auto flex max-w-[40rem] flex-col items-center gap-5 border border-[#E5E7EB] bg-white px-6 py-8 text-center">
+            <p className="max-w-[32rem] text-sm leading-relaxed text-[#3B3B3B]">
+              Cuando haya oportunidades publicadas, aparecerán aquí. También puedes pedir una búsqueda.
             </p>
-            <Link href="/subastas" className="btn-primary h-11 shrink-0 px-5 text-sm">
+            <Link href="/subastas" className="btn-primary h-11 px-6 text-sm">
               Explorar oportunidades
               <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
             </Link>
           </div>
         ) : (
-          <div className="mt-4 -mx-[var(--page-gutter)] px-[var(--page-gutter)] xl:mx-0 xl:px-0">
-            <VehicleCarousel speedSeconds={72}>
-              {auctions.map((vehicle) => (
-                <VehicleCard
-                  key={vehicle.id}
-                  vehicle={vehicle}
-                  tone="light"
-                  compact
-                  actionLabel="Ver oportunidad"
-                />
-              ))}
-            </VehicleCarousel>
-          </div>
+          <>
+            <div className="-mx-[var(--page-gutter)] px-[var(--page-gutter)] xl:mx-0 xl:px-0">
+              <VehicleCarousel speedSeconds={72}>
+                {auctions.map((vehicle) => (
+                  <VehicleCard
+                    key={vehicle.id}
+                    vehicle={vehicle}
+                    tone="light"
+                    compact
+                    actionLabel="Ver oportunidad"
+                  />
+                ))}
+              </VehicleCarousel>
+            </div>
+            <div className="mt-8 flex justify-center">
+              <Link
+                href="/subastas"
+                className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-[#111111] underline-offset-4 hover:underline"
+              >
+                Explorar oportunidades
+                <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </Link>
+            </div>
+          </>
         )}
       </PageContainer>
     </Section>

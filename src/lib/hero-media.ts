@@ -1,13 +1,7 @@
-/** Home hero — self-hosted, Unsplash-licensed (see public/marketing/IMAGE-LICENSES.md). */
-export const HOME_HERO_IMAGE = {
-  src: "/marketing/home-hero-crossover-urbano.jpg",
-  width: 1600,
-  height: 1000,
-  alt: "Crossover Honda blanco estacionado junto a un edificio urbano con palmeras, fotografía ilustrativa. No es inventario de Valcron.",
-  unsplashPhotoId: "photo-1704246125646-cfdf0cb6d2b8",
-} as const;
-
-/** Home editorial banner — Pexels License. Different vehicle from the hero. */
+/**
+ * V19 home uses a typographic (image-free) hero.
+ * HOME_BANNER_IMAGE remains for Open Graph / social previews and editorial cards.
+ */
 export const HOME_BANNER_IMAGE = {
   src: "/marketing/banner-suv-tropical.jpg",
   alt: "SUV Mazda blanco en un entorno tropical, fotografía ilustrativa. No representa las instalaciones de Valcron.",

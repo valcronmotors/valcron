@@ -44,8 +44,8 @@ export const metadata: Metadata = {
     url: SITE.url,
     images: [
       {
-        url: "/marketing/home-hero-crossover-urbano.jpg",
-        alt: "Crossover Honda blanco estacionado junto a un edificio urbano con palmeras, fotografía ilustrativa. No es inventario de Valcron.",
+        url: "/marketing/banner-suv-tropical.jpg",
+        alt: "SUV Mazda blanco en un entorno tropical, fotografía ilustrativa. No representa las instalaciones de Valcron.",
       },
     ],
   },
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Más opciones. Más cerca de ti. | Valcron Motors",
     description: SITE.valueProposition,
-    images: ["/marketing/home-hero-crossover-urbano.jpg"],
+    images: ["/marketing/banner-suv-tropical.jpg"],
   },
 };
 

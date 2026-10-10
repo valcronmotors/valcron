@@ -47,7 +47,7 @@
   --text-inverse: #f5f5f5;
   --brand: #111111;
   --brand-hover: #3b3b3b;
-  --brand-orange: #e85d04;
+  --brand-orange: #ec752f; /* sampled from official Valcron logo artwork */
   --success: #128c4b;
   --warning: #8a6414;
   --danger: #9b2c2c;
@@ -210,41 +210,28 @@ h3 {
   letter-spacing: -0.04em;
 }
 
-/* Home banner: short on phones, wide and cinematic from tablet up. */
-.home-hero-cinematic {
-  height: 26.5rem;
+/* V19 typographic home banner — compact, no photography */
+.home-hero-type {
+  min-height: clamp(17.5rem, 42vw, 22rem);
 }
 
 @media (min-width: 768px) {
-  .home-hero-cinematic {
-    height: 32rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .home-hero-cinematic {
-    height: 38rem;
-  }
-}
-
-@media (min-width: 1440px) {
-  .home-hero-cinematic {
-    height: 42rem;
-  }
-}
-
-@media (min-width: 1920px) {
-  .home-hero-cinematic {
-    height: 46rem;
+  .home-hero-type {
+    min-height: clamp(18.5rem, 28vw, 24rem);
   }
 }
 
 .home-hero-title {
   font-family: var(--font-jakarta), "Plus Jakarta Sans", sans-serif;
-  font-size: clamp(2.15rem, 1.2rem + 3.6vw, 4.1rem);
+  font-size: clamp(2.35rem, 1.35rem + 3.8vw, 4.25rem);
   font-weight: 700;
-  line-height: 1.04;
+  line-height: 1.05;
   letter-spacing: -0.04em;
+}
+
+/* Legacy cinematic class kept for any residual references */
+.home-hero-cinematic {
+  min-height: clamp(26rem, 42vw, 36rem);
 }
 
 @utility display-section {

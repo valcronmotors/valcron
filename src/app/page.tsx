@@ -6,15 +6,13 @@ import { HomeAuctionCarousel } from "@/components/home/HomeAuctionCarousel";
 import { HomeBrandCarousel } from "@/components/home/HomeBrandCarousel";
 import { HomeBuyGuide } from "@/components/home/HomeBuyGuide";
 import { HomeDiscover } from "@/components/home/HomeDiscover";
-import { HomeExplore } from "@/components/home/HomeExplore";
 import { HomeFaqPreview } from "@/components/home/HomeFaqPreview";
 import { HomeFinalCta } from "@/components/home/HomeFinalCta";
 import { HomeFinancingTeaser } from "@/components/home/HomeFinancingTeaser";
 import { HomeHero } from "@/components/home/HomeHero";
 import { HomeResourcesPreview } from "@/components/home/HomeResourcesPreview";
-import { HomeStories } from "@/components/home/HomeStories";
 import { HomeTrust } from "@/components/home/HomeTrust";
-import { HOME_HERO_IMAGE } from "@/lib/hero-media";
+import { HOME_BANNER_IMAGE } from "@/lib/hero-media";
 import {
   loadAuctionCatalogVehicles,
   loadLocalStockVehicles,
@@ -34,14 +32,10 @@ export const metadata: Metadata = {
     title: "Más opciones. Más cerca de ti. | Valcron Motors",
     description: SITE.valueProposition,
     url: SITE.url,
-    images: [{ url: HOME_HERO_IMAGE.src, alt: HOME_HERO_IMAGE.alt }],
+    // Social share still needs an image; home hero itself is typographic-only.
+    images: [{ url: HOME_BANNER_IMAGE.src, alt: HOME_BANNER_IMAGE.alt }],
   },
 };
-
-async function HomeExploreBand() {
-  const inventory = await loadLocalStockVehicles({ limit: 12 });
-  return <HomeExplore vehicles={inventory.data} error={inventory.error} />;
-}
 
 async function HomeLocalInventoryBand() {
   const inventory = await loadLocalStockVehicles({ limit: 12 });
@@ -53,6 +47,11 @@ async function HomeAuctionInventoryBand() {
   return <HomeAuctionCarousel vehicles={auctions.data} error={auctions.error} />;
 }
 
+/**
+ * V19 home sequence (concise):
+ * hero → marquee → Inventario Valcron → buying tools → Discover →
+ * auctions → financing/import → trust → resources → FAQ → final CTA
+ */
 export default function Home() {
   return (
     <>
@@ -64,9 +63,6 @@ export default function Home() {
         <HomeHero />
         <HomeBrandCarousel />
         <Suspense fallback={<InventorySectionSkeleton />}>
-          <HomeExploreBand />
-        </Suspense>
-        <Suspense fallback={<InventorySectionSkeleton />}>
           <HomeLocalInventoryBand />
         </Suspense>
         <HomeBuyGuide />
@@ -76,7 +72,6 @@ export default function Home() {
         </Suspense>
         <HomeFinancingTeaser />
         <HomeTrust />
-        <HomeStories />
         <HomeResourcesPreview />
         <HomeFaqPreview />
         <HomeFinalCta />

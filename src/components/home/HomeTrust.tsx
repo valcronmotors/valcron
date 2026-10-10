@@ -5,22 +5,24 @@ import { SITE } from "@/lib/site";
 /** Verified company facts only. No reviews, ratings, or delivery photos. */
 export function HomeTrust() {
   return (
-    <Section className="section-light bg-[#f7f8fa]" tight>
+    <Section className="section-light bg-[#F5F5F5]" tight>
       <PageContainer wide>
-        <div className="grid gap-6 border border-[#e4e6ea] bg-white px-5 py-6 sm:px-8 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_auto] md:items-center">
+        <div className="mx-auto flex max-w-[48rem] flex-col items-center gap-5 border border-[#E5E7EB] bg-white px-6 py-8 text-center sm:px-10">
           <div>
-            <h2 className="font-display text-2xl font-bold tracking-tight text-[#08090b] md:text-3xl">
-              Valcron Motors
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6b7280]">Empresa</p>
+            <h2 className="mt-2 font-display text-2xl font-bold tracking-tight text-[#111111] md:text-3xl">
+              Valcron Motors Group, SRL
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-[#676a70]">
-              Dealer en {SITE.address.city}. Inventario publicado, búsqueda y orientación con bancos locales.
+            <p className="mx-auto mt-3 max-w-[32rem] text-sm leading-relaxed text-[#3B3B3B]">
+              Dealer en {SITE.address.city}. Inventario publicado, búsqueda personalizada y orientación con
+              bancos locales.
             </p>
           </div>
-          <p className="text-sm leading-relaxed text-[#3a3d42]">
+          <p className="text-sm leading-relaxed text-[#3B3B3B]">
             {SITE.address.full}
-            <span className="mt-1 block font-semibold">{SITE.phoneOffice}</span>
+            <span className="mt-1 block font-semibold text-[#111111]">{SITE.phoneOffice}</span>
           </p>
-          <Link href="/contacto" className="btn-secondary h-11 w-fit px-5 text-sm">
+          <Link href="/contacto" className="btn-primary h-11 px-6 text-sm">
             Cómo llegar
           </Link>
         </div>

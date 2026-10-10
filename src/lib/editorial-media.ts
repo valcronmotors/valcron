@@ -3,8 +3,8 @@ const photo = (file: string) => `/marketing/${file}`;
 
 export const EDITORIAL = {
   suvNight: {
-    src: photo("home-hero.jpg"),
-    alt: "Honda CR-V en carretera abierta, fotografía ilustrativa de opciones de vehículos SUV",
+    src: photo("suv-entorno-abierto.jpg"),
+    alt: "SUV en entorno abierto, fotografía ilustrativa de opciones de vehículos",
   },
   sedan: {
     src: photo("sedan-familiar-compra.jpg"),

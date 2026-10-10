@@ -1,12 +1,13 @@
-# Marketing photography licenses (V15)
+# Marketing photography licenses
 
 All files in this folder are illustrative marketing photographs. They are not Valcron Motors inventory, staff, premises, customer deliveries, or auction partnerships.
 
-License for every photograph below: [Unsplash License](https://unsplash.com/license) — free to use for commercial and non-commercial purposes. Attribution is appreciated and not required. A model is named only when the photograph itself shows it. `home-hero.jpg` shows a Honda badge on a CR-V. The other files are not labeled as a specific model.
+**V19 note:** The public Home hero is typographic only (no photograph). Images below support Discover, financing/import cards, page heroes, and Open Graph previews.
+
+License for Unsplash files: [Unsplash License](https://unsplash.com/license) — free for commercial and non-commercial use. Attribution appreciated, not required.
 
 | File | Unsplash photo ID |
 | --- | --- |
-| `home-hero.jpg` | `photo-1519641471654-76ce0107ad1b` |
 | `suv-urbano-compra-vehiculos.jpg` | `photo-1704940225548-1420f7fed72f` |
 | `crossover-compacto-inventario.jpg` | `photo-1707070182914-fb69f596c98e` |
 | `sedan-familiar-compra.jpg` | `photo-1619767886558-efdc259cde1a` |
@@ -34,13 +35,10 @@ Source URL pattern: `https://unsplash.com/photos/{id}` and `https://images.unspl
 
 Vehicle galleries, auction listing photos, and Supabase Storage uploads are not in this folder and were not replaced.
 
-## V17 replacements (Home)
-
-These files replace the mountain hero, desert banner, desk financing card, and cargo-truck importation card. Older files above remain for other pages and were not overwritten.
+## Additional licensed assets (Home cards / OG)
 
 | File | Source | License | Subject |
 | --- | --- | --- | --- |
-| `home-hero-crossover-urbano.jpg` | [Unsplash photo-1704246125646-cfdf0cb6d2b8](https://unsplash.com/photos/a-white-car-is-parked-in-a-parking-lot-TdAatXFLWak) | [Unsplash License](https://unsplash.com/license) | White Honda crossover parked by an urban building with palms. Illustrative. Not Valcron inventory or premises. |
-| `banner-suv-tropical.jpg` | [Pexels 33145484](https://www.pexels.com/photo/white-suv-parked-on-a-sunny-day-33145484/) by Ayyeee Ayyeee | [Pexels License](https://www.pexels.com/license/) | White Mazda SUV in a tropical setting. Different vehicle from the hero. Not Valcron premises. |
+| `banner-suv-tropical.jpg` | [Pexels 33145484](https://www.pexels.com/photo/white-suv-parked-on-a-sunny-day-33145484/) by Ayyeee Ayyeee | [Pexels License](https://www.pexels.com/license/) | White Mazda SUV in a tropical setting. Used for OG/social and editorial — not Valcron premises. |
 | `consulta-compra-vehiculo.jpg` | [Pexels 7144259](https://www.pexels.com/photo/dealer-consulting-client-about-car-in-salon-7144259/) by Antoni Shkraba | [Pexels License](https://www.pexels.com/license/) | Stock consultation beside a vehicle. Not Valcron employees, customers, or a financing approval. |
 | `portavehiculos-logistica.jpg` | [Pexels 34539243](https://www.pexels.com/photo/car-transport-truck-on-road-in-heathwood-34539243/) by Elite Transport Solutions | [Pexels License](https://www.pexels.com/license/) | Vehicle carrier loaded with cars. Not a Valcron shipment. |
