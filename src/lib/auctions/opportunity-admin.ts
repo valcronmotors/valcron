@@ -189,7 +189,16 @@ export function opportunityWebsiteState(
     Partial<
       Pick<
         AuctionOpportunityRow,
-        "provider" | "provider_lot_id" | "year" | "make" | "model" | "location" | "auction_metadata"
+        | "provider"
+        | "provider_lot_id"
+        | "year"
+        | "make"
+        | "model"
+        | "location"
+        | "auction_metadata"
+        | "vin"
+        | "title_status"
+        | "primary_damage"
       >
     >,
   vehicle?: LinkedVehicleSummary | null,
@@ -211,6 +220,12 @@ export function opportunityWebsiteState(
       buy_now_usd: meta.buy_now_usd ?? (vehicle.public_price_mode === "fixed" ? vehicle.price : null),
       hasCoverPhoto: photos.some((photo) => photo.is_cover) || photos.length > 0,
       photoCount: photos.length,
+      vin: row.vin,
+      title_status: row.title_status,
+      odometer_status: meta.odometer_status,
+      primary_damage: row.primary_damage,
+      secondary_damage: meta.secondary_damage,
+      run_and_drive: meta.run_and_drive,
     }),
   );
   return ready ? "ready" : "draft";
