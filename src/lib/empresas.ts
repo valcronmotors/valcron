@@ -1,4 +1,4 @@
-import { COMPANIES, type Company } from "@/lib/companies";
+import { matchesCompany, type Company } from "@/lib/companies";
 import { createClient } from "@/utils/supabase/server";
 
 export type EmpresaRecord = {
@@ -30,7 +30,6 @@ export async function getEmpresaIdByCompany(company: Company) {
     return { id: null as string | null, error };
   }
 
-  const { matchesCompany } = await import("@/lib/companies");
   const match = data.find((empresa) => matchesCompany(empresa.nombre, company));
   return { id: match?.id ?? null, error: null };
 }
