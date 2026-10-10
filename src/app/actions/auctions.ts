@@ -28,6 +28,7 @@ import { setVehiclePublished } from "@/app/actions/vehicles";
 import { COPART_DUPLICATE_LOT_MESSAGE, copartOpportunityInsert } from "@/lib/auction-providers/copart/opportunity";
 import { COPART_LOOKUP_SUCCESS_MESSAGE } from "@/lib/auction-providers/copart/lookup";
 import { normalizeCopartLotNumber } from "@/lib/auction-providers/copart/urls";
+import { auctionPublicationBlockMessage } from "@/lib/auctions/auction-publication";
 import {
   isAuctionProvider,
   type AuctionOpportunityRow,
@@ -517,48 +518,93 @@ export async function publishAuctionOpportunity(opportunityId: string): Promise<
     return { error: "Oportunidad inválida." };
   }
 
+  const supabase = await createClient();
+  const { data: opportunityRow, error: opportunityError } = await supabase
+    .from("auction_opportunities")
+    .select("*")
+    .eq("id", opportunityId)
+    .maybeSingle();
+  if (opportunityError || !opportunityRow) {
+    return { error: publicActionError(opportunityError, "Oportunidad no encontrada.") };
+  }
+  const opportunity = opportunityRow as AuctionOpportunityRow;
+  const meta = readAuctionMetadata(opportunity.auction_metadata);
+
   const prepared = await prepareAuctionForWebsite(opportunityId);
-  if (prepared.error || !prepared.vehicleId && !prepared.id) {
+  if (prepared.error || (!prepared.vehicleId && !prepared.id)) {
     return { error: prepared.error ?? "No se pudo preparar la oportunidad." };
   }
   const vehicleId = prepared.vehicleId ?? prepared.id!;
-  const publish = await setVehiclePublished(vehicleId, true);
-  if (publish.error) {
-    return { error: publish.error, id: opportunityId, vehicleId };
-  }
 
-  const supabase = await createClient();
-  const { data: vehicle } = await supabase
+  const { data: vehicleFull, error: vehicleLookupError } = await supabase
     .from("vehicles")
-    .select("id, year, make, model, trim, status")
+    .select(
+      "id, year, make, model, trim, status, published, published_at, source_type, vehicle_photos ( id, is_cover, storage_path )",
+    )
     .eq("id", vehicleId)
     .maybeSingle();
+  if (vehicleLookupError || !vehicleFull) {
+    return { error: publicActionError(vehicleLookupError, "Vehículo de subasta no encontrado."), id: opportunityId };
+  }
 
-  if (vehicle && (vehicle.status === "draft" || vehicle.status === "hidden")) {
-    await supabase.from("vehicles").update({ status: "available" }).eq("id", vehicleId);
+  const photos = (vehicleFull.vehicle_photos ?? []) as { id: string; is_cover: boolean; storage_path?: string | null }[];
+  const hasCover = photos.some((photo) => photo.is_cover && photo.storage_path?.trim()) || photos.some((photo) => photo.storage_path?.trim());
+  const blocked = auctionPublicationBlockMessage({
+    provider: opportunity.provider,
+    provider_lot_id: opportunity.provider_lot_id,
+    year: opportunity.year ?? vehicleFull.year,
+    make: opportunity.make ?? vehicleFull.make,
+    model: opportunity.model ?? vehicleFull.model,
+    location: opportunity.location,
+    price_mode: meta.price_mode ?? "contact",
+    buy_now_usd: meta.buy_now_usd,
+    hasCoverPhoto: hasCover,
+    photoCount: photos.length,
+  });
+  if (blocked) {
+    return { error: blocked, id: opportunityId, vehicleId };
+  }
+
+  // Auction publish path: set available + published without local inventory status rules.
+  const { data: updated, error: publishError } = await supabase
+    .from("vehicles")
+    .update({
+      published: true,
+      status: "available",
+      source_type: "other",
+      published_at: vehicleFull.published_at ?? new Date().toISOString(),
+    })
+    .eq("id", vehicleId)
+    .select("id, published, year, make, model, trim")
+    .maybeSingle();
+  if (publishError || !updated?.published) {
+    return {
+      error: publicActionError(publishError, "No se pudo publicar la oportunidad de subasta."),
+      id: opportunityId,
+      vehicleId,
+    };
   }
 
   await supabase.from("auction_opportunities").update({ status: "published" }).eq("id", opportunityId);
   revalidateAuctions(opportunityId);
   revalidatePath("/inventario");
   revalidatePath("/subastas");
+  revalidatePath(`/inventario/${vehicleId}`);
 
-  const slug = vehicle
-    ? buildVehicleSlug({
-        id: vehicle.id,
-        year: vehicle.year,
-        make: vehicle.make,
-        model: vehicle.model,
-        trim: vehicle.trim,
-      })
-    : null;
+  const slug = buildVehicleSlug({
+    id: updated.id,
+    year: updated.year,
+    make: updated.make,
+    model: updated.model,
+    trim: updated.trim,
+  });
 
   return {
     error: null,
     success: "Oportunidad publicada en el inventario de subastas.",
     id: opportunityId,
     vehicleId,
-    publicPath: slug ? vehiclePath(slug) : "/subastas",
+    publicPath: vehiclePath(slug),
   };
 }
 

@@ -81,7 +81,7 @@ export function AdminPrimaryButton({
     <button
       type={type}
       {...props}
-      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-[0.75rem] bg-[var(--admin-nav)] px-5 text-sm font-medium text-white transition duration-200 hover:bg-[var(--admin-nav-hover)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 ${className ?? ""}`}
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-[0.75rem] bg-[var(--admin-text)] px-5 text-sm font-medium text-white transition duration-200 hover:bg-[#191919] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-[#9ca3af] disabled:text-white disabled:opacity-100 ${className ?? ""}`}
     >
       {children}
     </button>
@@ -98,7 +98,7 @@ export function AdminSecondaryButton({
     <button
       type={type}
       {...props}
-      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[var(--admin-border-strong)] bg-[var(--admin-surface)] px-5 text-sm font-medium text-[var(--admin-text)] transition duration-200 hover:bg-[var(--admin-surface-muted)] active:scale-[0.99] disabled:opacity-60 ${className ?? ""}`}
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[var(--admin-border-strong)] bg-[var(--admin-surface)] px-5 text-sm font-medium text-[var(--admin-text)] transition duration-200 hover:bg-[var(--admin-surface-muted)] active:scale-[0.99] disabled:cursor-not-allowed disabled:border-[#d1d5db] disabled:bg-[#f3f4f6] disabled:text-[#6b7280] disabled:opacity-100 ${className ?? ""}`}
     >
       {children}
     </button>

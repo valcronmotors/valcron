@@ -18,6 +18,7 @@ import {
   reorderVehiclePhotos,
   updateVehiclePhoto,
 } from "@/app/actions/vehicles";
+import { AdminAuctionPastePanel } from "@/components/admin/AdminAuctionPastePanel";
 import { AdminMediaPicker } from "@/components/admin/AdminMediaPicker";
 import { AdminSearchableSelect } from "@/components/admin/AdminSearchableSelect";
 import { AuctionBadge } from "@/components/admin/AdminBadges";
@@ -65,6 +66,10 @@ import {
   type AuctionAdminPriceMode,
 } from "@/lib/auction-admin-fields";
 import {
+  auctionPublicationBlockMessage,
+  auctionPublicationChecks,
+} from "@/lib/auctions/auction-publication";
+import {
   activeAuctionProviderChoices,
   historicalProviderLabel,
   opportunityVehicleTitle,
@@ -95,7 +100,22 @@ const STEPS = [
   { id: 4 as const, label: "Precio y publicación" },
 ];
 
-const DRAFT_KEY = "valcron.auction.manual.draft.v26";
+const DRAFT_KEY = "valcron.auction.manual.draft.v27";
+
+const LOCATION_SUGGESTIONS = [
+  "TN - MEMPHIS",
+  "FL - ORLANDO",
+  "FL - MIAMI",
+  "CA - LOS ANGELES",
+  "TX - HOUSTON",
+  "TX - DALLAS",
+  "GA - ATLANTA",
+  "NJ - NEWARK",
+  "NY - LONG ISLAND",
+  "IL - CHICAGO",
+  "PA - PHILADELPHIA",
+  "NC - CHARLOTTE",
+];
 
 type FormState = {
   provider: AuctionProvider;
@@ -184,11 +204,16 @@ function emptyForm(): FormState {
 
 function formFromOpportunity(opportunity: AuctionOpportunityRow): FormState {
   const meta = readAuctionMetadata(opportunity.auction_metadata);
+  const location =
+    (opportunity.location ?? "").trim() ||
+    [meta.city, meta.state].filter(Boolean).join(" - ") ||
+    "";
   return {
     provider: opportunity.provider,
     provider_lot_id: opportunity.provider_lot_id ?? "",
     source_url: opportunity.source_url ?? "",
-    location: opportunity.location ?? "",
+    location,
+    // Preserve city/state internally for drafts; not shown as separate inputs.
     city: meta.city ?? "",
     state: meta.state ?? "",
     auction_date: meta.auction_date ?? "",
@@ -376,6 +401,57 @@ export function AdminAuctionForm({
     setValues((current) => ({ ...current, [key]: value }));
   }
 
+  function applyPasteFields(
+    pastePatch: Record<string, string>,
+    meta: { providerHint: "copart" | "iaa" | "manheim" | null },
+  ) {
+    setValues((current) => {
+      const next = { ...current };
+      for (const [key, value] of Object.entries(pastePatch)) {
+        if (key in next && value != null) {
+          (next as Record<string, unknown>)[key] = value;
+        }
+      }
+      return next;
+    });
+    if (pastePatch.make) {
+      const makeStateNext = makeSelectState(pastePatch.make);
+      setMakeSelect(makeStateNext.selectValue);
+      setCustomMake(makeStateNext.customValue);
+    }
+    if (pastePatch.model || pastePatch.make) {
+      const makeForModel = pastePatch.make || values.make;
+      const modelStateNext = modelSelectState(makeForModel, pastePatch.model || values.model);
+      setModelSelect(modelStateNext.selectValue);
+      setCustomModel(modelStateNext.customValue);
+    }
+    if (meta.providerHint) {
+      setNotice(
+        `Datos aplicados. Confirma la casa de subasta (${meta.providerHint === "iaa" ? "IAA" : meta.providerHint === "manheim" ? "Manheim" : "Copart"} sugerida). No se guardó ni publicó automáticamente.`,
+      );
+    } else {
+      setNotice("Datos aplicados. Revisa los campos y confirma la casa de subasta. No se guardó ni publicó automáticamente.");
+    }
+    setStep(0);
+  }
+
+  const publishBlockers = useMemo(
+    () =>
+      auctionPublicationChecks({
+        provider: values.provider,
+        provider_lot_id: values.provider_lot_id,
+        year: values.year,
+        make: values.make,
+        model: values.model,
+        location: values.location,
+        price_mode: values.price_mode,
+        buy_now_usd: values.buy_now_usd ? Number(values.buy_now_usd) : null,
+        hasCoverPhoto: (photos?.length ?? 0) > 0,
+        photoCount: photos?.length ?? 0,
+      }),
+    [values, photos],
+  );
+
   function buildFormData(id?: string) {
     const make = resolveMakeValue(makeSelect === OTHER_MAKE_VALUE ? OTHER_MAKE_VALUE : makeState.selectValue, customMake || values.make);
     const model = resolveModelValue(
@@ -547,6 +623,22 @@ export function AdminAuctionForm({
   }
 
   async function handlePublish() {
+    const blocked = auctionPublicationBlockMessage({
+      provider: values.provider,
+      provider_lot_id: values.provider_lot_id,
+      year: values.year,
+      make: values.make,
+      model: values.model,
+      location: values.location,
+      price_mode: values.price_mode,
+      buy_now_usd: values.buy_now_usd ? Number(values.buy_now_usd) : null,
+      hasCoverPhoto: (photos?.length ?? 0) > 0,
+      photoCount: photos?.length ?? 0,
+    });
+    if (blocked) {
+      setError(blocked);
+      return;
+    }
     if (!opportunity?.id) {
       const savedDraft = await saveDraft();
       if (savedDraft.error || !savedDraft.id) {
@@ -647,7 +739,44 @@ export function AdminAuctionForm({
       ) : null}
 
       {step === 0 ? (
-        <FormSection title="Subasta y lote" hint="Selecciona la casa de subasta e ingresa el lote manualmente. No se extrae información automáticamente.">
+        <AdminAuctionPastePanel
+          currentValues={{
+            year: values.year,
+            make: values.make,
+            model: values.model,
+            trim: values.trim,
+            provider_lot_id: values.provider_lot_id,
+            vin: values.vin,
+            location: values.location,
+            auction_date: values.auction_date,
+            auction_sale_status: values.auction_sale_status,
+            seller_type: values.seller_type,
+            body_style: values.body_style,
+            fuel: values.fuel,
+            engine: values.engine,
+            transmission: values.transmission,
+            drivetrain: values.drivetrain,
+            exterior_color: values.exterior_color,
+            mileage: values.mileage,
+            mileage_unit: values.mileage_unit,
+            odometer_status: values.odometer_status,
+            primary_damage: values.primary_damage,
+            secondary_damage: values.secondary_damage,
+            keys: values.keys,
+            run_and_drive: values.run_and_drive,
+            title_status: values.title_status,
+            internal_notes: values.internal_notes,
+            source_url: values.source_url,
+            price_mode: values.price_mode,
+            buy_now_usd: values.buy_now_usd,
+            description: values.description,
+          }}
+          onApply={applyPasteFields}
+        />
+      ) : null}
+
+      {step === 0 ? (
+        <FormSection title="Subasta y lote" hint="Selecciona la casa de subasta e ingresa el lote. El pegado de texto no publica ni guarda solo.">
           <div className="grid gap-4 sm:grid-cols-2">
             <AdminField label="Casa de subasta" required>
               <AdminSelect
@@ -677,15 +806,31 @@ export function AdminAuctionForm({
                 />
               </AdminField>
             </div>
-            <AdminField label="Ubicación de subasta">
-              <AdminInput value={values.location} onChange={(event) => patch("location", event.target.value)} />
-            </AdminField>
-            <AdminField label="Ciudad">
-              <AdminInput value={values.city} onChange={(event) => patch("city", event.target.value)} />
-            </AdminField>
-            <AdminField label="Estado">
-              <AdminInput value={values.state} onChange={(event) => patch("state", event.target.value)} />
-            </AdminField>
+            <div className="sm:col-span-2">
+              <AdminField label="Ubicación de subasta">
+                <AdminSearchableSelect
+                  name="location"
+                  value={
+                    LOCATION_SUGGESTIONS.includes(values.location)
+                      ? values.location
+                      : values.location
+                        ? "__other__"
+                        : ""
+                  }
+                  options={LOCATION_SUGGESTIONS.map((item) => ({ value: item, label: item }))}
+                  allowCustom
+                  otherValue="__other__"
+                  otherLabel="Otra ubicación"
+                  customValue={LOCATION_SUGGESTIONS.includes(values.location) ? "" : values.location}
+                  placeholder="Ej. TN - MEMPHIS"
+                  onValueChange={(next) => {
+                    if (next === "__other__") return;
+                    patch("location", next);
+                  }}
+                  onCustomChange={(custom) => patch("location", custom)}
+                />
+              </AdminField>
+            </div>
             <AdminField label="Fecha de subasta">
               <AdminInput
                 type="date"
@@ -1084,32 +1229,61 @@ export function AdminAuctionForm({
         </FormSection>
       ) : null}
 
-      <div className="sticky bottom-0 z-20 -mx-1 flex flex-wrap items-center justify-between gap-2 border-t border-[var(--admin-border)] bg-[var(--admin-bg)]/95 px-1 py-3 backdrop-blur pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        <AdminSecondaryButton
-          type="button"
-          disabled={step === 0}
-          onClick={() => setStep((current) => Math.max(0, current - 1) as EditorStep)}
-        >
-          <ChevronLeft className="mr-1 h-4 w-4" />
-          Anterior
-        </AdminSecondaryButton>
-        <div className="flex flex-wrap gap-2">
-          <AdminSecondaryButton type="button" disabled={pending || saving} onClick={() => void handleSave()}>
-            Guardar borrador
+      <div className="sticky bottom-0 z-30 -mx-1 border-t border-[var(--admin-border)] bg-white px-2 pt-3 shadow-[0_-8px_24px_rgba(8,9,11,0.08)] pb-[max(1rem,env(safe-area-inset-bottom))]">
+        {step === 4 && publishBlockers.some((check) => check.required && !check.ok) ? (
+          <p className="mb-2 text-xs text-[var(--admin-warning)]">
+            Falta:{" "}
+            {publishBlockers
+              .filter((check) => check.required && !check.ok)
+              .map((check) => check.label)
+              .join(", ")}
+          </p>
+        ) : null}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <AdminSecondaryButton
+            type="button"
+            disabled={step === 0}
+            aria-label="Anterior"
+            onClick={() => setStep((current) => Math.max(0, current - 1) as EditorStep)}
+          >
+            <ChevronLeft className="h-4 w-4" aria-hidden />
+            Anterior
           </AdminSecondaryButton>
-          {step < 4 ? (
-            <AdminPrimaryButton
-              type="button"
-              onClick={() => setStep((current) => Math.min(4, current + 1) as EditorStep)}
-            >
-              Siguiente
-              <ChevronRight className="ml-1 h-4 w-4" />
-            </AdminPrimaryButton>
-          ) : (
-            <AdminPrimaryButton type="button" disabled={pending || saving} onClick={() => setConfirm("publish")}>
-              Publicar oportunidad
-            </AdminPrimaryButton>
-          )}
+          <div className="flex flex-wrap justify-end gap-2">
+            <AdminSecondaryButton type="button" disabled={pending || saving} onClick={() => void handleSave()}>
+              Guardar borrador
+            </AdminSecondaryButton>
+            {vehicleId || opportunity?.linked_vehicle_id ? (
+              <AdminSecondaryButton type="button" onClick={() => setStep(4)}>
+                Vista previa
+              </AdminSecondaryButton>
+            ) : null}
+            {step < 4 ? (
+              <AdminPrimaryButton
+                type="button"
+                onClick={() => setStep((current) => Math.min(4, current + 1) as EditorStep)}
+              >
+                Continuar
+                <ChevronRight className="h-4 w-4" aria-hidden />
+              </AdminPrimaryButton>
+            ) : (
+              <AdminPrimaryButton
+                type="button"
+                disabled={pending || saving || publishBlockers.some((check) => check.required && !check.ok)}
+                onClick={() => setConfirm("publish")}
+                title={
+                  publishBlockers.some((check) => check.required && !check.ok)
+                    ? `Completa: ${publishBlockers
+                        .filter((check) => check.required && !check.ok)
+                        .map((check) => check.label)
+                        .join(", ")}`
+                    : "Publicar oportunidad"
+                }
+              >
+                Publicar oportunidad
+              </AdminPrimaryButton>
+            )}
+          </div>
         </div>
       </div>
 
