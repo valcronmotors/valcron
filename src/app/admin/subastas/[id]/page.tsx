@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { AdminAuctionForm } from "@/components/admin/AdminAuctionForm";
 import { getAuctionOpportunity } from "@/app/actions/auctions";
@@ -13,9 +14,13 @@ export default async function AdminSubastaDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { opportunity } = await getAuctionOpportunity(id);
+  const { opportunity, linkedVehicle } = await getAuctionOpportunity(id);
   if (!opportunity) {
     notFound();
   }
-  return <AdminAuctionForm opportunity={opportunity} />;
+  return (
+    <Suspense fallback={<div className="p-6 text-sm text-[var(--admin-text-muted)]">Cargando editor…</div>}>
+      <AdminAuctionForm opportunity={opportunity} linkedVehicle={linkedVehicle} />
+    </Suspense>
+  );
 }

@@ -154,16 +154,16 @@ describe("public website v2 navigation", () => {
 
 describe("public price-mode rendering", () => {
   it("never prints 0, null, undefined or NaN", () => {
-    expect(formatCustomerFacingPrice("contact", null)).toBe("Consultar precio");
-    expect(formatCustomerFacingPrice("contact", 0)).toBe("Consultar precio");
+    expect(formatCustomerFacingPrice("contact", null)).toBe("Precio a consultar");
+    expect(formatCustomerFacingPrice("contact", 0)).toBe("Precio a consultar");
     expect(formatCustomerFacingPrice("from", 18900)).toBe("Desde US$ 18,900");
     expect(formatCustomerFacingPrice("estimated", 21500)).toBe("Precio estimado US$ 21,500");
     expect(formatCustomerFacingPrice("fixed", 28500)).toBe("US$ 28,500");
-    expect(formatCustomerFacingPrice("fixed", Number.NaN)).toBe("Consultar precio");
-    expect(formatCustomerFacingPrice("from", undefined)).toBe("Consultar precio");
+    expect(formatCustomerFacingPrice("fixed", Number.NaN)).toBe("Precio a consultar");
+    expect(formatCustomerFacingPrice("from", undefined)).toBe("Precio a consultar");
 
     const contact = toPublicVehicle(row({ source_type: "other", public_price_mode: "contact", price: null }));
-    expect(displayVehiclePrice(contact, "USD").primary).toBe("Consultar precio");
+    expect(displayVehiclePrice(contact, "USD").primary).toBe("Precio a consultar");
     expect(displayVehiclePrice(contact, "USD").primary).not.toMatch(/0|null|undefined|NaN/i);
   });
 

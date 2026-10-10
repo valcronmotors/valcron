@@ -17,7 +17,11 @@ import {
   adminFieldClass,
 } from "@/components/admin/ui";
 import { AUCTION_STATUS_LABEL } from "@/lib/admin-copy";
-import { prepareAuctionForWebsite, setAuctionOpportunityStatus } from "@/app/actions/auctions";
+import {
+  publishAuctionOpportunity,
+  setAuctionOpportunityStatus,
+  unpublishAuctionOpportunity,
+} from "@/app/actions/auctions";
 import {
   ACTIVE_PROVIDER_FILTERS,
   OPPORTUNITY_STATUS_FILTERS,
@@ -25,6 +29,7 @@ import {
   filterOpportunities,
   opportunityCountLabel,
   opportunityOverflowActions,
+  opportunityPublicationMetrics,
   opportunityThumbnailUrl,
   opportunityVehicleTitle,
   opportunityVehicleTrim,
@@ -33,6 +38,11 @@ import {
   type LinkedVehicleSummary,
   type OpportunityWebsiteState,
 } from "@/lib/auctions/opportunity-admin";
+import {
+  AUCTION_PRICE_MODES,
+  AUCTION_SALE_STATUS_OPTIONS,
+  readAuctionMetadata,
+} from "@/lib/auction-admin-fields";
 import type { AuctionOpportunityRow, AuctionOpportunityStatus, AuctionProvider } from "@/lib/website-schema";
 
 function formatDamage(value: string | null | undefined) {
@@ -68,12 +78,14 @@ function statusBadgeClass(status: AuctionOpportunityStatus) {
   return "border-[var(--admin-border)] bg-[var(--admin-surface-muted)] text-[var(--admin-text-secondary)]";
 }
 
+type Row = AuctionOpportunityRow & { linked_vehicle?: LinkedVehicleSummary | null };
+
 export function AdminAuctionList({
   opportunities,
   error,
   provider = "all",
 }: {
-  opportunities: Array<AuctionOpportunityRow & { linked_vehicle?: LinkedVehicleSummary | null }>;
+  opportunities: Row[];
   error: string | null;
   provider?: "all" | ActiveAuctionProvider;
 }) {
@@ -81,10 +93,18 @@ export function AdminAuctionList({
   const [query, setQuery] = useState("");
   const [providerFilter, setProviderFilter] = useState<"all" | ActiveAuctionProvider>(provider);
   const [statusFilter, setStatusFilter] = useState<"all" | AuctionOpportunityStatus>("all");
+  const [makeFilter, setMakeFilter] = useState("");
+  const [modelFilter, setModelFilter] = useState("");
+  const [yearFilter, setYearFilter] = useState("");
+  const [priceModeFilter, setPriceModeFilter] = useState<"all" | "contact" | "buy_now">("all");
+  const [auctionStatusFilter, setAuctionStatusFilter] = useState("");
   const [menuId, setMenuId] = useState<string | null>(null);
   const [archiveId, setArchiveId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+
+  const metrics = useMemo(() => opportunityPublicationMetrics(opportunities), [opportunities]);
 
   const filtered = useMemo(
     () =>
@@ -92,15 +112,44 @@ export function AdminAuctionList({
         provider: providerFilter,
         status: statusFilter,
         query,
+        make: makeFilter,
+        model: modelFilter,
+        year: yearFilter,
+        priceMode: priceModeFilter,
+        auctionStatus: auctionStatusFilter,
       }),
-    [opportunities, providerFilter, statusFilter, query],
+    [
+      opportunities,
+      providerFilter,
+      statusFilter,
+      query,
+      makeFilter,
+      modelFilter,
+      yearFilter,
+      priceModeFilter,
+      auctionStatusFilter,
+    ],
   );
-  const filtersActive = Boolean(query.trim()) || providerFilter !== "all" || statusFilter !== "all";
+
+  const filtersActive =
+    Boolean(query.trim()) ||
+    providerFilter !== "all" ||
+    statusFilter !== "all" ||
+    Boolean(makeFilter.trim()) ||
+    Boolean(modelFilter.trim()) ||
+    Boolean(yearFilter.trim()) ||
+    priceModeFilter !== "all" ||
+    Boolean(auctionStatusFilter);
 
   function clearFilters() {
     setQuery("");
     setProviderFilter("all");
     setStatusFilter("all");
+    setMakeFilter("");
+    setModelFilter("");
+    setYearFilter("");
+    setPriceModeFilter("all");
+    setAuctionStatusFilter("");
   }
 
   function archive() {
@@ -112,44 +161,91 @@ export function AdminAuctionList({
           return;
         }
         setArchiveId(null);
+        setActionSuccess("Oportunidad archivada.");
         router.refresh();
       });
     });
   }
 
-  function prepare(id: string) {
+  function publish(id: string) {
     startTransition(() => {
-      void prepareAuctionForWebsite(id).then((result) => {
+      void publishAuctionOpportunity(id).then((result) => {
         if (result.error) {
           setActionError(result.error);
           return;
         }
-        if (result.id) {
-          router.push(`/admin/inventario/${result.id}`);
-          return;
-        }
+        setActionSuccess(result.success ?? "Publicado.");
+        setMenuId(null);
         router.refresh();
       });
     });
+  }
+
+  function unpublish(id: string) {
+    startTransition(() => {
+      void unpublishAuctionOpportunity(id).then((result) => {
+        if (result.error) {
+          setActionError(result.error);
+          return;
+        }
+        setActionSuccess(result.success ?? "Despublicado.");
+        setMenuId(null);
+        router.refresh();
+      });
+    });
+  }
+
+  function menuItems(row: Row) {
+    return opportunityOverflowActions(row, row.linked_vehicle).map((item) => ({
+      id: item.id,
+      label: item.label,
+      href: item.href,
+      target: item.target,
+      danger: item.danger,
+      onSelect:
+        item.id === "archive"
+          ? () => setArchiveId(row.id)
+          : item.id === "publish"
+            ? () => publish(row.id)
+            : item.id === "unpublish"
+              ? () => unpublish(row.id)
+              : undefined,
+    }));
   }
 
   return (
     <div className="grid gap-6">
       <AdminPageHeader
-        title="Oportunidades de subasta"
-        subtitle="Busca, revisa y prepara vehículos de subasta para publicarlos en Valcron Motors."
+        title="Oportunidades de Subasta"
+        subtitle="Ingreso manual Copart, IAA y Manheim. Publicación solo en el inventario de subastas."
         count={opportunityCountLabel(filtered.length)}
         actions={
-          <div className="flex flex-wrap gap-2">
-            <Link href="/admin/subastas/copart">
-              <AdminSecondaryButton>Buscar en Copart</AdminSecondaryButton>
-            </Link>
-            <Link href="/admin/subastas/nuevo">
-              <AdminPrimaryButton>+ Agregar oportunidad</AdminPrimaryButton>
-            </Link>
-          </div>
+          <Link href="/admin/subastas/nuevo">
+            <AdminPrimaryButton>Agregar vehículo de subasta</AdminPrimaryButton>
+          </Link>
         }
       />
+
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {[
+          { label: "Publicados", value: metrics.publicados },
+          { label: "Borradores", value: metrics.borradores },
+          { label: "En revisión", value: metrics.enRevision },
+          { label: "Archivados", value: metrics.archivados },
+        ].map((item) => (
+          <div
+            key={item.label}
+            className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] px-4 py-3 shadow-[var(--admin-shadow)]"
+          >
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--admin-text-muted)]">
+              {item.label}
+            </p>
+            <p className="mt-1 font-display text-2xl font-semibold tabular-nums text-[var(--admin-text)]">
+              {item.value}
+            </p>
+          </div>
+        ))}
+      </section>
 
       <label className="block">
         <span className="sr-only">Buscar vehículo, VIN o lote</span>
@@ -164,14 +260,13 @@ export function AdminAuctionList({
       <div className="grid gap-4">
         <div>
           <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
-            Proveedor
+            Casa de subasta
           </p>
           <div className="flex flex-wrap gap-2">
             {ACTIVE_PROVIDER_FILTERS.map((item) => (
               <button
                 key={item.id}
                 type="button"
-                title={item.id === "iaa" ? "Ingreso manual" : undefined}
                 onClick={() => setProviderFilter(item.id)}
                 className={`min-h-10 rounded-lg px-3 text-sm font-medium transition duration-200 ${
                   providerFilter === item.id
@@ -184,50 +279,116 @@ export function AdminAuctionList({
             ))}
           </div>
         </div>
-        <label className="max-w-xs">
-          <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
-            Estado
-          </span>
-          <select
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)}
-            className={`${adminFieldClass} mt-0`}
-            aria-label="Todos los estados"
-          >
-            {OPPORTUNITY_STATUS_FILTERS.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-        </label>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <label>
+            <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+              Marca
+            </span>
+            <input
+              value={makeFilter}
+              onChange={(event) => setMakeFilter(event.target.value)}
+              className={`${adminFieldClass} mt-0`}
+              placeholder="Marca"
+            />
+          </label>
+          <label>
+            <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+              Modelo
+            </span>
+            <input
+              value={modelFilter}
+              onChange={(event) => setModelFilter(event.target.value)}
+              className={`${adminFieldClass} mt-0`}
+              placeholder="Modelo"
+            />
+          </label>
+          <label>
+            <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+              Año
+            </span>
+            <input
+              value={yearFilter}
+              onChange={(event) => setYearFilter(event.target.value)}
+              className={`${adminFieldClass} mt-0`}
+              placeholder="Año"
+              inputMode="numeric"
+            />
+          </label>
+          <label>
+            <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+              Publicación
+            </span>
+            <select
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)}
+              className={`${adminFieldClass} mt-0`}
+            >
+              {OPPORTUNITY_STATUS_FILTERS.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+              Estado de subasta
+            </span>
+            <select
+              value={auctionStatusFilter}
+              onChange={(event) => setAuctionStatusFilter(event.target.value)}
+              className={`${adminFieldClass} mt-0`}
+            >
+              <option value="">Todos</option>
+              {AUCTION_SALE_STATUS_OPTIONS.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-text-muted)]">
+              Modo de precio
+            </span>
+            <select
+              value={priceModeFilter}
+              onChange={(event) => setPriceModeFilter(event.target.value as typeof priceModeFilter)}
+              className={`${adminFieldClass} mt-0`}
+            >
+              <option value="all">Todos</option>
+              {AUCTION_PRICE_MODES.map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </div>
 
       {error ? <AdminNotice tone="warning">No pudimos cargar las oportunidades.</AdminNotice> : null}
       {actionError ? <AdminNotice tone="warning">{actionError}</AdminNotice> : null}
+      {actionSuccess ? <AdminNotice tone="neutral">{actionSuccess}</AdminNotice> : null}
 
       {filtered.length === 0 ? (
         opportunities.length === 0 ? (
           <AdminEmptyState
             icon={Gavel}
             title="No hay oportunidades de subasta."
-            copy="Busca en Copart o agrega una oportunidad."
+            copy="Agrega un vehículo Copart, IAA o Manheim de forma manual."
             action={
-              <div className="flex flex-wrap justify-center gap-2">
-                <Link href="/admin/subastas/copart">
-                  <AdminPrimaryButton>Buscar en Copart</AdminPrimaryButton>
-                </Link>
-                <Link href="/admin/subastas/nuevo">
-                  <AdminSecondaryButton>Agregar manualmente</AdminSecondaryButton>
-                </Link>
-              </div>
+              <Link href="/admin/subastas/nuevo">
+                <AdminPrimaryButton>Agregar vehículo de subasta</AdminPrimaryButton>
+              </Link>
             }
           />
         ) : (
           <AdminEmptyState
             icon={Gavel}
             title="No encontramos oportunidades con estos filtros."
-            copy={filtersActive ? "Prueba otro proveedor, estado o término de búsqueda." : "Cambia la vista para ver otras oportunidades."}
+            copy={filtersActive ? "Prueba otros filtros o limpia la búsqueda." : "Cambia la vista para ver otras oportunidades."}
             action={
               <AdminSecondaryButton type="button" onClick={clearFilters}>
                 Limpiar filtros
@@ -242,11 +403,11 @@ export function AdminAuctionList({
               <thead className="bg-[var(--admin-surface-muted)] text-[11px] uppercase tracking-[0.12em] text-[var(--admin-text-muted)]">
                 <tr>
                   <th className="px-4 py-3 font-medium">Vehículo</th>
-                  <th className="px-4 py-3 font-medium">Proveedor</th>
+                  <th className="px-4 py-3 font-medium">Casa</th>
                   <th className="px-4 py-3 font-medium">Lote</th>
-                  <th className="px-4 py-3 font-medium">Kilometraje</th>
                   <th className="px-4 py-3 font-medium">Daño</th>
-                  <th className="px-4 py-3 font-medium">Estado</th>
+                  <th className="px-4 py-3 font-medium">Precio</th>
+                  <th className="px-4 py-3 font-medium">Publicación</th>
                   <th className="px-4 py-3 font-medium">Website</th>
                   <th className="px-4 py-3 font-medium">Acciones</th>
                 </tr>
@@ -257,6 +418,7 @@ export function AdminAuctionList({
                   const trim = opportunityVehicleTrim(row);
                   const website = opportunityWebsiteState(row, row.linked_vehicle);
                   const thumb = opportunityThumbnailUrl(row);
+                  const meta = readAuctionMetadata(row.auction_metadata);
                   return (
                     <tr key={row.id} className="align-middle">
                       <td className="px-4 py-3">
@@ -270,11 +432,6 @@ export function AdminAuctionList({
                           <span className="min-w-0">
                             <span className="block font-medium text-[var(--admin-text)]">{title}</span>
                             {trim ? <span className="block text-xs text-[var(--admin-text-muted)]">{trim}</span> : null}
-                            {row.vin ? (
-                              <span className="mt-0.5 block font-mono text-[11px] text-[var(--admin-text-muted)]">
-                                {row.vin}
-                              </span>
-                            ) : null}
                           </span>
                         </Link>
                       </td>
@@ -284,11 +441,13 @@ export function AdminAuctionList({
                       <td className="px-4 py-3 text-xs tabular-nums text-[var(--admin-text-secondary)]">
                         {row.provider_lot_id || "—"}
                       </td>
-                      <td className="px-4 py-3 text-xs tabular-nums text-[var(--admin-text-secondary)]">
-                        {row.mileage != null ? `${row.mileage.toLocaleString("en-US")} mi` : "—"}
-                      </td>
                       <td className="px-4 py-3 text-xs text-[var(--admin-text-secondary)]">
                         {formatDamage(row.primary_damage)}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-[var(--admin-text-secondary)]">
+                        {meta.price_mode === "buy_now" && meta.buy_now_usd
+                          ? `Buy Now US$ ${meta.buy_now_usd.toLocaleString("en-US")}`
+                          : "A consultar"}
                       </td>
                       <td className="px-4 py-3">
                         <span
@@ -310,26 +469,14 @@ export function AdminAuctionList({
                             href={`/admin/subastas/${row.id}`}
                             className="inline-flex min-h-10 items-center rounded-lg border border-[var(--admin-border)] px-3 text-sm font-medium text-[var(--admin-text)] hover:bg-[var(--admin-surface-muted)]"
                           >
-                            Revisar
+                            Editar
                           </Link>
                           <AdminActionMenu
                             label={`Más acciones para ${title}`}
                             open={menuId === row.id}
                             onOpenChange={(open) => setMenuId(open ? row.id : null)}
                             disabled={pending}
-                            items={opportunityOverflowActions(row).map((item) => ({
-                              id: item.id,
-                              label: item.label,
-                              href: item.href,
-                              target: item.target,
-                              danger: item.danger,
-                              onSelect:
-                                item.id === "archive"
-                                  ? () => setArchiveId(row.id)
-                                  : item.id === "prepare"
-                                    ? () => prepare(row.id)
-                                    : undefined,
-                            }))}
+                            items={menuItems(row)}
                           />
                         </div>
                       </td>
@@ -346,10 +493,11 @@ export function AdminAuctionList({
               const trim = opportunityVehicleTrim(row);
               const website = opportunityWebsiteState(row, row.linked_vehicle);
               const thumb = opportunityThumbnailUrl(row);
+              const meta = readAuctionMetadata(row.auction_metadata);
               return (
                 <article
                   key={row.id}
-                  className="overflow-hidden rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] shadow-[var(--admin-shadow)]"
+                  className="relative overflow-hidden rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface)] shadow-[var(--admin-shadow)]"
                 >
                   <Link href={`/admin/subastas/${row.id}`} className="block">
                     <CopartPhoto
@@ -360,21 +508,33 @@ export function AdminAuctionList({
                     />
                   </Link>
                   <div className="grid gap-3 p-4">
-                    <div>
-                      <Link href={`/admin/subastas/${row.id}`} className="font-medium text-[var(--admin-text)]">
-                        {title}
-                        {trim ? ` ${trim}` : ""}
-                      </Link>
-                      <p className="mt-1 text-xs text-[var(--admin-text-muted)]">
-                        <AuctionBadge source={row.provider as AuctionProvider} />
-                        <span className="ml-2">
-                          {row.provider_lot_id ? `Lote ${row.provider_lot_id}` : "Sin lote"}
-                        </span>
-                      </p>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <Link href={`/admin/subastas/${row.id}`} className="font-medium text-[var(--admin-text)]">
+                          {title}
+                          {trim ? ` ${trim}` : ""}
+                        </Link>
+                        <p className="mt-1 text-xs text-[var(--admin-text-muted)]">
+                          <AuctionBadge source={row.provider as AuctionProvider} />
+                          <span className="ml-2">
+                            {row.provider_lot_id ? `Lote ${row.provider_lot_id}` : "Sin lote"}
+                          </span>
+                        </p>
+                      </div>
+                      <AdminActionMenu
+                        label={`Más acciones para ${title}`}
+                        open={menuId === row.id}
+                        onOpenChange={(open) => setMenuId(open ? row.id : null)}
+                        disabled={pending}
+                        items={menuItems(row)}
+                      />
                     </div>
                     <p className="text-sm text-[var(--admin-text-secondary)]">
-                      {row.mileage != null ? `${row.mileage.toLocaleString("en-US")} mi` : "Kilometraje no indicado"}
-                      {row.primary_damage ? ` · Daño: ${formatDamage(row.primary_damage)}` : ""}
+                      {row.primary_damage ? `Daño: ${formatDamage(row.primary_damage)}` : "Sin daño indicado"}
+                      {" · "}
+                      {meta.price_mode === "buy_now" && meta.buy_now_usd
+                        ? `Buy Now US$ ${meta.buy_now_usd.toLocaleString("en-US")}`
+                        : "Precio a consultar"}
                     </p>
                     <div className="flex flex-wrap gap-2">
                       <span
@@ -388,33 +548,12 @@ export function AdminAuctionList({
                         {OPPORTUNITY_WEBSITE_STATE_LABEL[website]}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between gap-2">
-                      <Link
-                        href={`/admin/subastas/${row.id}`}
-                        className="inline-flex min-h-11 flex-1 items-center justify-center rounded-lg bg-[var(--admin-text)] px-4 text-sm font-medium text-white"
-                      >
-                        Revisar
-                      </Link>
-                      <AdminActionMenu
-                        label={`Más acciones para ${title}`}
-                        open={menuId === row.id}
-                        onOpenChange={(open) => setMenuId(open ? row.id : null)}
-                        disabled={pending}
-                        items={opportunityOverflowActions(row).map((item) => ({
-                          id: item.id,
-                          label: item.label,
-                          href: item.href,
-                          target: item.target,
-                          danger: item.danger,
-                          onSelect:
-                            item.id === "archive"
-                              ? () => setArchiveId(row.id)
-                              : item.id === "prepare"
-                                ? () => prepare(row.id)
-                                : undefined,
-                        }))}
-                      />
-                    </div>
+                    <Link
+                      href={`/admin/subastas/${row.id}`}
+                      className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-[var(--admin-text)] px-4 text-sm font-medium text-white"
+                    >
+                      Editar
+                    </Link>
                   </div>
                 </article>
               );
@@ -426,7 +565,7 @@ export function AdminAuctionList({
       <AdminConfirmDialog
         open={Boolean(archiveId)}
         title="Archivar oportunidad"
-        description="La oportunidad dejará de aparecer en el trabajo activo. No se publica ni se elimina el vehículo vinculado."
+        description="La oportunidad dejará de aparecer en el trabajo activo y se despublicará del website si estaba publicada."
         confirmLabel="Archivar"
         pending={pending}
         danger

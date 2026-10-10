@@ -19,7 +19,7 @@ function formatAmount(amount: number | null | undefined, currency: "USD" | "DOP"
 }
 
 export const PUBLIC_PRICE_MODE_LABELS: Record<PublicPriceMode, string> = {
-  contact: "Consultar precio",
+  contact: "Precio a consultar",
   from: "Desde",
   estimated: "Precio estimado",
   fixed: "Precio fijo",
@@ -80,16 +80,21 @@ export function formatCustomerFacingPrice(
   mode: PublicPriceMode,
   amount: number | null | undefined,
   currency: "USD" | "DOP" = "USD",
+  options?: { auctionBuyNow?: boolean },
 ) {
   if (mode === "contact") {
-    return "Consultar precio";
+    return "Precio a consultar";
   }
   const formatted = formatAmount(amount, currency);
   if (!formatted) {
-    return "Consultar precio";
+    return "Precio a consultar";
   }
   if (mode === "from") return `Desde ${formatted}`;
   if (mode === "estimated") return `Precio estimado ${formatted}`;
+  if (options?.auctionBuyNow || mode === "fixed") {
+    // Auction Buy Now uses fixed mode; keep plain USD for local stock callers that pass no options.
+    if (options?.auctionBuyNow) return `Buy Now: ${formatted}`;
+  }
   return formatted;
 }
 
@@ -101,6 +106,8 @@ export function auctionPublicPriceDisclaimer(mode: PublicPriceMode) {
       return "Precio de referencia. El total puede variar según el resultado de la subasta, transporte y servicios seleccionados.";
     case "estimated":
       return "Estimación sujeta al resultado de la subasta y a los costos aplicables.";
+    case "fixed":
+      return "Precio de compra en subasta. No incluye transporte, impuestos, aduanas ni otros costos de importación.";
     default:
       return null;
   }

@@ -83,7 +83,10 @@ export function displayVehiclePrice(
       : vehicle.pricing.usdPrice
         ? "USD"
         : currency;
-  const primary = formatCustomerFacingPrice(mode, preferredAmount, preferredCurrency);
+  const auctionListing = vehicle.listingKind === "auction" || vehicle.availability === "auction";
+  const primary = formatCustomerFacingPrice(mode, preferredAmount, preferredCurrency, {
+    auctionBuyNow: auctionListing && mode === "fixed",
+  });
   const otherAmount = preferredCurrency === "USD" ? vehicle.pricing.rdPrice : vehicle.pricing.usdPrice;
   const otherCurrency: VehicleCurrency = preferredCurrency === "USD" ? "DOP" : "USD";
   const secondary =
@@ -92,7 +95,7 @@ export function displayVehiclePrice(
       : undefined;
 
   return {
-    label: mode === "fixed" ? "Precio de venta" : "Precio",
+    label: auctionListing && mode === "fixed" ? "Buy Now" : mode === "fixed" ? "Precio de venta" : "Precio",
     primary,
     secondary,
   };
@@ -128,7 +131,10 @@ export function buildVehicleWhatsAppMessage(vehicle: PublicVehicle) {
   const title = vehicleDisplayTitle(vehicle);
   const url = canonicalVehicleUrl(vehicle);
   if (vehicle.availability === "auction" || vehicle.listingKind === "auction") {
-    return `Hola, me interesa recibir una cotización para esta oportunidad de subasta: ${title}. ${url}`;
+    const lot = vehicle.auction?.lotNumber?.trim();
+    const provider = vehicle.fuenteSubasta?.trim();
+    const lotPart = lot ? ` (lote ${lot}${provider ? ` · ${provider}` : ""})` : provider ? ` (${provider})` : "";
+    return `Hola, me interesa recibir una cotización para esta oportunidad de subasta: ${title}${lotPart}. ${url}`;
   }
   if (vehicle.availability === "sold") {
     return `Hola, me interesa un vehículo similar a este: ${title}. ${url}`;

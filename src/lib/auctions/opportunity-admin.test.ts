@@ -47,25 +47,24 @@ function opportunity(overrides: Partial<AuctionOpportunityRow> = {}): AuctionOpp
 }
 
 describe("active auction opportunity UI", () => {
-  it("offers Copart and manual IAA, not Manheim, for new opportunities", () => {
+  it("offers Copart, IAA, and Manheim for new opportunities", () => {
     const labels = activeAuctionProviderChoices().map((item) => item.id);
-    expect(labels).toEqual(["copart", "iaa"]);
-    expect(activeAuctionProviderChoices().find((item) => item.id === "iaa")?.label).toMatch(/ingreso manual/i);
-    expect(ACTIVE_AUCTION_PROVIDERS).toEqual(["copart", "iaa"]);
-    expect(ACTIVE_PROVIDER_FILTERS.map((item) => item.id)).toEqual(["all", "copart", "iaa"]);
-    expect(ACTIVE_PROVIDER_FILTERS.map((item) => item.id as string)).not.toContain("manheim");
-    expect(newOpportunityRejectsManheim("manheim", false)).toBe(true);
+    expect(labels).toEqual(["copart", "iaa", "manheim"]);
+    expect(activeAuctionProviderChoices().find((item) => item.id === "iaa")?.label).toBe("IAA");
+    expect(ACTIVE_AUCTION_PROVIDERS).toEqual(["copart", "iaa", "manheim"]);
+    expect(ACTIVE_PROVIDER_FILTERS.map((item) => item.id)).toEqual(["all", "copart", "iaa", "manheim"]);
+    expect(newOpportunityRejectsManheim("manheim", false)).toBe(false);
     expect(newOpportunityRejectsManheim("copart", false)).toBe(false);
-    expect(remapNewOpportunityProvider("manheim")).toBe("other");
+    expect(remapNewOpportunityProvider("manheim")).toBe("manheim");
     expect(remapNewOpportunityProvider("iaa")).toBe("iaa");
   });
 
-  it("keeps Manheim only when editing a historical record", () => {
+  it("keeps Manheim selectable for new and historical records", () => {
     const choices = activeAuctionProviderChoices("manheim");
     expect(choices.some((item) => item.id === "manheim")).toBe(true);
     expect(newOpportunityRejectsManheim("manheim", true)).toBe(false);
     expect(historicalProviderLabel("manheim")).toBe("Manheim");
-    expect(providerFilterFromParam("manheim")).toBe("all");
+    expect(providerFilterFromParam("manheim")).toBe("manheim");
   });
 });
 
@@ -76,11 +75,12 @@ describe("opportunity filters and search", () => {
     opportunity({ id: "mh-1", provider: "manheim", provider_lot_id: "99", make: "FORD", model: "F-150", status: "archived" }),
   ];
 
-  it("filters by Copart and IAA without a Manheim chip", () => {
+  it("filters by Copart, IAA, and Manheim", () => {
     expect(filterOpportunities(rows, { provider: "copart" }).map((row) => row.id)).toEqual([
       "11111111-1111-4111-8111-111111111111",
     ]);
     expect(filterOpportunities(rows, { provider: "iaa" })[0]?.provider).toBe("iaa");
+    expect(filterOpportunities(rows, { provider: "manheim" })[0]?.provider).toBe("manheim");
     expect(filterOpportunities(rows, { provider: "all" }).some((row) => row.provider === "manheim")).toBe(true);
   });
 
@@ -122,7 +122,7 @@ describe("opportunity presentation", () => {
     const row = opportunity();
     expect(opportunityWebsiteState(row)).toBe("unprepared");
     expect(OPPORTUNITY_WEBSITE_STATE_LABEL.unprepared).toBe("No preparado");
-    expect(OPPORTUNITY_WEBSITE_STATE_LABEL.draft).toBe("Borrador creado");
+    expect(OPPORTUNITY_WEBSITE_STATE_LABEL.draft).toBe("Borrador");
     expect(OPPORTUNITY_WEBSITE_STATE_LABEL.ready).toBe("Listo para publicar");
     expect(OPPORTUNITY_WEBSITE_STATE_LABEL.published).toBe("Publicado");
     expect(opportunityWebsiteState({ ...row, linked_vehicle_id: "veh-1" }, null)).toBe("draft");
@@ -180,24 +180,40 @@ describe("opportunity presentation", () => {
     ).toBe("published");
   });
 
-  it("exposes Revisar plus overflow actions without raw field names", () => {
+  it("exposes manual workflow overflow actions without extraction labels", () => {
     const actions = opportunityOverflowActions(opportunity());
-    expect(actions.map((item) => item.id)).toEqual(["view", "source", "prepare", "archive"]);
+    expect(actions.map((item) => item.id)).toEqual(["view", "edit", "publish", "source", "archive"]);
     expect(actions.map((item) => item.label)).toEqual([
       "Ver oportunidad",
+      "Editar",
+      "Publicar",
       "Abrir lote original",
-      "Preparar para website",
       "Archivar",
     ]);
-    expect(JSON.stringify(actions)).not.toMatch(/provider_lot_id|linked_vehicle_id|source_type|NOT_CONFIGURED/);
-    const linked = opportunityOverflowActions({
-      ...opportunity(),
-      linked_vehicle_id: "veh-1",
-      status: "published",
-    });
-    expect(linked.some((item) => item.id === "linked")).toBe(true);
-    expect(linked.some((item) => item.label === "Ver vehículo vinculado")).toBe(true);
-    expect(linked.some((item) => item.id === "prepare")).toBe(false);
+    expect(JSON.stringify(actions)).not.toMatch(/provider_lot_id|linked_vehicle_id|source_type|NOT_CONFIGURED|Extract|CSV|Preparar/);
+    const linked = opportunityOverflowActions(
+      {
+        ...opportunity(),
+        linked_vehicle_id: "veh-1",
+        status: "published",
+      },
+      {
+        id: "veh-1",
+        published: true,
+        status: "available",
+        year: 2021,
+        make: "Honda",
+        model: "CR-V",
+        description: "Lista",
+        price: null,
+        public_price_mode: "contact",
+        source_type: "other",
+        vehicle_photos: [{ id: "p1", is_cover: true }],
+      },
+    );
+    expect(linked.some((item) => item.id === "preview")).toBe(true);
+    expect(linked.some((item) => item.id === "unpublish")).toBe(true);
+    expect(linked.some((item) => item.id === "publish")).toBe(false);
     expect(opportunityOverflowActions({ ...opportunity(), status: "archived" }).some((item) => item.id === "archive")).toBe(
       false,
     );

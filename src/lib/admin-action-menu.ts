@@ -28,8 +28,9 @@ export function positionAdminMenu({
 }) {
   const spaceBelow = viewport.height - trigger.bottom - padding;
   const spaceAbove = trigger.top - padding;
+  // Mobile/tablet portrait: always use a bottom sheet so menus never overlap card stacks.
   const cramped =
-    viewport.width < 768 || (spaceBelow < menu.height && spaceAbove < menu.height);
+    viewport.width < 1024 || (spaceBelow < menu.height && spaceAbove < menu.height);
 
   if (cramped) {
     return {

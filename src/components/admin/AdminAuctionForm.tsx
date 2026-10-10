@@ -1,16 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Check, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import {
   createAuctionOpportunity,
-  parseAuctionUrlAction,
   prepareAuctionForWebsite,
+  publishAuctionOpportunity,
+  unpublishAuctionOpportunity,
   updateAuctionOpportunity,
   type AuctionActionState,
 } from "@/app/actions/auctions";
-import { lookupCopartLotAction, type CopartLotLookupActionResult } from "@/app/actions/copart";
+import {
+  attachVehiclePhotos,
+  deleteVehiclePhoto,
+  reorderVehiclePhotos,
+  updateVehiclePhoto,
+} from "@/app/actions/vehicles";
+import { AdminMediaPicker } from "@/components/admin/AdminMediaPicker";
+import { AdminSearchableSelect } from "@/components/admin/AdminSearchableSelect";
+import { AuctionBadge } from "@/components/admin/AdminBadges";
+import { AdminConfirmDialog } from "@/components/admin/AdminModal";
 import {
   AdminCard,
   AdminError,
@@ -22,415 +33,1118 @@ import {
   AdminSelect,
   AdminTextArea,
 } from "@/components/admin/ui";
-import { AuctionBadge } from "@/components/admin/AdminBadges";
-import { CopartLookupCard } from "@/components/admin/CopartLookupCard";
-import { AdminConfirmDialog } from "@/components/admin/AdminModal";
+import {
+  ADMIN_BODY_STYLE_OPTIONS,
+  ADMIN_DRIVETRAIN_OPTIONS,
+  ADMIN_EXTERIOR_COLOR_OPTIONS,
+  ADMIN_FUEL_OPTIONS,
+  ADMIN_OTHER_SENTINEL,
+  ADMIN_TRANSMISSION_OPTIONS,
+  withCurrentOption,
+} from "@/lib/admin-field-options";
+import {
+  makeSelectState,
+  modelSelectState,
+  resolveMakeValue,
+  resolveModelValue,
+  resolveSmartFieldValue,
+  smartFieldState,
+} from "@/lib/admin-smart-fields";
+import {
+  AUCTION_DAMAGE_OPTIONS,
+  AUCTION_KEYS_OPTIONS,
+  AUCTION_ODOMETER_OPTIONS,
+  AUCTION_PRICE_MODES,
+  AUCTION_PROVIDER_OPTIONS,
+  AUCTION_RUN_DRIVE_OPTIONS,
+  AUCTION_SALE_STATUS_OPTIONS,
+  AUCTION_SECONDARY_DAMAGE_OPTIONS,
+  AUCTION_TITLE_OPTIONS,
+  BUY_NOW_DISCLAIMER,
+  readAuctionMetadata,
+  type AuctionAdminPriceMode,
+} from "@/lib/auction-admin-fields";
 import {
   activeAuctionProviderChoices,
   historicalProviderLabel,
-  remapNewOpportunityProvider,
+  opportunityVehicleTitle,
+  type LinkedVehicleSummary,
 } from "@/lib/auctions/opportunity-admin";
-import {
-  COPART_DUPLICATE_LOT_MESSAGE,
-} from "@/lib/auction-providers/copart/opportunity";
-import {
-  COPART_LOOKUP_LOADED_COPY,
-  COPART_LOOKUP_SUCCESS_MESSAGE,
-  COPART_LOT_NOT_FOUND_HINT,
-  COPART_LOT_NOT_FOUND_MESSAGE,
-  shouldConfirmCopartLookupReplace,
-  type CopartOpportunityFormValues,
-} from "@/lib/auction-providers/copart/lookup";
 import { isSafeHttpUrl } from "@/lib/safe-url";
-import { type AuctionOpportunityRow, type AuctionProvider } from "@/lib/website-schema";
+import { MAX_VEHICLE_PHOTOS, validatePhotoFile, vehicleImageAdminPath } from "@/lib/storage";
+import { removeStoredPhoto, uploadVehiclePhotos } from "@/lib/vehicle-photos";
+import {
+  OTHER_MAKE_LABEL,
+  OTHER_MAKE_VALUE,
+  OTHER_MODEL_LABEL,
+  OTHER_MODEL_VALUE,
+  VEHICLE_MAKE_OPTIONS,
+  makeChangeConflictsWithModel,
+  modelsForMake,
+  yearOptions,
+} from "@/lib/vehicle-make-models";
+import type { AuctionOpportunityRow, AuctionProvider } from "@/lib/website-schema";
 
-export function AdminAuctionForm({ opportunity }: { opportunity?: AuctionOpportunityRow | null }) {
-  const router = useRouter();
-  const saved = Boolean(opportunity?.id);
-  const [parseState, setParseState] = useState<AuctionActionState>({ error: null });
-  const [parsing, setParsing] = useState(false);
-  const [saveState, setSaveState] = useState<AuctionActionState>({ error: null });
-  const [pending, setPending] = useState(false);
-  const [preparing, setPreparing] = useState(false);
-  const [lookingUp, setLookingUp] = useState(false);
-  const [provider, setProvider] = useState<AuctionProvider>(opportunity?.provider ?? "copart");
-  const [lot, setLot] = useState(opportunity?.provider_lot_id ?? "");
-  const [sourceUrl, setSourceUrl] = useState(opportunity?.source_url ?? "");
-  const [form, setForm] = useState<CopartOpportunityFormValues>({
-    vin: opportunity?.vin ?? "",
-    year: opportunity?.year != null ? String(opportunity.year) : "",
-    make: opportunity?.make ?? "",
-    model: opportunity?.model ?? "",
-    trim: opportunity?.trim ?? "",
-    mileage: opportunity?.mileage != null ? String(opportunity.mileage) : "",
-    titleStatus: opportunity?.title_status ?? "",
-    primaryDamage: opportunity?.primary_damage ?? "",
-    location: opportunity?.location ?? "",
-  });
-  const [notes, setNotes] = useState(opportunity?.internal_notes ?? "");
-  const [lookup, setLookup] = useState<CopartLotLookupActionResult | null>(null);
-  const [baseline, setBaseline] = useState<CopartOpportunityFormValues | null>(
-    opportunity?.id
-      ? {
-          vin: opportunity.vin ?? "",
-          year: opportunity.year != null ? String(opportunity.year) : "",
-          make: opportunity.make ?? "",
-          model: opportunity.model ?? "",
-          trim: opportunity.trim ?? "",
-          mileage: opportunity.mileage != null ? String(opportunity.mileage) : "",
-          titleStatus: opportunity.title_status ?? "",
-          primaryDamage: opportunity.primary_damage ?? "",
-          location: opportunity.location ?? "",
-        }
-      : null,
+type EditorStep = 0 | 1 | 2 | 3 | 4;
+
+const STEPS = [
+  { id: 0 as const, label: "Subasta y lote" },
+  { id: 1 as const, label: "Vehículo" },
+  { id: 2 as const, label: "Condición" },
+  { id: 3 as const, label: "Fotos" },
+  { id: 4 as const, label: "Precio y publicación" },
+];
+
+const DRAFT_KEY = "valcron.auction.manual.draft.v26";
+
+type FormState = {
+  provider: AuctionProvider;
+  provider_lot_id: string;
+  source_url: string;
+  location: string;
+  city: string;
+  state: string;
+  auction_date: string;
+  auction_sale_status: string;
+  seller_type: string;
+  year: string;
+  make: string;
+  model: string;
+  trim: string;
+  vin: string;
+  mileage: string;
+  mileage_unit: "mi" | "km";
+  body_style: string;
+  fuel: string;
+  transmission: string;
+  drivetrain: string;
+  engine: string;
+  exterior_color: string;
+  interior_color: string;
+  description: string;
+  primary_damage: string;
+  secondary_damage: string;
+  run_and_drive: string;
+  keys: string;
+  odometer_status: string;
+  title_status: string;
+  price_mode: AuctionAdminPriceMode;
+  buy_now_usd: string;
+  video_url: string;
+  featured: boolean;
+  internal_notes: string;
+};
+
+type LocalPhoto = {
+  id: string;
+  file: File;
+  preview: string;
+  isCover: boolean;
+};
+
+function emptyForm(): FormState {
+  return {
+    provider: "copart",
+    provider_lot_id: "",
+    source_url: "",
+    location: "",
+    city: "",
+    state: "",
+    auction_date: "",
+    auction_sale_status: "Estado desconocido",
+    seller_type: "",
+    year: "",
+    make: "",
+    model: "",
+    trim: "",
+    vin: "",
+    mileage: "",
+    mileage_unit: "mi",
+    body_style: "",
+    fuel: "",
+    transmission: "",
+    drivetrain: "",
+    engine: "",
+    exterior_color: "",
+    interior_color: "",
+    description: "",
+    primary_damage: "",
+    secondary_damage: "Not Reported",
+    run_and_drive: "Not Reported",
+    keys: "Unknown",
+    odometer_status: "Unknown",
+    title_status: "",
+    price_mode: "contact",
+    buy_now_usd: "",
+    video_url: "",
+    featured: false,
+    internal_notes: "",
+  };
+}
+
+function formFromOpportunity(opportunity: AuctionOpportunityRow): FormState {
+  const meta = readAuctionMetadata(opportunity.auction_metadata);
+  return {
+    provider: opportunity.provider,
+    provider_lot_id: opportunity.provider_lot_id ?? "",
+    source_url: opportunity.source_url ?? "",
+    location: opportunity.location ?? "",
+    city: meta.city ?? "",
+    state: meta.state ?? "",
+    auction_date: meta.auction_date ?? "",
+    auction_sale_status: meta.auction_sale_status ?? "Estado desconocido",
+    seller_type: meta.seller_type ?? "",
+    year: opportunity.year != null ? String(opportunity.year) : "",
+    make: opportunity.make ?? "",
+    model: opportunity.model ?? "",
+    trim: opportunity.trim ?? "",
+    vin: opportunity.vin ?? "",
+    mileage: opportunity.mileage != null ? String(opportunity.mileage) : "",
+    mileage_unit: meta.mileage_unit === "km" ? "km" : "mi",
+    body_style: meta.body_style ?? "",
+    fuel: meta.fuel ?? "",
+    transmission: meta.transmission ?? "",
+    drivetrain: meta.drivetrain ?? "",
+    engine: meta.engine ?? "",
+    exterior_color: meta.exterior_color ?? "",
+    interior_color: meta.interior_color ?? "",
+    description: meta.description ?? "",
+    primary_damage: opportunity.primary_damage ?? "",
+    secondary_damage: meta.secondary_damage ?? "Not Reported",
+    run_and_drive: meta.run_and_drive ?? "Not Reported",
+    keys: meta.keys ?? "Unknown",
+    odometer_status: meta.odometer_status ?? "Unknown",
+    title_status: opportunity.title_status ?? "",
+    price_mode: meta.price_mode ?? "contact",
+    buy_now_usd: meta.buy_now_usd != null ? String(meta.buy_now_usd) : "",
+    video_url: meta.video_url ?? "",
+    featured: Boolean(meta.featured),
+    internal_notes: opportunity.internal_notes ?? "",
+  };
+}
+
+function optionsFrom(list: readonly string[]) {
+  return list.map((value) => ({ value, label: value }));
+}
+
+function FormSection({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <AdminCard>
+      <div className="mb-5">
+        <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">{title}</h2>
+        {hint ? (
+          <p className="mt-1 max-w-2xl text-sm leading-6 text-[var(--admin-text-secondary)]">{hint}</p>
+        ) : null}
+      </div>
+      {children}
+    </AdminCard>
   );
-  const [lastAppliedLot, setLastAppliedLot] = useState<string | null>(null);
-  const [pendingReplace, setPendingReplace] = useState<CopartLotLookupActionResult | null>(null);
+}
 
-  function patchForm(key: keyof CopartOpportunityFormValues, value: string) {
-    setForm((current) => ({ ...current, [key]: value }));
-  }
+function SmartSelectField({
+  label,
+  options,
+  value,
+  onChange,
+  required,
+}: {
+  label: string;
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (next: string) => void;
+  required?: boolean;
+}) {
+  const state = smartFieldState(options, value);
+  return (
+    <AdminField label={label} required={required}>
+      <AdminSelect
+        value={state.selectValue}
+        onChange={(event) => {
+          const next = event.target.value;
+          if (next === ADMIN_OTHER_SENTINEL) {
+            onChange(state.customValue || "Other");
+            return;
+          }
+          onChange(next);
+        }}
+      >
+        <option value="">Seleccionar</option>
+        {options
+          .filter((option) => option.value !== "Other" && option.value !== "Otro" && option.value !== "Otra")
+          .map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        <option value={ADMIN_OTHER_SENTINEL}>Otro</option>
+      </AdminSelect>
+      {state.isOther || state.selectValue === ADMIN_OTHER_SENTINEL ? (
+        <AdminInput
+          className="mt-2"
+          value={state.customValue || (state.isOther ? value : "")}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder="Escribe el valor"
+        />
+      ) : null}
+    </AdminField>
+  );
+}
 
-  function applyLookup(result: CopartLotLookupActionResult) {
-    if (result.status !== "found" || !result.prefill) {
-      setLookup(result);
+export function AdminAuctionForm({
+  opportunity,
+  linkedVehicle,
+}: {
+  opportunity?: AuctionOpportunityRow | null;
+  linkedVehicle?: LinkedVehicleSummary | null;
+}) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const saved = Boolean(opportunity?.id);
+  const [step, setStep] = useState<EditorStep>(() => {
+    const paso = Number(searchParams.get("paso"));
+    if (paso >= 0 && paso <= 4) return paso as EditorStep;
+    return 0;
+  });
+  const [values, setValues] = useState<FormState>(() =>
+    opportunity ? formFromOpportunity(opportunity) : emptyForm(),
+  );
+  const [customMake, setCustomMake] = useState("");
+  const [customModel, setCustomModel] = useState("");
+  const [makeSelect, setMakeSelect] = useState(() =>
+    makeSelectState(opportunity?.make ?? "").selectValue,
+  );
+  const [modelSelect, setModelSelect] = useState(() =>
+    modelSelectState(opportunity?.make ?? "", opportunity?.model ?? "").selectValue,
+  );
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [publicPath, setPublicPath] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [localPhotos, setLocalPhotos] = useState<LocalPhoto[]>([]);
+  const [vehicleId, setVehicleId] = useState<string | null>(opportunity?.linked_vehicle_id ?? linkedVehicle?.id ?? null);
+  const [published, setPublished] = useState(Boolean(linkedVehicle?.published));
+  const [photos, setPhotos] = useState(linkedVehicle?.vehicle_photos ?? []);
+  const [confirm, setConfirm] = useState<"publish" | "unpublish" | null>(null);
+  const [draftReady, setDraftReady] = useState(saved);
+
+  useEffect(() => {
+    if (saved) {
+      setDraftReady(true);
       return;
     }
-    const next = result.prefill;
-    setProvider("copart");
-    setLot(next.lot);
-    setSourceUrl(next.sourceUrl || result.sourceUrl || sourceUrl);
-    setForm(next.form);
-    setBaseline(next.form);
-    setLastAppliedLot(next.lot);
-    setLookup(result);
-    setParseState({
-      error: null,
-      success: COPART_LOOKUP_SUCCESS_MESSAGE,
-      parsed: { provider: "copart", providerLotId: next.lot, sourceUrl: next.sourceUrl },
-      lookup: result,
-    });
-  }
-
-  function considerLookup(result: CopartLotLookupActionResult) {
-    if (result.status === "found" && result.prefill) {
-      const confirm = shouldConfirmCopartLookupReplace({
-        current: form,
-        baseline,
-        lastAppliedLot,
-        incomingLot: result.prefill.lot,
-      });
-      if (confirm) {
-        setPendingReplace(result);
+    try {
+      const raw = window.localStorage.getItem(DRAFT_KEY);
+      if (!raw) {
+        setDraftReady(true);
         return;
       }
+      const parsed = JSON.parse(raw) as FormState;
+      setValues((current) => ({ ...current, ...parsed }));
+      const makeState = makeSelectState(parsed.make ?? "");
+      const modelState = modelSelectState(parsed.make ?? "", parsed.model ?? "");
+      setMakeSelect(makeState.selectValue);
+      setCustomMake(makeState.customValue);
+      setModelSelect(modelState.selectValue);
+      setCustomModel(modelState.customValue);
+      setNotice("Borrador local recuperado. Guarda para persistirlo en el servidor.");
+    } catch {
+      /* ignore corrupt draft */
     }
-    applyLookup(result);
+    setDraftReady(true);
+  }, [saved]);
+
+  useEffect(() => {
+    if (!draftReady || saved) return;
+    const timer = window.setTimeout(() => {
+      try {
+        window.localStorage.setItem(DRAFT_KEY, JSON.stringify(values));
+      } catch {
+        /* quota */
+      }
+    }, 400);
+    return () => window.clearTimeout(timer);
+  }, [values, draftReady, saved]);
+
+  const makeState = useMemo(() => {
+    if (makeSelect === OTHER_MAKE_VALUE) {
+      return { selectValue: OTHER_MAKE_VALUE, customValue: customMake, isOther: true };
+    }
+    return makeSelectState(values.make);
+  }, [customMake, makeSelect, values.make]);
+
+  const modelOptions = useMemo(() => {
+    const base = modelsForMake(values.make).map((model) => ({ value: model, label: model }));
+    return [...base, { value: OTHER_MODEL_VALUE, label: OTHER_MODEL_LABEL }];
+  }, [values.make]);
+
+  function patch<K extends keyof FormState>(key: K, value: FormState[K]) {
+    setValues((current) => ({ ...current, [key]: value }));
   }
 
-  async function handleParse(formData: FormData) {
-    setParsing(true);
-    const result = await parseAuctionUrlAction(null, formData);
-    if (result.parsed) {
-      setProvider(saved ? result.parsed.provider : remapNewOpportunityProvider(result.parsed.provider));
-      setLot(result.parsed.providerLotId ?? "");
-      setSourceUrl(result.parsed.sourceUrl);
-    }
-    if (result.lookup) {
-      considerLookup(result.lookup);
-    } else {
-      setParseState(result);
-    }
-    setParsing(false);
+  function buildFormData(id?: string) {
+    const make = resolveMakeValue(makeSelect === OTHER_MAKE_VALUE ? OTHER_MAKE_VALUE : makeState.selectValue, customMake || values.make);
+    const model = resolveModelValue(
+      modelSelect === OTHER_MODEL_VALUE ? OTHER_MODEL_VALUE : modelSelect || values.model,
+      customModel || values.model,
+    );
+    const formData = new FormData();
+    if (id) formData.set("id", id);
+    formData.set("provider", values.provider);
+    formData.set("provider_lot_id", values.provider_lot_id);
+    formData.set("source_url", values.source_url);
+    formData.set("location", values.location);
+    formData.set("city", values.city);
+    formData.set("state", values.state);
+    formData.set("auction_date", values.auction_date);
+    formData.set("auction_sale_status", values.auction_sale_status);
+    formData.set("seller_type", values.seller_type);
+    formData.set("year", values.year);
+    formData.set("make", make || values.make);
+    formData.set("model", model || values.model);
+    formData.set("trim", values.trim);
+    formData.set("vin", values.vin);
+    formData.set("mileage", values.mileage);
+    formData.set("mileage_unit", values.mileage_unit);
+    formData.set("body_style", values.body_style);
+    formData.set("fuel", values.fuel);
+    formData.set("transmission", values.transmission);
+    formData.set("drivetrain", values.drivetrain);
+    formData.set("engine", values.engine);
+    formData.set("exterior_color", values.exterior_color);
+    formData.set("interior_color", values.interior_color);
+    formData.set("description", values.description);
+    formData.set("primary_damage", values.primary_damage);
+    formData.set("secondary_damage", values.secondary_damage);
+    formData.set("run_and_drive", values.run_and_drive);
+    formData.set("keys", values.keys);
+    formData.set("odometer_status", values.odometer_status);
+    formData.set("title_status", values.title_status);
+    formData.set("price_mode", values.price_mode);
+    formData.set("buy_now_usd", values.buy_now_usd);
+    formData.set("video_url", values.video_url);
+    formData.set("featured", values.featured ? "true" : "false");
+    formData.set("internal_notes", values.internal_notes);
+    formData.set("status", opportunity?.status === "archived" ? "archived" : opportunity?.status === "published" ? "published" : "draft");
+    return formData;
   }
 
-  async function lookupLot() {
-    if (lookingUp || provider !== "copart") return;
-    setLookingUp(true);
-    const result = await lookupCopartLotAction(lot || sourceUrl);
-    considerLookup(result);
-    setLookingUp(false);
-  }
-
-  async function handleSubmit(formData: FormData) {
-    setPending(true);
+  async function saveDraft(): Promise<AuctionActionState> {
+    if (values.source_url && !isSafeHttpUrl(values.source_url)) {
+      return { error: "El enlace de origen debe comenzar con http:// o https://." };
+    }
+    if (!values.provider || !["copart", "iaa", "manheim", "other"].includes(values.provider)) {
+      return { error: "Selecciona Copart, IAA o Manheim." };
+    }
+    setSaving(true);
+    const formData = buildFormData(opportunity?.id);
     const result = saved
       ? await updateAuctionOpportunity(null, formData)
       : await createAuctionOpportunity(null, formData);
-    setSaveState(result);
-    setPending(false);
-    if (!result.error && result.id && !saved) {
-      router.replace(`/admin/subastas/${result.id}`);
-    }
-  }
-
-  async function prepare() {
-    if (!opportunity?.id) return;
-    setPreparing(true);
-    const result = await prepareAuctionForWebsite(opportunity.id);
-    setSaveState(result);
-    setPreparing(false);
+    setSaving(false);
     if (!result.error && result.id) {
-      router.push(`/admin/inventario/${result.id}`);
+      try {
+        window.localStorage.removeItem(DRAFT_KEY);
+      } catch {
+        /* ignore */
+      }
+      if (!saved) {
+        router.replace(`/admin/subastas/${result.id}`);
+      } else {
+        router.refresh();
+      }
     }
+    return result;
   }
 
-  const lookupBusy = lookingUp || parsing;
-  const notFound = lookup?.status === "not_found";
+  async function ensureVehicle(): Promise<string | null> {
+    if (vehicleId) return vehicleId;
+    if (!opportunity?.id) {
+      const created = await saveDraft();
+      if (created.error || !created.id) {
+        setError(created.error);
+        return null;
+      }
+      const prepared = await prepareAuctionForWebsite(created.id);
+      if (prepared.error || !(prepared.vehicleId ?? prepared.id)) {
+        setError(prepared.error);
+        return null;
+      }
+      const id = prepared.vehicleId ?? prepared.id!;
+      setVehicleId(id);
+      return id;
+    }
+    const prepared = await prepareAuctionForWebsite(opportunity.id);
+    if (prepared.error || !(prepared.vehicleId ?? prepared.id)) {
+      setError(prepared.error);
+      return null;
+    }
+    const id = prepared.vehicleId ?? prepared.id!;
+    setVehicleId(id);
+    return id;
+  }
+
+  async function handleSave() {
+    setError(null);
+    setNotice(null);
+    startTransition(() => {
+      void saveDraft().then((result) => {
+        if (result.error) {
+          setError(result.error);
+          return;
+        }
+        setNotice(result.success ?? "Borrador guardado.");
+      });
+    });
+  }
+
+  async function handleFiles(fileList: FileList | File[]) {
+    const files = [...fileList];
+    if (!files.length) return;
+    setError(null);
+    setUploading(true);
+    const id = await ensureVehicle();
+    if (!id) {
+      setUploading(false);
+      return;
+    }
+    const accepted: File[] = [];
+    for (const file of files) {
+      const invalid = validatePhotoFile(file);
+      if (invalid) {
+        setError(invalid);
+        continue;
+      }
+      accepted.push(file);
+    }
+    if (!accepted.length) {
+      setUploading(false);
+      return;
+    }
+    if ((photos?.length ?? 0) + localPhotos.length + accepted.length > MAX_VEHICLE_PHOTOS) {
+      setError(`Máximo ${MAX_VEHICLE_PHOTOS} fotos.`);
+      setUploading(false);
+      return;
+    }
+    const result = await uploadVehiclePhotos(accepted, {
+      vehicleId: id,
+      onUploaded: async ({ paths }) => {
+        const coverPath = !(photos?.length) && !localPhotos.length ? paths[0] : null;
+        return attachVehiclePhotos({ vehicleId: id, paths, coverPath });
+      },
+    });
+    setUploading(false);
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+    setNotice("Fotos subidas.");
+    router.refresh();
+  }
+
+  async function handlePublish() {
+    if (!opportunity?.id) {
+      const savedDraft = await saveDraft();
+      if (savedDraft.error || !savedDraft.id) {
+        setError(savedDraft.error);
+        return;
+      }
+      const result = await publishAuctionOpportunity(savedDraft.id);
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      setPublished(true);
+      setPublicPath(result.publicPath ?? null);
+      setNotice(result.success ?? "Publicado.");
+      router.replace(`/admin/subastas/${savedDraft.id}?paso=4`);
+      return;
+    }
+    await saveDraft();
+    const result = await publishAuctionOpportunity(opportunity.id);
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+    setPublished(true);
+    setPublicPath(result.publicPath ?? null);
+    setNotice(result.success ?? "Publicado.");
+    router.refresh();
+  }
+
+  async function handleUnpublish() {
+    if (!opportunity?.id) return;
+    const result = await unpublishAuctionOpportunity(opportunity.id);
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+    setPublished(false);
+    setNotice(result.success ?? "Despublicado.");
+    router.refresh();
+  }
+
+  const title = opportunity ? opportunityVehicleTitle(opportunity) : "Agregar vehículo de subasta";
+  const providerChoices = activeAuctionProviderChoices(values.provider);
 
   return (
     <div className="grid gap-6">
       <AdminPageHeader
-        title={saved ? "Oportunidad" : "Agregar oportunidad"}
-        subtitle="Busca un lote Copart o completa los datos. No se publica automáticamente."
+        title={saved ? title : "Agregar vehículo de subasta"}
+        subtitle="Ingreso manual. No se publica en Inventario Valcron."
+        actions={
+          saved ? (
+            <AuctionBadge source={values.provider} />
+          ) : (
+            <Link href="/admin/subastas">
+              <AdminSecondaryButton>Volver</AdminSecondaryButton>
+            </Link>
+          )
+        }
       />
 
-      <AdminCard>
-        <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Importar desde enlace</h2>
-        <p className="mt-1 text-sm leading-6 text-[var(--admin-text-secondary)]">
-          Si pegas un enlace de Copart, buscamos el lote en el inventario oficial. IAA se completa a mano.
-        </p>
-        <form action={handleParse} className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]">
-          <AdminInput
-            name="source_url"
-            placeholder="https://www.copart.com/lot/..."
-            value={sourceUrl}
-            onChange={(event) => setSourceUrl(event.target.value)}
-            className="h-12"
-          />
-          <AdminPrimaryButton type="submit" disabled={lookupBusy} className="sm:min-w-[10.5rem]">
-            {parsing ? "Buscando..." : "Analizar enlace"}
-          </AdminPrimaryButton>
-        </form>
-        <AdminError message={parseState.error} />
-        {parseState.success && lookup?.status === "found" ? (
-          <p className="mt-3 text-sm text-[var(--admin-success)]">{parseState.success}</p>
-        ) : parseState.success && lookup?.status !== "not_found" ? (
-          <p className="mt-3 text-sm text-[var(--admin-success)]">{parseState.success}</p>
-        ) : null}
-        {parseState.parsed && lookup?.status !== "found" && lookup?.status !== "not_found" ? (
-          <div className="mt-4 rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] p-4">
-            <p className="text-sm font-medium text-[var(--admin-text)]">Revisa y completa la información antes de guardar.</p>
-            <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
-              <div>
-                <dt className="text-xs text-[var(--admin-text-muted)]">Proveedor</dt>
-                <dd>
-                  {historicalProviderLabel(
-                    saved ? parseState.parsed.provider : remapNewOpportunityProvider(parseState.parsed.provider),
-                  )}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs text-[var(--admin-text-muted)]">Lote</dt>
-                <dd>{parseState.parsed.providerLotId || "Completar a mano"}</dd>
-              </div>
-              <div>
-                <dt className="text-xs text-[var(--admin-text-muted)]">Enlace</dt>
-                <dd className="truncate">{parseState.parsed.sourceUrl}</dd>
-              </div>
-            </dl>
-          </div>
-        ) : null}
-      </AdminCard>
-
-      {lookup?.status === "found" && lookup.vehicle ? (
-        <CopartLookupCard
-          vehicle={lookup.vehicle}
-          gallery={lookup.gallery}
-          lastUpdated={lookup.lastUpdated}
-          duplicateId={saved ? null : lookup.duplicateId}
-        />
-      ) : null}
-
-      {lookup?.error && lookup.status !== "found" && lookup.status !== "not_found" ? (
-        <AdminError message={lookup.error} />
-      ) : null}
-
-      {notFound ? (
-        <AdminCard>
-          <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">{COPART_LOT_NOT_FOUND_MESSAGE}</h2>
-          <p className="mt-2 text-sm leading-6 text-[var(--admin-text-secondary)]">{COPART_LOT_NOT_FOUND_HINT}</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Link href="/admin/subastas/copart">
-              <AdminPrimaryButton type="button">Buscar en inventario Copart</AdminPrimaryButton>
-            </Link>
-            <AdminSecondaryButton type="button" onClick={() => setLookup(null)}>
-              Continuar manualmente
-            </AdminSecondaryButton>
-          </div>
-        </AdminCard>
-      ) : null}
-
-      <form action={handleSubmit} className="grid gap-6">
-        {opportunity?.id ? <input type="hidden" name="id" value={opportunity.id} /> : null}
-        <AdminCard>
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Datos de la unidad</h2>
-              <p className="mt-1 text-xs text-[var(--admin-text-muted)]">
-                Información pública Valcron se define después, al preparar para website. El precio público no se copia
-                desde Copart.
-              </p>
-            </div>
-            <AuctionBadge source={provider} />
-          </div>
-          <AdminError message={saveState.error} />
-          {saveState.error === COPART_DUPLICATE_LOT_MESSAGE && saveState.id ? (
-            <p className="mt-2 text-sm">
-              <Link href={`/admin/subastas/${saveState.id}`} className="font-medium underline-offset-2 hover:underline">
-                Ver oportunidad
-              </Link>
-            </p>
-          ) : null}
-          {saveState.success ? (
-            <p className="mt-3 text-sm text-[var(--admin-success)]">{saveState.success}</p>
-          ) : null}
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <AdminField
-              label="Proveedor"
-              hint={provider === "iaa" ? "IAA se ingresa a mano hasta que exista acceso B2B." : undefined}
+      <nav className="flex gap-2 overflow-x-auto pb-1" aria-label="Pasos del editor">
+        {STEPS.map((item) => {
+          const active = step === item.id;
+          const done = step > item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setStep(item.id)}
+              className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-medium ${
+                active
+                  ? "bg-[var(--admin-text)] text-white"
+                  : done
+                    ? "bg-[var(--admin-success-bg)] text-[var(--admin-success)]"
+                    : "border border-[var(--admin-border)] bg-[var(--admin-surface)] text-[var(--admin-text-secondary)]"
+              }`}
             >
+              {done ? <Check className="h-3.5 w-3.5" /> : <span className="tabular-nums">{item.id + 1}</span>}
+              <span className="hidden sm:inline">{item.label}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      {error ? <AdminError>{error}</AdminError> : null}
+      {notice ? (
+        <p className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] px-4 py-3 text-sm text-[var(--admin-text-secondary)]">
+          {notice}
+          {publicPath ? (
+            <>
+              {" "}
+              <Link href={publicPath} className="font-medium underline" target="_blank">
+                Ver oportunidad publicada
+              </Link>
+            </>
+          ) : null}
+        </p>
+      ) : null}
+
+      {step === 0 ? (
+        <FormSection title="Subasta y lote" hint="Selecciona la casa de subasta e ingresa el lote manualmente. No se extrae información automáticamente.">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <AdminField label="Casa de subasta" required>
               <AdminSelect
-                name="provider"
-                value={provider}
-                onChange={(event) => setProvider(event.target.value as AuctionProvider)}
+                value={values.provider}
+                onChange={(event) => patch("provider", event.target.value as AuctionProvider)}
               >
-                {activeAuctionProviderChoices(saved ? opportunity?.provider : provider).map((item) => (
+                {providerChoices.map((item) => (
                   <option key={item.id} value={item.id}>
                     {item.label}
                   </option>
                 ))}
               </AdminSelect>
             </AdminField>
-            <AdminField
-              label="Número de lote"
-              hint={provider === "copart" ? "Busca el lote en el inventario oficial de Copart." : undefined}
-            >
-              <div className="flex gap-2">
-                <AdminInput
-                  name="provider_lot_id"
-                  value={lot}
-                  onChange={(event) => setLot(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" && provider === "copart") {
-                      event.preventDefault();
-                      void lookupLot();
-                    }
-                  }}
-                />
-                {provider === "copart" ? (
-                  <AdminSecondaryButton type="button" disabled={lookupBusy} onClick={() => void lookupLot()}>
-                    {lookingUp ? "Buscando..." : "Buscar lote"}
-                  </AdminSecondaryButton>
-                ) : null}
-              </div>
+            <AdminField label="Número de lote" required>
+              <AdminInput
+                value={values.provider_lot_id}
+                onChange={(event) => patch("provider_lot_id", event.target.value)}
+                placeholder="Ej. 66502456"
+              />
             </AdminField>
             <div className="sm:col-span-2">
-              <AdminField label="Enlace de origen">
-                <AdminInput name="source_url" value={sourceUrl} onChange={(event) => setSourceUrl(event.target.value)} />
+              <AdminField label="URL de origen">
+                <AdminInput
+                  value={values.source_url}
+                  onChange={(event) => patch("source_url", event.target.value)}
+                  placeholder="https://..."
+                />
               </AdminField>
-              {isSafeHttpUrl(sourceUrl) ? (
-                <a
-                  href={sourceUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-2 inline-flex min-h-10 items-center text-sm text-[var(--admin-text-secondary)] underline-offset-2 hover:underline"
-                >
-                  Abrir lote original
-                </a>
-              ) : null}
             </div>
+            <AdminField label="Ubicación de subasta">
+              <AdminInput value={values.location} onChange={(event) => patch("location", event.target.value)} />
+            </AdminField>
+            <AdminField label="Ciudad">
+              <AdminInput value={values.city} onChange={(event) => patch("city", event.target.value)} />
+            </AdminField>
+            <AdminField label="Estado">
+              <AdminInput value={values.state} onChange={(event) => patch("state", event.target.value)} />
+            </AdminField>
+            <AdminField label="Fecha de subasta">
+              <AdminInput
+                type="date"
+                value={values.auction_date}
+                onChange={(event) => patch("auction_date", event.target.value)}
+              />
+            </AdminField>
+            <AdminField label="Estado de subasta">
+              <AdminSelect
+                value={values.auction_sale_status}
+                onChange={(event) => patch("auction_sale_status", event.target.value)}
+              >
+                {AUCTION_SALE_STATUS_OPTIONS.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </AdminSelect>
+            </AdminField>
+            <AdminField label="Tipo de vendedor">
+              <AdminInput
+                value={values.seller_type}
+                onChange={(event) => patch("seller_type", event.target.value)}
+                placeholder="Cuando se conozca"
+              />
+            </AdminField>
+          </div>
+          <p className="mt-4 text-sm text-[var(--admin-text-muted)]">
+            Proveedor seleccionado: <strong>{historicalProviderLabel(values.provider)}</strong>
+            {AUCTION_PROVIDER_OPTIONS.every((item) => item.value !== values.provider) ? " (histórico)" : ""}
+          </p>
+        </FormSection>
+      ) : null}
+
+      {step === 1 ? (
+        <FormSection title="Información del vehículo" hint="Usa los selectores inteligentes. Elige «Otra marca» u «Otro modelo» si no aparece en la lista.">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <AdminField label="Año" required>
+              <AdminSelect value={values.year} onChange={(event) => patch("year", event.target.value)}>
+                <option value="">Seleccionar</option>
+                {yearOptions().map((year) => (
+                  <option key={year} value={String(year)}>
+                    {year}
+                  </option>
+                ))}
+              </AdminSelect>
+            </AdminField>
+            <AdminField label="Marca" required>
+              <AdminSearchableSelect
+                name="make"
+                value={makeSelect || makeState.selectValue}
+                options={VEHICLE_MAKE_OPTIONS.map((make) => ({ value: make, label: make }))}
+                allowCustom
+                otherValue={OTHER_MAKE_VALUE}
+                otherLabel={OTHER_MAKE_LABEL}
+                customValue={customMake}
+                onValueChange={(next) => {
+                  setMakeSelect(next);
+                  if (next === OTHER_MAKE_VALUE) {
+                    patch("make", customMake);
+                    return;
+                  }
+                  const conflicts = makeChangeConflictsWithModel(next, values.model);
+                  patch("make", next);
+                  if (conflicts) {
+                    setModelSelect(OTHER_MODEL_VALUE);
+                    setCustomModel(values.model);
+                  } else {
+                    setModelSelect(modelSelectState(next, values.model).selectValue);
+                  }
+                }}
+                onCustomChange={(custom) => {
+                  setCustomMake(custom);
+                  patch("make", custom);
+                }}
+              />
+            </AdminField>
+            <AdminField label="Modelo" required>
+              <AdminSearchableSelect
+                name="model"
+                value={modelSelect}
+                options={modelOptions}
+                allowCustom
+                otherValue={OTHER_MODEL_VALUE}
+                otherLabel={OTHER_MODEL_LABEL}
+                customValue={customModel}
+                onValueChange={(next) => {
+                  setModelSelect(next);
+                  if (next === OTHER_MODEL_VALUE) {
+                    patch("model", customModel);
+                    return;
+                  }
+                  patch("model", next);
+                }}
+                onCustomChange={(custom) => {
+                  setCustomModel(custom);
+                  patch("model", custom);
+                }}
+              />
+            </AdminField>
+            <AdminField label="Trim / versión">
+              <AdminInput value={values.trim} onChange={(event) => patch("trim", event.target.value)} />
+            </AdminField>
             <AdminField label="VIN">
               <AdminInput
-                name="vin"
+                value={values.vin}
+                onChange={(event) => patch("vin", event.target.value.toUpperCase())}
                 maxLength={17}
-                value={form.vin}
-                onChange={(event) => patchForm("vin", event.target.value)}
-                className="font-mono uppercase"
               />
-            </AdminField>
-            <AdminField label="Año">
-              <AdminInput
-                name="year"
-                type="number"
-                min={1980}
-                max={2100}
-                value={form.year}
-                onChange={(event) => patchForm("year", event.target.value)}
-              />
-            </AdminField>
-            <AdminField label="Marca">
-              <AdminInput name="make" value={form.make} onChange={(event) => patchForm("make", event.target.value)} />
-            </AdminField>
-            <AdminField label="Modelo">
-              <AdminInput name="model" value={form.model} onChange={(event) => patchForm("model", event.target.value)} />
-            </AdminField>
-            <AdminField label="Versión">
-              <AdminInput name="trim" value={form.trim} onChange={(event) => patchForm("trim", event.target.value)} />
             </AdminField>
             <AdminField label="Kilometraje">
+              <div className="grid grid-cols-[1fr_auto] gap-2">
+                <AdminInput
+                  value={values.mileage}
+                  onChange={(event) => patch("mileage", event.target.value)}
+                  inputMode="numeric"
+                />
+                <AdminSelect
+                  value={values.mileage_unit}
+                  onChange={(event) => patch("mileage_unit", event.target.value as "mi" | "km")}
+                >
+                  <option value="mi">mi</option>
+                  <option value="km">km</option>
+                </AdminSelect>
+              </div>
+            </AdminField>
+            <SmartSelectField
+              label="Carrocería"
+              options={withCurrentOption(ADMIN_BODY_STYLE_OPTIONS, values.body_style)}
+              value={values.body_style}
+              onChange={(next) => patch("body_style", resolveSmartFieldValue(
+                smartFieldState(ADMIN_BODY_STYLE_OPTIONS, next).isOther ? ADMIN_OTHER_SENTINEL : next,
+                smartFieldState(ADMIN_BODY_STYLE_OPTIONS, next).isOther ? next : "",
+              ))}
+            />
+            <SmartSelectField
+              label="Combustible"
+              options={withCurrentOption(ADMIN_FUEL_OPTIONS, values.fuel)}
+              value={values.fuel}
+              onChange={(next) => patch("fuel", next)}
+            />
+            <SmartSelectField
+              label="Transmisión"
+              options={withCurrentOption(ADMIN_TRANSMISSION_OPTIONS, values.transmission)}
+              value={values.transmission}
+              onChange={(next) => patch("transmission", next)}
+            />
+            <SmartSelectField
+              label="Tracción"
+              options={withCurrentOption(ADMIN_DRIVETRAIN_OPTIONS, values.drivetrain)}
+              value={values.drivetrain}
+              onChange={(next) => patch("drivetrain", next)}
+            />
+            <AdminField label="Motor">
+              <AdminInput value={values.engine} onChange={(event) => patch("engine", event.target.value)} />
+            </AdminField>
+            <SmartSelectField
+              label="Color exterior"
+              options={withCurrentOption(ADMIN_EXTERIOR_COLOR_OPTIONS, values.exterior_color)}
+              value={values.exterior_color}
+              onChange={(next) => patch("exterior_color", next)}
+            />
+            <AdminField label="Color interior">
               <AdminInput
-                name="mileage"
-                type="number"
-                min={0}
-                value={form.mileage}
-                onChange={(event) => patchForm("mileage", event.target.value)}
+                value={values.interior_color}
+                onChange={(event) => patch("interior_color", event.target.value)}
               />
             </AdminField>
-            <AdminField label="Título">
-              <AdminInput
-                name="title_status"
-                value={form.titleStatus}
-                onChange={(event) => patchForm("titleStatus", event.target.value)}
-              />
-            </AdminField>
-            <AdminField label="Daño principal">
-              <AdminInput
-                name="primary_damage"
-                value={form.primaryDamage}
-                onChange={(event) => patchForm("primaryDamage", event.target.value)}
-              />
-            </AdminField>
-            <AdminField label="Ubicación de subasta" hint="Yard o ciudad de la subasta. No es la dirección de Valcron.">
-              <AdminInput
-                name="location"
-                value={form.location}
-                onChange={(event) => patchForm("location", event.target.value)}
-              />
-            </AdminField>
-            <div className="sm:col-span-2 xl:col-span-4">
-              <AdminField label="Nota interna" hint="No aparece en el catálogo público.">
-                <AdminTextArea name="internal_notes" value={notes} onChange={(event) => setNotes(event.target.value)} />
+            <div className="sm:col-span-2">
+              <AdminField label="Descripción">
+                <AdminTextArea
+                  value={values.description}
+                  onChange={(event) => patch("description", event.target.value)}
+                  rows={4}
+                  placeholder="Descripción pública de la oportunidad"
+                />
               </AdminField>
             </div>
           </div>
-          {lookup?.status === "found" ? (
-            <p className="mt-4 text-xs text-[var(--admin-text-muted)]">{COPART_LOOKUP_LOADED_COPY}</p>
+        </FormSection>
+      ) : null}
+
+      {step === 2 ? (
+        <FormSection title="Condición y daños" hint="Usa la terminología exacta de la subasta cuando esté disponible. Run and Drive no es una garantía mecánica.">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <SmartSelectField
+              label="Daño principal"
+              options={optionsFrom(AUCTION_DAMAGE_OPTIONS)}
+              value={values.primary_damage}
+              onChange={(next) => patch("primary_damage", next)}
+            />
+            <SmartSelectField
+              label="Daño secundario"
+              options={optionsFrom(AUCTION_SECONDARY_DAMAGE_OPTIONS)}
+              value={values.secondary_damage}
+              onChange={(next) => patch("secondary_damage", next)}
+            />
+            <SmartSelectField
+              label="Run and Drive"
+              options={optionsFrom(AUCTION_RUN_DRIVE_OPTIONS)}
+              value={values.run_and_drive}
+              onChange={(next) => patch("run_and_drive", next)}
+            />
+            <AdminField label="Llaves">
+              <AdminSelect value={values.keys} onChange={(event) => patch("keys", event.target.value)}>
+                {AUCTION_KEYS_OPTIONS.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </AdminSelect>
+            </AdminField>
+            <AdminField label="Estado del odómetro">
+              <AdminSelect
+                value={values.odometer_status}
+                onChange={(event) => patch("odometer_status", event.target.value)}
+              >
+                {AUCTION_ODOMETER_OPTIONS.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </AdminSelect>
+            </AdminField>
+            <SmartSelectField
+              label="Tipo de título / documento"
+              options={optionsFrom(AUCTION_TITLE_OPTIONS)}
+              value={values.title_status}
+              onChange={(next) => patch("title_status", next)}
+            />
+            <div className="sm:col-span-2">
+              <AdminField label="Notas internas">
+                <AdminTextArea
+                  value={values.internal_notes}
+                  onChange={(event) => patch("internal_notes", event.target.value)}
+                  rows={3}
+                  placeholder="Solo visibles en Admin"
+                />
+              </AdminField>
+            </div>
+          </div>
+        </FormSection>
+      ) : null}
+
+      {step === 3 ? (
+        <FormSection
+          title="Fotografías y videos"
+          hint="Sube solo imágenes autorizadas. No se descargan fotos de la subasta automáticamente."
+        >
+          <AdminMediaPicker onFiles={handleFiles} uploading={uploading || pending} />
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {(photos ?? []).map((photo) => (
+              <div key={photo.id} className="relative overflow-hidden rounded-lg border border-[var(--admin-border)]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={photo.storage_path ? vehicleImageAdminPath(String(photo.storage_path)) : ""}
+                  alt=""
+                  className="aspect-[4/3] w-full object-cover"
+                />
+                <div className="flex items-center justify-between gap-1 p-2">
+                  <button
+                    type="button"
+                    className={`inline-flex items-center gap-1 text-xs ${photo.is_cover ? "text-[var(--admin-warning)]" : "text-[var(--admin-text-muted)]"}`}
+                    onClick={() => {
+                      if (!vehicleId) return;
+                      void updateVehiclePhoto({ id: photo.id, vehicleId, is_cover: true }).then(() =>
+                        router.refresh(),
+                      );
+                    }}
+                  >
+                    <Star className="h-3.5 w-3.5" />
+                    Portada
+                  </button>
+                  <button
+                    type="button"
+                    className="text-xs text-[var(--admin-danger)]"
+                    onClick={() => {
+                      if (!vehicleId || !photo.storage_path) return;
+                      void deleteVehiclePhoto({
+                        id: photo.id,
+                        vehicleId,
+                        storagePath: String(photo.storage_path),
+                      }).then(async () => {
+                        await removeStoredPhoto(String(photo.storage_path));
+                        router.refresh();
+                      });
+                    }}
+                  >
+                    Quitar
+                  </button>
+                </div>
+              </div>
+            ))}
+            {localPhotos.map((photo) => (
+              <div key={photo.id} className="overflow-hidden rounded-lg border border-[var(--admin-border)]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={photo.preview} alt="" className="aspect-[4/3] w-full object-cover" />
+              </div>
+            ))}
+          </div>
+          {(photos?.length ?? 0) > 1 ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              <AdminSecondaryButton
+                type="button"
+                disabled={!vehicleId}
+                onClick={() => {
+                  if (!vehicleId || !photos?.length) return;
+                  const ids = [...photos].map((photo) => photo.id);
+                  const [first, ...rest] = ids;
+                  if (!first) return;
+                  void reorderVehiclePhotos(vehicleId, [...rest, first]).then(() => router.refresh());
+                }}
+              >
+                Reordenar
+              </AdminSecondaryButton>
+            </div>
           ) : null}
-          <div className="mt-6 flex flex-wrap gap-3">
-            <AdminPrimaryButton type="submit" disabled={pending || preparing || lookupBusy}>
-              {pending ? "Guardando..." : "Guardar borrador"}
+          <div className="mt-4">
+            <AdminField label="Video (URL o enlace)">
+              <AdminInput
+                value={values.video_url}
+                onChange={(event) => patch("video_url", event.target.value)}
+                placeholder="https://... (opcional)"
+              />
+            </AdminField>
+          </div>
+        </FormSection>
+      ) : null}
+
+      {step === 4 ? (
+        <FormSection
+          title="Precio y publicación"
+          hint="Por defecto el precio público es «Precio a consultar». Solo muestra Buy Now si el monto está verificado."
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <AdminField label="Modo de precio" required>
+              <AdminSelect
+                value={values.price_mode}
+                onChange={(event) => patch("price_mode", event.target.value as AuctionAdminPriceMode)}
+              >
+                {AUCTION_PRICE_MODES.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </AdminSelect>
+            </AdminField>
+            {values.price_mode === "buy_now" ? (
+              <AdminField label="Buy Now (USD)" required>
+                <AdminInput
+                  value={values.buy_now_usd}
+                  onChange={(event) => patch("buy_now_usd", event.target.value)}
+                  inputMode="decimal"
+                  placeholder="Monto verificado"
+                />
+              </AdminField>
+            ) : (
+              <div className="rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-muted)] px-4 py-3 text-sm text-[var(--admin-text-secondary)]">
+                CTA público: <strong>Solicitar cotización</strong>
+              </div>
+            )}
+          </div>
+          {values.price_mode === "buy_now" ? (
+            <p className="mt-4 rounded-xl border border-[var(--admin-warning)]/20 bg-[var(--admin-warning-bg)] px-4 py-3 text-sm text-[var(--admin-warning)]">
+              {BUY_NOW_DISCLAIMER}
+            </p>
+          ) : null}
+          <label className="mt-4 flex items-center gap-2 text-sm text-[var(--admin-text-secondary)]">
+            <input
+              type="checkbox"
+              checked={values.featured}
+              onChange={(event) => patch("featured", event.target.checked)}
+            />
+            Destacar en carrusel de subastas
+          </label>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <AdminPrimaryButton
+              type="button"
+              disabled={pending || saving}
+              onClick={() => setConfirm("publish")}
+            >
+              Publicar oportunidad
             </AdminPrimaryButton>
-            {saved ? (
-              <AdminSecondaryButton type="button" disabled={pending || preparing} onClick={() => void prepare()}>
-                {preparing ? "Preparando..." : "Preparar para website"}
+            {published ? (
+              <AdminSecondaryButton type="button" disabled={pending} onClick={() => setConfirm("unpublish")}>
+                Despublicar
               </AdminSecondaryButton>
             ) : null}
+            {publicPath ? (
+              <Link href={publicPath} target="_blank">
+                <AdminSecondaryButton type="button">Vista previa pública</AdminSecondaryButton>
+              </Link>
+            ) : null}
           </div>
-        </AdminCard>
-      </form>
+        </FormSection>
+      ) : null}
+
+      <div className="sticky bottom-0 z-20 -mx-1 flex flex-wrap items-center justify-between gap-2 border-t border-[var(--admin-border)] bg-[var(--admin-bg)]/95 px-1 py-3 backdrop-blur pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <AdminSecondaryButton
+          type="button"
+          disabled={step === 0}
+          onClick={() => setStep((current) => Math.max(0, current - 1) as EditorStep)}
+        >
+          <ChevronLeft className="mr-1 h-4 w-4" />
+          Anterior
+        </AdminSecondaryButton>
+        <div className="flex flex-wrap gap-2">
+          <AdminSecondaryButton type="button" disabled={pending || saving} onClick={() => void handleSave()}>
+            Guardar borrador
+          </AdminSecondaryButton>
+          {step < 4 ? (
+            <AdminPrimaryButton
+              type="button"
+              onClick={() => setStep((current) => Math.min(4, current + 1) as EditorStep)}
+            >
+              Siguiente
+              <ChevronRight className="ml-1 h-4 w-4" />
+            </AdminPrimaryButton>
+          ) : (
+            <AdminPrimaryButton type="button" disabled={pending || saving} onClick={() => setConfirm("publish")}>
+              Publicar oportunidad
+            </AdminPrimaryButton>
+          )}
+        </div>
+      </div>
 
       <AdminConfirmDialog
-        open={Boolean(pendingReplace)}
-        title="¿Reemplazar los datos del vehículo?"
-        description="Ya editaste esta ficha. Si continúas, los datos del nuevo lote de Copart reemplazarán lo que escribiste."
-        confirmLabel="Reemplazar datos"
-        pending={false}
+        open={confirm === "publish"}
+        title="Publicar oportunidad"
+        description="Se validarán los campos requeridos y la foto de portada. La unidad aparecerá solo en Oportunidades de Subasta."
+        confirmLabel="Publicar"
+        pending={pending || saving}
         onConfirm={() => {
-          if (pendingReplace) applyLookup(pendingReplace);
-          setPendingReplace(null);
+          setConfirm(null);
+          startTransition(() => {
+            void handlePublish();
+          });
         }}
-        onClose={() => setPendingReplace(null)}
+        onClose={() => setConfirm(null)}
+      />
+      <AdminConfirmDialog
+        open={confirm === "unpublish"}
+        title="Despublicar oportunidad"
+        description="La oportunidad dejará de verse en el inventario público de subastas."
+        confirmLabel="Despublicar"
+        pending={pending}
+        danger
+        onConfirm={() => {
+          setConfirm(null);
+          startTransition(() => {
+            void handleUnpublish();
+          });
+        }}
+        onClose={() => setConfirm(null)}
       />
     </div>
   );
