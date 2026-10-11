@@ -11,7 +11,7 @@ export function FooterPartners() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
         <h2
           id="footer-partners-heading"
-          className="shrink-0 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-[#5c6370]"
+          className="shrink-0 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-[#b8bdc7]"
         >
           Asociaciones y plataformas
         </h2>
@@ -20,7 +20,7 @@ export function FooterPartners() {
           {FOOTER_PARTNERS.map((partner) => {
             const isAdeci = partner.id === "adeci";
             const surface = (
-              <span className="footer-partner-card flex h-[4.25rem] w-full flex-col items-center justify-center gap-1 rounded-md border border-[#e4e6ea] bg-white px-2.5 py-1.5 transition duration-200 hover:border-[#d0d4da] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff] sm:h-[4.5rem] sm:w-[11.5rem]">
+              <span className="footer-partner-card flex h-[4.25rem] w-full flex-col items-center justify-center gap-1 rounded-md border border-white/20 bg-white shadow-[0_1px_12px_rgba(255,255,255,0.08)] px-2.5 py-1.5 transition duration-200 hover:border-[#d0d4da] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff] sm:h-[4.5rem] sm:w-[11.5rem]">
                 {isAdeci ? (
                   <Image
                     src={partner.src}
