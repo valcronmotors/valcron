@@ -29,7 +29,7 @@ export function AdminQuickNavigation() {
       <AdminModal open={open} title="¿Qué quieres hacer?" subtitle="Encuentra cualquier opción del panel." onClose={() => setOpen(false)}>
         <label className="block text-sm font-medium">
           Buscar en el admin
-          <AdminInput value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Fotos, subastas, usuarios…" />
+          <AdminInput value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Inventario, subastas, usuarios…" />
         </label>
         <nav aria-label="Accesos rápidos" className="mt-4 grid gap-2">
           {results.map((item) => {
