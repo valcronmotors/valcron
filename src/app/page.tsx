@@ -5,13 +5,10 @@ import { InventorySectionSkeleton } from "@/components/public/InventorySkeleton"
 import { HomeAuctionCarousel } from "@/components/home/HomeAuctionCarousel";
 import { HomeBrandCarousel } from "@/components/home/HomeBrandCarousel";
 import { HomeBuyGuide } from "@/components/home/HomeBuyGuide";
-import { HomeDiscover } from "@/components/home/HomeDiscover";
-import { HomeFaqPreview } from "@/components/home/HomeFaqPreview";
 import { HomeFinalCta } from "@/components/home/HomeFinalCta";
 import { HomeFinancingTeaser } from "@/components/home/HomeFinancingTeaser";
 import { HomeHero } from "@/components/home/HomeHero";
-import { HomeResourcesPreview } from "@/components/home/HomeResourcesPreview";
-import { HomeTrust } from "@/components/home/HomeTrust";
+import { HomeModelSpotlight } from "@/components/home/HomeModelSpotlight";
 import {
   loadAuctionCatalogVehicles,
   loadLocalStockVehicles,
@@ -47,9 +44,7 @@ async function HomeAuctionInventoryBand() {
 }
 
 /**
- * V19 home sequence (concise):
- * hero → marquee → Inventario Valcron → buying tools → Discover →
- * auctions → financing/import → trust → resources → FAQ → final CTA
+ * Vehicle-led home. Editorial model references stay separate from real stock.
  */
 export default function Home() {
   return (
@@ -61,18 +56,15 @@ export default function Home() {
       <main>
         <HomeHero />
         <HomeBrandCarousel />
+        <HomeBuyGuide />
+        <HomeModelSpotlight />
         <Suspense fallback={<InventorySectionSkeleton />}>
           <HomeLocalInventoryBand />
         </Suspense>
-        <HomeBuyGuide />
-        <HomeDiscover />
         <Suspense fallback={null}>
           <HomeAuctionInventoryBand />
         </Suspense>
         <HomeFinancingTeaser />
-        <HomeTrust />
-        <HomeResourcesPreview />
-        <HomeFaqPreview />
         <HomeFinalCta />
       </main>
     </>

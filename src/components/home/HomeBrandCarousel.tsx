@@ -29,7 +29,7 @@ function BrandTile({
           width={96}
           height={64}
           unoptimized
-          className="h-auto max-h-9 w-auto max-w-full object-contain sm:max-h-11 lg:max-h-[3.25rem]"
+          className="h-auto grayscale opacity-70 transition hover:grayscale-0 hover:opacity-100 max-h-9 w-auto max-w-full object-contain sm:max-h-11 lg:max-h-[3.25rem]"
         />
       </span>
       <span className="text-center text-[11px] font-medium text-[#676a70] lg:text-xs">{name}</span>
@@ -37,37 +37,12 @@ function BrandTile({
   );
 }
 
-/**
- * Continuous infinite brand marquee (CSS transform) on all viewports,
- * including mobile/iOS. Reduced-motion → static horizontal scroll rail.
- * Brand set is repeated in each track group so wide/desktop widths stay seamless.
- */
+/** Static brand rail keeps the home calm and keyboard navigation concise. */
 export function HomeBrandCarousel() {
-  const sequence = [...VEHICLE_BRANDS, ...VEHICLE_BRANDS, ...VEHICLE_BRANDS];
-
   return (
-    <section className="brand-marquee section-light bg-[#f7f8fa]" aria-label="Marcas para buscar">
-      <div className="brand-marquee-viewport relative w-full overflow-hidden py-5 md:py-6">
-        <div className="brand-marquee-track">
-          <div className="brand-marquee-group">
-            {sequence.map((brand, index) => (
-              <BrandTile key={`${brand.slug}-${index}`} {...brand} />
-            ))}
-          </div>
-          <div className="brand-marquee-group" aria-hidden="true">
-            {sequence.map((brand, index) => (
-              <BrandTile key={`dup-${brand.slug}-${index}`} {...brand} duplicate />
-            ))}
-          </div>
-        </div>
-
-        <div className="brand-marquee-static">
-          <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-[var(--page-gutter)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:gap-5">
-            {VEHICLE_BRANDS.map((brand) => (
-              <BrandTile key={`static-${brand.slug}`} {...brand} />
-            ))}
-          </div>
-        </div>
+    <section className="section-light border-b border-[#eceef1] bg-white px-[var(--page-gutter)] py-6 md:py-8" aria-label="Marcas para buscar">
+      <div className="mx-auto flex max-w-[var(--content-wide)] flex-wrap items-center justify-center gap-x-5 gap-y-4 sm:gap-x-8">
+        {VEHICLE_BRANDS.map(brand => <BrandTile key={brand.slug} {...brand} />)}
       </div>
     </section>
   );
