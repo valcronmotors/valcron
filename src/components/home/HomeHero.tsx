@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Form from "next/form";
 import Link from "next/link";
 import { ArrowRight, Search } from "lucide-react";
 import { PageContainer } from "@/components/public/layout";
@@ -20,10 +21,10 @@ export function HomeHero() {
         <p className="relative z-10 text-xs leading-relaxed text-[#482008]">Imagen de referencia. Modelo para búsqueda bajo solicitud.</p>
       </div>
     </div>
-    <form action="/inventario" method="get" className="relative z-20 mt-7 grid gap-4 rounded-2xl border border-[#e7e8eb] bg-white p-5 shadow-[0_14px_45px_rgba(26,28,34,0.08)] sm:grid-cols-[1fr_1fr_auto] lg:-mt-2 lg:max-w-[52rem]">
+    <Form action="/inventario" className="relative z-20 mt-7 grid gap-4 rounded-2xl border border-[#e7e8eb] bg-white p-5 shadow-[0_14px_45px_rgba(26,28,34,0.08)] sm:grid-cols-[1fr_1fr_auto] lg:-mt-2 lg:max-w-[52rem]">
       <label className="grid gap-2 text-xs font-semibold text-[#70747c]">Marca<select name="marca" defaultValue="" className="min-h-11 w-full rounded-lg bg-[#f6f7f9] px-3 text-sm text-[#17191d]"><option value="">Todas las marcas</option>{VEHICLE_BRANDS.map(b => <option key={b.name} value={b.name}>{b.name}</option>)}</select></label>
       <label className="grid gap-2 text-xs font-semibold text-[#70747c]">Modelo o palabra clave<input name="q" placeholder="Ej. Sportage, CR-V…" className="min-h-11 w-full rounded-lg bg-[#f6f7f9] px-3 text-sm text-[#17191d]" /></label>
       <button type="submit" className="home-orange-button self-end"><Search className="h-4 w-4" aria-hidden="true" />Buscar vehículos</button>
-    </form>
+    </Form>
   </PageContainer></section>;
 }
