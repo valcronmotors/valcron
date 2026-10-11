@@ -42,6 +42,25 @@ import {
 } from "@/lib/website-schema";
 import { createClient } from "@/utils/supabase/server";
 import { buildVehicleSlug, vehiclePath } from "@/lib/vehicles/vehicle-slugs";
+import { VEHICLE_PHOTOS_BUCKET } from "@/lib/storage";
+
+export async function deleteAuctionOpportunity(opportunityId: string) {
+  await requireAdmin();
+  if (!UUID_RE.test(opportunityId)) return { error: "Oportunidad inválida." };
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("delete_auction_opportunity", { opportunity_id: opportunityId });
+  if (error) return { error: publicActionError(error, "No se pudo eliminar la oportunidad.") };
+  revalidateAuctions(opportunityId);
+  revalidatePath("/inventario");
+  revalidatePath("/admin/inventario");
+  revalidatePath("/");
+  const paths = (data ?? []) as string[];
+  if (paths.length) {
+    const { error: storageError } = await supabase.storage.from(VEHICLE_PHOTOS_BUCKET).remove(paths);
+    if (storageError) return { error: "La oportunidad se eliminó, pero no se pudieron limpiar todas sus fotos." };
+  }
+  return { error: null };
+}
 
 export type AuctionActionState = {
   error: string | null;

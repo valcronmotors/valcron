@@ -293,6 +293,7 @@ export type OpportunityOverflowActionId =
   | "publish"
   | "unpublish"
   | "archive"
+  | "delete"
   | "source";
 
 export function opportunityOverflowActions(
@@ -333,6 +334,7 @@ export function opportunityOverflowActions(
     actions.push({ id: "archive", label: "Archivar", danger: true });
   }
 
+  actions.push({ id: "delete", label: "Eliminar", danger: true });
   return actions;
 }
 

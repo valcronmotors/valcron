@@ -225,13 +225,14 @@ describe("opportunity presentation", () => {
 
   it("exposes manual workflow overflow actions without extraction labels", () => {
     const actions = opportunityOverflowActions(opportunity());
-    expect(actions.map((item) => item.id)).toEqual(["view", "edit", "publish", "source", "archive"]);
+    expect(actions.map((item) => item.id)).toEqual(["view", "edit", "publish", "source", "archive", "delete"]);
     expect(actions.map((item) => item.label)).toEqual([
       "Ver oportunidad",
       "Editar",
       "Publicar",
       "Abrir lote original",
       "Archivar",
+      "Eliminar",
     ]);
     expect(JSON.stringify(actions)).not.toMatch(/provider_lot_id|linked_vehicle_id|source_type|NOT_CONFIGURED|Extract|CSV|Preparar/);
     const linked = opportunityOverflowActions(

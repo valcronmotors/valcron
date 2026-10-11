@@ -11,7 +11,7 @@ import { createClient } from "@/utils/supabase/server";
 import type { InquiryRow, VehicleRow, VehicleSourceType } from "@/lib/website-schema";
 
 export const DASHBOARD_VEHICLE_SELECT =
-  "id, year, make, model, trim, status, published, featured, price, currency, source_type, updated_at";
+  "id, year, make, model, trim, status, published, featured, price, currency, source_type, updated_at, vehicle_photos ( id, vehicle_id, storage_path, is_cover, sort_order, created_at )";
 
 export type DashboardVehicle = Pick<
   VehicleRow,
@@ -27,6 +27,7 @@ export type DashboardVehicle = Pick<
   | "currency"
   | "source_type"
   | "updated_at"
+  | "vehicle_photos"
 >;
 
 export type DashboardInquiry = Pick<

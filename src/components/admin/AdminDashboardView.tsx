@@ -9,6 +9,8 @@ import {
   filterLocalStockRows,
 } from "@/lib/catalogs";
 import type { DashboardInquiry, DashboardVehicle } from "@/lib/admin-data";
+import { CopartPhoto } from "@/components/admin/CopartPhoto";
+import { sortVehiclePhotos, vehicleImageAdminPath } from "@/lib/storage";
 
 export function AdminDashboardView({
   vehicles,
@@ -160,6 +162,12 @@ export function AdminDashboardView({
                   href={`/admin/inventario/${row.id}`}
                   className="flex items-center justify-between gap-3 py-3"
                 >
+                  <CopartPhoto
+                    src={row.vehicle_photos?.length ? vehicleImageAdminPath(sortVehiclePhotos(row.vehicle_photos)[0].storage_path) : null}
+                    alt={vehicleLabel(row)}
+                    placeholder="quiet"
+                    className="h-14 w-20 shrink-0 rounded-md object-cover"
+                  />
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-[var(--admin-text)]">{vehicleLabel(row)}</p>
                     <p className="mt-0.5 text-xs text-[var(--admin-text-muted)]">
