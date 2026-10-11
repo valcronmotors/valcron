@@ -185,6 +185,9 @@ describe("auction public pricing", () => {
     expect(shouldEmitStructuredOfferPrice("from")).toBe(false);
     expect(shouldEmitStructuredOfferPrice("estimated")).toBe(false);
     expect(vehicleJsonLd(stock).offers).toMatchObject({ price: 18500, priceCurrency: "USD" });
+    expect(vehicleJsonLd(stock)["@type"]).toEqual(["Vehicle", "Product"]);
+    expect(vehicleJsonLd(contact)["@type"]).toBe("Vehicle");
+    expect(vehicleJsonLd(toPublicVehicle(row({ status: "reserved" }))).offers).toMatchObject({ availability: "https://schema.org/OutOfStock" });
   });
 
   it("sorts contact-price vehicles after numeric prices", () => {

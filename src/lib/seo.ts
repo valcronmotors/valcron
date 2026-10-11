@@ -40,6 +40,13 @@ export function publicPageMetadata({
       locale: "es_DO",
       siteName: SITE.shortName,
       type,
+      images: [{ url: absoluteUrl("/api/public/social-image"), width: 1200, height: 630, alt: `${SITE.shortName} — ${SITE.address.city}` }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | ${SITE.shortName}`,
+      description,
+      images: [absoluteUrl("/api/public/social-image")],
     },
   };
 }
@@ -165,15 +172,19 @@ export function vehicleJsonLd(vehicle: PublicVehicle) {
         url: canonicalVehicleUrl(vehicle),
         priceCurrency: price.currency,
         price: price.price,
+        seller: { "@type": "AutoDealer", "@id": `${SITE.url}/#business`, name: SITE.shortName, url: SITE.url },
         availability:
           vehicle.availability === "sold"
             ? "https://schema.org/SoldOut"
-            : vehicle.availability === "available_rd"
-              ? "https://schema.org/InStock"
-              : "https://schema.org/PreOrder",
+            : vehicle.availability === "reserved"
+              ? "https://schema.org/OutOfStock"
+              : vehicle.availability === "available_rd"
+                ? "https://schema.org/InStock"
+                : "https://schema.org/PreOrder",
       };
     }
   }
 
+  if (data.offers) data["@type"] = ["Vehicle", "Product"];
   return data;
 }

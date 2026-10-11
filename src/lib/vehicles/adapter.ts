@@ -286,7 +286,7 @@ export async function getPublicSitemapVehicles() {
   }
 
   return {
-    data: asVehicleRows(data)
+    data: (await attachCoverPhotos(asVehicleRows(data)))
       .filter(isPublicDetailListing)
       .map((row) => {
         const vehicle = normalizeVehicle(row);

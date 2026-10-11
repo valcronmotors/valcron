@@ -3,6 +3,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { getAdminProfile } from "@/lib/auth";
 
 export const metadata: Metadata = {
+  robots: { index: false, follow: false },
   title: {
     default: "Dashboard",
     template: "%s | Valcron Admin",

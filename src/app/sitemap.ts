@@ -7,6 +7,7 @@ const STATIC_PATHS = [
   "/",
   "/inventario",
   "/comprar",
+  "/solicitar-vehiculo",
   "/subastas",
   "/importacion",
   "/financiamiento",
@@ -47,6 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     vehicleEntries = (vehicles.data ?? []).map((vehicle) => ({
       url: `${SITE.url}/inventario/${vehicle.slug}`,
       lastModified: vehicle.updatedAt ?? vehicle.publishedAt ?? undefined,
+      images: vehicle.images.map((image) => image.url.startsWith("http") ? image.url : `${SITE.url}${image.url}`),
     }));
   } catch {
     // Preview / local builds without public Supabase config still emit static routes.

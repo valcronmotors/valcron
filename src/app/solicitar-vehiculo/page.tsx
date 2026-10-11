@@ -18,9 +18,10 @@ export default function SolicitarVehiculoPage() {
       <Section className="bg-white" tight>
         <PageContainer narrow>
           <SectionHeader
+            as="h1"
             align="center"
             kicker="Búsqueda"
-            title="Solicitar vehículo"
+            title="Encuentra el vehículo que buscas"
             subtitle="Marca, modelo, año y presupuesto. Revisamos opciones en inventario y otras fuentes."
           />
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">

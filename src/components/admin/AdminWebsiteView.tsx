@@ -7,6 +7,8 @@ import { SITE } from "@/lib/site";
 import { canPublishVehicleListing, vehiclePublicationChecks } from "@/lib/publication-readiness";
 import { opportunityWebsiteState, type LinkedVehicleSummary } from "@/lib/auctions/opportunity-admin";
 import type { AuctionOpportunityRow, InquiryRow, VehicleRow } from "@/lib/website-schema";
+import { listingQualitySuggestions } from "@/lib/listing-quality";
+import { opportunityVehicleTitle } from "@/lib/auctions/opportunity-admin";
 
 export function AdminWebsiteView({
   vehicles,
@@ -41,6 +43,10 @@ export function AdminWebsiteView({
   const readyAuctions = auctionOpportunities.filter(
     (row) => row.status !== "archived" && opportunityWebsiteState(row, row.linked_vehicle) === "ready",
   );
+  const contentSuggestions = [
+    ...published.map((row) => ({ id: row.id, title: vehicleLabel(row), href: `/admin/inventario/${row.id}`, suggestions: listingQualitySuggestions(row) })),
+    ...publishedAuctions.map((row) => ({ id: row.id, title: opportunityVehicleTitle(row), href: `/admin/subastas/${row.id}`, suggestions: listingQualitySuggestions(row.linked_vehicle ?? {}) })),
+  ].filter((row) => row.suggestions.length > 0);
 
   return (
     <div className="grid gap-6">
@@ -102,6 +108,29 @@ export function AdminWebsiteView({
           </dl>
         </AdminCard>
       </section>
+
+      <AdminCard>
+        <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Calidad de fichas y captación</h2>
+        <p className="mt-2 text-sm text-[var(--admin-text-secondary)]">Recomendaciones para que el cliente entienda mejor cada unidad. No bloquean la publicación ni representan una puntuación de Google.</p>
+        {contentSuggestions.length ? (
+          <ul className="mt-4 divide-y divide-[var(--admin-border)]">
+            {contentSuggestions.map((row) => (
+              <li key={row.id} className="flex flex-col justify-between gap-3 py-4 sm:flex-row">
+                <div>
+                  <p className="font-medium">{row.title}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-[var(--admin-text-secondary)]">{row.suggestions.join(" · ")}</p>
+                </div>
+                <Link href={row.href} className="inline-flex min-h-11 shrink-0 items-center font-semibold underline underline-offset-4">Mejorar ficha</Link>
+              </li>
+            ))}
+          </ul>
+        ) : <p className="mt-4 text-sm text-[var(--admin-text-secondary)]">Las fichas publicadas tienen portada, galería y descripción desarrollada.</p>}
+        <div className="mt-5 flex flex-wrap gap-4 border-t border-[var(--admin-border)] pt-4 text-sm">
+          <Link href="/solicitar-vehiculo" className="font-medium underline underline-offset-4">Ver formulario de captación</Link>
+          <Link href="/sitemap.xml" className="font-medium underline underline-offset-4">Sitemap para Google</Link>
+          <Link href="/admin/solicitudes" className="font-medium underline underline-offset-4">Atender solicitudes</Link>
+        </div>
+      </AdminCard>
 
       <AdminCard>
         <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Enlaces públicos</h2>

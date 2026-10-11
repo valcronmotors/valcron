@@ -12,7 +12,6 @@ import { HomeFinancingTeaser } from "@/components/home/HomeFinancingTeaser";
 import { HomeHero } from "@/components/home/HomeHero";
 import { HomeResourcesPreview } from "@/components/home/HomeResourcesPreview";
 import { HomeTrust } from "@/components/home/HomeTrust";
-import { HOME_BANNER_IMAGE } from "@/lib/hero-media";
 import {
   loadAuctionCatalogVehicles,
   loadLocalStockVehicles,
@@ -21,7 +20,7 @@ import { SITE, autoDealerJsonLd } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Más opciones. Más cerca de ti. | Valcron Motors",
+    absolute: "Dealer en Santo Domingo Este | Vehículos en venta | Valcron Motors",
   },
   description: SITE.valueProposition,
   alternates: { canonical: "/" },
@@ -29,11 +28,11 @@ export const metadata: Metadata = {
     locale: "es_DO",
     type: "website",
     siteName: SITE.shortName,
-    title: "Más opciones. Más cerca de ti. | Valcron Motors",
+    title: "Dealer en Santo Domingo Este | Valcron Motors",
     description: SITE.valueProposition,
     url: SITE.url,
-    // Social share still needs an image; home hero itself is typographic-only.
-    images: [{ url: HOME_BANNER_IMAGE.src, alt: HOME_BANNER_IMAGE.alt }],
+    // Corporate social card; vehicle detail pages retain their real cover photo.
+    images: [{ url: "/api/public/social-image", width: 1200, height: 630, alt: "Valcron Motors — dealer en Santo Domingo Este" }],
   },
 };
 
