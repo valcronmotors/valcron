@@ -3,7 +3,7 @@ import { FOOTER_PARTNERS } from "@/lib/partners";
 
 /**
  * Compact associations / platforms strip — secondary to Valcron branding.
- * Small light logo surfaces only (no oversized partner cards).
+ * Transparent logo surfaces on the gloss-black footer.
  */
 export function FooterPartners() {
   return (
@@ -20,15 +20,15 @@ export function FooterPartners() {
           {FOOTER_PARTNERS.map((partner) => {
             const isAdeci = partner.id === "adeci";
             const surface = (
-              <span className="footer-partner-card flex h-[4.25rem] w-full flex-col items-center justify-center gap-1 rounded-md border border-white/20 bg-white shadow-[0_1px_12px_rgba(255,255,255,0.08)] px-2.5 py-1.5 transition duration-200 hover:border-[#d0d4da] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2b6cff] sm:h-[4.5rem] sm:w-[11.5rem]">
+              <span className="footer-partner-card flex h-[4.25rem] w-full flex-col items-center justify-center gap-1 bg-transparent px-2.5 py-1.5 transition duration-200 hover:opacity-80 sm:h-[4.5rem] sm:w-[11.5rem]">
                 {isAdeci ? (
                   <Image
                     src={partner.src}
                     alt=""
                     width={partner.width}
                     height={partner.height}
-                    className="h-9 w-9 object-contain object-center"
-                    sizes="36px"
+                    className="h-10 w-10 object-contain object-center"
+                    sizes="40px"
                   />
                 ) : (
                   <Image
@@ -36,11 +36,11 @@ export function FooterPartners() {
                     alt=""
                     width={partner.width}
                     height={partner.height}
-                    className="h-auto w-[6.25rem] max-w-full object-contain object-center"
-                    sizes="100px"
+                    className="h-auto w-[8rem] max-w-full object-contain object-center brightness-0 invert"
+                    sizes="128px"
                   />
                 )}
-                <span className="text-center text-[0.625rem] leading-tight text-[#5c6068]">
+                <span className="text-center text-[0.625rem] leading-tight text-[#d4d7de]">
                   <span className="sr-only">{partner.name} — </span>
                   {partner.label}
                 </span>
@@ -55,7 +55,7 @@ export function FooterPartners() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`${partner.name} — ${partner.label}`}
-                    className="block"
+                    className="block rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                   >
                     {surface}
                   </a>
