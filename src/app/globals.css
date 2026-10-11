@@ -972,21 +972,24 @@ input[type="range"].luxury-range::-moz-range-thumb {
   border: 2px solid #2b6cff;
 }
 
-/* Admin console — Valcron gloss black + electric blue accents */
+/* Admin console — same warm orange and quiet surfaces as the public website. */
 .admin-console {
-  --admin-bg: #f7f7f8;
+  --admin-bg: #f6f7f9;
   --admin-surface: #ffffff;
   --admin-surface-elevated: #ffffff;
   --admin-surface-muted: #f3f4f6;
-  --admin-border: #e5e5e5;
+  --admin-border: #e7e8eb;
   --admin-border-strong: #d4d4d4;
-  --admin-text: #08090b;
+  --admin-text: #17191d;
   --admin-text-secondary: #3a3d42;
   --admin-text-muted: #676a70;
-  --admin-brand: #2b6cff;
-  --admin-brand-hover: #1f56e0;
+  --admin-brand: #a74718;
+  --admin-accent: #f47735;
+  --admin-accent-hover: #ed6825;
+  --admin-accent-ink: #23150e;
+  --admin-brand-hover: #8c4017;
   --admin-nav: #ffffff;
-  --admin-nav-hover: #f5f5f5;
+  --admin-nav-hover: #fff0e6;
   --admin-nav-text: #08090b;
   --admin-nav-muted: #676a70;
   --admin-nav-border: #e5e5e5;
@@ -996,10 +999,10 @@ input[type="range"].luxury-range::-moz-range-thumb {
   --admin-warning-bg: #f7f1e3;
   --admin-danger: #9b2c2c;
   --admin-danger-bg: #f8eaea;
-  --admin-info: #2b6cff;
-  --admin-focus: #2b6cff;
+  --admin-info: #a74718;
+  --admin-focus: #a74718;
   --admin-shadow: 0 1px 2px rgba(8, 9, 11, 0.04), 0 10px 28px rgba(8, 9, 11, 0.05);
-  --admin-radius: 0.5rem;
+  --admin-radius: 1rem;
   color: var(--admin-text);
   background: var(--admin-bg);
 }
@@ -1037,3 +1040,18 @@ input[type="range"].luxury-range::-moz-range-thumb {
 @media (min-width: 768px) { .home-steps::before { content: ''; position: absolute; left: 17%; right: 17%; top: 2rem; border-top: 1px dashed #f2b892; } .home-steps { position: relative; } }
 .public-site .section-light .btn-primary { background: #f47735; border-color: #f47735; color: #23150e; border-radius: .75rem; }
 .public-site .section-light .btn-primary:hover { background: #ed6825; border-color: #ed6825; color: #23150e; }
+
+/* Shared workspace hierarchy and responsive editor controls. */
+.admin-page-heading { border: 1px solid var(--admin-border); border-radius: 1.5rem; padding: clamp(1.25rem, 3vw, 2rem); background: linear-gradient(115deg, #fff 65%, #fff0e6); }
+.admin-page-heading h1 { line-height: 1.2; }
+.admin-console main { scrollbar-gutter: stable; }
+.admin-console input[type="checkbox"], .admin-console input[type="radio"] { accent-color: var(--admin-brand); }
+.admin-editor-steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .5rem; }
+@media (max-width: 639px) {
+  .admin-page-heading { padding: 1.25rem; border-radius: 1.25rem; }
+  .admin-page-heading > div:last-child { max-width: 100%; }
+  .admin-editor-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .admin-editor-actions > div { display: grid; grid-template-columns: auto 1fr; align-items: center; }
+  .admin-editor-actions > div > div { display: flex; flex-wrap: wrap; }
+  .admin-editor-actions button { padding-inline: .75rem; font-size: .8125rem; }
+}

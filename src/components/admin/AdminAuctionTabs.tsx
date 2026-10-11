@@ -15,7 +15,7 @@ export function AdminAuctionTabs({
           href={item.href}
           className={`inline-flex min-h-10 items-center rounded-lg px-3 text-sm font-medium ${
             active === item.id || item.id === "opportunities"
-              ? "bg-[var(--admin-text)] text-white"
+              ? "bg-[var(--admin-accent)] text-[var(--admin-accent-ink)]"
               : "border border-[var(--admin-border)] text-[var(--admin-text-secondary)]"
           }`}
         >

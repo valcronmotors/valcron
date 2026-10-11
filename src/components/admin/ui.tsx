@@ -81,7 +81,7 @@ export function AdminPrimaryButton({
     <button
       type={type}
       {...props}
-      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-[0.75rem] bg-[var(--admin-text)] px-5 text-sm font-medium text-white transition duration-200 hover:bg-[#191919] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-[#9ca3af] disabled:text-white disabled:opacity-100 ${className ?? ""}`}
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-[0.75rem] bg-[var(--admin-accent)] px-5 text-sm font-semibold text-[var(--admin-accent-ink)] transition duration-200 hover:bg-[var(--admin-accent-hover)] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-[#9ca3af] disabled:text-white disabled:opacity-100 ${className ?? ""}`}
     >
       {children}
     </button>
@@ -269,7 +269,7 @@ export function AdminPageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-end justify-between gap-4">
+    <div className="admin-page-heading flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0">
         <h1 className="font-display text-2xl font-semibold tracking-tight text-[var(--admin-text)] sm:text-[1.75rem]">
           {title}

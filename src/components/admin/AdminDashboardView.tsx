@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Car, FileEdit, Gavel, Globe2, Inbox, PackagePlus } from "lucide-react";
+import { Car, FileEdit, Gavel, Globe2, Inbox, PackagePlus, Users, ArrowUpRight } from "lucide-react";
 import { AdminPublishBadge, AdminStatusBadge } from "@/components/admin/AdminBadges";
 import { AdminCard, AdminEmptyState, AdminNotice, AdminPrimaryButton } from "@/components/admin/ui";
 import { adminGreeting, formatAdminDate } from "@/lib/admin-copy";
@@ -52,7 +52,7 @@ export function AdminDashboardView({
     },
     {
       href: "/admin/solicitudes",
-      label: "Consultas",
+      label: "Solicitudes",
       hint: `${newInquiries.length} nuevas`,
       icon: Inbox,
     },
@@ -68,6 +68,9 @@ export function AdminDashboardView({
       hint: `${published.length} en website`,
       icon: Globe2,
     },
+    { href: "/admin/subastas/nuevo", label: "Agregar subasta", hint: "Copart, IAA o Manheim", icon: PackagePlus },
+    { href: "/admin/website", label: "Revisar website", hint: "Publicación y calidad del catálogo", icon: Globe2 },
+    { href: "/admin/configuracion/usuarios", label: "Usuarios y permisos", hint: "Administrar el equipo", icon: Users },
   ] as const;
 
   return (
@@ -78,13 +81,13 @@ export function AdminDashboardView({
         </AdminNotice>
       ) : null}
 
-      <header className="flex flex-wrap items-end justify-between gap-4">
+      <header className="admin-page-heading flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
           <h1 className="font-display text-2xl font-semibold tracking-tight text-[var(--admin-text)] sm:text-[1.85rem]">
             {adminGreeting()}
           </h1>
           <p className="mt-1 max-w-xl text-sm leading-6 text-[var(--admin-text-secondary)]">
-            Agregar → fotos → disponibilidad → vista previa → publicar.
+            Tu negocio, en un solo lugar. Gestiona vehículos, subastas y consultas de tus clientes.
           </p>
         </div>
         <Link href="/admin/inventario/nuevo">
@@ -97,9 +100,9 @@ export function AdminDashboardView({
           <Link
             key={item.href}
             href={item.href}
-            className={`rounded-xl border p-4 shadow-[var(--admin-shadow)] transition hover:border-[var(--admin-border-strong)] ${
+            className={`rounded-2xl border p-5 shadow-[var(--admin-shadow)] transition hover:border-[var(--admin-border-strong)] ${
               "primary" in item && item.primary
-                ? "border-[var(--admin-text)] bg-[var(--admin-text)] text-white"
+                ? "border-[var(--admin-accent)] bg-[var(--admin-accent)] text-[var(--admin-accent-ink)]"
                 : "border-[var(--admin-border)] bg-[var(--admin-surface)]"
             }`}
           >
@@ -107,7 +110,7 @@ export function AdminDashboardView({
               <span
                 className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
                   "primary" in item && item.primary
-                    ? "bg-white/10 text-white"
+                    ? "bg-white/30 text-[var(--admin-accent-ink)]"
                     : "bg-[var(--admin-surface-muted)] text-[var(--admin-text-secondary)]"
                 }`}
               >
@@ -116,19 +119,20 @@ export function AdminDashboardView({
               <span className="min-w-0">
                 <span
                   className={`block text-sm font-semibold ${
-                    "primary" in item && item.primary ? "text-white" : "text-[var(--admin-text)]"
+                    "primary" in item && item.primary ? "text-[var(--admin-accent-ink)]" : "text-[var(--admin-text)]"
                   }`}
                 >
                   {item.label}
                 </span>
                 <span
                   className={`mt-0.5 block text-xs ${
-                    "primary" in item && item.primary ? "text-white/70" : "text-[var(--admin-text-muted)]"
+                    "primary" in item && item.primary ? "text-[var(--admin-accent-ink)]" : "text-[var(--admin-text-muted)]"
                   }`}
                 >
                   {item.hint}
                 </span>
               </span>
+              <ArrowUpRight className="ml-auto h-4 w-4 shrink-0" aria-hidden />
             </span>
           </Link>
         ))}

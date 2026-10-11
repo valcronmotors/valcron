@@ -199,11 +199,12 @@ describe("legacy isolation", () => {
     expect(hrefs).not.toContain("/repuestos");
     expect(hrefs).not.toContain("/crm");
     expect(ADMIN_NAV.map((item) => item.label)).toEqual([
-      "Dashboard",
+      "Inicio",
       "Inventario Valcron",
       "Subastas",
       "Solicitudes",
       "Website",
+      "Usuarios",
     ]);
     expect(ADMIN_NAV.find((item) => item.id === "inventario")?.children?.map((c) => c.label)).toEqual([
       "Vehículos",

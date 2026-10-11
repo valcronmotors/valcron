@@ -37,7 +37,7 @@ export function AdminCopartAddButton({ lotNumber }: { lotNumber: string }) {
         type="button"
         onClick={() => void add()}
         disabled={pending}
-        className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[var(--admin-text)] px-4 text-sm font-medium text-white disabled:opacity-60"
+        className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[var(--admin-accent)] px-4 text-sm font-medium text-[var(--admin-accent-ink)] disabled:opacity-60"
       >
         {pending ? "Guardando..." : "Agregar a oportunidades"}
       </button>

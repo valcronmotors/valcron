@@ -158,7 +158,7 @@ export function AdminCopartSearch({
             className={`${adminFieldClass} mt-0`}
             aria-label="Millas máximas"
           />
-          <button type="submit" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[var(--admin-text)] px-4 text-sm font-medium text-white">
+          <button type="submit" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[var(--admin-accent)] px-4 text-sm font-medium text-[var(--admin-accent-ink)]">
             Buscar inventario Copart
           </button>
         </div>

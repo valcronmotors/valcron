@@ -704,7 +704,7 @@ export function AdminAuctionForm({
         }
       />
 
-      <nav className="flex gap-2 overflow-x-auto pb-1" aria-label="Pasos del editor">
+      <nav className="admin-editor-steps" aria-label="Pasos del editor">
         {STEPS.map((item) => {
           const active = step === item.id;
           const done = step > item.id;
@@ -712,17 +712,18 @@ export function AdminAuctionForm({
             <button
               key={item.id}
               type="button"
+              aria-current={active ? "step" : undefined}
               onClick={() => setStep(item.id)}
               className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-medium ${
                 active
-                  ? "bg-[var(--admin-text)] text-white"
+                  ? "bg-[var(--admin-accent)] text-[var(--admin-accent-ink)]"
                   : done
                     ? "bg-[var(--admin-success-bg)] text-[var(--admin-success)]"
                     : "border border-[var(--admin-border)] bg-[var(--admin-surface)] text-[var(--admin-text-secondary)]"
               }`}
             >
               {done ? <Check className="h-3.5 w-3.5" /> : <span className="tabular-nums">{item.id + 1}</span>}
-              <span className="hidden sm:inline">{item.label}</span>
+              <span className="text-xs sm:text-sm">{item.label}</span>
             </button>
           );
         })}
@@ -1116,7 +1117,7 @@ export function AdminAuctionForm({
                     type="button"
                     disabled={pending || uploading || !vehicleId || photo.is_cover}
                     aria-pressed={photo.is_cover}
-                    className={`inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-xs font-semibold disabled:cursor-default ${photo.is_cover ? "bg-[var(--admin-text)] text-white" : "border border-[var(--admin-border)] text-[var(--admin-text)]"}`}
+                    className={`inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-xs font-semibold disabled:cursor-default ${photo.is_cover ? "bg-[var(--admin-accent)] text-[var(--admin-accent-ink)]" : "border border-[var(--admin-border)] text-[var(--admin-text)]"}`}
                     onClick={() => {
                       if (!vehicleId) return;
                       setError(null);
@@ -1270,7 +1271,7 @@ export function AdminAuctionForm({
         </FormSection>
       ) : null}
 
-      <div className="sticky bottom-0 z-30 -mx-1 border-t border-[var(--admin-border)] bg-white px-2 pt-3 shadow-[0_-8px_24px_rgba(8,9,11,0.08)] pb-[max(1rem,env(safe-area-inset-bottom))]">
+      <div className="admin-editor-actions sticky bottom-0 z-30 -mx-1 border-t border-[var(--admin-border)] bg-white px-2 pt-3 shadow-[0_-8px_24px_rgba(8,9,11,0.08)] pb-[max(1rem,env(safe-area-inset-bottom))]">
         {step === 4 && !publishEnabled ? (
           <p className="mb-2 text-xs text-[var(--admin-warning)]">
             {auctionPublicationBlockMessage(publicationInput) ??

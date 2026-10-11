@@ -303,7 +303,7 @@ export function AdminAuctionList({
                 onClick={() => setProviderFilter(item.id)}
                 className={`min-h-10 rounded-lg px-3 text-sm font-medium transition duration-200 ${
                   providerFilter === item.id
-                    ? "bg-[var(--admin-text)] text-white"
+                    ? "bg-[var(--admin-accent)] text-[var(--admin-accent-ink)]"
                     : "border border-[var(--admin-border)] bg-[var(--admin-surface)] text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface-muted)]"
                 }`}
               >
@@ -500,7 +500,7 @@ export function AdminAuctionList({
                         <div className="flex items-center justify-end gap-1">
                           <Link
                             href={`/admin/subastas/${row.id}`}
-                            className="inline-flex min-h-11 items-center rounded-lg bg-[var(--admin-text)] px-3 text-sm font-semibold text-white hover:opacity-90"
+                            className="inline-flex min-h-11 items-center rounded-lg bg-[var(--admin-accent)] px-3 text-sm font-semibold text-[var(--admin-accent-ink)] hover:opacity-90"
                           >
                             Editar
                           </Link>
@@ -583,7 +583,7 @@ export function AdminAuctionList({
                     </div>
                     <Link
                       href={`/admin/subastas/${row.id}`}
-                      className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-[var(--admin-text)] px-4 text-sm font-medium text-white"
+                      className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-[var(--admin-accent)] px-4 text-sm font-medium text-[var(--admin-accent-ink)]"
                     >
                       Editar vehículo
                     </Link>

@@ -491,7 +491,7 @@ function InventoryCard({
       <div className="mt-4 grid grid-cols-2 gap-2">
         <Link
           href={`/admin/inventario/${vehicle.id}`}
-          className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[var(--admin-text)] px-3 text-sm font-medium text-white"
+          className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[var(--admin-accent)] px-3 text-sm font-medium text-[var(--admin-accent-ink)]"
         >
           Editar
         </Link>
