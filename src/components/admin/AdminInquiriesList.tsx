@@ -85,7 +85,7 @@ export function AdminInquiriesList({
             onClick={() => setFilter(item.id)}
             className={`min-h-10 rounded-lg px-3 text-sm font-medium transition duration-200 ${
               filter === item.id
-                ? "bg-[var(--admin-text)] text-white"
+                ? "bg-[var(--admin-accent)] text-[var(--admin-accent-ink)]"
                 : "border border-[var(--admin-border)] bg-[var(--admin-surface)] text-[var(--admin-text-secondary)] hover:bg-[var(--admin-surface-muted)]"
             }`}
           >
@@ -232,7 +232,7 @@ export function AdminInquiriesList({
                     <button
                       type="button"
                       disabled={pending}
-                      className="inline-flex min-h-10 items-center rounded-lg bg-[var(--admin-text)] px-3 text-sm text-white"
+                      className="inline-flex min-h-10 items-center rounded-lg bg-[var(--admin-accent)] px-3 text-sm text-[var(--admin-accent-ink)]"
                       onClick={() => updateStatus(inquiry.id, "closed")}
                     >
                       Cerrar

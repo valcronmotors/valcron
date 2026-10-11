@@ -24,7 +24,7 @@ export type AdminNavSection = {
 export const ADMIN_NAV: AdminNavSection[] = [
   {
     id: "dashboard",
-    label: "Dashboard",
+    label: "Inicio",
     icon: "dashboard",
     href: "/admin",
     description: "Resumen de Inventario Valcron, subastas y solicitudes.",
@@ -78,6 +78,13 @@ export const ADMIN_NAV: AdminNavSection[] = [
     icon: "website",
     href: "/admin/website",
     description: "Estado de publicación de ambos catálogos públicos.",
+  },
+  {
+    id: "usuarios",
+    label: "Usuarios",
+    icon: "settings",
+    href: "/admin/configuracion/usuarios",
+    description: "Gestionar el equipo y los permisos del panel.",
   },
 ];
 
@@ -138,9 +145,9 @@ export function findAdminNavItem(pathname: string) {
   }
 
   if (pathname.startsWith("/admin/configuracion/usuarios") || pathname.startsWith("/admin/usuarios")) {
-    const website = ADMIN_NAV.find((section) => section.id === "website");
+    const users = ADMIN_NAV.find((section) => section.id === "usuarios");
     return {
-      section: website ?? ADMIN_NAV[0],
+      section: users ?? ADMIN_NAV[0],
       item: {
         href: "/admin/configuracion/usuarios",
         label: "Usuarios",

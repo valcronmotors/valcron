@@ -60,7 +60,7 @@ export function AdminSidebar({
             <span className="block">
               <BrandLogo size="admin" tone="onLight" variant="full" />
               <span className="mt-2 block text-[11px] font-medium tracking-[0.14em] text-[var(--admin-nav-muted)]">
-                Website Admin
+                Panel de administración
               </span>
             </span>
           )}
@@ -77,8 +77,8 @@ export function AdminSidebar({
         </button>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-2 py-4">
-        <ul className="space-y-0.5">
+      <nav aria-label="Administración" className="flex-1 overflow-y-auto px-3 py-4">
+        <ul className="space-y-1.5">
           {ADMIN_NAV.map((section) => (
             <NavSection
               key={section.id}
@@ -147,9 +147,9 @@ function NavSection({
   const Icon = ADMIN_NAV_ICONS[section.icon];
   const active = sectionHasActiveChild(pathname, section);
   const [userOpen, setUserOpen] = useState<boolean | null>(null);
-  const open = userOpen ?? active;
+  const open = userOpen ?? true;
 
-  const itemClass = `group flex items-center gap-3 rounded-md px-2.5 py-2 text-[13.5px] transition duration-200 ${
+  const itemClass = `group flex items-center gap-3 min-h-11 rounded-xl px-3 py-2.5 text-[13.5px] transition duration-200 ${
     active
       ? "bg-[var(--admin-nav-hover)] text-[var(--admin-text)]"
       : "text-[var(--admin-nav-muted)] hover:bg-[var(--admin-nav-hover)] hover:text-[var(--admin-text)]"

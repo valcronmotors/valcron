@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AdminQuickNavigation } from "@/components/admin/AdminQuickNavigation";
 import { Globe, Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { adminInitials } from "@/lib/admin-copy";
@@ -16,7 +17,7 @@ export function AdminHeader({
 }) {
   const pathname = usePathname();
   const match = findAdminNavItem(pathname);
-  const crumbs: { href: string; label: string }[] = [{ href: "/admin", label: pathname === "/admin" ? "Dashboard" : "Admin" }];
+  const crumbs: { href: string; label: string }[] = [{ href: "/admin", label: pathname === "/admin" ? "Inicio" : "Admin" }];
   if (match && match.section.href && match.section.href !== "/admin") {
     crumbs.push({ href: match.section.href, label: match.section.label });
   }
@@ -25,7 +26,7 @@ export function AdminHeader({
   }
 
   return (
-    <header className="sticky top-0 z-20 flex h-14 w-full shrink-0 items-center gap-3 border-b border-[var(--admin-border)] bg-[var(--admin-surface)]/92 px-4 backdrop-blur-md md:px-6 lg:h-[3.25rem] lg:px-8">
+    <header className="sticky top-0 z-20 flex h-16 w-full shrink-0 items-center gap-3 border-b border-[var(--admin-border)] bg-[var(--admin-surface)]/92 px-4 backdrop-blur-md md:px-6 lg:h-18 lg:px-8">
       <button
         type="button"
         onClick={onMenu}
@@ -55,6 +56,7 @@ export function AdminHeader({
         </ol>
       </nav>
 
+      <AdminQuickNavigation />
       <Link
         href="/"
         className="hidden h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm text-[var(--admin-text-secondary)] transition hover:bg-[var(--admin-surface-muted)] hover:text-[var(--admin-text)] sm:inline-flex"

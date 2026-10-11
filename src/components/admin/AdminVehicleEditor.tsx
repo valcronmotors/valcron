@@ -981,10 +981,11 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
             <button
               key={item.id}
               type="button"
+              aria-current={active ? "step" : undefined}
               onClick={() => setStep(item.id)}
               className={`rounded-xl border px-2 py-3 text-center transition ${
                 active
-                  ? "border-[var(--admin-text)] bg-[var(--admin-text)] text-white"
+                  ? "border-[var(--admin-accent)] bg-[var(--admin-accent)] text-[var(--admin-accent-ink)]"
                   : done
                     ? "border-[var(--admin-success)]/30 bg-[var(--admin-success-bg)] text-[var(--admin-success)]"
                     : "border-[var(--admin-border)] bg-[var(--admin-surface)] text-[var(--admin-text-secondary)]"
@@ -1241,7 +1242,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
                     onClick={() => applyAvailability(option.value)}
                     className={`rounded-xl border px-4 py-3 text-left transition ${
                       active
-                        ? "border-[var(--admin-text)] bg-[var(--admin-text)] text-white"
+                        ? "border-[var(--admin-accent)] bg-[var(--admin-accent)] text-[var(--admin-accent-ink)]"
                         : "border-[var(--admin-border)] bg-[var(--admin-surface)] text-[var(--admin-text)] hover:bg-[var(--admin-surface-muted)]"
                     }`}
                   >
@@ -1363,7 +1364,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
                         aria-pressed={isCover}
                         className={`min-h-11 flex-1 rounded-lg px-3 text-xs font-semibold ${
                           isCover
-                            ? "bg-[var(--admin-text)] text-white"
+                            ? "bg-[var(--admin-accent)] text-[var(--admin-accent-ink)]"
                             : "border border-[var(--admin-border)]"
                         }`}
                         onClick={() => {
@@ -2066,7 +2067,7 @@ function StickyActionBar({
                 type="button"
                 onClick={onPublish}
                 disabled={busy || !saved || !readyToPublish}
-                className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-[var(--admin-text)] px-4 text-sm font-semibold text-white disabled:opacity-50"
+                className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-[var(--admin-accent)] px-4 text-sm font-semibold text-[var(--admin-accent-ink)] disabled:opacity-50"
               >
                 {publishing ? "Publicando..." : "Publicar vehículo"}
               </button>
@@ -2095,7 +2096,7 @@ function StickyActionBar({
               type="button"
               onClick={onContinue}
               disabled={busy}
-              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[var(--admin-text)] px-3 text-sm font-semibold text-white disabled:opacity-60"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[var(--admin-accent)] px-3 text-sm font-semibold text-[var(--admin-accent-ink)] disabled:opacity-60"
             >
               Continuar
             </button>
