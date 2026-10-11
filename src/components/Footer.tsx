@@ -50,8 +50,8 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
       >
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-10">
           <div className="sm:col-span-2 lg:col-span-3">
-            <Link href="/" aria-label={SITE.brand} className="inline-flex rounded-xl bg-white p-3 shadow-[0_2px_18px_rgba(255,255,255,0.08)] ring-1 ring-white/20">
-              <BrandLogo size="footer" tone="onLight" variant="full" />
+            <Link href="/" aria-label={SITE.brand} className="inline-flex bg-transparent [&_img]:drop-shadow-[0_0_1px_rgba(255,255,255,0.7)]">
+              <BrandLogo size="footer" tone="onDark" variant="full" />
             </Link>
             <p className="mt-3 max-w-[16rem] text-[0.8125rem] leading-relaxed text-[#d4d7de]">
               Valcron Motors Group, SRL — vehículos, subastas e importación en República
