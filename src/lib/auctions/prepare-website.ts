@@ -128,7 +128,8 @@ export function opportunityToVehicleDraft(
 
   return {
     data: {
-      vin: opportunity.vin,
+      // Only complete VINs belong in the strict vehicle record; keep partial VINs on the opportunity.
+      vin: /^[A-HJ-NPR-Z0-9]{17}$/.test(opportunity.vin ?? "") ? opportunity.vin : null,
       year,
       make,
       model,

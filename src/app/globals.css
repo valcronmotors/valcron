@@ -527,11 +527,11 @@ h3 {
   object-position: center;
 }
 
-/* —— Footer — light corporate —— */
+/* —— Footer — gloss black with clear logo and text contrast —— */
 .site-footer {
   isolation: isolate;
-  background-color: #f6f7f8;
-  color: #3d4148;
+  background: linear-gradient(160deg, #202024 0%, #080809 34%, #000 72%);
+  color: #d4d7de;
 }
 
 .section-light,

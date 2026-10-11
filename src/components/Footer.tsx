@@ -10,9 +10,9 @@ import {
 } from "@/lib/site";
 
 const headingClass =
-  "mb-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-[#6b7280]";
+  "mb-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-[#b8bdc7]";
 const linkClass =
-  "text-[0.875rem] leading-6 text-[#3B3B3B] transition-colors duration-200 hover:text-[#111111] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111111]";
+  "text-[0.875rem] leading-6 text-[#d4d7de] transition-colors duration-200 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
 
 const FOOTER_EXPLORE_V2 = [
   { href: "/", label: "Inicio" },
@@ -43,17 +43,17 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
   const year = new Date().getFullYear();
 
   return (
-    <footer className="site-footer relative mt-auto border-t border-[#E5E7EB] bg-[#F5F5F5]">
+    <footer className="site-footer relative mt-auto border-t border-white/10 bg-black">
       <div
         className="relative mx-auto w-full max-w-[var(--content-wide)] py-10 md:py-12"
         style={{ paddingInline: "var(--page-gutter)" }}
       >
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-10">
           <div className="sm:col-span-2 lg:col-span-3">
-            <Link href="/" aria-label={SITE.brand} className="inline-flex">
+            <Link href="/" aria-label={SITE.brand} className="inline-flex rounded-xl bg-white p-3 shadow-[0_2px_18px_rgba(255,255,255,0.08)] ring-1 ring-white/20">
               <BrandLogo size="footer" tone="onLight" variant="full" />
             </Link>
-            <p className="mt-3 max-w-[16rem] text-[0.8125rem] leading-relaxed text-[#3B3B3B]">
+            <p className="mt-3 max-w-[16rem] text-[0.8125rem] leading-relaxed text-[#d4d7de]">
               Valcron Motors Group, SRL — vehículos, subastas e importación en República
               Dominicana.
             </p>
@@ -72,12 +72,12 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
 
           <div className="sm:col-span-2 lg:col-span-3">
             <h2 className={headingClass}>Contacto</h2>
-            <address className="not-italic text-[0.875rem] leading-6 text-[#3d4148]">
+            <address className="not-italic text-[0.875rem] leading-6 text-[#d4d7de]">
               <p>{SITE.address.full}</p>
               <p className="mt-3">
                 WhatsApp{" "}
                 <a
-                  className="font-medium text-[#111111] hover:text-[var(--brand-orange,#e85d04)]"
+                  className="font-medium text-white hover:text-[var(--brand-orange,#e85d04)]"
                   href={whatsappHref()}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -86,29 +86,29 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
                 </a>
               </p>
               <p className="mt-3">
-                <a className="hover:text-[#08090b]" href={SITE.url}>
+                <a className="hover:text-white" href={SITE.url}>
                   valcronmotors.com
                 </a>
               </p>
             </address>
             {showCompactMap ? (
               <div className="mt-5">
-                <BusinessLocation variant="compact" tone="light" />
+                <BusinessLocation variant="compact" tone="dark" />
               </div>
             ) : null}
           </div>
         </div>
 
-        <div className="mt-8 border-t border-[#e6e8eb] pt-5">
+        <div className="mt-8 border-t border-white/10 pt-5">
           <FooterPartners />
         </div>
       </div>
 
       <div
-        className="border-t border-[#e6e8eb] bg-white py-3.5"
+        className="border-t border-white/10 bg-black/70 py-3.5"
         style={{ paddingInline: "var(--page-gutter)" }}
       >
-        <div className="mx-auto flex max-w-[var(--content-wide)] flex-col items-center gap-2 text-center text-[0.6875rem] leading-5 text-[#6b7280] sm:flex-row sm:justify-between sm:text-left">
+        <div className="mx-auto flex max-w-[var(--content-wide)] flex-col items-center gap-2 text-center text-[0.6875rem] leading-5 text-[#b8bdc7] sm:flex-row sm:justify-between sm:text-left">
           <p>
             © {year} {SITE.legalName}. Todos los derechos reservados.
           </p>
@@ -117,12 +117,12 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
               <Link
                 key={item.href}
                 href={item.href}
-                className="underline-offset-2 hover:text-[#08090b] hover:underline"
+                className="underline-offset-2 hover:text-white hover:underline"
               >
                 {item.label}
               </Link>
             ))}
-            <p className="inline-flex items-center gap-1.5 uppercase tracking-[0.12em] text-[#5c6370]">
+            <p className="inline-flex items-center gap-1.5 uppercase tracking-[0.12em] text-[#b8bdc7]">
               <DominicanFlag />
               República Dominicana
             </p>

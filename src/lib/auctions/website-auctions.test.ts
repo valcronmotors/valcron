@@ -86,6 +86,16 @@ describe("prepare-for-website flow", () => {
     expect(JSON.stringify(publicVehicleKeysFromDraft(result.data!))).not.toContain("internal_notes");
   });
 
+  it("prepares partial VIN opportunities without violating the vehicle VIN constraint", () => {
+    for (const vin of ["7FARS6H97TE******", "1", "4T1", "5ABC?"]) {
+      const result = opportunityToVehicleDraft({ ...opportunity, vin });
+      expect(result.error).toBeNull();
+      expect(result.data?.vin).toBeNull();
+      expect(vin).toBeTruthy();
+    }
+    expect(opportunityToVehicleDraft(opportunity).data?.vin).toBe(opportunity.vin);
+  });
+
   it("requires year, make, and model", () => {
     const result = opportunityToVehicleDraft({
       ...opportunity,
