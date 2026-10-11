@@ -8,9 +8,10 @@ export const SITE = {
   legalName: "Valcron Motors Group, SRL",
   url: "https://valcronmotors.com",
   tagline: "Más opciones. Más cerca de ti.",
+  seoTitle: "Dealer en Santo Domingo Este | Vehículos en venta | Valcron Motors",
   heroEyebrow: "Valcron Motors Group",
   heroTitle: "Más opciones. Más cerca de ti.",
-  heroSubtitle: "Encuentra tu próximo vehículo con Valcron Motors.",
+  heroSubtitle: "Vehículos en venta en Santo Domingo Este, búsqueda personalizada y orientación con bancos locales. Encuentra tu próximo vehículo con Valcron Motors.",
   valueProposition:
     "Valcron Motors en Santo Domingo Este: vehículos disponibles, búsqueda personalizada, financiamiento con bancos locales y opciones de subasta e importación cuando aplica.",
   address: {
@@ -185,7 +186,7 @@ export const HEADER_DIRECT_LINKS = [
 
 export const FOOTER_INVENTORY = [
   { href: "/inventario", label: "Vehículos disponibles" },
-  { href: "/contacto", label: "Solicitar vehículo" },
+  { href: "/solicitar-vehiculo", label: "Solicitar vehículo" },
   { href: "/comprar", label: "Cómo comprar" },
 ] as const;
 
@@ -369,6 +370,8 @@ export function autoDealerJsonLd() {
     },
     url: SITE.url,
     telephone: SITE.whatsappInternational,
+    logo: `${SITE.url}/branding/valcron-logo-light.webp`,
+    image: `${SITE.url}/api/public/social-image`,
     address: {
       "@type": "PostalAddress",
       streetAddress: SITE.address.streetAddress,

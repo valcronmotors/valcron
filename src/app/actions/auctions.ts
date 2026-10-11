@@ -53,6 +53,7 @@ export async function deleteAuctionOpportunity(opportunityId: string) {
   revalidateAuctions(opportunityId);
   revalidatePath("/inventario");
   revalidatePath("/admin/inventario");
+  revalidatePath("/sitemap.xml");
   revalidatePath("/");
   const paths = (data ?? []) as string[];
   if (paths.length) {

@@ -57,12 +57,14 @@ export function SectionHeader({
   subtitle,
   align = "left",
   tone = "light",
+  as: Heading = "h2",
 }: {
   kicker?: string;
   title: ReactNode;
   subtitle?: ReactNode;
   align?: "left" | "center";
   tone?: "light" | "dark" | "accent";
+  as?: "h1" | "h2";
 }) {
   const titleColor =
     tone === "light" ? "text-[#08090b]" : tone === "accent" ? "text-white" : "text-white";
@@ -72,7 +74,7 @@ export function SectionHeader({
   return (
     <div className={align === "center" ? "mx-auto max-w-[40rem] text-center" : "max-w-[40rem]"}>
       {kicker ? <p className="kicker">{kicker}</p> : null}
-      <h2 className={`display-lg mt-3 text-balance ${titleColor}`}>{title}</h2>
+      <Heading className={`display-lg mt-3 text-balance ${titleColor}`}>{title}</Heading>
       {subtitle ? (
         <p className={`mt-4 text-[length:var(--text-body-lg)] leading-[1.55] ${subColor}`}>
           {subtitle}

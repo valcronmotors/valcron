@@ -21,13 +21,16 @@ export function HomeHero() {
         <p className="mx-auto mt-4 max-w-[28rem] text-base leading-relaxed text-[#3B3B3B] sm:mt-5 sm:text-lg">
           {SITE.heroSubtitle}
         </p>
-        <div className="mt-7 flex w-full justify-center sm:mt-8">
+        <div className="mt-7 flex w-full flex-col items-center justify-center gap-3 sm:mt-8 sm:flex-row">
           <Link
             href="/inventario"
             className="inline-flex h-12 min-w-[12.5rem] items-center justify-center gap-2 rounded-full bg-[#111111] px-7 text-sm font-semibold text-white transition-colors hover:bg-[#3B3B3B] lg:h-14 lg:min-w-[14rem] lg:text-base"
           >
             Ver inventario
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+          <Link href="/solicitar-vehiculo" className="inline-flex h-12 items-center justify-center rounded-full border border-[#b5b5b5] px-7 text-sm font-semibold text-[#111111] transition-colors hover:bg-white lg:h-14 lg:text-base">
+            Encontrar mi vehículo
           </Link>
         </div>
       </PageContainer>

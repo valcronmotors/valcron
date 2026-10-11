@@ -7,6 +7,8 @@ import { SITE } from "@/lib/site";
 import { canPublishVehicleListing, vehiclePublicationChecks } from "@/lib/publication-readiness";
 import { opportunityWebsiteState, type LinkedVehicleSummary } from "@/lib/auctions/opportunity-admin";
 import type { AuctionOpportunityRow, InquiryRow, VehicleRow } from "@/lib/website-schema";
+import { listingQualitySuggestions } from "@/lib/listing-quality";
+import { opportunityVehicleTitle } from "@/lib/auctions/opportunity-admin";
 
 export function AdminWebsiteView({
   vehicles,
@@ -41,6 +43,10 @@ export function AdminWebsiteView({
   const readyAuctions = auctionOpportunities.filter(
     (row) => row.status !== "archived" && opportunityWebsiteState(row, row.linked_vehicle) === "ready",
   );
+  const contentSuggestions = [
+    ...published.map((row) => ({ id: row.id, title: vehicleLabel(row), href: `/admin/inventario/${row.id}`, suggestions: listingQualitySuggestions(row) })),
+    ...publishedAuctions.map((row) => ({ id: row.id, title: opportunityVehicleTitle(row), href: `/admin/subastas/${row.id}`, suggestions: listingQualitySuggestions(row.linked_vehicle ?? {}) })),
+  ].filter((row) => row.suggestions.length > 0);
 
   return (
     <div className="grid gap-6">
@@ -99,124 +105,18 @@ export function AdminWebsiteView({
                 {readyAuctions.length}
               </dd>
             </div>
-          </dl>
-        </AdminCard>
-      </section>
-
-      <AdminCard>
-        <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Enlaces públicos</h2>
-        <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
-          <li>
-            <Link href="/" className="inline-flex items-center gap-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
-              <Globe className="h-4 w-4" /> Home
-            </Link>
-          </li>
-          <li>
-            <Link href="/inventario" className="inline-flex items-center gap-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
-              <Globe className="h-4 w-4" /> Inventario Valcron
-            </Link>
-          </li>
-          <li>
-            <Link href="/subastas" className="inline-flex items-center gap-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
-              <Globe className="h-4 w-4" /> Oportunidades de subasta
-            </Link>
-          </li>
-          <li>
-            <Link href="/contacto" className="inline-flex items-center gap-2 text-[var(--admin-text-secondary)] hover:text-[var(--admin-text)]">
-              <Globe className="h-4 w-4" /> Contacto
-            </Link>
-          </li>
-        </ul>
-        <p className="mt-6 text-xs text-[var(--admin-text-muted)]">
-          {SITE.url} · Última solicitud:{" "}
-          {inquiries[0] ? `${inquiries[0].name} · ${formatAdminDate(inquiries[0].created_at)}` : "todavía no hay mensajes"}
-        </p>
-      </AdminCard>
-
-      <AdminCard>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">
-              Destacados · Inventario Valcron
-            </h2>
-            <p className="mt-1 text-sm text-[var(--admin-text-secondary)]">
-              Aparecen primero en el carrusel local de la Home.
-            </p>
-          </div>
-          <Link href="/admin/inventario">
-            <AdminSecondaryButton>Administrar destacados</AdminSecondaryButton>
-          </Link>
-        </div>
-        {featured.length === 0 ? (
-          <div className="mt-6">
-            <AdminEmptyState
-              icon={Star}
-              title="No hay destacados"
-              copy="Marca una unidad como destacada desde su ficha, después de publicarla."
-            />
-          </div>
-        ) : (
-          <ul className="mt-4 divide-y divide-[var(--admin-border)]">
-            {featured.map((vehicle) => (
-              <li key={vehicle.id} className="flex items-center justify-between py-3">
-                <Link href={`/admin/inventario/${vehicle.id}`} className="font-medium text-[var(--admin-text)]">
-                  {vehicleLabel(vehicle)}
-                </Link>
-                <span className="text-xs text-[var(--admin-text-muted)]">{formatAdminDate(vehicle.updated_at)}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </AdminCard>
-
-      <section className="grid gap-4 lg:grid-cols-2">
-        <AdminCard>
-          <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Publicados</h2>
-          <p className="mt-1 text-sm text-[var(--admin-text-secondary)]">
-            Unidades visibles en el website ahora mismo.
-          </p>
-          {published.length === 0 ? (
-            <p className="mt-4 text-sm text-[var(--admin-text-muted)]">Todavía no hay unidades publicadas.</p>
-          ) : (
-            <ul className="mt-4 divide-y divide-[var(--admin-border)]">
-              {published.slice(0, 12).map((vehicle) => (
-                <li key={vehicle.id} className="flex items-center justify-between gap-3 py-3">
-                  <Link href={`/admin/inventario/${vehicle.id}`} className="font-medium text-[var(--admin-text)]">
-                    {vehicleLabel(vehicle)}
-                  </Link>
-                  <Link
-                    href={`/inventario/${vehicle.id}`}
-                    target="_blank"
-                    className="text-xs text-[var(--admin-text-muted)] underline-offset-2 hover:underline"
-                  >
-                    Ver ficha
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </AdminCard>
-        <AdminCard>
-          <h2 className="font-display text-lg font-semibold text-[var(--admin-text)]">Listos sin publicar</h2>
-          <p className="mt-1 text-sm text-[var(--admin-text-secondary)]">
-            Cumplen lo obligatorio y aún no están en el website.
-          </p>
-          {unpublishedReady.length === 0 ? (
-            <p className="mt-4 text-sm text-[var(--admin-text-muted)]">No hay borradores listos para publicar.</p>
-          ) : (
-            <ul className="mt-4 divide-y divide-[var(--admin-border)]">
-              {unpublishedReady.map((vehicle) => (
-                <li key={vehicle.id} className="flex items-center justify-between gap-3 py-3">
-                  <Link href={`/admin/inventario/${vehicle.id}`} className="font-medium text-[var(--admin-text)]">
-                    {vehicleLabel(vehicle)}
-                  </Link>
-                  <span className="text-xs text-[var(--admin-text-muted)]">Listo</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </AdminCard>
-      </section>
-    </div>
+   …2482 tokens truncated…m,env(safe-area-inset-bottom))] right-4 z-50 flex items-center gap-3 lg:bottom-6 lg:right-5 xl:bottom-8 xl:right-7"
+      aria-label="WhatsApp de Valcron Motors"
+    >
+      <span className="hidden max-w-[12rem] rounded-2xl border border-white/10 bg-[#0a0a0a]/90 px-3 py-2 text-left shadow-[0_12px_40px_rgba(0,0,0,0.35)] backdrop-blur-md 2xl:block">
+        <span className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-white">
+          WhatsApp
+        </span>
+        <span className="mt-0.5 block text-xs text-[#d4d4d4]">{SITE.whatsappDisplay}</span>
+      </span>
+      <span className="relative inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#25d366] text-white shadow-[0_12px_32px_rgba(0,0,0,0.35)] transition duration-200 group-hover:scale-[1.03] group-hover:bg-[#1ebe5d] motion-reduce:transform-none sm:h-14 sm:w-14">
+        <WhatsAppIcon className="h-5 w-5 sm:h-6 sm:w-6" />
+      </span>
+    </a>
   );
 }

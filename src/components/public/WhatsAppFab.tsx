@@ -9,7 +9,7 @@ export function WhatsAppFab() {
       href={whatsappHref()}
       target="_blank"
       rel="noopener noreferrer"
-      className="whatsapp-fab group fixed bottom-6 right-5 z-50 hidden items-center gap-3 lg:flex xl:bottom-8 xl:right-7"
+      className="whatsapp-fab group fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-4 z-50 flex items-center gap-3 lg:bottom-6 lg:right-5 xl:bottom-8 xl:right-7"
       aria-label="WhatsApp de Valcron Motors"
     >
       <span className="hidden max-w-[12rem] rounded-2xl border border-white/10 bg-[#0a0a0a]/90 px-3 py-2 text-left shadow-[0_12px_40px_rgba(0,0,0,0.35)] backdrop-blur-md 2xl:block">

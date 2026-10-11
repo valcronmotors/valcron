@@ -15,7 +15,7 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: "Más opciones. Más cerca de ti. | Valcron Motors",
+    default: SITE.seoTitle,
     template: "%s | Valcron Motors",
   },
   description: SITE.valueProposition,
@@ -40,21 +40,23 @@ export const metadata: Metadata = {
     locale: "es_DO",
     type: "website",
     siteName: SITE.shortName,
-    title: "Más opciones. Más cerca de ti. | Valcron Motors",
+    title: SITE.seoTitle,
     description: SITE.valueProposition,
     url: SITE.url,
     images: [
       {
-        url: "/marketing/banner-suv-tropical.jpg",
-        alt: "SUV Mazda blanco en un entorno tropical, fotografía ilustrativa. No representa las instalaciones de Valcron.",
+        url: "/api/public/social-image",
+        width: 1200,
+        height: 630,
+        alt: "Valcron Motors — dealer en Santo Domingo Este",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Más opciones. Más cerca de ti. | Valcron Motors",
+    title: SITE.seoTitle,
     description: SITE.valueProposition,
-    images: ["/marketing/banner-suv-tropical.jpg"],
+    images: ["/api/public/social-image"],
   },
 };
 
