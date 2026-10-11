@@ -219,6 +219,8 @@ function revalidateVehicles(id?: string) {
   revalidatePath("/admin/inventario");
   revalidatePath("/inventario");
   revalidatePath("/oportunidades");
+  revalidatePath("/subastas");
+  revalidatePath("/admin/subastas");
   revalidatePath("/");
   revalidatePath("/sitemap.xml");
   if (id) {
@@ -514,10 +516,12 @@ export async function updateVehiclePhoto(input: {
   if (input.is_cover !== undefined) patch.is_cover = input.is_cover;
   if (input.sort_order !== undefined) patch.sort_order = input.sort_order;
 
-  const { error } = await supabase.from("vehicle_photos").update(patch).eq("id", input.id);
+  const { data, error } = await supabase.from("vehicle_photos").update(patch)
+    .eq("id", input.id).eq("vehicle_id", input.vehicleId).select("id").maybeSingle();
   if (error) {
     return { error: publicActionError(error, "No se pudo actualizar la foto.") };
   }
+  if (!data) return { error: "No se encontró la foto de este vehículo." };
   revalidateVehicles(input.vehicleId);
   return { error: null };
 }

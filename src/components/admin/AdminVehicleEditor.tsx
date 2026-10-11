@@ -1299,7 +1299,7 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
       {step === 1 ? (
         <FormSection
           title="Fotos"
-          hint="Elige galería, archivos o cámara. La portada es obligatoria para publicar."
+          hint="Elige galería, archivos o cámara. Pulsa Usar como portada en la foto que quieres mostrar en las tarjetas del website. Puedes cambiarla cuando quieras."
         >
           {coverNotice ? (
             <div className="mb-4 rounded-lg border border-[var(--admin-brand)]/20 bg-[var(--admin-brand)]/8 px-4 py-3 text-sm text-[var(--admin-text)]">
@@ -1359,6 +1359,8 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
                     <div className="flex flex-wrap gap-2 p-3">
                       <button
                         type="button"
+                        disabled={busy || isCover}
+                        aria-pressed={isCover}
                         className={`min-h-11 flex-1 rounded-lg px-3 text-xs font-semibold ${
                           isCover
                             ? "bg-[var(--admin-text)] text-white"
@@ -1366,18 +1368,24 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
                         }`}
                         onClick={() => {
                           if (savedPhoto && vehicle?.id) {
-                            void updateVehiclePhoto({
-                              id: photo.id,
-                              vehicleId: vehicle.id,
-                              is_cover: true,
-                            }).then((result) => {
-                              if (result.error) {
-                                setError(result.error);
-                                return;
+                            setError(null);
+                            startTransition(async () => {
+                              try {
+                                const result = await updateVehiclePhoto({
+                                  id: photo.id,
+                                  vehicleId: vehicle.id,
+                                  is_cover: true,
+                                });
+                                if (result.error) {
+                                  setError(result.error);
+                                  return;
+                                }
+                                setCoverNotice("Portada actualizada.");
+                                setNotice("Foto de portada actualizada. Se mostrará en las tarjetas del website.");
+                                router.refresh();
+                              } catch {
+                                setError("No se pudo cambiar la portada. Inténtalo de nuevo.");
                               }
-                              setCoverNotice("Portada actualizada.");
-                              setNotice("Foto de portada actualizada.");
-                              router.refresh();
                             });
                           } else {
                             setLocalPhotos((current) =>
