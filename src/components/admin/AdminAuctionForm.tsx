@@ -1099,7 +1099,7 @@ export function AdminAuctionForm({
       {step === 3 ? (
         <FormSection
           title="Fotografías y videos"
-          hint="Sube solo imágenes autorizadas. No se descargan fotos de la subasta automáticamente."
+          hint="Elige Usar como portada en la foto que quieres mostrar en las tarjetas del website. Puedes cambiarla cuando quieras. Sube solo imágenes autorizadas."
         >
           <AdminMediaPicker onFiles={handleFiles} uploading={uploading || pending} />
           <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -1114,16 +1114,30 @@ export function AdminAuctionForm({
                 <div className="flex items-center justify-between gap-1 p-2">
                   <button
                     type="button"
-                    className={`inline-flex items-center gap-1 text-xs ${photo.is_cover ? "text-[var(--admin-warning)]" : "text-[var(--admin-text-muted)]"}`}
+                    disabled={pending || uploading || !vehicleId || photo.is_cover}
+                    aria-pressed={photo.is_cover}
+                    className={`inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-xs font-semibold disabled:cursor-default ${photo.is_cover ? "bg-[var(--admin-text)] text-white" : "border border-[var(--admin-border)] text-[var(--admin-text)]"}`}
                     onClick={() => {
                       if (!vehicleId) return;
-                      void updateVehiclePhoto({ id: photo.id, vehicleId, is_cover: true }).then(() =>
-                        router.refresh(),
-                      );
+                      setError(null);
+                      setNotice(null);
+                      startTransition(async () => {
+                        try {
+                          const result = await updateVehiclePhoto({ id: photo.id, vehicleId, is_cover: true });
+                          if (result.error) {
+                            setError(result.error);
+                            return;
+                          }
+                          setNotice("Foto de portada actualizada. Se mostrará en las tarjetas del website.");
+                          router.refresh();
+                        } catch {
+                          setError("No se pudo cambiar la portada. Inténtalo de nuevo.");
+                        }
+                      });
                     }}
                   >
-                    <Star className="h-3.5 w-3.5" />
-                    Portada
+                    <Star aria-hidden="true" className="h-3.5 w-3.5" />
+                    {photo.is_cover ? "Portada actual" : "Usar como portada"}
                   </button>
                   <button
                     type="button"
