@@ -1024,3 +1024,16 @@ input[type="range"].luxury-range::-moz-range-thumb {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Vehicle-led home: warm orange, soft gray and generous white space. */
+.home-eyebrow { color: #8c4017; font-size: .7rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+.home-section-title { font-family: var(--font-jakarta), sans-serif; font-size: clamp(1.9rem, 3.3vw, 3.2rem); line-height: 1.12; font-weight: 700; letter-spacing: -.035em; color: #17191d; }
+.home-orange-button, .home-outline-button { display: inline-flex; min-height: 3rem; align-items: center; justify-content: center; gap: .6rem; border-radius: .75rem; padding: .85rem 1.3rem; font-size: .875rem; font-weight: 700; transition: background-color .2s; }
+.home-orange-button { background: #f47735; color: #23150e; }
+.home-orange-button:hover { background: #ed6825; }
+.home-outline-button { border: 1px solid #d8dbe1; color: #17191d; }
+.home-outline-button:hover { background: white; }
+.home-orange-button:focus-visible, .home-outline-button:focus-visible, .home-showcase :is(input, select):focus-visible { outline: 2px solid #17191d; outline-offset: 4px; }
+@media (min-width: 768px) { .home-steps::before { content: ''; position: absolute; left: 17%; right: 17%; top: 2rem; border-top: 1px dashed #f2b892; } .home-steps { position: relative; } }
+.public-site .section-light .btn-primary { background: #f47735; border-color: #f47735; color: #23150e; border-radius: .75rem; }
+.public-site .section-light .btn-primary:hover { background: #ed6825; border-color: #ed6825; color: #23150e; }
