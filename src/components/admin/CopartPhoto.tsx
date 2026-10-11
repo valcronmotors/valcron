@@ -20,8 +20,9 @@ export function CopartPhoto({
   placeholder?: "text" | "quiet";
 }) {
   const [failed, setFailed] = useState(false);
+  const uploaded = src?.startsWith("/api/admin/vehicle-images/") ? src : null;
   const direct = src ? copartCardImageUrl(src) : copartCardImageUrl(thumbnailUrl ?? null, imageReference ?? null);
-  const proxied = copartAdminMediaSrc(direct);
+  const proxied = uploaded ?? copartAdminMediaSrc(direct);
 
   if (!proxied || failed) {
     if (placeholder === "quiet") {

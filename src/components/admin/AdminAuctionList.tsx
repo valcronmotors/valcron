@@ -19,6 +19,7 @@ import {
 import { AUCTION_STATUS_LABEL } from "@/lib/admin-copy";
 import {
   publishAuctionOpportunity,
+  deleteAuctionOpportunity,
   setAuctionOpportunityStatus,
   unpublishAuctionOpportunity,
 } from "@/app/actions/auctions";
@@ -101,6 +102,7 @@ export function AdminAuctionList({
   const [auctionStatusFilter, setAuctionStatusFilter] = useState("");
   const [menuId, setMenuId] = useState<string | null>(null);
   const [archiveId, setArchiveId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -208,7 +210,9 @@ export function AdminAuctionList({
       target: item.target,
       danger: item.danger,
       onSelect:
-        item.id === "archive"
+        item.id === "delete"
+          ? () => setDeleteId(row.id)
+          : item.id === "archive"
           ? () => setArchiveId(row.id)
           : item.id === "publish"
             ? () => publish(row.id)
@@ -591,6 +595,28 @@ export function AdminAuctionList({
         </>
       )}
 
+      <AdminConfirmDialog
+        open={Boolean(deleteId)}
+        title="Eliminar oportunidad"
+        description="Se eliminarán la oportunidad y su vehículo de subasta con sus fotos. Dejará de aparecer en el website. Esta acción no se puede deshacer."
+        confirmLabel="Eliminar"
+        pending={pending}
+        danger
+        onConfirm={() => {
+          if (!deleteId) return;
+          setActionError(null);
+          startTransition(async () => {
+            try {
+              const result = await deleteAuctionOpportunity(deleteId);
+              if (result.error) { setActionError(result.error); return; }
+              setDeleteId(null);
+              setActionSuccess("Oportunidad eliminada.");
+              router.refresh();
+            } catch { setActionError("No se pudo eliminar la oportunidad. Inténtalo de nuevo."); }
+          });
+        }}
+        onClose={() => setDeleteId(null)}
+      />
       <AdminConfirmDialog
         open={Boolean(archiveId)}
         title="Archivar oportunidad"
