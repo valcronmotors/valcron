@@ -36,7 +36,8 @@ import {
   VEHICLE_FORM_ERRORS,
 } from "@/lib/vehicle-form-state";
 import { auctionPublicationBlockMessage } from "@/lib/auctions/auction-publication";
-import { readAuctionMetadata } from "@/lib/auction-admin-fields";
+import { readAuctionMetadata, mergeAuctionMetadata } from "@/lib/auction-admin-fields";
+import { evaluateOpportunityEligibility, eligibilitySnapshot } from "@/lib/auctions/eligibility-audit";
 import { createClient } from "@/utils/supabase/server";
 
 export type VehicleActionState = {
@@ -79,6 +80,56 @@ async function auctionEligibilityBlockForVehicle(
     secondary_damage: meta.secondary_damage,
     run_and_drive: meta.run_and_drive,
   });
+}
+
+
+/** Link an existing auction-origin inventory vehicle without duplicating its public listing or photos. */
+export async function linkInventoryVehicleToAuction(
+  vehicleId: string,
+  providerLotId: string,
+  provider: "copart" | "iaa" | "manheim" | "other" = "copart",
+): Promise<VehicleActionState> {
+  await requireAdmin();
+  if (!UUID_RE.test(vehicleId)) return { error: "Vehículo inválido." };
+  const lot = providerLotId.trim();
+  if (!lot || lot.length > 80) return { error: "Ingresa un número de lote válido." };
+  const supabase = await createClient();
+  const { data: vehicle, error: vehicleError } = await supabase.from("vehicles")
+    .select("id, vin, year, make, model, trim, mileage, title_status, condition, description, location, source_type, vehicle_photos(id, is_cover, storage_path)")
+    .eq("id", vehicleId).maybeSingle();
+  if (vehicleError || !vehicle) return { error: publicActionError(vehicleError, "Vehículo no encontrado.") };
+  if (vehicle.source_type !== "other") return { error: "Solo se pueden convertir registros con Origen Otro." };
+  const { data: linked, error: linkedError } = await supabase.from("auction_opportunities")
+    .select("id").eq("linked_vehicle_id", vehicleId).maybeSingle();
+  if (linkedError) return { error: publicActionError(linkedError, "No se pudo comprobar el vínculo de subasta.") };
+  if (linked) return { error: null, success: "Este vehículo ya está vinculado a una oportunidad.", id: linked.id };
+  const { data: duplicate, error: duplicateError } = await supabase.from("auction_opportunities")
+    .select("id").eq("provider", provider).eq("provider_lot_id", lot).maybeSingle();
+  if (duplicateError) return { error: publicActionError(duplicateError, "No se pudo comprobar el número de lote.") };
+  if (duplicate) return { error: "Este lote ya existe en Oportunidades. Abre el registro existente para evitar duplicados.", id: duplicate.id };
+
+  const meta = { price_mode: "contact", description: vehicle.description ?? null, run_and_drive: null, secondary_damage: null, odometer_status: null, converted_from_inventory: true };
+  const candidate = {
+    provider, provider_lot_id: lot,
+    source_url: provider === "copart" ? `https://www.copart.com/lot/${encodeURIComponent(lot)}` : null,
+    vin: vehicle.vin, year: vehicle.year, make: vehicle.make, model: vehicle.model, trim: vehicle.trim,
+    mileage: vehicle.mileage, title_status: vehicle.title_status, primary_damage: vehicle.condition,
+    location: null, auction_metadata: meta,
+    internal_notes: "Vinculado desde Inventario; completar datos de subasta y Verificación Valcron antes de publicar.",
+    status: "draft", linked_vehicle_id: vehicleId,
+  };
+  const eligibility = evaluateOpportunityEligibility(candidate as unknown as AuctionOpportunityRow);
+  const auction_metadata = mergeAuctionMetadata(meta, eligibilitySnapshot(eligibility) as never);
+  const { data: opportunity, error } = await supabase.from("auction_opportunities")
+    .insert({ ...candidate, auction_metadata }).select("id").single();
+  if (error || !opportunity) return { error: publicActionError(error, "No se pudo crear el vínculo de oportunidad.") };
+  revalidateVehicles(vehicleId);
+  revalidatePath(`/admin/subastas/${opportunity.id}`);
+  return {
+    error: null,
+    success: "Vehículo vinculado sin duplicar ficha ni fotos. Completa los datos de subasta y la Verificación Valcron antes de publicar.",
+    id: opportunity.id,
+  };
 }
 
 const VIN_RE = /^[A-HJ-NPR-Z0-9]{17}$/;
