@@ -175,7 +175,7 @@ export function VehicleCard({
             }
           >
             <WhatsAppIcon className="h-4 w-4" />
-            Consultar por WhatsApp
+            {vehicle.listingKind === "auction" || vehicle.availability === "auction" ? "Cotiza por WhatsApp" : "Consultar por WhatsApp"}
           </a>
         </div>
       </div>
