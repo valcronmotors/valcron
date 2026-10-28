@@ -3,7 +3,7 @@
 import Form from "next/form";
 import Link from "next/link";
 import { ArrowRight, Search } from "lucide-react";
-import { Instagram } from "lucide-react";
+import { Camera } from "lucide-react";
 import { PageContainer } from "@/components/public/layout";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import { VEHICLE_BRANDS } from "@/lib/vehicle-brands";
@@ -48,7 +48,7 @@ export function HomeHero() {
         </Form>
         <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-[#676a70]">
           <span className="font-medium text-[#17191d]">Síguenos para nuevas llegadas:</span>
-          <a href={SITE.instagramUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-[#a74718]"><Instagram className="h-3.5 w-3.5" aria-hidden="true" /> Instagram</a>
+          <a href={SITE.instagramUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-[#a74718]"><Camera className="h-3.5 w-3.5" aria-hidden="true" /> Instagram</a>
           <a href={SITE.facebookUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-[#a74718]"><span aria-hidden="true" className="inline-flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#1877f2] text-[10px] font-bold text-white">f</span> Facebook</a>
         </div>
       </PageContainer>
