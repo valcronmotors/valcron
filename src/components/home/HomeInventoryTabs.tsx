@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Facebook, Instagram, ArrowRight } from "lucide-react";
+import { Instagram, ArrowRight } from "lucide-react";
 import { PageContainer, Section } from "@/components/public/layout";
 import { VehicleCard } from "@/components/public/VehicleCard";
 import { VehicleCarousel } from "@/components/public/VehicleCarousel";
@@ -76,7 +76,7 @@ export function HomeInventoryTabs({
           <p className="text-sm font-semibold text-[#17191d]">Síguenos en Instagram y Facebook para nuevas llegadas</p>
           <div className="flex items-center gap-3">
             <a href={SITE.instagramUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[#e1e3e8] px-4 text-sm font-semibold text-[#17191d] hover:bg-[#f5f6f7]" aria-label="Seguir a Valcron Motors en Instagram"><Instagram className="h-4 w-4" aria-hidden="true" /> Instagram</a>
-            <a href={SITE.facebookUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[#e1e3e8] px-4 text-sm font-semibold text-[#17191d] hover:bg-[#f5f6f7]" aria-label="Seguir a Valcron Motors en Facebook"><Facebook className="h-4 w-4" aria-hidden="true" /> Facebook</a>
+            <a href={SITE.facebookUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[#e1e3e8] px-4 text-sm font-semibold text-[#17191d] hover:bg-[#f5f6f7]" aria-label="Seguir a Valcron Motors en Facebook"><span aria-hidden="true" className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[#1877f2] text-[11px] font-bold text-white">f</span> Facebook</a>
           </div>
         </div>
       </section>
