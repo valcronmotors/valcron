@@ -1,9 +1,5 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { FeaturedInventory } from "@/components/public/FeaturedInventory";
-import { InventorySectionSkeleton } from "@/components/public/InventorySkeleton";
-import { HomeAuctionCarousel } from "@/components/home/HomeAuctionCarousel";
-import { HomeBrandCarousel } from "@/components/home/HomeBrandCarousel";
+import { HomeInventoryTabs } from "@/components/home/HomeInventoryTabs";
 import { HomeBuyGuide } from "@/components/home/HomeBuyGuide";
 import { HomeFinalCta } from "@/components/home/HomeFinalCta";
 import { HomeFinancingTeaser } from "@/components/home/HomeFinancingTeaser";
@@ -28,42 +24,29 @@ export const metadata: Metadata = {
     title: "Dealer en Santo Domingo Este | Valcron Motors",
     description: SITE.valueProposition,
     url: SITE.url,
-    // Corporate social card; vehicle detail pages retain their real cover photo.
     images: [{ url: "/api/public/social-image", width: 1200, height: 630, alt: "Valcron Motors — dealer en Santo Domingo Este" }],
   },
 };
 
-async function HomeLocalInventoryBand() {
-  const inventory = await loadLocalStockVehicles({ limit: 12 });
-  return <FeaturedInventory vehicles={inventory.data} error={inventory.error} />;
-}
+export default async function Home() {
+  const [inventory, auctions] = await Promise.all([
+    loadLocalStockVehicles({ limit: 12 }),
+    loadAuctionCatalogVehicles({ limit: 12 }),
+  ]);
 
-async function HomeAuctionInventoryBand() {
-  const auctions = await loadAuctionCatalogVehicles({ limit: 12 });
-  return <HomeAuctionCarousel vehicles={auctions.data} error={auctions.error} />;
-}
-
-/**
- * Vehicle-led home. Editorial model references stay separate from real stock.
- */
-export default function Home() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(autoDealerJsonLd()) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(autoDealerJsonLd()) }} />
       <main>
         <HomeHero />
-        <HomeBrandCarousel />
-        <HomeBuyGuide />
+        <HomeInventoryTabs
+          vehicles={inventory.data}
+          auctions={auctions.data}
+          inventoryError={inventory.error}
+          auctionError={auctions.error}
+        />
         <HomeModelSpotlight />
-        <Suspense fallback={<InventorySectionSkeleton />}>
-          <HomeLocalInventoryBand />
-        </Suspense>
-        <Suspense fallback={null}>
-          <HomeAuctionInventoryBand />
-        </Suspense>
+        <HomeBuyGuide />
         <HomeFinancingTeaser />
         <HomeFinalCta />
       </main>
