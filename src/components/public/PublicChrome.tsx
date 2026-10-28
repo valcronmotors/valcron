@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { CurrencyProvider } from "@/components/public/CurrencyProvider";
 import { WhatsAppFab } from "@/components/public/WhatsAppFab";
+import { HomeMobileActionBar } from "@/components/home/HomeInventoryTabs";
 
 export function PublicChrome({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -22,9 +23,10 @@ export function PublicChrome({ children }: { children: ReactNode }) {
     <CurrencyProvider>
       <div className="public-site flex min-h-full flex-1 flex-col bg-[#f5f6f7] text-[#08090b]">
         <Navbar />
-        <div className="flex min-h-0 flex-1 flex-col overflow-x-clip">{children}</div>
+        <div className="flex min-h-0 flex-1 flex-col overflow-x-clip pb-20 lg:pb-0">{children}</div>
         <Footer />
         <WhatsAppFab />
+        <HomeMobileActionBar />
       </div>
     </CurrencyProvider>
   );
