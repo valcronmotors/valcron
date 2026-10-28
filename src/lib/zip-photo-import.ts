@@ -17,5 +17,5 @@ export async function extractImageFilesFromZip(archive: File): Promise<File[]> {
   if (!images.length) throw new Error("El ZIP no contiene fotos compatibles.");
   if (images.length > MAX_ARCHIVE_IMAGES) throw new Error(`El ZIP contiene más de ${MAX_ARCHIVE_IMAGES} fotos. Divide el archivo y vuelve a intentarlo.`);
   if (images.reduce((sum,[,data]) => sum + data.byteLength,0) > MAX_EXTRACTED_BYTES) throw new Error("Las fotos descomprimidas superan el límite de 200 MB.");
-  return images.map(([path,data]) => { const name = path.split(/[\\/]/).pop() || "copart-photo.jpg"; return new File([data],name,{type:mimeFromName(name),lastModified:archive.lastModified}); });
+  return images.map(([path,data]) => { const name = path.split(/[\\/]/).pop() || "copart-photo.jpg"; return new File([data.slice().buffer as ArrayBuffer],name,{type:mimeFromName(name),lastModified:archive.lastModified}); });
 }
