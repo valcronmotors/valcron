@@ -11,7 +11,7 @@ import {
 
 export const VEHICLE_PHOTOS_BUCKET = "vehicle-images";
 export const MAX_PHOTO_BYTES = 50 * 1024 * 1024;
-export const MAX_VEHICLE_PHOTOS = 40;
+export const MAX_VEHICLE_PHOTOS = 5;
 
 export const ALLOWED_PHOTO_MIME_TYPES = [
   "image/jpeg", "image/png", "image/webp", "image/avif", "image/gif",
