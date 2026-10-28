@@ -15,7 +15,7 @@ describe("admin media picker upload policy", () => {
     }
     expect(PHOTO_FILE_ACCEPT).toContain(".png");
     expect(PHOTO_FILE_ACCEPT).toContain(".heic");
-    expect(PHOTO_FORMAT_HINT).toMatch(/50 MB.*40 fotos/);
+    expect(PHOTO_FORMAT_HINT).toMatch(/50 MB.*5 fotos/);
     expect(validatePhotoFile({ type: "", name: "Photo.PNG", size: 12 * 1024 * 1024 })).toBeNull();
     expect(validatePhotoFile({ type: "application/octet-stream", name: "Photo.jpg", size: 1024 })).toBeNull();
     expect(validatePhotoFile({ type: "image/jpg", size: 1024 })).toBeNull();
