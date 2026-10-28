@@ -32,6 +32,7 @@ export const SITE = {
   instagramUrl: "https://www.instagram.com/valcronmotors/",
   instagramHandle: "@valcronmotors",
   facebookUrl: "https://www.facebook.com/people/Valcron-Motors-Group/61584457784163/",
+  tiktokUrl: "https://www.tiktok.com/@valcronmotors",
   facebookDisplay: "Valcron Motors Group",
   newsletterEnabled: false,
   defaultWhatsappMessage:
@@ -347,6 +348,14 @@ export function configuredSocialLinks() {
           href: SITE.facebookUrl,
           label: "Facebook de Valcron Motors",
           display: SITE.facebookDisplay,
+        }
+      : null,
+    SITE.tiktokUrl
+      ? {
+          id: "tiktok" as const,
+          href: SITE.tiktokUrl,
+          label: "TikTok de Valcron Motors",
+          display: "@valcronmotors",
         }
       : null,
   ].filter((item): item is NonNullable<typeof item> => Boolean(item));
