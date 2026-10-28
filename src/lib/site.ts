@@ -391,7 +391,7 @@ export function autoDealerJsonLd() {
       "@type": "Country",
       name: "República Dominicana",
     },
-    sameAs: [SITE.instagramUrl, SITE.facebookUrl],
+    sameAs: [SITE.instagramUrl, SITE.facebookUrl, SITE.tiktokUrl],
     hasMap: SITE.maps.directionsUrl,
   };
 
