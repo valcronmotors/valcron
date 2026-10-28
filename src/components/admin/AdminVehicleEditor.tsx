@@ -17,6 +17,7 @@ import {
 } from "@/app/actions/vehicles";
 import { AdminConfirmDialog, AdminModal } from "@/components/admin/AdminModal";
 import { AdminMediaPicker } from "@/components/admin/AdminMediaPicker";
+import { AdminConvertVehicleToAuctionButton } from "@/components/admin/AdminConvertVehicleToAuctionButton";
 import { AdminSearchableSelect } from "@/components/admin/AdminSearchableSelect";
 import { AdminPublishBadge, AdminStatusBadge } from "@/components/admin/AdminBadges";
 import {
@@ -971,6 +972,14 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
             </a>
           ) : null}
         </div>
+      ) : null}
+
+      {saved && vehicle?.id && values.source_type === "other" ? (
+        <AdminCard>
+          <h2 className="font-display text-base font-semibold text-[var(--admin-text)]">Publicación como oportunidad de subasta</h2>
+          <p className="mt-1 text-sm leading-6 text-[var(--admin-text-secondary)]">Vincula esta misma ficha con Oportunidades. Se conservarán las fotos y no se creará un segundo vehículo público. La publicación seguirá sujeta a la Verificación Valcron.</p>
+          <div className="mt-3"><AdminConvertVehicleToAuctionButton vehicleId={vehicle.id} /></div>
+        </AdminCard>
       ) : null}
 
       <nav aria-label="Pasos del vehículo" className="grid grid-cols-4 gap-2">
