@@ -11,7 +11,7 @@ import {
 
 export const VEHICLE_PHOTOS_BUCKET = "vehicle-images";
 export const MAX_PHOTO_BYTES = 50 * 1024 * 1024;
-export const MAX_VEHICLE_PHOTOS = 5;
+export const MAX_VEHICLE_PHOTOS = 40;
 
 export const ALLOWED_PHOTO_MIME_TYPES = [
   "image/jpeg", "image/png", "image/webp", "image/avif", "image/gif",
@@ -26,7 +26,7 @@ const PHOTO_EXTENSIONS: Record<string, string> = {
 
 export const PHOTO_FILE_ACCEPT = [...ALLOWED_PHOTO_MIME_TYPES, ...Object.keys(PHOTO_EXTENSIONS).map((ext) => `.${ext}`)].join(",");
 export const PHOTO_FORMAT_HINT =
-  "JPG, PNG, WebP, AVIF, GIF, BMP, HEIC/HEIF y TIFF · hasta 50 MB por foto · hasta 40 fotos. Se optimizan automáticamente.";
+  "JPG, PNG, WebP, AVIF, GIF, BMP, HEIC/HEIF y TIFF · hasta 50 MB por foto · hasta 5 fotos. Se optimizan automáticamente.";
 
 export function photoMimeType(file: Pick<File, "type"> & { name?: string }) {
   const type = file.type.toLowerCase().split(";")[0].trim();
