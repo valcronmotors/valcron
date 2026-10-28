@@ -107,14 +107,13 @@ export async function linkInventoryVehicleToAuction(
     .select("id").eq("provider", provider).eq("provider_lot_id", lot).maybeSingle();
   if (duplicateError) return { error: publicActionError(duplicateError, "No se pudo comprobar el número de lote.") };
   if (duplicate) return { error: "Este lote ya existe en Oportunidades. Abre el registro existente para evitar duplicados.", id: duplicate.id };
-
   const meta = { price_mode: "contact", description: vehicle.description ?? null, run_and_drive: null, secondary_damage: null, odometer_status: null, converted_from_inventory: true };
   const candidate = {
     provider, provider_lot_id: lot,
     source_url: provider === "copart" ? `https://www.copart.com/lot/${encodeURIComponent(lot)}` : null,
     vin: vehicle.vin, year: vehicle.year, make: vehicle.make, model: vehicle.model, trim: vehicle.trim,
     mileage: vehicle.mileage, title_status: vehicle.title_status, primary_damage: vehicle.condition,
-    location: null, auction_metadata: meta,
+    location: vehicle.location ?? null, auction_metadata: meta,
     internal_notes: "Vinculado desde Inventario; completar datos de subasta y Verificación Valcron antes de publicar.",
     status: "draft", linked_vehicle_id: vehicleId,
   };
@@ -125,11 +124,7 @@ export async function linkInventoryVehicleToAuction(
   if (error || !opportunity) return { error: publicActionError(error, "No se pudo crear el vínculo de oportunidad.") };
   revalidateVehicles(vehicleId);
   revalidatePath(`/admin/subastas/${opportunity.id}`);
-  return {
-    error: null,
-    success: "Vehículo vinculado sin duplicar ficha ni fotos. Completa los datos de subasta y la Verificación Valcron antes de publicar.",
-    id: opportunity.id,
-  };
+  return { error: null, success: "Vehículo vinculado sin duplicar ficha ni fotos. Completa los datos de subasta y la Verificación Valcron antes de publicar.", id: opportunity.id };
 }
 
 const VIN_RE = /^[A-HJ-NPR-Z0-9]{17}$/;
