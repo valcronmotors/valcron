@@ -74,17 +74,30 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
             <h2 className={headingClass}>Contacto</h2>
             <address className="not-italic text-[0.875rem] leading-6 text-[#d4d7de]">
               <p>{SITE.address.full}</p>
-              <p className="mt-3">
-                WhatsApp{" "}
-                <a
-                  className="font-medium text-white hover:text-[var(--brand-orange,#e85d04)]"
-                  href={whatsappHref()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {SITE.whatsappDisplay}
-                </a>
-              </p>
+              <div className="mt-3 grid gap-2">
+                <p>
+                  WhatsApp{" "}
+                  <a
+                    className="font-medium text-white hover:text-[var(--brand-orange,#e85d04)]"
+                    href={whatsappHref()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {SITE.whatsappDisplay}
+                  </a>
+                </p>
+                <p>
+                  WhatsApp{" "}
+                  <a
+                    className="font-medium text-white hover:text-[var(--brand-orange,#e85d04)]"
+                    href={SITE.whatsappSecondaryUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {SITE.whatsappSecondaryDisplay}
+                  </a>
+                </p>
+              </div>
               <p className="mt-3">
                 <a className="hover:text-white" href={SITE.url}>
                   valcronmotors.com
