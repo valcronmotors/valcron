@@ -66,6 +66,10 @@ export function HomeHero() {
               WhatsApp
             </a>
           </div>
+          <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-white/90" aria-label="Números de WhatsApp">
+            <a href={SITE.whatsappUrl} target="_blank" rel="noopener noreferrer" className="underline decoration-white/40 underline-offset-4 hover:text-white">WhatsApp {SITE.whatsappDisplay}</a>
+            <a href={SITE.whatsappSecondaryUrl} target="_blank" rel="noopener noreferrer" className="underline decoration-white/40 underline-offset-4 hover:text-white">WhatsApp {SITE.whatsappSecondaryDisplay}</a>
+          </div>
         </div>
 
         <nav className="relative mt-7 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-white/20 pt-3 sm:mt-8 sm:pt-4" aria-label="Explorar por marca">
