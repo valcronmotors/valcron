@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { PageContainer } from "@/components/public/layout";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
-import { HOME_HERO_IMAGE } from "@/lib/hero-media";
+import { HOME_BANNER_IMAGE } from "@/lib/hero-media";
 import { VEHICLE_BRANDS } from "@/lib/vehicle-brands";
 import { SITE, whatsappHref } from "@/lib/site";
 
@@ -18,8 +18,8 @@ export function HomeHero() {
       aria-label="Portada"
     >
       <Image
-        src={HOME_HERO_IMAGE.src}
-        alt={HOME_HERO_IMAGE.alt}
+        src={HOME_BANNER_IMAGE.src}
+        alt={HOME_BANNER_IMAGE.alt}
         fill
         priority
         fetchPriority="high"
