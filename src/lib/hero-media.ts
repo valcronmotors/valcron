@@ -1,10 +1,11 @@
 /**
- * V19 home uses a typographic (image-free) hero.
- * HOME_BANNER_IMAGE remains for Open Graph / social previews and editorial cards.
+ * Original V12 cinematic home hero: licensed Honda CR-V-style SUV photography.
+ * The original self-hosted file was removed in a later cleanup, so this uses the
+ * same original Unsplash photo ID directly to preserve the approved banner image.
  */
 export const HOME_BANNER_IMAGE = {
-  src: "/marketing/banner-suv-tropical.jpg",
-  alt: "SUV Mazda blanco en un entorno tropical, fotografía ilustrativa. No representa las instalaciones de Valcron.",
+  src: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=2400&q=82",
+  alt: "SUV familiar contemporáneo estilo Honda CR-V en paisaje abierto, fotografía ilustrativa",
 } as const;
 
 /** Illustrative stock consultation. Not Valcron staff, customers, or a financing decision. */
