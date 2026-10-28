@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   ...publicPageMetadata({
     title: "Contacto en Santo Domingo Este",
-    description: `Visítanos en Av Principal 20, Santo Domingo Este, o escríbenos por WhatsApp al ${SITE.whatsappDisplay} o ${SITE.whatsappSecondaryDisplay}.`,
+    description: "Visítanos en Av Principal 20, Santo Domingo Este, o escríbenos por WhatsApp.",
     path: "/contacto",
   }),
 };
@@ -57,24 +57,14 @@ export default function ContactoPage() {
               <h2 className="mt-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6b7280]">
                 WhatsApp
               </h2>
-              <div className="mt-2 flex flex-col items-start gap-2">
-                <a
-                  href={whatsapp}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex text-sm font-semibold text-[#111111] underline-offset-4 hover:underline"
-                >
-                  {SITE.whatsappDisplay}
-                </a>
-                <a
-                  href={SITE.whatsappSecondaryUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex text-sm font-semibold text-[#111111] underline-offset-4 hover:underline"
-                >
-                  {SITE.whatsappSecondaryDisplay}
-                </a>
-              </div>
+              <a
+                href={whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex text-sm font-semibold text-[#111111] underline-offset-4 hover:underline"
+              >
+                Escribir por WhatsApp
+              </a>
             </div>
 
             <div className="border border-[#E5E7EB] bg-white p-5 md:p-6">
