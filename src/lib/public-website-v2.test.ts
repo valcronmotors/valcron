@@ -141,10 +141,13 @@ describe("public website v2 navigation", () => {
     expect(SITE.address.full).not.toMatch(/Brisa Oriental/i);
   });
 
-  it("publishes WhatsApp as the only public phone number", () => {
+  it("publishes both public WhatsApp numbers and links", () => {
     expect(SITE.whatsappDisplay).toBe("(829) 321-1271");
     expect(SITE.whatsappUrl).toBe("https://wa.me/18293211271");
     expect(SITE.whatsappInternational).toBe("+18293211271");
+    expect(SITE.whatsappSecondaryDisplay).toBe("(849) 257-2225");
+    expect(SITE.whatsappSecondaryUrl).toBe("https://wa.me/18492572225");
+    expect(SITE.whatsappSecondaryInternational).toBe("+18492572225");
     expect(JSON.stringify(SITE)).not.toMatch(/809.?623.?9381|18096239381/);
     for (const faq of HOME_FAQS) {
       expect(`${faq.q} ${faq.a}`).not.toMatch(/809.?623.?9381/);
