@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { Camera, FolderOpen, Images } from "lucide-react";
 import { PHOTO_FILE_ACCEPT, PHOTO_FORMAT_HINT } from "@/lib/storage";
+import { extractImageFilesFromZip } from "@/lib/zip-photo-import";
 
 /**
  * Three explicit media sources.
@@ -36,11 +37,20 @@ export function AdminMediaPicker({
   const iconClass = light ? "h-5 w-5 text-[var(--admin-text-secondary)]" : "h-5 w-5 text-slate-300";
   const hintClass = light ? "text-[var(--admin-text-muted)]" : "text-slate-500";
 
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    if (event.target.files?.length) {
-      onFiles(Array.from(event.target.files));
-    }
+  async function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(event.target.files ?? []);
     event.target.value = "";
+    if (!files.length) return;
+    const expanded: File[] = [];
+    try {
+      for (const file of files) {
+        if (/\\.zip$/i.test(file.name) || file.type === "application/zip" || file.type === "application/x-zip-compressed") expanded.push(...(await extractImageFilesFromZip(file)));
+        else expanded.push(file);
+      }
+      if (expanded.length) onFiles(expanded);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "No se pudo abrir el ZIP. Prueba con un ZIP estándar de imágenes.");
+    }
   }
 
   return (
@@ -62,7 +72,7 @@ export function AdminMediaPicker({
           onClick={() => filesRef.current?.click()}
         >
           <FolderOpen className={iconClass} strokeWidth={1.75} aria-hidden="true" />
-          Seleccionar archivos
+          Fotos o ZIP de Copart
         </button>
         <button
           type="button"
@@ -76,7 +86,7 @@ export function AdminMediaPicker({
       </div>
 
       <p className={`text-center text-xs ${hintClass}`}>
-        {uploading ? "Subiendo fotos…" : PHOTO_FORMAT_HINT}
+        {uploading ? "Subiendo fotos…" : `${PHOTO_FORMAT_HINT} También puedes seleccionar un ZIP de imágenes.`}
         {showDragHint ? " · En escritorio también puedes arrastrar imágenes." : null}
       </p>
 
@@ -95,7 +105,7 @@ export function AdminMediaPicker({
       <input
         ref={filesRef}
         type="file"
-        accept={PHOTO_FILE_ACCEPT}
+        accept={`${PHOTO_FILE_ACCEPT},.zip,application/zip,application/x-zip-compressed`}
         multiple
         className="hidden"
         onChange={handleChange}
