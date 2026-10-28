@@ -21,6 +21,14 @@ function InstagramIcon({ className, gradientId }: { className?: string; gradient
   );
 }
 
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path fill="currentColor" d="M19.6 8.1a7.1 7.1 0 0 1-4.2-1.4v8.1a6.2 6.2 0 1 1-5.4-6.1v3.3a2.9 2.9 0 1 0 2.1 2.8V2h3.3c.2 2.1 1.8 3.9 4.2 4.2z" />
+    </svg>
+  );
+}
+
 function FacebookIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
@@ -75,8 +83,10 @@ export function SocialLinks({
         >
           {item.id === "instagram" ? (
             <InstagramIcon className={iconClass} gradientId={`${gradientId}-${item.id}`} />
-          ) : (
+          ) : item.id === "facebook" ? (
             <FacebookIcon className={iconClass} />
+          ) : (
+            <TikTokIcon className={iconClass} />
           )}
         </a>
       ))}
@@ -113,6 +123,15 @@ export function FooterSocialIcons({ className = "" }: { className?: string }) {
         aria-label="Instagram de Valcron Motors"
       >
         <InstagramIcon className={iconClass} gradientId={gradientId} />
+      </a>
+      <a
+        href="https://www.tiktok.com/@valcronmotors"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={footerSocialClass}
+        aria-label="TikTok de Valcron Motors"
+      >
+        <TikTokIcon className={iconClass} />
       </a>
       <a
         href={SITE.whatsappUrl}
