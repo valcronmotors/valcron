@@ -4,6 +4,7 @@ import { HomeBuyGuide } from "@/components/home/HomeBuyGuide";
 import { HomeFinalCta } from "@/components/home/HomeFinalCta";
 import { HomeFinancingTeaser } from "@/components/home/HomeFinancingTeaser";
 import { HomeHero } from "@/components/home/HomeHero";
+import { HomeBrandCarousel } from "@/components/home/HomeBrandCarousel";
 import { HomeModelSpotlight } from "@/components/home/HomeModelSpotlight";
 import {
   loadAuctionCatalogVehicles,
@@ -39,6 +40,7 @@ export default async function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(autoDealerJsonLd()) }} />
       <main>
         <HomeHero />
+        <HomeBrandCarousel />
         <HomeInventoryTabs
           vehicles={inventory.data}
           auctions={auctions.data}

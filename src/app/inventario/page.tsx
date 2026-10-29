@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { PageContainer } from "@/components/public/layout";
 import { CatalogSkeleton } from "@/components/public/InventorySkeleton";
 import { VehicleCatalog, type CatalogFilters } from "@/components/public/VehicleCatalog";
@@ -70,6 +71,10 @@ export default function InventarioPage({
         <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-[#08090b] md:text-4xl lg:text-[2.75rem]">
           Vehículos disponibles
         </h1>
+        <nav aria-label="Categorías del catálogo" className="mt-5 flex flex-wrap gap-2">
+          <Link href="/subastas" className="inline-flex min-h-11 items-center rounded-xl bg-[#101114] px-5 text-sm font-semibold text-white hover:bg-[#303136]">Oportunidades de subasta</Link>
+          <span aria-current="page" className="inline-flex min-h-11 items-center rounded-xl border border-[#d8d8d8] bg-white px-5 text-sm font-semibold text-[#252525]">Vehículos disponibles</span>
+        </nav>
         <div className="mt-6 md:mt-8">
           <Suspense fallback={<CatalogSkeleton />}>
             <InventarioCatalog searchParams={searchParams} />
