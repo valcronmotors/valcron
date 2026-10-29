@@ -1099,8 +1099,8 @@ export function AdminAuctionForm({
 
       {step === 3 ? (
         <FormSection
-          title="Fotografías y videos"
-          hint="Elige Usar como portada en la foto que quieres mostrar en las tarjetas del website. Puedes cambiarla cuando quieras. Sube solo imágenes autorizadas."
+          title="Fotografías"
+          hint="Sube hasta 5 imágenes JPG u otros formatos admitidos, en el orden deseado. En la primera carga, la primera foto queda como portada. Los videos no se admiten en este flujo."
         >
           <AdminMediaPicker onFiles={handleFiles} uploading={uploading || pending} />
           <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -1184,15 +1184,6 @@ export function AdminAuctionForm({
               </AdminSecondaryButton>
             </div>
           ) : null}
-          <div className="mt-4">
-            <AdminField label="Video (URL o enlace)">
-              <AdminInput
-                value={values.video_url}
-                onChange={(event) => patch("video_url", event.target.value)}
-                placeholder="https://... (opcional)"
-              />
-            </AdminField>
-          </div>
         </FormSection>
       ) : null}
 
