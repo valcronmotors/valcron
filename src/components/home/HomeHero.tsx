@@ -34,19 +34,16 @@ export function HomeHero() {
           </div>
         </div>
 
-        <div className="relative mx-auto w-full max-w-[35rem] overflow-hidden rounded-[1.6rem] bg-[#ec752f] px-5 pb-5 pt-5 sm:rounded-[1.9rem] sm:px-7 sm:pb-6 sm:pt-6 lg:min-h-[24rem] lg:px-7">
-          <div className="relative z-[1] flex items-start justify-between gap-3">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#54240f] sm:text-[11px]">Explora el modelo</p>
-              <h2 className="mt-2 font-display text-xl font-bold tracking-[-0.025em] text-[#171311] sm:text-2xl">Honda CR-V Hybrid</h2>
-            </div>
-            <span className="shrink-0 rounded-full bg-[#f8e5d7] px-3 py-2 text-xs font-semibold text-[#30221a]">2025</span>
-          </div>
-          <div className="pointer-events-none absolute inset-x-0 top-[5.8rem] select-none overflow-hidden text-center font-display text-[4.5rem] font-bold leading-none tracking-[-0.06em] text-[#ffb06f]/70 sm:top-[6.4rem] sm:text-[6.5rem]" aria-hidden="true">HYBRID</div>
-          <div className="relative mt-4 sm:mt-5">
-            <Image src="/marketing/honda-crv-hybrid-2025.jpg" alt="Honda CR-V Hybrid 2025 gris, imagen ilustrativa de referencia del modelo" width={735} height={368} priority sizes="(max-width: 1024px) 92vw, 42vw" className="relative z-[1] h-auto w-full object-contain" />
-          </div>
-          <p className="mt-1 text-[9px] leading-4 text-[#5d2a14] sm:text-[10px]">Imagen de referencia. Modelo para búsqueda bajo solicitud.</p>
+        <div className="relative mx-auto w-full max-w-[39rem]">
+          <Image
+            src="/marketing/honda-crv-hybrid-2026.jpg"
+            alt="Honda CR-V Hybrid 2026 blanca completa sobre tarjeta naranja, con distintivo 2026 y fondo HYBRID"
+            width={1320}
+            height={560}
+            priority
+            sizes="(max-width: 1024px) 92vw, 50vw"
+            className="block h-auto w-full rounded-[1.6rem] object-contain"
+          />
         </div>
       </PageContainer>
     </section>
