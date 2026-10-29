@@ -193,7 +193,7 @@ export function evaluateTitleEligibility(raw: string | null | undefined): Eligib
 export function evaluateOdometerEligibility(raw: string | null | undefined): EligibilityCheckResult {
   const label = "Odometer";
   const normalized = normalizeEligibilityText(raw);
-  if (!normalized) {
+  if (!normalized || normalized === "not reported" || normalized === "unknown" || normalized === "unconfirmed") {
     return {
       id: "odometer",
       label,
