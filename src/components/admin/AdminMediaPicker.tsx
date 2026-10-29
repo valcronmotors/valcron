@@ -16,6 +16,7 @@ export function AdminMediaPicker({
   id = "admin-media-picker",
   tone = "light",
   showDragHint = true,
+  auctionUnlimited = false,
 }: {
   onFiles: (files: FileList | File[]) => void;
   disabled?: boolean;
@@ -23,6 +24,7 @@ export function AdminMediaPicker({
   id?: string;
   tone?: "light" | "dark";
   showDragHint?: boolean;
+  auctionUnlimited?: boolean;
 }) {
   const galleryRef = useRef<HTMLInputElement>(null);
   const filesRef = useRef<HTMLInputElement>(null);
@@ -76,7 +78,7 @@ export function AdminMediaPicker({
       </div>
 
       <p className={`text-center text-xs ${hintClass}`}>
-        {uploading ? "Subiendo fotos…" : PHOTO_FORMAT_HINT}
+        {uploading ? "Subiendo fotos…" : auctionUnlimited ? "Todas las fotos de Copart · JPG/JPEG · sin videos ni límite de cantidad." : PHOTO_FORMAT_HINT}
         {showDragHint ? " · En escritorio también puedes arrastrar imágenes." : null}
       </p>
 
@@ -108,7 +110,7 @@ export function AdminMediaPicker({
           data-testid="photo-files-input"
           aria-describedby={`${id}-file-hint`}
         />
-        <p id={`${id}-file-hint`} className={`mt-2 text-xs ${hintClass}`}>Selecciona hasta 5 imágenes. El orden de selección se conserva; la primera se usa como portada.</p>
+        <p id={`${id}-file-hint`} className={`mt-2 text-xs ${hintClass}`}>{auctionUnlimited ? "Selecciona todas las fotos de Copart. Se conserva el orden y la primera es la portada." : "Selecciona hasta 5 imágenes. El orden de selección se conserva; la primera se usa como portada."}</p>
       </div>
 
       {/* Camera only — separate input */}

@@ -19,7 +19,7 @@ export type PhotoUploadResult = {
 
 export async function uploadVehiclePhotos(
   files: File[],
-  options: { vehicleId?: string; currentCount: number },
+  options: { vehicleId?: string; currentCount: number; unlimitedForAuction?: boolean },
 ): Promise<PhotoUploadResult> {
   if (!options.vehicleId) {
     return { paths: [], urls: [], error: "Guarda el vehículo antes de subir fotos." };
@@ -28,7 +28,7 @@ export async function uploadVehiclePhotos(
     return { paths: [], urls: [], error: null };
   }
 
-  const remaining = MAX_VEHICLE_PHOTOS - options.currentCount;
+  const remaining = options.unlimitedForAuction ? files.length : MAX_VEHICLE_PHOTOS - options.currentCount;
   if (remaining <= 0) {
     return {
       paths: [],
@@ -37,7 +37,7 @@ export async function uploadVehiclePhotos(
     };
   }
 
-  const selected = files.slice(0, remaining);
+  const selected = options.unlimitedForAuction ? files : files.slice(0, remaining);
   const supabase = createClient();
   const folder = photoFolder(options.vehicleId);
   const paths: string[] = [];

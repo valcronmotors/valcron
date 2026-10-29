@@ -48,7 +48,7 @@ describe("auction publication validation", () => {
       primary_damage: "",
       run_and_drive: "",
     });
-    expect(message).toMatch(/Completa lo obligatorio|5 fotos/i);
+    expect(message).toMatch(/Completa lo obligatorio|foto/i);
     expect(message).not.toMatch(/Disponible, reservado o vendido/i);
   });
 
@@ -65,6 +65,13 @@ describe("auction publication validation", () => {
       "Publicar oportunidad",
     );
     expect(auctionPublishButtonLabel(ELIGIBLE_BASE)).toBe("Publicar oportunidad");
+  });
+
+  it("permits any number of auction photos when a cover exists", () => {
+    for (const count of [1, 5, 20, 80]) {
+      expect(auctionPublicationBlockMessage({ ...ELIGIBLE_BASE, photoCount: count })).toBeNull();
+    }
+    expect(auctionPublicationBlockMessage({ ...ELIGIBLE_BASE, photoCount: 0, hasCoverPhoto: false })).toMatch(/foto/i);
   });
 
   it("keeps local inventory validation unchanged for stock vehicles", () => {

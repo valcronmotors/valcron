@@ -79,8 +79,8 @@ export function auctionPublicationChecks(input: AuctionPublicationInput): Public
     },
     {
       id: "cover",
-      label: "Exactamente 5 fotos y portada",
-      ok: Boolean(input.hasCoverPhoto) && input.photoCount === 5,
+      label: "Al menos una foto y portada",
+      ok: Boolean(input.hasCoverPhoto) && (input.photoCount ?? 0) >= 1,
       required: true,
     },
     {
