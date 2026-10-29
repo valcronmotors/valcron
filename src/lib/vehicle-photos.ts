@@ -59,8 +59,11 @@ export async function uploadVehiclePhotos(
       }
       paths.push(path);
       fileIndexes.push(index);
-    } catch {
-      errors.push(`${file.name}: no se pudo procesar o subir esta foto. Reintenta con el archivo original.`);
+    } catch (cause) {
+      const detail = cause instanceof Error && cause.message.trim()
+        ? cause.message.trim()
+        : "No se pudo procesar la imagen.";
+      errors.push(`${file.name}: ${detail} Reintenta con el archivo JPG original.`);
     }
   }
   return { paths, fileIndexes, urls: paths.map(vehicleImageAdminPath), error: errors.length ? errors.join(" ") : null };
