@@ -645,28 +645,6 @@ export async function publishAuctionOpportunity(opportunityId: string): Promise<
   }
 
   const eligibility = evaluateOpportunityEligibility(opportunity);
-  if (false && !eligibility.canPublish) {
-    return {
-      error: auctionPublicationBlockMessage({
-        provider: opportunity.provider,
-        provider_lot_id: opportunity.provider_lot_id,
-        year: opportunity.year,
-        make: opportunity.make,
-        model: opportunity.model,
-        price_mode: meta.price_mode ?? "contact",
-        buy_now_usd: meta.buy_now_usd,
-        hasCoverPhoto: hasCover,
-        vin: opportunity.vin,
-          odometer_status: meta.odometer_status,
-        primary_damage: opportunity.primary_damage,
-        secondary_damage: meta.secondary_damage,
-        run_and_drive: meta.run_and_drive,
-      }),
-      id: opportunityId,
-      vehicleId,
-    };
-  }
-
   // Auction publish path: set available + published without local inventory status rules.
   const { data: updated, error: publishError } = await supabase
     .from("vehicles")
