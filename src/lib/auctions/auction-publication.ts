@@ -121,10 +121,10 @@ export function auctionPublicationBlockMessage(input: AuctionPublicationInput) {
 export function auctionPublishButtonLabel(input: AuctionPublicationInput) {
   const eligibility = auctionEligibilityFromPublicationInput(input);
   if (eligibility.overall === "blocked") return "Publicación bloqueada";
-  if (eligibility.overall === "review_required") return "Completar revisión";
+  if (eligibility.overall === "review_required" && !eligibility.canPublish) return "Completar revisión";
   const checks = auctionPublicationChecks(input);
   if (!canPublishAuctionOpportunity(checks)) return "Completar revisión";
-  return "Publicar oportunidad";
+  return eligibility.overall === "review_required" ? "Publicar con advertencias" : "Publicar oportunidad";
 }
 
 export function canAttemptAuctionPublish(input: AuctionPublicationInput) {
