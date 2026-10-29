@@ -80,8 +80,8 @@ export function auctionPublicationChecks(input: AuctionPublicationInput): Public
     },
     {
       id: "cover",
-      label: "Foto de portada",
-      ok: Boolean(input.hasCoverPhoto || (input.photoCount ?? 0) > 0),
+      label: "Exactamente 5 fotos y portada",
+      ok: Boolean(input.hasCoverPhoto) && input.photoCount === 5,
       required: true,
     },
     {
@@ -94,7 +94,7 @@ export function auctionPublicationChecks(input: AuctionPublicationInput): Public
       id: "eligibility",
       label: "Verificación Valcron",
       ok: eligibility.canPublish,
-      required: true,
+      required: false,
     },
   ];
 }
@@ -110,7 +110,7 @@ export function auctionPublicationBlockers(checks: PublicationCheck[]) {
 export function auctionPublicationBlockMessage(input: AuctionPublicationInput) {
   const eligibility = auctionEligibilityFromPublicationInput(input);
   const eligibilityMessage = eligibilityPublicationBlockMessage(eligibility);
-  if (eligibilityMessage) return eligibilityMessage;
+  // La verificación es informativa; solo los campos estructurales impiden publicar.
 
   const checks = auctionPublicationChecks(input).filter((check) => check.id !== "eligibility");
   if (canPublishAuctionOpportunity(checks)) return null;
@@ -119,11 +119,11 @@ export function auctionPublicationBlockMessage(input: AuctionPublicationInput) {
 
 export function auctionPublishButtonLabel(input: AuctionPublicationInput) {
   const eligibility = auctionEligibilityFromPublicationInput(input);
-  if (eligibility.overall === "blocked") return "Publicación bloqueada";
-  if (eligibility.overall === "review_required" && !eligibility.canPublish) return "Completar revisión";
+
+
   const checks = auctionPublicationChecks(input);
   if (!canPublishAuctionOpportunity(checks)) return "Completar revisión";
-  return eligibility.overall === "review_required" ? "Publicar con advertencias" : "Publicar oportunidad";
+  return "Publicar oportunidad";
 }
 
 export function canAttemptAuctionPublish(input: AuctionPublicationInput) {
