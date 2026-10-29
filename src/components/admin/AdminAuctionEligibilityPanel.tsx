@@ -74,6 +74,11 @@ export function AdminAuctionEligibilityPanel({
         </span>
       </div>
 
+      {result.canPublish && result.overall === "review_required" ? (
+        <p className="mt-3 rounded-lg border border-[var(--admin-warning)]/25 bg-[var(--admin-warning-bg)] px-3 py-2 text-xs leading-5 text-[var(--admin-warning)]">
+          Publicable con advertencias: se puede publicar sin inventar el tipo de título ni confirmar un odómetro no verificado. Las advertencias pendientes se mostrarán al público.
+        </p>
+      ) : null}
       <ul className={`mt-3 grid gap-2 ${compact ? "" : "sm:grid-cols-2"}`}>
         {result.checks.map((check) => {
           const hint = FIELD_ANCHORS[check.id];
