@@ -311,7 +311,6 @@ async function syncLinkedVehicle(
       transmission: draft.data.transmission,
       drivetrain: draft.data.drivetrain,
       fuel: draft.data.fuel,
-      title_status: null,
       condition: draft.data.condition,
       location: draft.data.location,
       public_price_mode: draft.data.public_price_mode,
