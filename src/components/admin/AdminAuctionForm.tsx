@@ -60,7 +60,6 @@ import {
   AUCTION_RUN_DRIVE_OPTIONS,
   AUCTION_SALE_STATUS_OPTIONS,
   AUCTION_SECONDARY_DAMAGE_OPTIONS,
-  AUCTION_TITLE_OPTIONS,
   BUY_NOW_DISCLAIMER,
   readAuctionMetadata,
   type AuctionAdminPriceMode,
@@ -456,7 +455,6 @@ export function AdminAuctionForm({
       hasCoverPhoto: (photos?.length ?? 0) > 0,
       photoCount: photos?.length ?? 0,
       vin: values.vin,
-      title_status: values.title_status,
       odometer_status: values.odometer_status,
       primary_damage: values.primary_damage,
       secondary_damage: values.secondary_damage,
@@ -516,7 +514,7 @@ export function AdminAuctionForm({
     formData.set("run_and_drive", values.run_and_drive);
     formData.set("keys", values.keys);
     formData.set("odometer_status", values.odometer_status);
-    formData.set("title_status", values.title_status);
+
     formData.set("price_mode", values.price_mode);
     formData.set("buy_now_usd", values.buy_now_usd);
     formData.set("video_url", values.video_url);
@@ -1076,13 +1074,6 @@ export function AdminAuctionForm({
                 ))}
               </AdminSelect>
             </AdminField>
-            <SmartSelectField
-              id="title_status"
-              label="Tipo de título / documento"
-              options={optionsFrom(AUCTION_TITLE_OPTIONS)}
-              value={values.title_status}
-              onChange={(next) => patch("title_status", next)}
-            />
             <div className="sm:col-span-2">
               <AdminField label="Notas internas">
                 <AdminTextArea
