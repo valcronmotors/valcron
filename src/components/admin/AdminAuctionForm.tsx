@@ -80,7 +80,7 @@ import {
   type LinkedVehicleSummary,
 } from "@/lib/auctions/opportunity-admin";
 import { isSafeHttpUrl } from "@/lib/safe-url";
-import { MAX_VEHICLE_PHOTOS, validatePhotoFile, vehicleImageAdminPath } from "@/lib/storage";
+import { validatePhotoFile, vehicleImageAdminPath } from "@/lib/storage";
 import { removeStoredPhoto, uploadVehiclePhotos } from "@/lib/vehicle-photos";
 import {
   OTHER_MAKE_LABEL,
@@ -463,7 +463,7 @@ export function AdminAuctionForm({
 
   const publishBlockers = useMemo(() => auctionPublicationChecks(publicationInput), [publicationInput]);
   const eligibility = useMemo(() => evaluateAuctionEligibility(publicationInput), [publicationInput]);
-  const publishEnabled = canAttemptAuctionPublish(publicationInput) && photos.length === 5;
+  const publishEnabled = canAttemptAuctionPublish(publicationInput);
   const publishLabel = auctionPublishButtonLabel(publicationInput);
 
   function jumpToField(nextStep: EditorStep, anchor: string) {
@@ -603,10 +603,6 @@ export function AdminAuctionForm({
       setError("Solo se admiten imágenes JPG/JPEG. Convierte los archivos a JPG y vuelve a seleccionarlos.");
       return;
     }
-    if ((photos?.length ?? 0) + files.length !== 5) {
-      setError(`Debes completar exactamente 5 fotos. Hay ${photos?.length ?? 0} guardadas y seleccionaste ${files.length}.`);
-      return;
-    }
     setError(null);
     setUploading(true);
     try {
@@ -626,14 +622,11 @@ export function AdminAuctionForm({
       if (!accepted.length) {
         return;
       }
-      if ((photos?.length ?? 0) + localPhotos.length + accepted.length > MAX_VEHICLE_PHOTOS) {
-        setError(`Máximo ${MAX_VEHICLE_PHOTOS} fotos.`);
-        return;
-      }
       const hadPhotos = (photos?.length ?? 0) > 0;
       const result = await uploadVehiclePhotos(accepted, {
         vehicleId: id,
         currentCount: (photos?.length ?? 0) + localPhotos.length,
+        unlimitedForAuction: true,
       });
       if (result.paths.length > 0) {
         const attached = await attachVehiclePhotos({
@@ -1097,9 +1090,9 @@ export function AdminAuctionForm({
       {step === 1 ? (
         <FormSection
           title="Fotografías"
-          hint="Selecciona exactamente 5 fotos JPG/JPEG en orden. La primera será la portada. No se admiten videos."
+          hint="Sube todas las fotografías de Copart en el orden original, sin límite de cantidad. La primera es la portada. No se admiten videos."
         >
-          <p className="mb-3 text-sm font-medium">Selecciona exactamente 5 fotos JPG. La primera será la portada.</p>
+          <p className="mb-3 text-sm font-medium">Selecciona todas las fotos JPG/JPEG de Copart. La primera será la portada.</p>
           <AdminMediaPicker onFiles={handleFiles} uploading={uploading || pending} />
           <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {(photos ?? []).map((photo) => (
@@ -1188,7 +1181,7 @@ export function AdminAuctionForm({
       {step === 2 ? (
         <FormSection
           title="Publicar oportunidad"
-          hint="Precio a consultar por defecto. La Verificación Valcron es informativa; la publicación exige los datos básicos y exactamente 5 fotos."
+          hint="Precio a consultar por defecto. La Verificación Valcron es informativa; la publicación exige los datos básicos y una foto de portada."
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <AdminField label="Modo de precio" required>
@@ -1301,7 +1294,7 @@ export function AdminAuctionForm({
       <AdminConfirmDialog
         open={confirm === "publish"}
         title="Publicar oportunidad"
-        description="Se validarán los datos básicos y exactamente 5 fotos con portada. La Verificación Valcron es informativa. La unidad aparecerá en Oportunidades de Subasta."
+        description="Se validarán los datos básicos y una foto de portada. La Verificación Valcron es informativa. La unidad aparecerá en Oportunidades de Subasta."
         confirmLabel="Publicar"
         pending={pending || saving}
         onConfirm={() => {
