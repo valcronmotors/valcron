@@ -1093,7 +1093,7 @@ export function AdminAuctionForm({
           hint="Sube todas las fotografías de Copart en el orden original, sin límite de cantidad. La primera es la portada. No se admiten videos."
         >
           <p className="mb-3 text-sm font-medium">Selecciona todas las fotos JPG/JPEG de Copart. La primera será la portada.</p>
-          <AdminMediaPicker onFiles={handleFiles} uploading={uploading || pending} />
+          <AdminMediaPicker onFiles={handleFiles} uploading={uploading || pending} auctionUnlimited />
           <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {(photos ?? []).map((photo) => (
               <div key={photo.id} className="relative overflow-hidden rounded-lg border border-[var(--admin-border)]">
