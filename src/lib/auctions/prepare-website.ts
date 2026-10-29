@@ -72,7 +72,10 @@ function buildAuctionDescription(
     run_and_drive: meta.run_and_drive,
   });
   const warnings = eligibility.canPublish && eligibility.overall === "review_required"
-    ? "PUBLICABLE CON ADVERTENCIAS. Tipo de título por confirmar. Condición del odómetro Actual no confirmada."
+    ? ["PUBLICABLE CON ADVERTENCIAS",
+       ...(eligibility.checks.some((check) => check.id === "title" && check.verdict === "review") ? ["Tipo de título por confirmar"] : []),
+       ...(eligibility.checks.some((check) => check.id === "odometer" && check.verdict === "review") ? ["Condición del odómetro Actual no confirmada"] : []),
+      ].join(". ") + "."
     : "";
   if (meta.description?.trim()) {
     return [meta.description.trim(), warnings].filter(Boolean).join(" ");
