@@ -107,7 +107,6 @@ export function auctionPublicationBlockers(checks: PublicationCheck[]) {
 }
 
 export function auctionPublicationBlockMessage(input: AuctionPublicationInput) {
-  const eligibility = auctionEligibilityFromPublicationInput(input);
   // La verificación es informativa; solo los campos estructurales impiden publicar.
 
   const checks = auctionPublicationChecks(input).filter((check) => check.id !== "eligibility");
@@ -116,9 +115,6 @@ export function auctionPublicationBlockMessage(input: AuctionPublicationInput) {
 }
 
 export function auctionPublishButtonLabel(input: AuctionPublicationInput) {
-  const eligibility = auctionEligibilityFromPublicationInput(input);
-
-
   const checks = auctionPublicationChecks(input);
   if (!canPublishAuctionOpportunity(checks)) return "Completar revisión";
   return "Publicar oportunidad";
