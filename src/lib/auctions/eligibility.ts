@@ -353,7 +353,6 @@ export function evaluateRunAndDriveEligibility(raw: string | null | undefined): 
 export function evaluateAuctionEligibility(input: AuctionEligibilityInput): AuctionEligibilityResult {
   const checks: EligibilityCheckResult[] = [
     evaluateVinEligibility(input.vin),
-    evaluateTitleEligibility(input.title_status),
     evaluateOdometerEligibility(input.odometer_status),
     evaluateDamageEligibility(input.primary_damage, "primary_damage"),
     evaluateDamageEligibility(input.secondary_damage, "secondary_damage"),
@@ -379,7 +378,7 @@ export function evaluateAuctionEligibility(input: AuctionEligibilityInput): Auct
     overallLabel = "REQUIERE REVISIÓN";
   }
 
-  if (overall === "review_required" && checks.every((check) => check.verdict === "approved" || (check.verdict === "review" && (check.id === "title" || check.id === "odometer")))) {
+  if (overall === "review_required" && checks.every((check) => check.verdict === "approved" || (check.verdict === "review" && check.id === "odometer"))) {
     overallLabel = "PUBLICABLE CON ADVERTENCIAS";
   }
 
