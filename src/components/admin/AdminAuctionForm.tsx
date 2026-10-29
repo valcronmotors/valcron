@@ -463,7 +463,7 @@ export function AdminAuctionForm({
 
   const publishBlockers = useMemo(() => auctionPublicationChecks(publicationInput), [publicationInput]);
   const eligibility = useMemo(() => evaluateAuctionEligibility(publicationInput), [publicationInput]);
-  const publishEnabled = canAttemptAuctionPublish(publicationInput);
+  const publishEnabled = canAttemptAuctionPublish(publicationInput) && photos.length === 5;
   const publishLabel = auctionPublishButtonLabel(publicationInput);
 
   function jumpToField(nextStep: EditorStep, anchor: string) {
@@ -536,8 +536,8 @@ export function AdminAuctionForm({
       result = saved
         ? await updateAuctionOpportunity(null, formData)
         : await createAuctionOpportunity(null, formData);
-    } catch {
-      return { error: "No se pudo guardar. Comprueba tu conexión y vuelve a intentar." };
+    } catch (error) {
+      return { error: `Falló el guardado de la oportunidad: ${error instanceof Error ? error.message : String(error)}. Comprueba tu conexión y vuelve a intentar.` };
     } finally {
       setSaving(false);
     }
@@ -1097,7 +1097,7 @@ export function AdminAuctionForm({
       {step === 1 ? (
         <FormSection
           title="Fotografías"
-          hint="Sube hasta 5 imágenes JPG u otros formatos admitidos, en el orden deseado. En la primera carga, la primera foto queda como portada. Los videos no se admiten en este flujo."
+          hint="Selecciona exactamente 5 fotos JPG/JPEG en orden. La primera será la portada. No se admiten videos."
         >
           <p className="mb-3 text-sm font-medium">Selecciona exactamente 5 fotos JPG. La primera será la portada.</p>
           <AdminMediaPicker onFiles={handleFiles} uploading={uploading || pending} />
@@ -1301,7 +1301,7 @@ export function AdminAuctionForm({
       <AdminConfirmDialog
         open={confirm === "publish"}
         title="Publicar oportunidad"
-        description="Se validarán los campos requeridos, la foto de portada y la Verificación Valcron. La unidad aparecerá solo en Oportunidades de Subasta."
+        description="Se validarán los datos básicos y exactamente 5 fotos con portada. La Verificación Valcron es informativa. La unidad aparecerá en Oportunidades de Subasta."
         confirmLabel="Publicar"
         pending={pending || saving}
         onConfirm={() => {
