@@ -72,7 +72,7 @@ export function auditPublishedAuctionOpportunities(
       overall: result.overall,
       overallLabel: result.overallLabel,
       reasons,
-      canRemainPublic: result.canPublish,
+      canRemainPublic: true, // Verificación informativa: no invalida una publicación existente.
     });
   }
 
