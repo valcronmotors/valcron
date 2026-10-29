@@ -438,20 +438,8 @@ export async function updateAuctionOpportunity(
   } as never);
 
   let nextStatus = parsed.data.status ?? existingRow.status;
-  let policyNote: string | null = null;
-  // Keeping a public listing requires current eligibility; otherwise demote audibly.
-  if ((nextStatus === "published" || existingRow.status === "published") && !eligibility.canPublish) {
-    nextStatus = "review";
-    policyNote =
-      "Guardado. La oportunidad dejó de estar publicada porque no cumple la Verificación Valcron.";
-    if (existingRow.linked_vehicle_id) {
-      await supabase
-        .from("vehicles")
-        .update({ published: false })
-        .eq("id", existingRow.linked_vehicle_id);
-    }
-  } else if (nextStatus === "published" && eligibility.canPublish) {
-    // Status "published" may only be retained when already published via publishAuctionOpportunity.
+  // La Verificación Valcron es informativa y nunca despublica una oportunidad.
+  if (nextStatus === "published") {
     nextStatus = existingRow.status === "published" ? "published" : "draft";
   }
 
@@ -477,7 +465,7 @@ export async function updateAuctionOpportunity(
   revalidateAuctions(id);
   return {
     error: null,
-    success: policyNote ?? "Borrador guardado.",
+    success: "Datos guardados.",
     id,
     vehicleId: sync.vehicleId ?? undefined,
   };
