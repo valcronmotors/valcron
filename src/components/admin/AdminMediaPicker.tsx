@@ -91,16 +91,25 @@ export function AdminMediaPicker({
         data-testid="photo-gallery-input"
       />
 
-      {/* Native file picker — never use capture */}
-      <input
-        ref={filesRef}
-        type="file"
-        accept={PHOTO_FILE_ACCEPT}
-        multiple
-        className="hidden"
-        onChange={handleChange}
-        data-testid="photo-files-input"
-      />
+      {/* Native file picker — kept visible so desktop/browser upload tools can target it directly. Never use capture. */}
+      <div className={`rounded-xl border border-dashed ${light ? "border-[var(--admin-border)] bg-[var(--admin-surface)]" : "border-white/15 bg-white/5"} p-3`}>
+        <label className={`mb-2 block text-xs font-semibold ${light ? "text-[var(--admin-text-secondary)]" : "text-slate-300"}`} htmlFor={`${id}-files-input`}>
+          Seleccionar archivos JPG u otras imágenes
+        </label>
+        <input
+          ref={filesRef}
+          id={`${id}-files-input`}
+          type="file"
+          accept={PHOTO_FILE_ACCEPT}
+          multiple
+          disabled={busy}
+          className={`block min-h-11 w-full cursor-pointer rounded-lg text-sm file:mr-3 file:min-h-10 file:rounded-lg file:border-0 file:px-4 file:font-semibold ${light ? "text-[var(--admin-text)] file:bg-[var(--admin-surface-muted)] file:text-[var(--admin-text)]" : "text-slate-200 file:bg-white/10 file:text-white"} disabled:cursor-not-allowed disabled:opacity-50`}
+          onChange={handleChange}
+          data-testid="photo-files-input"
+          aria-describedby={`${id}-file-hint`}
+        />
+        <p id={`${id}-file-hint`} className={`mt-2 text-xs ${hintClass}`}>Selecciona hasta 5 imágenes. El orden de selección se conserva; la primera se usa como portada.</p>
+      </div>
 
       {/* Camera only — separate input */}
       <input
