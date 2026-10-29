@@ -198,7 +198,7 @@ export function evaluateOdometerEligibility(raw: string | null | undefined): Eli
       id: "odometer",
       label,
       verdict: "review",
-      reason: "Bloqueado: el odómetro debe estar verificado como Actual.",
+      reason: "Condición del odómetro Actual no confirmada.",
     };
   }
   if (
@@ -379,11 +379,15 @@ export function evaluateAuctionEligibility(input: AuctionEligibilityInput): Auct
     overallLabel = "REQUIERE REVISIÓN";
   }
 
+  if (overall === "review_required" && checks.every((check) => check.verdict === "approved" || (check.verdict === "review" && (check.id === "title" || check.id === "odometer")))) {
+    overallLabel = "PUBLICABLE CON ADVERTENCIAS";
+  }
+
   return {
     overall,
     overallLabel,
     checks,
-    canPublish: overall === "eligible",
+    canPublish: overall === "eligible" || (overall === "review_required" && checks.every((check) => check.verdict === "approved" || (check.verdict === "review" && (check.id === "title" || check.id === "odometer")))),
     blockedReasons,
     reviewReasons,
   };
