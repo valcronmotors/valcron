@@ -39,7 +39,6 @@ const FORM_KEYS: Array<{ fieldKey: ParsedAuctionField["key"]; formKey: string }>
   { fieldKey: "secondary_damage", formKey: "secondary_damage" },
   { fieldKey: "keys", formKey: "keys" },
   { fieldKey: "run_and_drive", formKey: "run_and_drive" },
-  { fieldKey: "title_status", formKey: "title_status" },
   { fieldKey: "notes", formKey: "internal_notes" },
   { fieldKey: "source_url", formKey: "source_url" },
   { fieldKey: "price_mode", formKey: "price_mode" },

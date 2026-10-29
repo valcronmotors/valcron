@@ -120,11 +120,10 @@ export function VehicleCard({
           </p>
         ) : null}
 
-        {vehicle.listingKind === "auction" && vehicle.description?.includes("PUBLICABLE CON ADVERTENCIAS") ? (
+        {vehicle.listingKind === "auction" && vehicle.description?.includes("Condición del odómetro Actual no confirmada") ? (
           <div className="mt-3 space-y-1 rounded-lg border border-amber-300 bg-amber-50 p-3 text-left text-xs text-amber-950">
             <p className="font-semibold">Publicable con advertencias</p>
-            <p>Tipo de título por confirmar</p>
-            <p>Condición del odómetro Actual no confirmada</p>
+            {vehicle.description?.includes("Condición del odómetro Actual no confirmada") ? <p>Condición del odómetro Actual no confirmada</p> : null}
           </div>
         ) : null}
 

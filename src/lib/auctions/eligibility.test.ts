@@ -193,7 +193,7 @@ describe("overall eligibility", () => {
     expect(result.overallLabel).toBe("APROBADO");
   });
 
-  it("blocks when a prohibited title is present", () => {
+  it("does not evaluate title as a publication requirement", () => {
     const result = evaluateAuctionEligibility({
       vin: VIN_1,
       title_status: "Certificate of Destruction",
@@ -203,7 +203,8 @@ describe("overall eligibility", () => {
       run_and_drive: "Run and Drive",
     });
     expect(vinCheckDigitValid(VIN_1)).toBe(true);
-    expect(result.overall).toBe("blocked");
-    expect(result.canPublish).toBe(false);
+    expect(result.overall).toBe("eligible");
+    expect(result.canPublish).toBe(true);
+    expect(result.checks.some((check) => check.id === "title")).toBe(false);
   });
 });

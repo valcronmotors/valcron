@@ -3,7 +3,7 @@ import { publishAuctionDraft } from "./publish-draft";
 
 const eligible = {
   provider: "copart", provider_lot_id: "60659246", year: 2026,
-  make: "Honda", model: "CR-V", price_mode: "contact", hasCoverPhoto: true,
+  make: "Honda", model: "CR-V", price_mode: "contact", hasCoverPhoto: true, photoCount: 5,
   vin: "1HGCM82633A004352", title_status: "Salvage Title", odometer_status: "Actual",
   primary_damage: "Normal Wear", secondary_damage: "None", run_and_drive: "Run and Drive",
 };
@@ -30,13 +30,13 @@ describe("admin auction publication workflow", () => {
     expect(publish).toHaveBeenCalledWith("draft");
   });
 
-  it.each(["2HG***", "JHM", ""])("blocks VIN %s before saving", async (vin) => {
-    const save = vi.fn();
-    const publish = vi.fn();
+  it.each(["2HG***", "JHM", ""])("allows informational VIN warnings %s without blocking publication", async (vin) => {
+    const save = vi.fn(async () => ({ error: null, id: "draft" }));
+    const publish = vi.fn(async () => ({ error: null }));
     const result = await publishAuctionDraft({ ...eligible, vin }, save, publish);
-    expect(result.error).toMatch(/no comienza con 1, 4, 5 o 7/i);
-    expect(save).not.toHaveBeenCalled();
-    expect(publish).not.toHaveBeenCalled();
+    expect(result.error).toBeNull();
+    expect(save).toHaveBeenCalled();
+    expect(publish).toHaveBeenCalled();
   });
 
   it("never publishes stale data when saving fails", async () => {
@@ -52,10 +52,10 @@ describe("admin auction publication workflow", () => {
     expect(publish).not.toHaveBeenCalled();
   });
 
-  it("blocks missing eligibility fields before any write", async () => {
+  it("blocks missing required photos before any write", async () => {
     const save = vi.fn();
     const publish = vi.fn();
-    const result = await publishAuctionDraft({ ...eligible, vin: "", run_and_drive: "" }, save, publish);
+    const result = await publishAuctionDraft({ ...eligible, photoCount: 0 }, save, publish);
     expect(result.error).toBeTruthy();
     expect(save).not.toHaveBeenCalled();
     expect(publish).not.toHaveBeenCalled();

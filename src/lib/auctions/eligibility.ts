@@ -193,12 +193,12 @@ export function evaluateTitleEligibility(raw: string | null | undefined): Eligib
 export function evaluateOdometerEligibility(raw: string | null | undefined): EligibilityCheckResult {
   const label = "Odometer";
   const normalized = normalizeEligibilityText(raw);
-  if (!normalized) {
+  if (!normalized || normalized === "not reported" || normalized === "unknown" || normalized === "unconfirmed") {
     return {
       id: "odometer",
       label,
       verdict: "review",
-      reason: "Bloqueado: el odómetro debe estar verificado como Actual.",
+      reason: "Condición del odómetro Actual no confirmada.",
     };
   }
   if (
@@ -353,7 +353,6 @@ export function evaluateRunAndDriveEligibility(raw: string | null | undefined): 
 export function evaluateAuctionEligibility(input: AuctionEligibilityInput): AuctionEligibilityResult {
   const checks: EligibilityCheckResult[] = [
     evaluateVinEligibility(input.vin),
-    evaluateTitleEligibility(input.title_status),
     evaluateOdometerEligibility(input.odometer_status),
     evaluateDamageEligibility(input.primary_damage, "primary_damage"),
     evaluateDamageEligibility(input.secondary_damage, "secondary_damage"),
@@ -379,11 +378,15 @@ export function evaluateAuctionEligibility(input: AuctionEligibilityInput): Auct
     overallLabel = "REQUIERE REVISIÓN";
   }
 
+  if (overall === "review_required" && checks.every((check) => check.verdict === "approved" || (check.verdict === "review" && check.id === "odometer"))) {
+    overallLabel = "PUBLICABLE CON ADVERTENCIAS";
+  }
+
   return {
     overall,
     overallLabel,
     checks,
-    canPublish: overall === "eligible",
+    canPublish: overall === "eligible" || (overall === "review_required" && checks.every((check) => check.verdict === "approved" || (check.verdict === "review" && (check.id === "title" || check.id === "odometer")))),
     blockedReasons,
     reviewReasons,
   };

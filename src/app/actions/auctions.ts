@@ -223,8 +223,7 @@ function parseOpportunity(formData: FormData) {
       model: text(formData, "model"),
       trim: text(formData, "trim"),
       mileage: intOrNull(formData, "mileage"),
-      title_status: text(formData, "title_status"),
-      primary_damage: text(formData, "primary_damage"),
+        primary_damage: text(formData, "primary_damage"),
       location: text(formData, "location") || [metadata.city, metadata.state].filter(Boolean).join(", ") || null,
       internal_notes: text(formData, "internal_notes"),
       ...(statusRaw ? { status: statusRaw as AuctionOpportunityStatus } : {}),
@@ -312,7 +311,6 @@ async function syncLinkedVehicle(
       transmission: draft.data.transmission,
       drivetrain: draft.data.drivetrain,
       fuel: draft.data.fuel,
-      title_status: draft.data.title_status,
       condition: draft.data.condition,
       location: draft.data.location,
       public_price_mode: draft.data.public_price_mode,
@@ -440,20 +438,8 @@ export async function updateAuctionOpportunity(
   } as never);
 
   let nextStatus = parsed.data.status ?? existingRow.status;
-  let policyNote: string | null = null;
-  // Keeping a public listing requires current eligibility; otherwise demote audibly.
-  if ((nextStatus === "published" || existingRow.status === "published") && !eligibility.canPublish) {
-    nextStatus = "review";
-    policyNote =
-      "Guardado. La oportunidad dejó de estar publicada porque no cumple la Verificación Valcron.";
-    if (existingRow.linked_vehicle_id) {
-      await supabase
-        .from("vehicles")
-        .update({ published: false })
-        .eq("id", existingRow.linked_vehicle_id);
-    }
-  } else if (nextStatus === "published" && eligibility.canPublish) {
-    // Status "published" may only be retained when already published via publishAuctionOpportunity.
+  // La Verificación Valcron es informativa y nunca despublica una oportunidad.
+  if (nextStatus === "published") {
     nextStatus = existingRow.status === "published" ? "published" : "draft";
   }
 
@@ -479,7 +465,7 @@ export async function updateAuctionOpportunity(
   revalidateAuctions(id);
   return {
     error: null,
-    success: policyNote ?? "Borrador guardado.",
+    success: "Datos guardados.",
     id,
     vehicleId: sync.vehicleId ?? undefined,
   };
@@ -626,7 +612,6 @@ export async function publishAuctionOpportunity(opportunityId: string): Promise<
     hasCoverPhoto: hasCover,
     photoCount: photos.length,
     vin: opportunity.vin,
-    title_status: opportunity.title_status,
     odometer_status: meta.odometer_status,
     primary_damage: opportunity.primary_damage,
     secondary_damage: meta.secondary_damage,
@@ -647,29 +632,6 @@ export async function publishAuctionOpportunity(opportunityId: string): Promise<
   }
 
   const eligibility = evaluateOpportunityEligibility(opportunity);
-  if (!eligibility.canPublish) {
-    return {
-      error: auctionPublicationBlockMessage({
-        provider: opportunity.provider,
-        provider_lot_id: opportunity.provider_lot_id,
-        year: opportunity.year,
-        make: opportunity.make,
-        model: opportunity.model,
-        price_mode: meta.price_mode ?? "contact",
-        buy_now_usd: meta.buy_now_usd,
-        hasCoverPhoto: hasCover,
-        vin: opportunity.vin,
-        title_status: opportunity.title_status,
-        odometer_status: meta.odometer_status,
-        primary_damage: opportunity.primary_damage,
-        secondary_damage: meta.secondary_damage,
-        run_and_drive: meta.run_and_drive,
-      }),
-      id: opportunityId,
-      vehicleId,
-    };
-  }
-
   // Auction publish path: set available + published without local inventory status rules.
   const { data: updated, error: publishError } = await supabase
     .from("vehicles")

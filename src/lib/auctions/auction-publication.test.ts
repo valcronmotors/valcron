@@ -16,6 +16,7 @@ const ELIGIBLE_BASE = {
   location: "TN - MEMPHIS",
   price_mode: "contact" as const,
   hasCoverPhoto: true,
+  photoCount: 5,
   vin: "1HGCM82633A004352",
   title_status: "Salvage Title",
   odometer_status: "Actual",
@@ -40,13 +41,14 @@ describe("auction publication validation", () => {
       make: "",
       model: "",
       hasCoverPhoto: false,
+      photoCount: 0,
       vin: "",
       title_status: "",
       odometer_status: "",
       primary_damage: "",
       run_and_drive: "",
     });
-    expect(message).toMatch(/VIN incompleto|Completar revisión|Publicación bloqueada/i);
+    expect(message).toMatch(/Completa lo obligatorio|5 fotos/i);
     expect(message).not.toMatch(/Disponible, reservado o vendido/i);
   });
 
@@ -55,12 +57,12 @@ describe("auction publication validation", () => {
       ...ELIGIBLE_BASE,
       vin: "JHM***",
     });
-    expect(message).toMatch(/no comienza con 1, 4, 5 o 7/i);
+    expect(message).toBeNull();
     expect(auctionPublishButtonLabel({ ...ELIGIBLE_BASE, vin: "7FARS6H97TE******" })).toBe(
       "Publicar oportunidad",
     );
     expect(auctionPublishButtonLabel({ ...ELIGIBLE_BASE, title_status: "Junk" })).toBe(
-      "Publicación bloqueada",
+      "Publicar oportunidad",
     );
     expect(auctionPublishButtonLabel(ELIGIBLE_BASE)).toBe("Publicar oportunidad");
   });

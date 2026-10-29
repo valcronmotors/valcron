@@ -6,16 +6,15 @@ import {
   verdictLabel,
 } from "@/lib/auctions/eligibility";
 
-const FIELD_ANCHORS: Record<EligibilityCheckId, EditorStepHint> = {
-  vin: { step: 1, anchor: "vin" },
-  title: { step: 2, anchor: "title_status" },
-  odometer: { step: 2, anchor: "odometer_status" },
-  primary_damage: { step: 2, anchor: "primary_damage" },
-  secondary_damage: { step: 2, anchor: "secondary_damage" },
-  run_and_drive: { step: 2, anchor: "run_and_drive" },
+const FIELD_ANCHORS: Partial<Record<EligibilityCheckId, EditorStepHint>> = {
+  vin: { step: 0, anchor: "vin" },
+  odometer: { step: 0, anchor: "odometer_status" },
+  primary_damage: { step: 0, anchor: "primary_damage" },
+  secondary_damage: { step: 0, anchor: "secondary_damage" },
+  run_and_drive: { step: 0, anchor: "run_and_drive" },
 };
 
-type EditorStepHint = { step: 0 | 1 | 2 | 3 | 4; anchor: string };
+type EditorStepHint = { step: 0 | 1 | 2; anchor: string };
 
 function verdictClass(verdict: "approved" | "blocked" | "review") {
   if (verdict === "approved") {
@@ -43,7 +42,7 @@ export function AdminAuctionEligibilityPanel({
   compact = false,
 }: {
   result: AuctionEligibilityResult;
-  onJump?: (step: 0 | 1 | 2 | 3 | 4, anchor: string) => void;
+  onJump?: (step: 0 | 1 | 2, anchor: string) => void;
   compact?: boolean;
 }) {
   return (
@@ -74,6 +73,11 @@ export function AdminAuctionEligibilityPanel({
         </span>
       </div>
 
+      {result.canPublish && result.overall === "review_required" ? (
+        <p className="mt-3 rounded-lg border border-[var(--admin-warning)]/25 bg-[var(--admin-warning-bg)] px-3 py-2 text-xs leading-5 text-[var(--admin-warning)]">
+          Publicable con advertencias: se puede publicar sin confirmar un odómetro no verificado. Las advertencias pendientes se mostrarán al público.
+        </p>
+      ) : null}
       <ul className={`mt-3 grid gap-2 ${compact ? "" : "sm:grid-cols-2"}`}>
         {result.checks.map((check) => {
           const hint = FIELD_ANCHORS[check.id];
@@ -95,7 +99,7 @@ export function AdminAuctionEligibilityPanel({
                   <button
                     type="button"
                     className="shrink-0 text-xs font-medium underline underline-offset-2"
-                    onClick={() => onJump(hint.step, hint.anchor)}
+                    onClick={() => hint && onJump(hint.step, hint.anchor)}
                   >
                     Corregir
                   </button>

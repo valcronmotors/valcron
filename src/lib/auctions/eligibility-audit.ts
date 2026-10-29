@@ -33,7 +33,6 @@ export function opportunityEligibilityInput(opportunity: AuctionOpportunityRow) 
   const meta = readAuctionMetadata(opportunity.auction_metadata);
   return {
     vin: opportunity.vin,
-    title_status: opportunity.title_status,
     odometer_status: meta.odometer_status,
     primary_damage: opportunity.primary_damage,
     secondary_damage: meta.secondary_damage,
@@ -73,7 +72,7 @@ export function auditPublishedAuctionOpportunities(
       overall: result.overall,
       overallLabel: result.overallLabel,
       reasons,
-      canRemainPublic: result.canPublish,
+      canRemainPublic: true, // Verificación informativa: no invalida una publicación existente.
     });
   }
 

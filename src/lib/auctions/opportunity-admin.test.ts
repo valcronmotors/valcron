@@ -169,7 +169,7 @@ describe("opportunity presentation", () => {
           price: null,
           public_price_mode: "contact",
           source_type: "other",
-          vehicle_photos: [{ id: "p1", is_cover: true }],
+          vehicle_photos: Array.from({ length: 5 }, (_, index) => ({ id: `p${index + 1}`, is_cover: index === 0 })),
         },
       ),
     ).toBe("ready");
@@ -200,7 +200,7 @@ describe("opportunity presentation", () => {
           price: null,
           public_price_mode: "contact",
           source_type: "other",
-          vehicle_photos: [{ id: "p1", is_cover: true }],
+          vehicle_photos: Array.from({ length: 5 }, (_, index) => ({ id: `p${index + 1}`, is_cover: index === 0 })),
         },
       ),
     ).toBe("ready");
@@ -217,7 +217,7 @@ describe("opportunity presentation", () => {
           description: "Unidad lista para entrega en Santo Domingo Este.",
           price: 18900,
           source_type: "other",
-          vehicle_photos: [{ id: "p1", is_cover: true }],
+          vehicle_photos: Array.from({ length: 5 }, (_, index) => ({ id: `p${index + 1}`, is_cover: index === 0 })),
         },
       ),
     ).toBe("published");
@@ -252,7 +252,7 @@ describe("opportunity presentation", () => {
         price: null,
         public_price_mode: "contact",
         source_type: "other",
-        vehicle_photos: [{ id: "p1", is_cover: true }],
+        vehicle_photos: Array.from({ length: 5 }, (_, index) => ({ id: `p${index + 1}`, is_cover: index === 0 })),
       },
     );
     expect(linked.some((item) => item.id === "preview")).toBe(true);
