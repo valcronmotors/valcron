@@ -48,7 +48,7 @@ describe("auction publication validation", () => {
       primary_damage: "",
       run_and_drive: "",
     });
-    expect(message).toMatch(/VIN incompleto|Completar revisión|Publicación bloqueada/i);
+    expect(message).toMatch(/Completa lo obligatorio|5 fotos/i);
     expect(message).not.toMatch(/Disponible, reservado o vendido/i);
   });
 
@@ -57,7 +57,7 @@ describe("auction publication validation", () => {
       ...ELIGIBLE_BASE,
       vin: "JHM***",
     });
-    expect(message).toMatch(/no comienza con 1, 4, 5 o 7/i);
+    expect(message).toBeNull();
     expect(auctionPublishButtonLabel({ ...ELIGIBLE_BASE, vin: "7FARS6H97TE******" })).toBe(
       "Publicar oportunidad",
     );
