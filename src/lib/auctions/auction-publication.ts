@@ -1,6 +1,5 @@
 import type { AuctionAdminPriceMode } from "@/lib/auction-admin-fields";
 import {
-  eligibilityPublicationBlockMessage,
   evaluateAuctionEligibility,
   type AuctionEligibilityInput,
   type AuctionEligibilityResult,
@@ -109,7 +108,6 @@ export function auctionPublicationBlockers(checks: PublicationCheck[]) {
 
 export function auctionPublicationBlockMessage(input: AuctionPublicationInput) {
   const eligibility = auctionEligibilityFromPublicationInput(input);
-  const eligibilityMessage = eligibilityPublicationBlockMessage(eligibility);
   // La verificación es informativa; solo los campos estructurales impiden publicar.
 
   const checks = auctionPublicationChecks(input).filter((check) => check.id !== "eligibility");
