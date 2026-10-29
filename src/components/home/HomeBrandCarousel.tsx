@@ -15,7 +15,7 @@ function BrandTile({
   return (
     <Link
       href={inventorySearchHref({ marca: name })}
-      className="brand-marquee-item flex w-[4.75rem] shrink-0 flex-col items-center gap-1.5 sm:w-[5.5rem] lg:w-[6.25rem] min-[1600px]:w-[7.5rem]"
+      className="brand-marquee-item flex w-[4.75rem] shrink-0 snap-start flex-col items-center gap-1.5 sm:w-[5.5rem] lg:w-[6.25rem] min-[1600px]:w-[7.5rem]"
       tabIndex={duplicate ? -1 : undefined}
       aria-hidden={duplicate ? true : undefined}
     >
@@ -40,8 +40,8 @@ function BrandTile({
 /** Static brand rail keeps the home calm and keyboard navigation concise. */
 export function HomeBrandCarousel() {
   return (
-    <section className="section-light border-b border-[#eceef1] bg-white px-[var(--page-gutter)] py-6 md:py-8" aria-label="Marcas para buscar">
-      <div className="mx-auto flex max-w-[var(--content-wide)] flex-wrap items-center justify-center gap-x-5 gap-y-4 sm:gap-x-8">
+    <section className="section-light border-b border-[#eceef1] bg-white px-[var(--page-gutter)] py-4 md:py-5" aria-label="Marcas para buscar">
+      <div className="mx-auto flex max-w-[var(--content-wide)] snap-x snap-mandatory items-center gap-4 overflow-x-auto pb-2 sm:gap-7 [scrollbar-width:thin]">
         {VEHICLE_BRANDS.map(brand => <BrandTile key={brand.slug} {...brand} />)}
       </div>
     </section>
