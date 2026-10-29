@@ -34,16 +34,24 @@ export function HomeHero() {
           </div>
         </div>
 
-        <div className="relative mx-auto w-full max-w-[39rem]">
-          <Image
-            src="/marketing/honda-crv-hybrid-2026.jpg"
-            alt="Honda CR-V Hybrid 2026 blanca completa sobre tarjeta naranja, con distintivo 2026 y fondo HYBRID"
-            width={1320}
-            height={560}
-            priority
-            sizes="(max-width: 1024px) 92vw, 50vw"
-            className="block h-auto w-full rounded-[1.6rem] object-contain"
-          />
+        <div className="relative mx-auto w-full max-w-[43rem] overflow-hidden rounded-[1.6rem] bg-gradient-to-br from-[#fc8434] via-[#ff620a] to-[#a9360a] shadow-[0_20px_55px_-24px_rgba(124,48,11,0.45)] ring-1 ring-[#e65c18]/20">
+          <div className="relative h-[270px] sm:h-[340px] lg:h-[400px]">
+            <Image
+              src="/marketing/honda-crv-hybrid-2026.jpg"
+              alt="Honda CR-V Hybrid 2026 blanca, vista de tres cuartos"
+              fill
+              priority
+              sizes="(max-width: 1024px) 94vw, 52vw"
+              className="object-cover object-[78%_50%] scale-[1.52] origin-[78%_55%] sm:scale-[1.48]"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#e95508]/90 via-[#ef5d08]/45 to-transparent" />
+            <div className="absolute left-5 top-6 z-10 max-w-[48%] text-white sm:left-8 sm:top-9">
+              <p className="text-[9px] font-bold uppercase tracking-[0.18em] sm:text-xs">Explora el modelo</p>
+              <p className="mt-2 font-display text-[22px] font-extrabold leading-[1.05] tracking-tight sm:text-4xl">Honda CR-V</p>
+              <p className="mt-1 font-display text-lg font-bold italic leading-tight sm:text-2xl">HYBRID</p>
+              <span className="mt-3 inline-flex rounded-full border border-white/65 bg-white/15 px-3 py-1 text-xs font-bold backdrop-blur-sm">2026</span>
+            </div>
+          </div>
         </div>
       </PageContainer>
     </section>
