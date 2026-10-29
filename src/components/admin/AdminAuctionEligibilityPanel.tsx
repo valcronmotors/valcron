@@ -6,7 +6,7 @@ import {
   verdictLabel,
 } from "@/lib/auctions/eligibility";
 
-const FIELD_ANCHORS: Record<EligibilityCheckId, EditorStepHint> = {
+const FIELD_ANCHORS: Partial<Record<EligibilityCheckId, EditorStepHint>> = {
   vin: { step: 1, anchor: "vin" },
   odometer: { step: 2, anchor: "odometer_status" },
   primary_damage: { step: 2, anchor: "primary_damage" },
@@ -99,7 +99,7 @@ export function AdminAuctionEligibilityPanel({
                   <button
                     type="button"
                     className="shrink-0 text-xs font-medium underline underline-offset-2"
-                    onClick={() => onJump(hint.step, hint.anchor)}
+                    onClick={() => hint && onJump(hint.step, hint.anchor)}
                   >
                     Corregir
                   </button>
