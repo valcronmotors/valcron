@@ -14,7 +14,7 @@ const FIELD_ANCHORS: Partial<Record<EligibilityCheckId, EditorStepHint>> = {
   run_and_drive: { step: 0, anchor: "run_and_drive" },
 };
 
-type EditorStepHint = { step: 0 | 1 | 2 | 3 | 4; anchor: string };
+type EditorStepHint = { step: 0 | 1 | 2; anchor: string };
 
 function verdictClass(verdict: "approved" | "blocked" | "review") {
   if (verdict === "approved") {
@@ -42,7 +42,7 @@ export function AdminAuctionEligibilityPanel({
   compact = false,
 }: {
   result: AuctionEligibilityResult;
-  onJump?: (step: 0 | 1 | 2 | 3 | 4, anchor: string) => void;
+  onJump?: (step: 0 | 1 | 2, anchor: string) => void;
   compact?: boolean;
 }) {
   return (
