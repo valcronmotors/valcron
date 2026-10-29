@@ -2,6 +2,7 @@ import { readAuctionMetadata } from "@/lib/auction-admin-fields";
 import type { AuctionOpportunityRow, PublicPriceMode, VehicleSourceType } from "@/lib/website-schema";
 import { copartPublicDraftExtras } from "@/lib/auction-providers/copart/opportunity";
 import { defaultPublicPriceMode } from "@/lib/public-price-mode";
+import { evaluateAuctionEligibility } from "@/lib/auctions/eligibility";
 import { historicalProviderLabel } from "@/lib/auctions/opportunity-admin";
 
 export type VehicleDraftFromOpportunity = {
@@ -59,11 +60,22 @@ const PUBLIC_VEHICLE_KEYS = [
 ] as const;
 
 function buildAuctionDescription(
-  opportunity: Pick<AuctionOpportunityRow, "primary_damage" | "provider" | "provider_lot_id" | "auction_metadata">,
+  opportunity: Pick<AuctionOpportunityRow, "vin" | "title_status" | "primary_damage" | "provider" | "provider_lot_id" | "auction_metadata">,
 ) {
   const meta = readAuctionMetadata(opportunity.auction_metadata);
+  const eligibility = evaluateAuctionEligibility({
+    vin: opportunity.vin,
+    title_status: opportunity.title_status,
+    odometer_status: meta.odometer_status,
+    primary_damage: opportunity.primary_damage,
+    secondary_damage: meta.secondary_damage,
+    run_and_drive: meta.run_and_drive,
+  });
+  const warnings = eligibility.canPublish && eligibility.overall === "review_required"
+    ? "PUBLICABLE CON ADVERTENCIAS. Tipo de título por confirmar. Condición del odómetro Actual no confirmada."
+    : "";
   if (meta.description?.trim()) {
-    return meta.description.trim();
+    return [meta.description.trim(), warnings].filter(Boolean).join(" ");
   }
   const parts: string[] = [];
   const provider = historicalProviderLabel(opportunity.provider);
@@ -83,7 +95,7 @@ function buildAuctionDescription(
     parts.push(`Run and Drive: ${meta.run_and_drive}.`);
   }
   parts.push("No implica disponibilidad física en Valcron Motors.");
-  return parts.join(" ");
+  return [...parts, warnings].filter(Boolean).join(" ");
 }
 
 export function opportunityToVehicleDraft(
