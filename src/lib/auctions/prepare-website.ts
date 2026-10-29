@@ -70,9 +70,9 @@ function buildAuctionDescription(
     secondary_damage: meta.secondary_damage,
     run_and_drive: meta.run_and_drive,
   });
-  const warnings = eligibility.canPublish && eligibility.overall === "review_required"
+  const warnings = eligibility.checks.some((check) => check.id === "odometer" && check.verdict !== "approved")
     ? ["PUBLICABLE CON ADVERTENCIAS",
-       ...(eligibility.checks.some((check) => check.id === "odometer" && check.verdict === "review") ? ["Condición del odómetro Actual no confirmada"] : []),
+       ...(eligibility.checks.some((check) => check.id === "odometer" && check.verdict !== "approved") ? ["Condición del odómetro Actual no confirmada"] : []),
       ].join(". ") + "."
     : "";
   if (meta.description?.trim()) {
