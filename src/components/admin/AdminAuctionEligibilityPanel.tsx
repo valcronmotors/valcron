@@ -7,11 +7,11 @@ import {
 } from "@/lib/auctions/eligibility";
 
 const FIELD_ANCHORS: Partial<Record<EligibilityCheckId, EditorStepHint>> = {
-  vin: { step: 1, anchor: "vin" },
-  odometer: { step: 2, anchor: "odometer_status" },
-  primary_damage: { step: 2, anchor: "primary_damage" },
-  secondary_damage: { step: 2, anchor: "secondary_damage" },
-  run_and_drive: { step: 2, anchor: "run_and_drive" },
+  vin: { step: 0, anchor: "vin" },
+  odometer: { step: 0, anchor: "odometer_status" },
+  primary_damage: { step: 0, anchor: "primary_damage" },
+  secondary_damage: { step: 0, anchor: "secondary_damage" },
+  run_and_drive: { step: 0, anchor: "run_and_drive" },
 };
 
 type EditorStepHint = { step: 0 | 1 | 2 | 3 | 4; anchor: string };
