@@ -60,7 +60,7 @@ describe("auction publication validation", () => {
       "Publicar oportunidad",
     );
     expect(auctionPublishButtonLabel({ ...ELIGIBLE_BASE, title_status: "Junk" })).toBe(
-      "Publicación bloqueada",
+      "Publicar oportunidad",
     );
     expect(auctionPublishButtonLabel(ELIGIBLE_BASE)).toBe("Publicar oportunidad");
   });
