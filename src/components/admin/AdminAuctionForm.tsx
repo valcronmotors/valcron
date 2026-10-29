@@ -94,14 +94,12 @@ import {
 } from "@/lib/vehicle-make-models";
 import type { AuctionOpportunityRow, AuctionProvider } from "@/lib/website-schema";
 
-type EditorStep = 0 | 1 | 2 | 3 | 4;
+type EditorStep = 0 | 1 | 2;
 
 const STEPS = [
-  { id: 0 as const, label: "Subasta y lote" },
-  { id: 1 as const, label: "Vehículo" },
-  { id: 2 as const, label: "Condición" },
-  { id: 3 as const, label: "Fotos" },
-  { id: 4 as const, label: "Precio y publicación" },
+  { id: 0 as const, label: "Vehículo" },
+  { id: 1 as const, label: "Fotos" },
+  { id: 2 as const, label: "Publicar" },
 ];
 
 const DRAFT_KEY = "valcron.auction.manual.draft.v27";
@@ -342,7 +340,7 @@ export function AdminAuctionForm({
   const saved = Boolean(opportunity?.id);
   const [step, setStep] = useState<EditorStep>(() => {
     const paso = Number(searchParams.get("paso"));
-    if (paso >= 0 && paso <= 4) return paso as EditorStep;
+    if (paso >= 0 && paso <= 2) return paso as EditorStep;
     return 0;
   });
   const recoveredDraft = useMemo(() => {
@@ -601,6 +599,14 @@ export function AdminAuctionForm({
   async function handleFiles(fileList: FileList | File[]) {
     const files = [...fileList];
     if (!files.length) return;
+    if (files.some((file) => !/^image\/jpeg$/.test(file.type))) {
+      setError("Solo se admiten imágenes JPG/JPEG. Convierte los archivos a JPG y vuelve a seleccionarlos.");
+      return;
+    }
+    if ((photos?.length ?? 0) + files.length !== 5) {
+      setError(`Debes completar exactamente 5 fotos. Hay ${photos?.length ?? 0} guardadas y seleccionaste ${files.length}.`);
+      return;
+    }
     setError(null);
     setUploading(true);
     try {
@@ -647,8 +653,8 @@ export function AdminAuctionForm({
       }
       setNotice(`${result.paths.length} fotos subidas.`);
       router.refresh();
-    } catch {
-      setError("No se pudieron subir las fotos. Comprueba tu conexión y vuelve a intentar.");
+    } catch (error) {
+      setError(`Falló la subida de fotos: ${error instanceof Error ? error.message : String(error)}. Revisa el formato y la conexión e inténtalo nuevamente.`);
     } finally {
       setUploading(false);
     }
@@ -664,7 +670,7 @@ export function AdminAuctionForm({
     setPublicPath(result.publicPath ?? null);
     setNotice(result.success ?? "Publicado.");
     if (!opportunity?.id) {
-      router.replace(`/admin/subastas/${result.id}?paso=4`);
+      router.replace(`/admin/subastas/${result.id}?paso=2`);
     } else {
       router.refresh();
     }
@@ -869,7 +875,7 @@ export function AdminAuctionForm({
         </FormSection>
       ) : null}
 
-      {step === 1 ? (
+      {step === 0 ? (
         <FormSection title="Información del vehículo" hint="Usa los selectores inteligentes. Elige «Otra marca» u «Otro modelo» si no aparece en la lista.">
           <div className="grid gap-4 sm:grid-cols-2">
             <AdminField label="Año" required>
@@ -1021,7 +1027,7 @@ export function AdminAuctionForm({
         </FormSection>
       ) : null}
 
-      {step === 2 ? (
+      {step === 0 ? (
         <FormSection title="Condición y daños" hint="Usa la terminología exacta de la subasta cuando esté disponible. Run and Drive no es una garantía mecánica.">
           <div className="mb-4">
             <AdminAuctionEligibilityPanel
@@ -1088,11 +1094,12 @@ export function AdminAuctionForm({
         </FormSection>
       ) : null}
 
-      {step === 3 ? (
+      {step === 1 ? (
         <FormSection
           title="Fotografías"
           hint="Sube hasta 5 imágenes JPG u otros formatos admitidos, en el orden deseado. En la primera carga, la primera foto queda como portada. Los videos no se admiten en este flujo."
         >
+          <p className="mb-3 text-sm font-medium">Selecciona exactamente 5 fotos JPG. La primera será la portada.</p>
           <AdminMediaPicker onFiles={handleFiles} uploading={uploading || pending} />
           <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {(photos ?? []).map((photo) => (
@@ -1178,10 +1185,10 @@ export function AdminAuctionForm({
         </FormSection>
       ) : null}
 
-      {step === 4 ? (
+      {step === 2 ? (
         <FormSection
-          title="Precio y publicación"
-          hint="Por defecto el precio público es «Precio a consultar». Solo muestra Buy Now si el monto está verificado."
+          title="Publicar oportunidad"
+          hint="Precio a consultar por defecto. La Verificación Valcron es informativa; la publicación exige los datos básicos y exactamente 5 fotos."
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <AdminField label="Modo de precio" required>
@@ -1230,31 +1237,12 @@ export function AdminAuctionForm({
               onJump={(nextStep, anchor) => jumpToField(nextStep, anchor)}
             />
           </div>
-          <div className="mt-6 flex flex-wrap gap-2">
-            <AdminPrimaryButton
-              type="button"
-              disabled={pending || saving || uploading || !publishEnabled}
-              onClick={() => setConfirm("publish")}
-              title={publishEnabled ? "Publicar oportunidad" : auctionPublicationBlockMessage(publicationInput) ?? publishLabel}
-            >
-              {publishLabel}
-            </AdminPrimaryButton>
-            {published ? (
-              <AdminSecondaryButton type="button" disabled={pending || saving || uploading} onClick={() => setConfirm("unpublish")}>
-                Despublicar
-              </AdminSecondaryButton>
-            ) : null}
-            {publicPath ? (
-              <Link href={publicPath} target="_blank">
-                <AdminSecondaryButton type="button">Vista previa pública</AdminSecondaryButton>
-              </Link>
-            ) : null}
-          </div>
+          {publicPath ? <Link href={publicPath} target="_blank" className="text-sm underline">Ver oportunidad publicada</Link> : null}
         </FormSection>
       ) : null}
 
       <div className="admin-editor-actions sticky bottom-0 z-30 -mx-1 border-t border-[var(--admin-border)] bg-white px-2 pt-3 shadow-[0_-8px_24px_rgba(8,9,11,0.08)] pb-[max(1rem,env(safe-area-inset-bottom))]">
-        {step === 4 && !publishEnabled ? (
+        {step === 2 && !publishEnabled ? (
           <p className="mb-2 text-xs text-[var(--admin-warning)]">
             {auctionPublicationBlockMessage(publicationInput) ??
               `Falta: ${publishBlockers
@@ -1274,9 +1262,6 @@ export function AdminAuctionForm({
             Anterior
           </AdminSecondaryButton>
           <div className="flex flex-wrap justify-end gap-2">
-            <AdminSecondaryButton type="button" disabled={pending || saving || uploading} onClick={() => void handleSave()}>
-              Guardar borrador
-            </AdminSecondaryButton>
             {vehicleId || opportunity?.linked_vehicle_id ? (
               <Link
                 href={`/admin/inventario/${vehicleId ?? opportunity?.linked_vehicle_id}/vista-previa`}
@@ -1287,10 +1272,10 @@ export function AdminAuctionForm({
                 Vista previa
               </Link>
             ) : null}
-            {step < 4 ? (
+            {step < 2 ? (
               <AdminPrimaryButton
                 type="button"
-                onClick={() => setStep((current) => Math.min(4, current + 1) as EditorStep)}
+                onClick={() => setStep((current) => Math.min(2, current + 1) as EditorStep)}
               >
                 Continuar
                 <ChevronRight className="h-4 w-4" aria-hidden />
