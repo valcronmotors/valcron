@@ -32,7 +32,6 @@ export function auctionEligibilityFromPublicationInput(
 ): AuctionEligibilityResult {
   return evaluateAuctionEligibility({
     vin: input.vin,
-    title_status: input.title_status,
     odometer_status: input.odometer_status,
     primary_damage: input.primary_damage,
     secondary_damage: input.secondary_damage,
