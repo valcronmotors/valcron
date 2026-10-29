@@ -65,7 +65,6 @@ function buildAuctionDescription(
   const meta = readAuctionMetadata(opportunity.auction_metadata);
   const eligibility = evaluateAuctionEligibility({
     vin: opportunity.vin,
-    title_status: opportunity.title_status,
     odometer_status: meta.odometer_status,
     primary_damage: opportunity.primary_damage,
     secondary_damage: meta.secondary_damage,
@@ -73,7 +72,6 @@ function buildAuctionDescription(
   });
   const warnings = eligibility.canPublish && eligibility.overall === "review_required"
     ? ["PUBLICABLE CON ADVERTENCIAS",
-       ...(eligibility.checks.some((check) => check.id === "title" && check.verdict === "review") ? ["Tipo de título por confirmar"] : []),
        ...(eligibility.checks.some((check) => check.id === "odometer" && check.verdict === "review") ? ["Condición del odómetro Actual no confirmada"] : []),
       ].join(". ") + "."
     : "";
@@ -157,7 +155,7 @@ export function opportunityToVehicleDraft(
       transmission: meta.transmission ?? extras.transmission,
       drivetrain: meta.drivetrain ?? extras.drivetrain,
       fuel: meta.fuel ?? extras.fuel,
-      title_status: opportunity.title_status,
+      title_status: null,
       condition: (opportunity.primary_damage ?? "").trim() || null,
       location: locationParts.join(", ") || opportunity.location,
       source_type: "other",
