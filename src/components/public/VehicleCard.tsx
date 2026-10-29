@@ -123,7 +123,6 @@ export function VehicleCard({
         {vehicle.listingKind === "auction" && vehicle.description?.includes("PUBLICABLE CON ADVERTENCIAS") ? (
           <div className="mt-3 space-y-1 rounded-lg border border-amber-300 bg-amber-50 p-3 text-left text-xs text-amber-950">
             <p className="font-semibold">Publicable con advertencias</p>
-            {vehicle.description?.includes("Tipo de título por confirmar") ? <p>Tipo de título por confirmar</p> : null}
             {vehicle.description?.includes("Condición del odómetro Actual no confirmada") ? <p>Condición del odómetro Actual no confirmada</p> : null}
           </div>
         ) : null}
