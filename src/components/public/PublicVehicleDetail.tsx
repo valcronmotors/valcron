@@ -42,7 +42,7 @@ export function PublicVehicleDetail({
   const specs = visibleVehicleSpecs(vehicle);
   const price = displayVehiclePrice(vehicle, currency);
   const features = (vehicle.features ?? []).map((item) => item.trim()).filter(Boolean);
-  const description = vehicle.description?.trim() || null;
+  const description = vehicle.description?.replace(/Tipo de título por confirmar\.?\s*/gi, "").trim() || null;
   const sold = vehicle.availability === "sold";
   const year = vehicle.year || vehicle.ano;
   const make = vehicle.make || vehicle.marca;
