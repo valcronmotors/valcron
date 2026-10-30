@@ -23,8 +23,8 @@ export function HomeInventoryTabs({
   auctionError: string | null;
 }) {
   const [active, setActive] = useState<"available" | "auction">("auction");
-  const available = filterLocalStockVehicles(vehicles).slice(0, 3);
-  const opportunities = filterAuctionCatalogVehicles(auctions).slice(0, 3);
+  const available = filterLocalStockVehicles(vehicles);
+  const opportunities = filterAuctionCatalogVehicles(auctions);
   const items = active === "available" ? available : opportunities;
   const error = active === "available" ? inventoryError : auctionError;
 
@@ -45,10 +45,10 @@ export function HomeInventoryTabs({
 
           <div className="mb-5 inline-flex w-full rounded-xl border border-[#e0e2e6] bg-white p-1 sm:w-auto" role="tablist" aria-label="Catálogo de vehículos">
             <button type="button" role="tab" aria-selected={active === "auction"} onClick={() => setActive("auction")} className={`min-h-11 flex-1 rounded-lg px-4 text-sm font-semibold transition sm:flex-none ${active === "auction" ? "bg-[#08090b] text-white shadow-sm" : "text-[#454951] hover:bg-[#f3f4f6]"}`}>
-              Subastas ({opportunities.length})
+              Subastas
             </button>
             <button type="button" role="tab" aria-selected={active === "available"} onClick={() => setActive("available")} className={`min-h-11 flex-1 rounded-lg px-4 text-sm font-semibold transition sm:flex-none ${active === "available" ? "bg-[#08090b] text-white shadow-sm" : "text-[#454951] hover:bg-[#f3f4f6]"}`}>
-              Disponibles ({available.length})
+              Disponibles
             </button>
           </div>
 
