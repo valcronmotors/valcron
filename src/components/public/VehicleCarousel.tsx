@@ -211,7 +211,7 @@ export function VehicleCarousel({
       <div className={className}>
         <div
           ref={scrollerRef}
-          className="vehicle-carousel-scroller flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-auto sm:grid sm:max-w-3xl sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:snap-none md:gap-5"
+          className="vehicle-carousel-scroller flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-auto overscroll-y-auto touch-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-auto sm:grid sm:max-w-3xl sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:snap-none md:gap-5"
         >
           {items.map((child, index) => (
             <div key={index} className={ITEM_CLASS}>
@@ -246,7 +246,7 @@ export function VehicleCarousel({
       </div>
       <div
         ref={scrollerRef}
-        className="vehicle-carousel-scroller flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-5"
+        className="vehicle-carousel-scroller flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-auto overscroll-y-auto touch-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-5"
       >
         {items.map((child, index) => (
           <div key={index} className={ITEM_CLASS}>
