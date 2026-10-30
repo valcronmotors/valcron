@@ -823,8 +823,9 @@ h3 {
 .public-site .vehicle-carousel-scroller {
   width: 100%;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
-  overscroll-behavior-x: contain;
+  /* Allow vertical page scrolling over cards while retaining horizontal swipes. */
+  touch-action: pan-x pan-y;
+  overscroll-behavior-x: auto;
   scroll-snap-type: x mandatory;
 }
 
