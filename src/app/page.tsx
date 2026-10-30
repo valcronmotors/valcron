@@ -31,8 +31,8 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const [inventory, auctions] = await Promise.all([
-    loadLocalStockVehicles({ limit: 12 }),
-    loadAuctionCatalogVehicles({ limit: 12 }),
+    loadLocalStockVehicles(),
+    loadAuctionCatalogVehicles(),
   ]);
 
   return (
