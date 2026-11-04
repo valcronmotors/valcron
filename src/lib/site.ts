@@ -278,7 +278,7 @@ export const PUBLIC_PATHS = [
 const ADMIN_UNAUTH_PATHS = ["/login", "/api/public"] as const;
 
 export function isPublicPath(pathname: string) {
-  if (pathname === "/" || pathname.startsWith("/_next")) {
+  if (pathname === "/" || pathname === "/ads.txt" || pathname.startsWith("/_next")) {
     return true;
   }
 
