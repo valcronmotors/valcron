@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { PublicExperience } from "@/components/public/PublicExperience";
 import { SITE } from "@/lib/site";
+import { ADSENSE_CLIENT, GOOGLE_ADS_ID, GOOGLE_TAG_BOOTSTRAP } from "@/lib/google-tags";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -67,6 +68,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       data-scroll-behavior="smooth"
       className={`${jakarta.variable} h-full scroll-smooth antialiased`}
     >
+      <head>
+        <script id="google-tag" dangerouslySetInnerHTML={{ __html: GOOGLE_TAG_BOOTSTRAP }} />
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`} />
+        <script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          crossOrigin="anonymous"
+        />
+      </head>
       <body className="flex min-h-full flex-col bg-background font-sans text-foreground">
         <PublicExperience>{children}</PublicExperience>
       </body>
