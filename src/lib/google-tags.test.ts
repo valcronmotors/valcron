@@ -1,6 +1,7 @@
 import { runInNewContext } from "node:vm";
 import { describe, expect, it, vi } from "vitest";
 import { GOOGLE_ADS_ID, GOOGLE_TAG_BOOTSTRAP, WHATSAPP_CONVERSION_DESTINATION } from "@/lib/google-tags";
+import { isAdminPublicPath, isPublicPath } from "@/lib/site";
 
 function browserFixture() {
   const listeners = new Map<string, (event: unknown) => void>();
@@ -27,6 +28,12 @@ function browserFixture() {
 }
 
 describe("Google Ads WhatsApp conversion", () => {
+  it("lets Google read ads.txt without opening private routes or similarly named paths", () => {
+    expect(isPublicPath("/ads.txt")).toBe(true);
+    for (const path of ["/ads.txt/private", "/ads.txt-backup", "/admin", "/admin/inventario", "/api/admin/vehicle-images"]) expect(isPublicPath(path)).toBe(false);
+    expect(isAdminPublicPath("/ads.txt")).toBe(false);
+  });
+
   it("initializes the requested account and registers each delegated listener only once", () => {
     const fixture = browserFixture();
     fixture.bootstrap();
