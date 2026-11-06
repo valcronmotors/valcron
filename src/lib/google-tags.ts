@@ -1,7 +1,7 @@
 export const GOOGLE_ADS_ID = "AW-18548302229";
 export const WHATSAPP_CONVERSION_DESTINATION =
   "AW-18548302229/lW0OCPrd268dEJXDwoxF";
-export const ADSENSE_CLIENT = "ca-pub-1618826035661764";
+export const ADSENSE_CLIENT = "ca-pub-7804080664715961";
 
 // Runs in the head before hydration so early clicks can queue their conversion.
 // Root-layout persistence and the guard keep a single listener across SPA routes.
