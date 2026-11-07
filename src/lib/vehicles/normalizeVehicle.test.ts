@@ -83,6 +83,25 @@ describe("vehicle normalization", () => {
     expect(vehicle.fotosUrls[0]).toContain("vehicle-images");
   });
 
+  it.each(["valcron_stock", "other"] as const)("keeps warnings internal for %s without changing the stored row or listing data", (source_type) => {
+    const input = row({
+      source_type,
+      public_price_mode: "fixed",
+      condition: "Front End",
+      title_status: "Salvage",
+      description: "Honda Civic 2021. Daño principal: Front End. Airbags desplegados. PUBLICABLE CON ADVERTENCIAS. Condición del odómetro Actual no confirmada. Precio a consultar.",
+    });
+    const original = structuredClone(input);
+    const vehicle = toPublicVehicle(input);
+    expect(vehicle.description).toBe("Honda Civic 2021. Precio a consultar.");
+    expect(vehicle).toMatchObject({ condition: null, titleType: null, primaryDamage: null, secondaryDamage: null });
+    expect(input).toEqual(original);
+    expect(vehicle.id).toBe(input.id);
+    expect(vehicle.pricing.publicPrice).toBe(input.price);
+    expect(vehicle.images.map((image) => image.id)).toEqual(["p1", "p2"]);
+    expect(vehicle.published).toBe(input.published);
+  });
+
   it("labels auction-origin units without claiming Valcron stock", () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
     const vehicle = toPublicVehicle(row({ source_type: "other" }));

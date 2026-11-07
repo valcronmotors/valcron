@@ -6,6 +6,7 @@ import {
 import { DEFAULT_TASA_USD_DOP } from "@/lib/fx";
 import { sortVehiclePhotos, vehicleImageAdminPath, vehicleImagePublicPath } from "@/lib/storage";
 import { buildVehicleSlug } from "@/lib/vehicles/vehicle-slugs";
+import { publicVehicleDescription } from "@/lib/vehicles/public-description";
 import {
   isAuctionOpportunitySource,
   listingKindFromAvailability,
@@ -81,7 +82,6 @@ export function toPublicVehicle(row: VehicleRow): PublicVehicle {
   const currency = row.currency === "DOP" ? "DOP" : "USD";
   const mode = resolvePublicPriceMode(row.source_type, row.public_price_mode);
   const lotNumber = auctionOrigin ? cleanText(row.stock_number) : null;
-  const primaryDamage = auctionOrigin ? cleanText(row.condition) : null;
   const tasaUsdDop = DEFAULT_TASA_USD_DOP;
   const usdPrice =
     price == null
@@ -132,9 +132,9 @@ export function toPublicVehicle(row: VehicleRow): PublicVehicle {
     drivetrain: cleanText(row.drivetrain),
     exteriorColor: cleanText(row.exterior_color),
     interiorColor: cleanText(row.interior_color),
-    titleType: cleanText(row.title_status),
-    condition: cleanText(row.condition),
-    primaryDamage,
+    titleType: null,
+    condition: null,
+    primaryDamage: null,
     secondaryDamage: null,
     keysAvailable: null,
     runAndDrive: null,
@@ -165,7 +165,7 @@ export function toPublicVehicle(row: VehicleRow): PublicVehicle {
           buyNowPrice: mode === "fixed" ? price : null,
         }
       : null,
-    description: cleanText(row.description),
+    description: publicVehicleDescription(row.description),
     features: [],
     published: row.published,
     featured: Boolean(row.featured),
