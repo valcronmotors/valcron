@@ -1,6 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/quienes-somos",
+        destination: "/nosotros",
+        statusCode: 301,
+      },
+      {
+        source: "/calculadora-financiamiento",
+        destination: "/calculadoras/financiamiento",
+        statusCode: 301,
+      },
+    ];
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 3600,
