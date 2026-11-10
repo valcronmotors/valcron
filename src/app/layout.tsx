@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import Script from "next/script";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { PublicExperience } from "@/components/public/PublicExperience";
 import { SITE } from "@/lib/site";
@@ -70,9 +71,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     >
       <head>
         <script id="google-tag" dangerouslySetInnerHTML={{ __html: GOOGLE_TAG_BOOTSTRAP }} />
-        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`} />
-        <script
-          async
+        <Script
+          id="google-ads-loader"
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`}
+        />
+        <Script
+          id="google-adsense-loader"
+          strategy="afterInteractive"
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
           crossOrigin="anonymous"
         />
