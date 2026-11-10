@@ -1,5 +1,6 @@
 "use client";
 
+import { trackWhatsAppNavigation } from "@/lib/google-tags";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -49,6 +50,7 @@ export function FinanceForm() {
       className="grid gap-5 gloss-panel p-6 md:p-8"
       onSubmit={(event) => {
         event.preventDefault();
+        trackWhatsAppNavigation(href);
         window.open(href, "_blank", "noopener,noreferrer");
       }}
     >

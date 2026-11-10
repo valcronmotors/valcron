@@ -1,5 +1,6 @@
 "use client";
 
+import { trackWhatsAppNavigation } from "@/lib/google-tags";
 import { useMemo, useState } from "react";
 import { SITE, whatsappHref } from "@/lib/site";
 
@@ -32,6 +33,7 @@ export function ImportQuoteForm() {
       className="grid gap-4 gloss-panel p-6"
       onSubmit={(event) => {
         event.preventDefault();
+        trackWhatsAppNavigation(href);
         window.open(href, "_blank", "noopener,noreferrer");
       }}
     >

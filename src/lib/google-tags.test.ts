@@ -1,6 +1,6 @@
 import { runInNewContext } from "node:vm";
 import { describe, expect, it, vi } from "vitest";
-import { ADSENSE_BOOTSTRAP, ADSENSE_SCRIPT_URL, GOOGLE_ADS_ID, GOOGLE_TAG_BOOTSTRAP, WHATSAPP_CONVERSION_DESTINATION } from "@/lib/google-tags";
+import { ADSENSE_BOOTSTRAP, ADSENSE_SCRIPT_URL, GOOGLE_ADS_ID, GOOGLE_TAG_BOOTSTRAP, WHATSAPP_CONVERSION_DESTINATION, trackWhatsAppNavigation } from "@/lib/google-tags";
 import { isAdminPublicPath, isPublicPath } from "@/lib/site";
 
 function browserFixture() {
@@ -74,6 +74,20 @@ describe("Google Ads WhatsApp conversion", () => {
     fixture.window.location = new URL("https://www.valcronmotors.com/subastas/vehiculo-2");
     fixture.click(href);
     expect(fixture.conversions()).toHaveLength(2);
+  });
+
+  it("tracks programmatic form navigation and shares duplicate protection with links", () => {
+    const fixture = browserFixture();
+    vi.stubGlobal("window", fixture.window);
+    try {
+      const href = "https://wa.me/18293211271?text=Importacion";
+      trackWhatsAppNavigation(href);
+      trackWhatsAppNavigation(href);
+      fixture.click(href);
+      expect(fixture.conversions()).toEqual([["event", "conversion", { send_to: WHATSAPP_CONVERSION_DESTINATION }]]);
+      trackWhatsAppNavigation("https://example.com/?next=wa.me/123");
+      expect(fixture.conversions()).toHaveLength(1);
+    } finally { vi.unstubAllGlobals(); }
   });
 
   it("ignores unrelated links and right clicks", () => {
