@@ -77,26 +77,8 @@ export async function POST(request: Request) {
     }
   }
 
-  const since = new Date(Date.now() - 15 * 60 * 1000).toISOString();
-  let duplicateQuery = supabase
-    .from("inquiries")
-    .select("id")
-    .eq("name", parsed.data.name)
-    .gte("created_at", since)
-    .limit(1);
-  if (parsed.data.email) {
-    duplicateQuery = duplicateQuery.eq("email", parsed.data.email);
-  } else if (parsed.data.phone) {
-    duplicateQuery = duplicateQuery.eq("phone", parsed.data.phone);
-  }
-  if (parsed.data.vehicle_id) {
-    duplicateQuery = duplicateQuery.eq("vehicle_id", parsed.data.vehicle_id);
-  }
-  const { data: recent } = await duplicateQuery;
-  if (recent && recent.length > 0) {
-    return publicJson(request, { error: "Ya recibimos una solicitud similar. Te contactaremos pronto." }, 429);
-  }
-
+  // Anonymous clients may insert inquiries, but must never read customer data.
+  // The abuse guards above handle repeat submissions without a forbidden SELECT.
   const vin = String(body.vin ?? "").trim().toUpperCase();
   const message = [parsed.data.message, vin ? `VIN consultado: ${vin}` : null]
     .filter(Boolean)

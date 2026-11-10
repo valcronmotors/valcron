@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "./route";
 import { resetInquiryAbuseGuard } from "@/lib/inquiry-abuse";
 
-const { createClient, insert } = vi.hoisted(() => ({ createClient: vi.fn(), insert: vi.fn() }));
+const { createClient, insert, from } = vi.hoisted(() => ({ createClient: vi.fn(), insert: vi.fn(), from: vi.fn() }));
 vi.mock("@/utils/supabase/server", () => ({ createClient }));
 
 function request(body: unknown) {
@@ -19,7 +19,8 @@ describe("public lead endpoint", () => {
     for (const key of ["select", "eq", "gte", "limit"] as const) query[key].mockReturnValue(query);
     query.then.mockImplementation((resolve) => resolve({ data: [], error: null }));
     insert.mockResolvedValue({ error: null });
-    createClient.mockResolvedValue({ from: () => ({ ...query, insert }) });
+    from.mockReturnValue({ ...query, insert });
+    createClient.mockResolvedValue({ from });
   });
 
   it.each([null, [], "invalid", 3])("rejects non-object JSON without contacting Supabase: %j", async (body) => {
@@ -31,6 +32,7 @@ describe("public lead endpoint", () => {
     const body = { nombre: "Prueba auditoría", telefono: "8095550100", mensaje: "Solicitud de prueba" };
     expect((await POST(request(body))).status).toBe(201);
     expect(insert).toHaveBeenCalledWith(expect.objectContaining({ name: body.nombre, phone: body.telefono, source: "web" }));
+    expect(from.mock.calls).toEqual([["inquiries"]]);
     expect((await POST(request(body))).status).toBe(429);
     expect(insert).toHaveBeenCalledTimes(1);
   });
