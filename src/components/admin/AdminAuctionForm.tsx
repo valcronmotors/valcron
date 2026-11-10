@@ -19,6 +19,7 @@ import {
   updateVehiclePhoto,
 } from "@/app/actions/vehicles";
 import { AdminAuctionPastePanel } from "@/components/admin/AdminAuctionPastePanel";
+import { AdminLandedEstimateEditor } from "@/components/admin/AdminLandedEstimateEditor";
 import { AdminMediaPicker } from "@/components/admin/AdminMediaPicker";
 import { AdminSearchableSelect } from "@/components/admin/AdminSearchableSelect";
 import { AuctionBadge } from "@/components/admin/AdminBadges";
@@ -1167,6 +1168,7 @@ export function AdminAuctionForm({
           title="Publicar oportunidad"
           hint="Precio a consultar por defecto. La Verificación Valcron es informativa; la publicación exige los datos básicos y una foto de portada."
         >
+          <AdminLandedEstimateEditor vehicleId={vehicleId} amount={linkedVehicle?.landed_estimate_usd} validated={linkedVehicle?.landed_estimate_validated} />
           <div className="grid gap-4 sm:grid-cols-2">
             <AdminField label="Modo de precio" required>
               <AdminSelect

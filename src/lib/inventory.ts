@@ -44,7 +44,7 @@ export type ErpVehicleRow = {
 export const VEHICLE_INVENTORY_SELECT = `
   id, stock_number, vin, year, make, model, trim, mileage, mileage_unit,
   exterior_color, interior_color, engine, transmission, drivetrain, fuel,
-  condition, title_status, description, price, currency, public_price_mode, location, source_type,
+  condition, title_status, description, price, currency, public_price_mode, down_payment_dop, landed_estimate_usd, landed_estimate_validated, location, source_type,
   status, featured, published, published_at, created_at, updated_at
 `.replace(/\s+/g, " ").trim();
 

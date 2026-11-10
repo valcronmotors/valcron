@@ -6,9 +6,10 @@ import { Camera, ArrowRight } from "lucide-react";
 import { PageContainer, Section } from "@/components/public/layout";
 import { VehicleCard } from "@/components/public/VehicleCard";
 import { VehicleCarousel } from "@/components/public/VehicleCarousel";
+import { useVehicleContactHref } from "@/components/public/VehicleContactContext";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import { filterAuctionCatalogVehicles, filterLocalStockVehicles } from "@/lib/catalogs";
-import { SITE, whatsappHref } from "@/lib/site";
+import { SITE } from "@/lib/site";
 import type { PublicVehicle } from "@/types/vehicle";
 
 export function HomeInventoryTabs({
@@ -63,7 +64,7 @@ export function HomeInventoryTabs({
                   ))}
                 </VehicleCarousel>
               </div>
-              {active === "auction" ? <p className="mt-4 text-xs text-[#676a70]">En subastas, el precio se consulta por WhatsApp. Lote y daño son datos informativos; confirma los detalles antes de ofertar.</p> : null}
+              {active === "auction" ? <p className="mt-4 text-xs text-[#676a70]">Los precios «Desde» son estimados puestos en RD, sujetos a cotización final según el lote y el día de la subasta. Sin estimado validado, consulta por WhatsApp.</p> : null}
             </div>
           ) : (
             <div className="rounded-xl border border-[#e5e7eb] bg-white px-5 py-7 text-sm text-[#676a70]">No hay publicaciones disponibles en esta categoría por el momento.</div>
@@ -85,10 +86,11 @@ export function HomeInventoryTabs({
 }
 
 export function HomeMobileActionBar() {
+  const contactHref = useVehicleContactHref();
   return (
     <nav aria-label="Acciones rápidas" className="fixed inset-x-0 bottom-0 z-[60] grid grid-cols-2 gap-2 border-t border-[#e5e7eb] bg-white/95 px-3 pt-2 backdrop-blur-md lg:hidden" style={{ paddingBottom: "max(0.55rem, env(safe-area-inset-bottom))" }}>
       <Link href="/inventario" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#08090b] px-3 text-sm font-semibold text-white"><ArrowRight className="h-4 w-4" aria-hidden="true" /> Ver vehículos</Link>
-      <a href={whatsappHref("Hola, quiero información sobre los vehículos disponibles en Valcron Motors.")} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#128c4b] px-3 text-sm font-semibold text-white"><WhatsAppIcon className="h-4 w-4" /> WhatsApp</a>
+      <a href={contactHref} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#128c4b] px-3 text-sm font-semibold text-white"><WhatsAppIcon className="h-4 w-4" /> WhatsApp</a>
     </nav>
   );
 }

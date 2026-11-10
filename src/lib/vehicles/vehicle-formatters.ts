@@ -1,3 +1,4 @@
+import { landedEstimateLabel } from "@/lib/landed-estimate";
 import {
   formatCustomerFacingPrice,
   resolvePublicPriceMode,
@@ -61,6 +62,9 @@ export function displayVehiclePrice(
   vehicle: PublicVehicle,
   currency: VehicleCurrency,
 ): { label: string; primary: string; secondary?: string } {
+  if (vehicle.pricing.landedEstimateUsd && vehicle.pricing.landedEstimateUsd > 0) {
+    return { label: "Estimado puesto en RD", primary: landedEstimateLabel(vehicle.pricing.landedEstimateUsd), secondary: undefined };
+  }
   const mode =
     vehicle.pricing.publicPriceMode ??
     resolvePublicPriceMode(
@@ -134,12 +138,14 @@ export function buildVehicleWhatsAppMessage(vehicle: PublicVehicle) {
     const lot = vehicle.auction?.lotNumber?.trim();
     const provider = vehicle.fuenteSubasta?.trim();
     const lotPart = lot ? ` (lote ${lot}${provider ? ` · ${provider}` : ""})` : provider ? ` (${provider})` : "";
-    return `Hola, me interesa recibir una cotización para esta oportunidad de subasta: ${title}${lotPart}. ${url}`;
+    const estimate = vehicle.pricing.landedEstimateUsd ? ` ${landedEstimateLabel(vehicle.pricing.landedEstimateUsd)}. Sujeto a cotización final.` : "";
+    return `Hola, me interesa recibir una cotización para esta oportunidad de subasta: ${title}${lotPart}.${estimate} ${url}`;
   }
   if (vehicle.availability === "sold") {
     return `Hola, me interesa un vehículo similar a este: ${title}. ${url}`;
   }
-  return `Hola, me interesa este vehículo disponible en Valcron: ${title}. ${url}`;
+  const price = formatVehiclePrice(vehicle.pricing.usdPrice, "USD");
+  return `Hola Valcron, quiero cotizar este vehículo: ${title}${price ? ` · precio ${price}` : ""}. ${url}`;
 }
 
 export function buildVehicleWhatsAppUrl(vehicle: PublicVehicle) {

@@ -3,6 +3,7 @@
 import { revalidatePath, updateTag } from "next/cache";
 import { publicActionError } from "@/lib/action-errors";
 import { requireAdmin } from "@/lib/auth";
+import { parseLandedEstimate } from "@/lib/landed-estimate";
 import {
   canPublishVehicleListing,
   publicationBlockers,
@@ -189,6 +190,7 @@ export type VehicleInput = {
   fuel: string | null;
   condition: string | null;
   description: string | null;
+  down_payment_dop: number | null;
   price: number | null;
   currency: "USD" | "DOP";
   public_price_mode: PublicPriceMode;
@@ -223,6 +225,8 @@ function parseVehicleForm(formData: FormData): { data: VehicleInput | null; erro
   if (vin && !VIN_RE.test(vin)) {
     return { data: null, error: VEHICLE_FORM_ERRORS.vin };
   }
+  const down_payment_dop = moneyOrNull(formData, "down_payment_dop");
+  if (down_payment_dop != null && down_payment_dop < 0) return { data: null, error: "La inicial no puede ser negativa." };
   const price = moneyOrNull(formData, "price");
   if (price != null && price <= 0) {
     return { data: null, error: VEHICLE_FORM_ERRORS.price };
@@ -261,6 +265,7 @@ function parseVehicleForm(formData: FormData): { data: VehicleInput | null; erro
       condition: text(formData, "condition"),
       description: text(formData, "description"),
       price,
+      down_payment_dop,
       currency,
       public_price_mode,
       source_type,
@@ -286,6 +291,20 @@ function revalidateVehicles(id?: string) {
     revalidatePath(`/admin/inventario/${id}`);
     revalidatePath(`/inventario/${id}`);
   }
+}
+
+export async function saveVehicleLandedEstimate(formData: FormData): Promise<VehicleActionState> {
+  await requireAdmin();
+  const id = required(formData, "id");
+  if (!UUID_RE.test(id)) return { error: "Vehículo inválido." };
+  const parsed = parseLandedEstimate(String(formData.get("landed_estimate_usd") ?? ""), formData.get("validated") === "true");
+  if (!parsed.data) return { error: parsed.error };
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("vehicles").update(parsed.data).eq("id", id).eq("source_type", "other").select("id").maybeSingle();
+  if (error || !data) return { error: publicActionError(error, "No se pudo guardar el estimado de esta subasta.") };
+  revalidateVehicles(id);
+  revalidatePath("/admin/subastas/[id]", "page");
+  return { error: null, success: parsed.data.landed_estimate_validated ? "Estimado validado: se mostrará como Desde, puesto en RD." : "Guardado sin validar: el público verá Precio a consultar." };
 }
 
 export async function createVehicle(

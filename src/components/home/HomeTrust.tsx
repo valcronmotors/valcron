@@ -1,32 +1,22 @@
-import Link from "next/link";
-import { PageContainer, Section } from "@/components/public/layout";
-import { SITE } from "@/lib/site";
+import Image from "next/image";
+import { Star, ArrowUpRight } from "lucide-react";
+import { PageContainer } from "@/components/public/layout";
+import { GOOGLE_BUSINESS_PROFILE as profile, REAL_DELIVERY_PHOTOS } from "@/lib/valcron-trust";
 
-/** Verified company facts only. No reviews, ratings, or delivery photos. */
 export function HomeTrust() {
-  return (
-    <Section className="section-light bg-[#F5F5F5]" tight>
-      <PageContainer wide>
-        <div className="mx-auto flex max-w-[48rem] flex-col items-center gap-5 border border-[#E5E7EB] bg-white px-6 py-8 text-center sm:px-10">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6b7280]">Empresa</p>
-            <h2 className="mt-2 font-display text-2xl font-bold tracking-tight text-[#111111] md:text-3xl">
-              Valcron Motors Group, SRL
-            </h2>
-            <p className="mx-auto mt-3 max-w-[32rem] text-sm leading-relaxed text-[#3B3B3B]">
-              Dealer en {SITE.address.city}. Inventario publicado, búsqueda personalizada y orientación con
-              bancos locales.
-            </p>
-          </div>
-          <p className="text-sm leading-relaxed text-[#3B3B3B]">
-            {SITE.address.full}
-            <span className="mt-1 block font-semibold text-[#111111]">WhatsApp {SITE.whatsappDisplay}</span>
-          </p>
-          <Link href="/contacto" className="btn-primary h-11 px-6 text-sm">
-            Cómo llegar
-          </Link>
+  return <section className="section-light border-y border-[#e8eaed] bg-white py-8" aria-label="Reseñas reales de Valcron">
+    <PageContainer>
+      <div className="flex flex-col gap-5 rounded-2xl border border-[#e4e6ea] bg-[#f8f7f5] p-6 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#676a70]">Conoce la experiencia Valcron</p>
+          <h2 className="mt-2 text-2xl font-bold text-[#08090b]">Opiniones reales en Google</h2>
+          <p className="mt-2 text-sm text-[#676a70]">{profile.name} · Santo Domingo Este</p>
+          <p className="mt-2 flex items-center gap-2 text-lg font-bold text-[#08090b]"><span>{profile.rating.toFixed(1)}/5</span><span className="flex text-[#ec752f]" aria-label="5 de 5 estrellas">{Array.from({ length: 5 }, (_, i) => <Star key={i} className="h-4 w-4 fill-current" aria-hidden="true" />)}</span><span className="text-sm font-normal">{profile.reviewCount} reseñas en Google</span></p>
+          <p className="mt-1 text-xs text-[#676a70]">Verificado el {profile.verifiedOn}.</p>
         </div>
-      </PageContainer>
-    </Section>
-  );
+        <a href={profile.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#08090b] px-5 text-sm font-semibold text-white">Ver reseñas en Google <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
+      </div>
+      {REAL_DELIVERY_PHOTOS.length > 0 ? <div className="mt-6 grid gap-4 sm:grid-cols-3">{REAL_DELIVERY_PHOTOS.map(photo => <figure key={photo.src}><Image src={photo.src} alt={photo.alt} width={720} height={540} sizes="(max-width:640px) 90vw, 30vw" className="aspect-[4/3] w-full rounded-xl object-cover" /><figcaption className="mt-2 text-sm text-[#676a70]">{photo.caption}</figcaption></figure>)}</div> : null}
+    </PageContainer>
+  </section>;
 }

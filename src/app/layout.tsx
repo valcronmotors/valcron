@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     url: SITE.url,
     images: [
       {
-        url: "/api/public/social-image",
+        url: "/api/public/social-image?v=20261110",
         width: 1200,
         height: 630,
         alt: "Valcron Motors — dealer en Santo Domingo Este",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: SITE.seoTitle,
     description: SITE.valueProposition,
-    images: ["/api/public/social-image"],
+    images: ["/api/public/social-image?v=20261110"],
   },
 };
 

@@ -97,7 +97,7 @@ describe("vehicle normalization", () => {
     expect(vehicle).toMatchObject({ condition: null, titleType: null, primaryDamage: null, secondaryDamage: null });
     expect(input).toEqual(original);
     expect(vehicle.id).toBe(input.id);
-    expect(vehicle.pricing.publicPrice).toBe(input.price);
+    expect(vehicle.pricing.publicPrice).toBe(source_type === "other" ? null : input.price);
     expect(vehicle.images.map((image) => image.id)).toEqual(["p1", "p2"]);
     expect(vehicle.published).toBe(input.published);
   });

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { VehicleFinanceEstimate } from "@/components/public/VehicleFinanceEstimate";
 import { useDisplayCurrency } from "@/components/public/CurrencyProvider";
 import { VehiclePhoto } from "@/components/shared/VehiclePhoto";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
@@ -136,6 +137,7 @@ export function VehicleCard({
           </div>
         ) : null}
 
+        <VehicleFinanceEstimate vehicle={vehicle} compact />
         {specs.length ? (
           <p
             className={`mt-2 text-[11px] leading-5 ${light ? "text-[#8a8d91]" : "text-[#a8abb0]"}`}
@@ -166,7 +168,7 @@ export function VehicleCard({
             }
           >
             <WhatsAppIcon className="h-4 w-4" />
-            {vehicle.listingKind === "auction" || vehicle.availability === "auction" ? "Cotiza por WhatsApp" : "Consultar por WhatsApp"}
+            {vehicle.listingKind === "auction" || vehicle.availability === "auction" ? "Cotiza por WhatsApp" : "Cotizar este vehículo"}
           </a>
         </div>
       </div>

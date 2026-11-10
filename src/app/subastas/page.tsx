@@ -12,7 +12,7 @@ import { SITE, whatsappHref } from "@/lib/site";
 import { publicPageMetadata } from "@/lib/seo";
 
 export const metadata = publicPageMetadata({
-  title: "Oportunidades de subasta desde Estados Unidos",
+  title: "Subastas de vehículos de EE. UU. para RD",
   description:
     "Vehículos seleccionados por Valcron en plataformas de subasta de EE.UU. (Copart e IAA). Cotización clara. Santo Domingo Este.",
   path: "/subastas",

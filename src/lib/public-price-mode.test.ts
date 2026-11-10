@@ -160,13 +160,13 @@ describe("auction public pricing", () => {
   it("renders customer-facing price copy without zeros or enum values", () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
     const contact = toPublicVehicle(row({ source_type: "other", public_price_mode: "contact", price: 12500 }));
-    const from = toPublicVehicle(row({ source_type: "other", public_price_mode: "from", price: 18900 }));
+    const from = toPublicVehicle(row({ source_type: "other", public_price_mode: "from", price: 12500, landed_estimate_usd: 18900, landed_estimate_validated: true }));
     const estimated = toPublicVehicle(row({ source_type: "other", public_price_mode: "estimated", price: 21500 }));
     const fixed = toPublicVehicle(row({ source_type: "other", public_price_mode: "fixed", price: 24900 }));
     expect(displayVehiclePrice(contact, "USD").primary).toBe("Precio a consultar");
-    expect(displayVehiclePrice(from, "USD").primary).toBe("Desde US$ 18,900");
-    expect(displayVehiclePrice(estimated, "USD").primary).toBe("Precio estimado US$ 21,500");
-    expect(displayVehiclePrice(fixed, "USD").primary).toBe("Buy Now: US$ 24,900");
+    expect(displayVehiclePrice(from, "USD").primary).toBe("Desde US$18,900 puesto en RD — precio estimado");
+    expect(displayVehiclePrice(estimated, "USD").primary).toBe("Precio a consultar");
+    expect(displayVehiclePrice(fixed, "USD").primary).toBe("Precio a consultar");
     expect(displayVehiclePrice(contact, "USD").primary).not.toMatch(/0/);
     expect(JSON.stringify(contact)).not.toContain("buyItNowPrice");
     expect(contact.pricing.usdPrice).toBeNull();
@@ -177,7 +177,7 @@ describe("auction public pricing", () => {
   it("omits a fake JSON-LD price for contact and non-fixed auction modes", () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
     const contact = toPublicVehicle(row({ source_type: "other", public_price_mode: "contact", price: null }));
-    const from = toPublicVehicle(row({ source_type: "other", public_price_mode: "from", price: 18900 }));
+    const from = toPublicVehicle(row({ source_type: "other", public_price_mode: "from", price: 12500, landed_estimate_usd: 18900, landed_estimate_validated: true }));
     const stock = toPublicVehicle(row({ public_price_mode: "fixed", price: 18500 }));
     expect(vehicleJsonLd(contact).offers).toBeUndefined();
     expect(vehicleJsonLd(from).offers).toBeUndefined();

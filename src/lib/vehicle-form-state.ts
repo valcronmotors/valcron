@@ -31,6 +31,7 @@ export type VehicleFormValues = {
   fuel: string;
   condition: string;
   description: string;
+  down_payment_dop: string;
   price: string;
   currency: "USD" | "DOP";
   public_price_mode: PublicPriceMode;
@@ -65,6 +66,7 @@ export function emptyVehicleFormValues(now = new Date()): VehicleFormValues {
     fuel: "",
     condition: "",
     description: "",
+    down_payment_dop: "",
     price: "",
     currency: "USD",
     public_price_mode: "fixed",
@@ -91,6 +93,7 @@ export function vehicleFormValuesFromRow(vehicle: VehicleRow): VehicleFormValues
     fuel: vehicle.fuel ?? "",
     condition: vehicle.condition ?? "",
     description: vehicle.description ?? "",
+    down_payment_dop: vehicle.down_payment_dop != null ? String(vehicle.down_payment_dop) : "",
     price: vehicle.price != null ? String(vehicle.price) : "",
     currency: vehicle.currency === "DOP" ? "DOP" : "USD",
     public_price_mode: resolvePublicPriceMode(vehicle.source_type, vehicle.public_price_mode),
@@ -186,6 +189,7 @@ export function vehicleFormDataFromValues(
   formData.set("condition", values.condition);
   formData.set("description", values.description);
   formData.set("price", values.price);
+  formData.set("down_payment_dop", values.down_payment_dop);
   formData.set("currency", values.currency);
   formData.set("public_price_mode", values.public_price_mode);
   formData.set("source_type", values.source_type);

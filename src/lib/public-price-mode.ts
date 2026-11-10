@@ -103,7 +103,7 @@ export function auctionPublicPriceDisclaimer(mode: PublicPriceMode) {
     case "contact":
       return "El precio final depende del resultado de la subasta y de los servicios seleccionados.";
     case "from":
-      return "Precio de referencia. El total puede variar según el resultado de la subasta, transporte y servicios seleccionados.";
+      return "Precio estimado puesto en RD. La cotización final se confirma por WhatsApp según el lote, los servicios y el día de la subasta.";
     case "estimated":
       return "Estimación sujeta al resultado de la subasta y a los costos aplicables.";
     case "fixed":
