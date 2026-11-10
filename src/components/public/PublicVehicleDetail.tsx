@@ -149,7 +149,7 @@ export function PublicVehicleDetail({
                 <p className="mt-3 text-sm leading-relaxed text-[#676a70]">{priceNote}</p>
               ) : null}
               <VehicleFinanceEstimate vehicle={vehicle} />
-              {auctionListing ? <Link href={`/calculadoras/importacion?${new URLSearchParams({ vehiculo: title, ano: String(year) })}`} className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-[#a54d1c] underline underline-offset-4">¿Cuánto me sale puesto en RD?</Link> : null}
+              {auctionListing ? <Link href={`/calculadoras/importacion?${new URLSearchParams({ vehiculo: title, ano: String(year), provider: vehicle.source === "iaai" ? "iaai" : "copart" })}`} className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-[#a54d1c] underline underline-offset-4">¿Cuánto me sale puesto en RD?</Link> : null}
               {auctionListing ? (
                 <p className="mt-3 text-sm leading-relaxed text-[#676a70]">{AUCTION_SERVICE_COPY}</p>
               ) : null}
