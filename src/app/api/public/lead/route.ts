@@ -20,7 +20,11 @@ export function OPTIONS(request: Request) {
 export async function POST(request: Request) {
   let body: Record<string, unknown>;
   try {
-    body = (await request.json()) as Record<string, unknown>;
+    const input: unknown = await request.json();
+    if (!input || typeof input !== "object" || Array.isArray(input)) {
+      return publicJson(request, { error: "No se pudo leer la solicitud." }, 400);
+    }
+    body = input as Record<string, unknown>;
   } catch {
     return publicJson(request, { error: "No se pudo leer la solicitud." }, 400);
   }

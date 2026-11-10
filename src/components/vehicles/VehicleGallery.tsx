@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { AdminMediaPicker } from "@/components/admin/AdminMediaPicker";
 import { FormError } from "@/components/form-fields";
@@ -105,7 +106,10 @@ export function VehicleGallery({
       {current ? (
         <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/30">
           <div className="relative">
-            <img
+            <Image
+              unoptimized
+              width={1200}
+              height={800}
               src={current}
               alt={`Foto ${clampedIndex + 1} del vehículo`}
               className={`w-full object-cover ${compact ? "h-56" : "h-80 sm:h-[28rem]"}`}
@@ -166,7 +170,10 @@ export function VehicleGallery({
                 photoIndex === clampedIndex ? "ring-cyan-400" : "ring-transparent"
               }`}
             >
-              <img
+              <Image
+                unoptimized
+                width={160}
+                height={100}
                 src={url}
                 alt=""
                 className="h-16 w-full object-cover"

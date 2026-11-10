@@ -374,7 +374,6 @@ export function AdminAuctionForm({
   const [uploading, setUploading] = useState(false);
   const [localPhotos] = useState<LocalPhoto[]>([]);
   const [vehicleId, setVehicleId] = useState<string | null>(opportunity?.linked_vehicle_id ?? linkedVehicle?.id ?? null);
-  const [published, setPublished] = useState(Boolean(linkedVehicle?.published));
   const photos = useMemo(() => linkedVehicle?.vehicle_photos ?? [], [linkedVehicle?.vehicle_photos]);
   const [confirm, setConfirm] = useState<"publish" | "unpublish" | null>(null);
 
@@ -583,19 +582,6 @@ export function AdminAuctionForm({
     return id;
   }
 
-  async function handleSave() {
-    setError(null);
-    setNotice(null);
-    startTransition(async () => {
-      const result = await saveDraft();
-      if (result.error) {
-        setError(result.error);
-        return;
-      }
-      setNotice(result.success ?? "Borrador guardado.");
-    });
-  }
-
   async function handleFiles(fileList: FileList | File[]) {
     const files = [...fileList];
     if (!files.length) return;
@@ -659,7 +645,6 @@ export function AdminAuctionForm({
       setError(result.error);
       return;
     }
-    setPublished(true);
     setPublicPath(result.publicPath ?? null);
     setNotice(result.success ?? "Publicado.");
     if (!opportunity?.id) {
@@ -676,7 +661,6 @@ export function AdminAuctionForm({
       setError(result.error);
       return;
     }
-    setPublished(false);
     setPublicPath(null);
     setNotice(result.success ?? "Despublicado.");
     router.refresh();
