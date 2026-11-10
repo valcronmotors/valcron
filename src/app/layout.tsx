@@ -4,7 +4,7 @@ import Script from "next/script";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { PublicExperience } from "@/components/public/PublicExperience";
 import { SITE } from "@/lib/site";
-import { ADSENSE_CLIENT, GOOGLE_ADS_ID, GOOGLE_TAG_BOOTSTRAP } from "@/lib/google-tags";
+import { ADSENSE_BOOTSTRAP, GOOGLE_ADS_ID, GOOGLE_TAG_BOOTSTRAP } from "@/lib/google-tags";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -79,8 +79,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Script
           id="google-adsense-loader"
           strategy="afterInteractive"
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-          crossOrigin="anonymous"
+          dangerouslySetInnerHTML={{ __html: ADSENSE_BOOTSTRAP }}
         />
       </head>
       <body className="flex min-h-full flex-col bg-background font-sans text-foreground">

@@ -1,5 +1,6 @@
 "use client";
 
+import { trackWhatsAppNavigation } from "@/lib/google-tags";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Anchor, Landmark, Ship, Tag } from "lucide-react";
@@ -50,6 +51,7 @@ export function ImportCostCalculator() {
       className="grid gap-5 gloss-panel p-6 md:p-8"
       onSubmit={(event) => {
         event.preventDefault();
+        trackWhatsAppNavigation(href);
         window.open(href, "_blank", "noopener,noreferrer");
       }}
     >
