@@ -11,6 +11,7 @@ import {
   loadLocalStockVehicles,
 } from "@/lib/public-inventory";
 import { SITE, autoDealerJsonLd } from "@/lib/site";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
   title: {
@@ -37,7 +38,7 @@ export default async function Home() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(autoDealerJsonLd()) }} />
+      <JsonLd data={autoDealerJsonLd()} />
       <main>
         <HomeHero />
         <HomeBrandCarousel />

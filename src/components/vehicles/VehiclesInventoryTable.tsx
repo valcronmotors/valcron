@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   VehicleLink,
@@ -84,7 +85,10 @@ export function VehiclesInventoryTable({
               <td className="px-4 py-3">
                 {(vehiculo.fotos_urls ?? []).length > 0 ? (
                   <span className="inline-flex items-center gap-2">
-                    <img
+                    <Image
+                      unoptimized
+                      width={56}
+                      height={40}
                       src={vehiculo.fotos_urls![0]}
                       alt=""
                       className="h-10 w-14 rounded-md object-cover"
