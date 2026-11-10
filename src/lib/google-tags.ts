@@ -2,6 +2,20 @@ export const GOOGLE_ADS_ID = "AW-18548302229";
 export const WHATSAPP_CONVERSION_DESTINATION =
   "AW-18548302229/lW0OCPrd268dEJXDwoxF";
 export const ADSENSE_CLIENT = "ca-pub-7804080664715961";
+export const ADSENSE_SCRIPT_URL = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`;
+
+// Run after hydration; keep Next's data-nscript attribute off Google's own tag.
+export const ADSENSE_BOOTSTRAP = `
+(function () {
+  var src = '${ADSENSE_SCRIPT_URL}';
+  if (document.querySelector('script[src="' + src + '"]')) return;
+  var script = document.createElement('script');
+  script.async = true;
+  script.src = src;
+  script.crossOrigin = 'anonymous';
+  document.head.appendChild(script);
+})();
+`;
 
 // Runs in the head before hydration so early clicks can queue their conversion.
 // Root-layout persistence and the guard keep a single listener across SPA routes.

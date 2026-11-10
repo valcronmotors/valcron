@@ -1,6 +1,6 @@
 import { runInNewContext } from "node:vm";
 import { describe, expect, it, vi } from "vitest";
-import { GOOGLE_ADS_ID, GOOGLE_TAG_BOOTSTRAP, WHATSAPP_CONVERSION_DESTINATION } from "@/lib/google-tags";
+import { ADSENSE_BOOTSTRAP, ADSENSE_SCRIPT_URL, GOOGLE_ADS_ID, GOOGLE_TAG_BOOTSTRAP, WHATSAPP_CONVERSION_DESTINATION } from "@/lib/google-tags";
 import { isAdminPublicPath, isPublicPath } from "@/lib/site";
 
 function browserFixture() {
@@ -26,6 +26,20 @@ function browserFixture() {
   const conversions = () => window.dataLayer.map((args) => Array.from(args)).filter((args) => args[0] === "event");
   return { window, addEventListener, bootstrap, click, conversions };
 }
+
+describe("AdSense loader", () => {
+  it("adds the exact Google script attributes in the head once", () => {
+    const scripts: Record<string, unknown>[] = [];
+    const document = {
+      querySelector: () => scripts.find((script) => script.src === ADSENSE_SCRIPT_URL),
+      createElement: () => ({}),
+      head: { appendChild: (script: Record<string, unknown>) => scripts.push(script) },
+    };
+    runInNewContext(ADSENSE_BOOTSTRAP, { document });
+    runInNewContext(ADSENSE_BOOTSTRAP, { document });
+    expect(scripts).toEqual([{ async: true, src: ADSENSE_SCRIPT_URL, crossOrigin: "anonymous" }]);
+  });
+});
 
 describe("Google Ads WhatsApp conversion", () => {
   it("lets Google read ads.txt without opening private routes or similarly named paths", () => {
