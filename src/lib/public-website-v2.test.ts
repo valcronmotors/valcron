@@ -271,7 +271,7 @@ describe("public copy constraints", () => {
   it("uses Dominican WhatsApp copy with vehicle context", () => {
     const stock = toPublicVehicle(row());
     const auction = toPublicVehicle(row({ source_type: "other", public_price_mode: "contact", price: null }));
-    expect(buildVehicleWhatsAppMessage(stock)).toMatch(/^Hola, me interesa este vehículo disponible en Valcron: 2023 Toyota RAV4/);
+    expect(buildVehicleWhatsAppMessage(stock)).toMatch(/^Hola Valcron, quiero cotizar este vehículo: 2023 Toyota RAV4/);
     expect(buildVehicleWhatsAppMessage(stock)).toContain("https://valcronmotors.com/inventario/");
     expect(buildVehicleWhatsAppMessage(auction)).toMatch(/cotización para esta oportunidad de subasta/);
   });

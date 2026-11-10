@@ -8,9 +8,9 @@ import { SITE } from "@/lib/site";
 import { publicPageMetadata } from "@/lib/seo";
 
 export const metadata = publicPageMetadata({
-  title: "Importación de vehículos a República Dominicana",
+  title: "Importa tu vehículo a República Dominicana",
   description:
-    "Selección, compra, transporte e importación a RD. Sin impuestos garantizados por adelantado.",
+    "Importa por encargo con Valcron Motors: búsqueda, compra en subasta, transporte y entrega en RD. Calcula un estimado y solicita tu cotización por WhatsApp.",
   path: "/importacion",
 });
 
@@ -60,6 +60,7 @@ const PHASES = [
 export default function ImportacionPage() {
   return (
     <main>
+      <div className="bg-[#fff4ed] px-[var(--page-gutter)] py-4 text-center"><Link href="/solicitar-vehiculo" className="font-semibold text-[#a54d1c] underline underline-offset-4">Solicitar mi vehículo por encargo</Link> · <Link href="/calculadoras/importacion" className="font-semibold text-[#08090b] underline underline-offset-4">¿Cuánto me sale puesto en RD?</Link></div>
       <PageHero
         kicker="Importación"
         title="Del origen a República Dominicana"

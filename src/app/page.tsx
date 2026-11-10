@@ -3,6 +3,8 @@ import { HomeInventoryTabs } from "@/components/home/HomeInventoryTabs";
 import { HomeBuyGuide } from "@/components/home/HomeBuyGuide";
 import { HomeFinalCta } from "@/components/home/HomeFinalCta";
 import { HomeFinancingTeaser } from "@/components/home/HomeFinancingTeaser";
+import { HomeTrust } from "@/components/home/HomeTrust";
+import { HomeImport } from "@/components/home/HomeImport";
 import { HomeHero } from "@/components/home/HomeHero";
 import { HomeBrandCarousel } from "@/components/home/HomeBrandCarousel";
 import { HomeModelSpotlight } from "@/components/home/HomeModelSpotlight";
@@ -26,7 +28,7 @@ export const metadata: Metadata = {
     title: "Dealer en Santo Domingo Este | Valcron Motors",
     description: SITE.valueProposition,
     url: SITE.url,
-    images: [{ url: "/api/public/social-image", width: 1200, height: 630, alt: "Valcron Motors — dealer en Santo Domingo Este" }],
+    images: [{ url: "/api/public/social-image?v=20261110", width: 1200, height: 630, alt: "Valcron Motors — dealer en Santo Domingo Este" }],
   },
 };
 
@@ -41,13 +43,15 @@ export default async function Home() {
       <JsonLd data={autoDealerJsonLd()} />
       <main>
         <HomeHero />
-        <HomeBrandCarousel />
         <HomeInventoryTabs
           vehicles={inventory.data}
           auctions={auctions.data}
           inventoryError={inventory.error}
           auctionError={auctions.error}
         />
+        <HomeTrust />
+        <HomeBrandCarousel />
+        <HomeImport />
         <HomeModelSpotlight />
         <HomeBuyGuide />
         <HomeFinancingTeaser />

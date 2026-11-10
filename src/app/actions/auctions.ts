@@ -761,7 +761,7 @@ export async function listAuctionOpportunities() {
     const withPriceMode = await supabase
       .from("vehicles")
       .select(
-        "id, published, status, year, make, model, description, price, public_price_mode, source_type, vehicle_photos ( id, is_cover, storage_path )",
+        "id, published, status, year, make, model, description, price, public_price_mode, landed_estimate_usd, landed_estimate_validated, source_type, vehicle_photos ( id, is_cover, storage_path )",
       )
       .in("id", linkedIds);
     const linkedVehicles =
@@ -804,7 +804,7 @@ export async function getAuctionOpportunity(id: string) {
     const withPriceMode = await supabase
       .from("vehicles")
       .select(
-        "id, published, status, year, make, model, description, price, public_price_mode, source_type, vehicle_photos ( id, is_cover, storage_path, sort_order, alt_text )",
+        "id, published, status, year, make, model, description, price, public_price_mode, landed_estimate_usd, landed_estimate_validated, source_type, vehicle_photos ( id, is_cover, storage_path, sort_order, alt_text )",
       )
       .eq("id", opportunity.linked_vehicle_id)
       .maybeSingle();

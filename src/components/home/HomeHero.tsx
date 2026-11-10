@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Search } from "lucide-react";
 import { PageContainer } from "@/components/public/layout";
-import { whatsappHref } from "@/lib/site";
 
 /**
  * Exact user-supplied campaign artwork. The full 16:9 image stays visible
@@ -31,14 +30,12 @@ export function HomeHero() {
           >
             Ver inventario <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
           </Link>
-          <a
-            href={whatsappHref("Hola, quiero solicitar una búsqueda personalizada de vehículo con Valcron Motors.")}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/importacion"
             className="inline-flex min-h-12 w-full items-center justify-center gap-1 rounded-xl border border-[#cbc5c0] bg-white px-2 text-center text-[12px] font-bold text-[#24211f] transition hover:bg-[#fff4ed] sm:min-h-14 sm:gap-2 sm:px-4 sm:text-base"
           >
-            <Search className="h-4 w-4 shrink-0" aria-hidden="true" /> Solicitar búsqueda
-          </a>
+            <Search className="h-4 w-4 shrink-0" aria-hidden="true" /> Importa tu vehículo
+          </Link>
         </div>
       </PageContainer>
     </section>

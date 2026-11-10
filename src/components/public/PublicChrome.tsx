@@ -6,6 +6,7 @@ import { Navbar } from "@/components/Navbar";
 import { CurrencyProvider } from "@/components/public/CurrencyProvider";
 import { WhatsAppFab } from "@/components/public/WhatsAppFab";
 import { HomeMobileActionBar } from "@/components/home/HomeInventoryTabs";
+import { VehicleContactProvider } from "@/components/public/VehicleContactContext";
 
 export function PublicChrome({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -21,6 +22,7 @@ export function PublicChrome({ children }: { children: ReactNode }) {
 
   return (
     <CurrencyProvider>
+      <VehicleContactProvider>
       <div className="public-site flex min-h-full flex-1 flex-col bg-[#f5f6f7] pb-20 text-[#08090b] lg:pb-0">
         <Navbar />
         <div className="flex min-h-0 flex-1 flex-col overflow-x-clip">{children}</div>
@@ -28,6 +30,7 @@ export function PublicChrome({ children }: { children: ReactNode }) {
         <WhatsAppFab />
         <HomeMobileActionBar />
       </div>
+      </VehicleContactProvider>
     </CurrencyProvider>
   );
 }

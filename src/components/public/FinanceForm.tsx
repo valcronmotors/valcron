@@ -6,7 +6,8 @@ import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { formatDop, formatUsd } from "@/lib/money";
 import { SITE, whatsappHref } from "@/lib/site";
-import { monthlyPayment } from "@/lib/public-filters";
+import { financeEstimate } from "@/lib/vehicle-finance";
+import { financeConfig } from "@/lib/finance-config";
 import { DEFAULT_TASA_USD_DOP } from "@/lib/vehicle-costs";
 
 const fieldClass = "field-input";
@@ -16,17 +17,19 @@ export function FinanceForm() {
   const initialMonto = Number(searchParams.get("monto") ?? 25000) || 25000;
   const [nombre, setNombre] = useState("");
   const [monto, setMonto] = useState(initialMonto);
-  const [downPct, setDownPct] = useState(20);
-  const [plazo, setPlazo] = useState(48);
+  const [downPct, setDownPct] = useState<number>(financeConfig.defaultDownPaymentPct);
+  const [downOverride, setDownOverride] = useState<number | null>(() => {
+    const value = Number(searchParams.get("inicialDop"));
+    return searchParams.has("inicialDop") && Number.isFinite(value) && value >= 0 ? value : null;
+  });
+  const [plazo, setPlazo] = useState<number>(financeConfig.defaultTermMonths);
   const [perfil, setPerfil] = useState("Persona física asalariada");
 
   const simulation = useMemo(() => {
-    const down = Math.round(monto * (downPct / 100));
-    const financed = Math.max(monto - down, 0);
-    const cuota = monthlyPayment(financed, plazo);
-    const cuotaDop = cuota * DEFAULT_TASA_USD_DOP;
-    return { down, financed, cuota, cuotaDop };
-  }, [downPct, monto, plazo]);
+    const estimate = financeEstimate(monto, downOverride ?? monto * DEFAULT_TASA_USD_DOP * downPct / 100, plazo);
+    const downDop = estimate?.downPaymentDop ?? 0;
+    return { down: downDop / DEFAULT_TASA_USD_DOP, downDop, financed: (estimate?.financedDop ?? 0) / DEFAULT_TASA_USD_DOP, cuota: (estimate?.monthlyDop ?? 0) / DEFAULT_TASA_USD_DOP, cuotaDop: estimate?.monthlyDop ?? 0 };
+  }, [downOverride, downPct, monto, plazo]);
 
   const href = useMemo(() => {
     const lines = [
@@ -34,7 +37,7 @@ export function FinanceForm() {
       nombre ? `Nombre: ${nombre}` : null,
       `Perfil: ${perfil}`,
       `Monto del vehículo: ${formatUsd(monto)}`,
-      `Inicial estimada: ${formatUsd(simulation.down)} (${downPct}%)`,
+      `Inicial estimada: ${formatDop(simulation.downDop)}`,
       `Plazo: ${plazo} meses`,
       `Monto a financiar: ${formatUsd(simulation.financed)}`,
       `Cuota ilustrativa: ${formatUsd(simulation.cuota)} / mes · ${formatDop(simulation.cuotaDop)}`,
@@ -43,7 +46,7 @@ export function FinanceForm() {
       .join("\n");
 
     return whatsappHref(lines);
-  }, [downPct, monto, nombre, perfil, plazo, simulation]);
+  }, [monto, nombre, perfil, plazo, simulation]);
 
   return (
     <form
@@ -72,14 +75,14 @@ export function FinanceForm() {
         />
       </label>
       <label className="block text-sm text-muted">
-        Inicial {downPct}% · {formatUsd(simulation.down)}
+        Inicial estimada · {formatDop(simulation.downDop)}
         <input
           type="range"
           min={20}
           max={60}
           step={1}
           value={downPct}
-          onChange={(event) => setDownPct(Number(event.target.value))}
+          onChange={(event) => { setDownOverride(null); setDownPct(Number(event.target.value)); }}
           className="luxury-range mt-4 w-full"
         />
       </label>

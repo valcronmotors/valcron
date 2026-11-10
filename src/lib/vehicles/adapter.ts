@@ -97,7 +97,7 @@ async function loadCatalogRows(): Promise<{ data: PublicVehicle[]; error: string
 
 const getCachedCatalogVehicles = unstable_cache(
   loadCatalogRows,
-  ["public-catalog-vehicles-public-details-v2"],
+  ["public-catalog-vehicles-conversion-v3"],
   { revalidate: PUBLIC_INVENTORY_REVALIDATE_SECONDS, tags: [PUBLIC_INVENTORY_CACHE_TAG] },
 );
 

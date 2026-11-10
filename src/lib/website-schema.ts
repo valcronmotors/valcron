@@ -53,6 +53,9 @@ export type VehicleRow = {
   description: string | null;
   price: number | null;
   currency: VehicleCurrencyCode;
+  down_payment_dop?: number | null;
+  landed_estimate_usd?: number | null;
+  landed_estimate_validated?: boolean;
   public_price_mode?: PublicPriceMode | null;
   location: string | null;
   source_type: VehicleSourceType;

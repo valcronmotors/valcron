@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { CurrencySwitch, useDisplayCurrency } from "@/components/public/CurrencyProvider";
 import { QuoteForm } from "@/components/public/QuoteForm";
+import { VehicleFinanceEstimate } from "@/components/public/VehicleFinanceEstimate";
+import { VehicleContact } from "@/components/public/VehicleContactContext";
 import { VehicleCard } from "@/components/public/VehicleCard";
 import { VehicleGallery } from "@/components/public/VehicleGallery";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
@@ -66,6 +68,7 @@ export function PublicVehicleDetail({
 
   return (
     <article className="section-light bg-[#f5f6f7] pb-[calc(5.5rem+env(safe-area-inset-bottom))] text-[#08090b] lg:pb-16">
+      <VehicleContact href={whatsapp} />
       <div
         className="mx-auto w-full max-w-[var(--content-max)] py-6 lg:py-12"
         style={{ paddingInline: "var(--page-gutter)" }}
@@ -145,6 +148,8 @@ export function PublicVehicleDetail({
               {priceNote ? (
                 <p className="mt-3 text-sm leading-relaxed text-[#676a70]">{priceNote}</p>
               ) : null}
+              <VehicleFinanceEstimate vehicle={vehicle} />
+              {auctionListing ? <Link href={`/calculadoras/importacion?${new URLSearchParams({ vehiculo: title, ano: String(year) })}`} className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-[#a54d1c] underline underline-offset-4">¿Cuánto me sale puesto en RD?</Link> : null}
               {auctionListing ? (
                 <p className="mt-3 text-sm leading-relaxed text-[#676a70]">{AUCTION_SERVICE_COPY}</p>
               ) : null}
@@ -179,11 +184,11 @@ export function PublicVehicleDetail({
                 className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#d8dbe0] bg-white text-sm font-semibold text-[#08090b] transition hover:border-[#08090b]"
               >
                 <WhatsAppIcon className="h-4 w-4" />
-                Consultar por WhatsApp
+                Cotizar este vehículo
               </a>
               {canFinance ? (
                 <Link
-                  href={`/financiamiento?monto=${financeAmount}`}
+                  href={`/calculadoras/financiamiento?monto=${financeAmount}${vehicle.pricing.downPaymentDop != null ? `&inicialDop=${vehicle.pricing.downPaymentDop}` : ""}`}
                   className="inline-flex h-12 w-full items-center justify-center rounded-xl border border-transparent text-sm font-semibold text-[#676a70] underline-offset-4 hover:underline"
                 >
                   Conocer opciones de financiamiento
@@ -261,7 +266,7 @@ export function PublicVehicleDetail({
                 className="mt-5 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[#d8dbe0] px-5 text-sm font-semibold text-[#08090b] transition hover:border-[#08090b]"
               >
                 <WhatsAppIcon className="h-4 w-4" />
-                Consultar por WhatsApp
+                Cotizar este vehículo
               </a>
             </div>
             <QuoteForm

@@ -48,6 +48,8 @@ export interface VehiclePricing {
   priceVisible?: boolean;
   priceLabel?: string | null;
   kind?: VehiclePriceKind;
+  downPaymentDop?: number | null;
+  landedEstimateUsd?: number | null;
   publicPriceMode?: "contact" | "from" | "estimated" | "fixed";
   exchangeRate?: number | null;
 }

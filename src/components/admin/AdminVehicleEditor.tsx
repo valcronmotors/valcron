@@ -16,6 +16,7 @@ import {
   updateVehiclePhoto,
 } from "@/app/actions/vehicles";
 import { AdminConfirmDialog, AdminModal } from "@/components/admin/AdminModal";
+import { AdminLandedEstimateEditor } from "@/components/admin/AdminLandedEstimateEditor";
 import { AdminMediaPicker } from "@/components/admin/AdminMediaPicker";
 import { AdminConvertVehicleToAuctionButton } from "@/components/admin/AdminConvertVehicleToAuctionButton";
 import { AdminSearchableSelect } from "@/components/admin/AdminSearchableSelect";
@@ -1228,6 +1229,8 @@ export function AdminVehicleEditor({ vehicle }: { vehicle?: VehicleRow | null })
                   <input type="hidden" name="currency" value={values.currency} />
                 </>
               )}
+              {!isAuctionOriginSource(values.source_type) ? <AdminField label="Inicial aprobada (RD$), opcional"><AdminInput type="number" min={0} step="0.01" name="down_payment_dop" value={values.down_payment_dop} onChange={(event) => patchValues({ down_payment_dop: event.target.value })} /></AdminField> : null}
+              {isAuctionOriginSource(values.source_type) ? <AdminLandedEstimateEditor vehicleId={vehicle?.id} amount={vehicle?.landed_estimate_usd} validated={vehicle?.landed_estimate_validated} /> : null}
               <p className="mt-2 text-sm text-[var(--admin-text-muted)]">
                 Vista cliente: <span className="font-semibold text-[var(--admin-text)]">{pricePreview}</span>
               </p>

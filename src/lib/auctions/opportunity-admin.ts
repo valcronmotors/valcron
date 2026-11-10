@@ -49,6 +49,8 @@ export type LinkedVehicleSummary = {
   model: string | null;
   description: string | null;
   price: number | null;
+  landed_estimate_usd?: number | null;
+  landed_estimate_validated?: boolean;
   public_price_mode?: PublicPriceMode | null;
   source_type: VehicleSourceType;
   vehicle_photos?: { id: string; is_cover: boolean; storage_path?: string | null }[] | null;

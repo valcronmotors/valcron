@@ -7,7 +7,7 @@ import { loadLocalStockVehicles } from "@/lib/public-inventory";
 import { publicPageMetadata } from "@/lib/seo";
 
 export const metadata = publicPageMetadata({
-  title: "Inventario Valcron — vehículos disponibles",
+  title: "Vehículos en venta en Santo Domingo Este",
   description:
     "Vehículos disponibles directamente a través de Valcron Motors en Santo Domingo Este. Filtra por marca, modelo y año.",
   path: "/inventario",
