@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import type { PublicVehicle } from "@/types/vehicle";
+import { createAdminClient, isServiceRoleConfigured } from "@/utils/supabase/admin";
+import { confirmedAuctionRunAndDrive } from "@/lib/auction-detail-facts";
 import { notFound, permanentRedirect } from "next/navigation";
 import { PublicVehicleDetail } from "@/components/public/PublicVehicleDetail";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -8,6 +11,25 @@ import { absoluteUrl, breadcrumbJsonLd, publicPageMetadata, vehicleJsonLd } from
 import { getSimilarVehicles } from "@/lib/vehicles/adapter";
 import { vehicleDisplayTitle, vehicleSeoDescription } from "@/lib/vehicles/vehicle-formatters";
 import { isVehicleUuid, vehiclePath } from "@/lib/vehicles/vehicle-slugs";
+
+
+// This server-only projection releases one approved lot fact, never the private metadata.
+async function loadAuctionRunAndDrive(vehicle: PublicVehicle) {
+  if (!vehicle.published || vehicle.listingKind !== "auction" || !isServiceRoleConfigured()) return false;
+  const { data, error } = await createAdminClient()
+    .from("auction_opportunities")
+    .select("auction_metadata")
+    .eq("linked_vehicle_id", vehicle.id)
+    .eq("status", "published")
+    .limit(1)
+    .abortSignal(AbortSignal.timeout(5000))
+    .maybeSingle();
+  if (error) {
+    console.error("auction public run-and-drive lookup failed", error.code);
+    return false;
+  }
+  return confirmedAuctionRunAndDrive(data?.auction_metadata?.run_and_drive);
+}
 
 export async function generateMetadata({
   params,
@@ -62,7 +84,7 @@ export default async function InventarioDetallePage({
     permanentRedirect(vehiclePath(result.data.slug));
   }
 
-  const similar = await getSimilarVehicles(result.data, 4);
+  const [similar, runAndDrive] = await Promise.all([getSimilarVehicles(result.data, 4), loadAuctionRunAndDrive(result.data)]);
   const title = vehicleDisplayTitle(result.data);
 
   return (
@@ -75,7 +97,7 @@ export default async function InventarioDetallePage({
         ])}
       />
       <JsonLd data={vehicleJsonLd(result.data)} />
-      <PublicVehicleDetail vehicle={result.data} similar={similar.data} />
+      <PublicVehicleDetail vehicle={result.data} similar={similar.data} auctionRunAndDrive={runAndDrive} />
     </main>
   );
 }
