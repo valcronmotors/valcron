@@ -109,16 +109,6 @@ export function VehicleCard({
           <p className={`mt-1 text-sm ${light ? "text-[#676a70]" : "text-[#d4d4d4]"}`}>{trim}</p>
         ) : null}
 
-        {vehicle.listingKind === "auction" || vehicle.availability === "auction" ? (
-          <p className={`mt-1.5 text-xs ${light ? "text-[#676a70]" : "text-[#d4d4d4]"}`}>
-            {[
-              vehicle.fuenteSubasta,
-              vehicle.auction?.lotNumber ? `Lote ${vehicle.auction.lotNumber}` : null,
-            ]
-              .filter(Boolean)
-              .join(" · ")}
-          </p>
-        ) : null}
 
         {price.primary ? (
           <div className="mt-2.5">
@@ -137,6 +127,7 @@ export function VehicleCard({
           </div>
         ) : null}
 
+        {vehicle.listingKind === "auction" && vehicle.pricing.landedEstimateUsd != null ? <p className="mt-2 text-xs font-semibold text-[#a54d1c]">Impuestos y placa incluidos</p> : null}
         <VehicleFinanceEstimate vehicle={vehicle} compact />
         {specs.length ? (
           <p

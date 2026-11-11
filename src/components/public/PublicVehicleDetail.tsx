@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { CurrencySwitch, useDisplayCurrency } from "@/components/public/CurrencyProvider";
 import { QuoteForm } from "@/components/public/QuoteForm";
-import { VehicleFinanceEstimate } from "@/components/public/VehicleFinanceEstimate";
+import { FinanceSimulator } from "@/components/public/FinanceSimulator";
 import { VehicleContact } from "@/components/public/VehicleContactContext";
 import { VehicleCard } from "@/components/public/VehicleCard";
 import { VehicleGallery } from "@/components/public/VehicleGallery";
@@ -19,7 +19,6 @@ import {
 import { publicListingBadge, publicVehicleInquiryLabel } from "@/lib/vehicles/vehicle-status";
 import {
   AUCTION_QUOTE_PREFILL,
-  AUCTION_SERVICE_COPY,
   auctionPublicPriceDisclaimer,
 } from "@/lib/public-price-mode";
 import type { PublicVehicle } from "@/types/vehicle";
@@ -148,11 +147,9 @@ export function PublicVehicleDetail({
               {priceNote ? (
                 <p className="mt-3 text-sm leading-relaxed text-[#676a70]">{priceNote}</p>
               ) : null}
-              <VehicleFinanceEstimate vehicle={vehicle} />
+              {canFinance ? <div className="mt-5"><FinanceSimulator key={vehicle.id} priceUsd={financeAmount} downPaymentDop={vehicle.pricing.downPaymentDop} vehicleTitle={title} fixedPrice /></div> : null}
               {auctionListing ? <Link href={`/calculadoras/importacion?${new URLSearchParams({ vehiculo: title, ano: String(year), provider: vehicle.source === "iaai" ? "iaai" : "copart" })}`} className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-[#a54d1c] underline underline-offset-4">¿Cuánto me sale puesto en RD?</Link> : null}
-              {auctionListing ? (
-                <p className="mt-3 text-sm leading-relaxed text-[#676a70]">{AUCTION_SERVICE_COPY}</p>
-              ) : null}
+              {auctionListing && vehicle.pricing.landedEstimateUsd != null ? <p className="mt-3 text-sm font-semibold text-[#a54d1c]">Impuestos y placa incluidos</p> : null}
             </div>
 
             {highlightSpecs.length ? (
