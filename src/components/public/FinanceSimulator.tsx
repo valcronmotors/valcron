@@ -19,7 +19,7 @@ export function FinanceSimulator({ priceUsd = 25000, downPaymentDop, vehicleTitl
   const estimate = price.trim() && down.trim() ? financeEstimate(Number(price), Number(down), months) : null;
   const message = ["Hola Valcron, quiero cotizar financiamiento.", vehicleTitle,
     `Precio del vehículo: ${formatUsd(Number(price) || 0)}`,
-    ...(estimate ? [`Inicial estimada: ${dop(estimate.downPaymentDop)}`, `Plazo: ${months} meses`, `Cuota estimada: ${dop(estimate.monthlyDop)}/mes`, `Tasa ilustrativa: ${estimate.annualRate * 100}% anual`] : []),
+    ...(estimate ? [`Inicial estimada: ${dop(estimate.downPaymentDop)}`, `Plazo: ${months} meses`, `Cuota estimada: ${dop(Math.ceil(estimate.monthlyDop))}/mes`, `Tasa ilustrativa: ${estimate.annualRate * 100}% anual`] : []),
     "Estimación sujeta a evaluación bancaria y cotización final."].filter(Boolean).join("\n");
   return <section aria-label="Simulador de financiamiento" className="min-w-0 rounded-2xl border border-[#e4e6ea] bg-white p-5 text-[#08090b] sm:p-6">
     <h3 className="text-xl font-bold">Simula tu cuota</h3>
