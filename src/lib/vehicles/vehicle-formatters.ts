@@ -63,7 +63,7 @@ export function displayVehiclePrice(
   currency: VehicleCurrency,
 ): { label: string; primary: string; secondary?: string } {
   if (vehicle.pricing.landedEstimateUsd && vehicle.pricing.landedEstimateUsd > 0) {
-    return { label: "Estimado puesto en RD", primary: landedEstimateLabel(vehicle.pricing.landedEstimateUsd), secondary: undefined };
+    return { label: "Precio", primary: `US$${formatDecimal(vehicle.pricing.landedEstimateUsd, vehicle.pricing.landedEstimateUsd % 1 ? 2 : 0)}`, secondary: undefined };
   }
   const mode =
     vehicle.pricing.publicPriceMode ??

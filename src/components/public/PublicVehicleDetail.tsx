@@ -65,6 +65,22 @@ export function PublicVehicleDetail({
     { label: "Exterior", value: vehicle.exteriorColor?.trim() || null },
   ].filter((item): item is { label: string; value: string } => Boolean(item.value));
 
+  if (auctionListing) return (
+    <article className="section-light bg-[#f5f6f7] py-6 text-[#08090b] lg:py-12">
+      <VehicleContact href={whatsapp} />
+      <div className="mx-auto grid w-full max-w-[var(--content-max)] min-w-0 gap-6 px-[var(--page-gutter)] lg:grid-cols-[minmax(0,1.55fr)_minmax(20rem,0.95fr)] lg:items-start lg:gap-10">
+        <VehicleGallery photos={photos} title={title} />
+        <aside className="min-w-0 rounded-2xl border border-[#e8eaed] bg-white p-5 sm:p-6">
+          <h1 className="break-words text-3xl font-bold tracking-tight">{title}</h1>
+          <p className="mt-6 text-2xl font-bold">{price.primary}</p>
+          {vehicle.pricing.landedEstimateUsd != null ? <p className="mt-3 text-sm font-semibold text-[#a54d1c]">Impuestos y placa incluidos</p> : null}
+          <p className="mt-3 text-xs leading-relaxed text-[#676a70]">Precio estimado. La cotización final se confirma por WhatsApp según el lote y el día de la subasta.</p>
+          <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="home-orange-button mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-4 text-center font-semibold"><WhatsAppIcon className="h-4 w-4" />Cotizar por WhatsApp</a>
+        </aside>
+      </div>
+    </article>
+  );
+
   return (
     <article className="section-light bg-[#f5f6f7] pb-[calc(5.5rem+env(safe-area-inset-bottom))] text-[#08090b] lg:pb-16">
       <VehicleContact href={whatsapp} />
