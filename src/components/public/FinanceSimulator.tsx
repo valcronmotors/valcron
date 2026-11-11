@@ -10,8 +10,8 @@ import { whatsappHref } from "@/lib/site";
 const field = "mt-2 min-h-12 w-full min-w-0 rounded-xl border border-[#d8dbe0] bg-white px-3 py-2 text-base text-[#08090b] focus:outline-none focus:ring-2 focus:ring-[#ec752f]";
 const dop = (value: number) => `RD$${formatDecimal(value, 0)}`;
 
-export function FinanceSimulator({ priceUsd = 25000, downPaymentDop, vehicleTitle, fixedPrice = false }: {
-  priceUsd?: number; downPaymentDop?: number | null; vehicleTitle?: string; fixedPrice?: boolean;
+export function FinanceSimulator({ priceUsd = 25000, downPaymentDop, vehicleTitle, fixedPrice = false, ctaLabel = "Cotizar por WhatsApp" }: {
+  priceUsd?: number; downPaymentDop?: number | null; vehicleTitle?: string; fixedPrice?: boolean; ctaLabel?: string;
 }) {
   const [price, setPrice] = useState(String(priceUsd));
   const [down, setDown] = useState(String(Math.round(downPaymentDop ?? priceUsd * DEFAULT_TASA_USD_DOP * financeConfig.defaultDownPaymentPct / 100)));
@@ -23,7 +23,7 @@ export function FinanceSimulator({ priceUsd = 25000, downPaymentDop, vehicleTitl
     `Precio del vehículo: ${formatUsd(Number(price) || 0)}`,
     ...(estimate ? [`Inicial estimada: ${dop(estimate.downPaymentDop)}`, `Plazo: ${years} ${years === 1 ? "año" : "años"}`, `Cuota estimada: ${dop(Math.ceil(estimate.monthlyDop))}/mes`, `Tasa ilustrativa: ${estimate.annualRate * 100}% anual`] : []),
     "Estimación sujeta a evaluación bancaria y cotización final."].filter(Boolean).join("\n");
-  return <section aria-label="Simulador de financiamiento" className="min-w-0 rounded-2xl border border-[#e4e6ea] bg-white p-5 text-[#08090b] sm:p-6">
+  return <section aria-label="Simulador de financiamiento" className="min-w-0 rounded-2xl border border-[#e4e6ea] bg-white p-5 text-left text-[#08090b] sm:p-6">
     <h3 className="text-xl font-bold">Simula tu cuota</h3>
     <p className="mt-1 text-sm text-[#676a70]">Ajusta la inicial, los años y el interés.</p>
     <p aria-live="polite" className="mt-3 rounded-xl bg-[#fff4eb] px-3 py-2 text-sm font-bold text-[#944314]">{estimate ? `Inicial: ${dop(estimate.downPaymentDop)} · ${years} ${years === 1 ? "año" : "años"} · ${Number(interest)}% anual` : "Completa los valores del simulador"}</p>
@@ -37,6 +37,6 @@ export function FinanceSimulator({ priceUsd = 25000, downPaymentDop, vehicleTitl
       {estimate ? <><p className="text-xs font-semibold uppercase tracking-wider text-[#944314]">Cuota estimada mensual</p><p className="mt-2 break-words text-3xl font-bold">{dop(Math.ceil(estimate.monthlyDop))}</p><p className="mt-2 text-sm text-[#50545b]">A financiar: {dop(estimate.financedDop)}</p></> : <p className="text-sm text-[#944314]">Introduce una inicial menor que el precio y un interés anual entre 8% y 30%.</p>}
     </div>
     <p className="mt-3 text-xs leading-relaxed text-[#676a70]">Tasa ilustrativa {interest || "—"}% anual · cambio RD${DEFAULT_TASA_USD_DOP}/US$1. Cuota estimada, sujeta a aprobación bancaria y cotización final.</p>
-    <a className="home-orange-button mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-xl px-4 text-center text-sm font-semibold" href={whatsappHref(message)} target="_blank" rel="noopener noreferrer">Cotizar por WhatsApp</a>
+    <a className="home-orange-button mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-xl px-4 text-center text-sm font-semibold" href={whatsappHref(message)} target="_blank" rel="noopener noreferrer">{ctaLabel}</a>
   </section>;
 }

@@ -164,7 +164,7 @@ describe("auction public pricing", () => {
     const estimated = toPublicVehicle(row({ source_type: "other", public_price_mode: "estimated", price: 21500 }));
     const fixed = toPublicVehicle(row({ source_type: "other", public_price_mode: "fixed", price: 24900 }));
     expect(displayVehiclePrice(contact, "USD").primary).toBe("Precio a consultar");
-    expect(displayVehiclePrice(from, "USD").primary).toBe("Desde US$18,900 puesto en RD — precio estimado");
+    expect(displayVehiclePrice(from, "USD").primary).toBe("US$18,900");
     expect(displayVehiclePrice(estimated, "USD").primary).toBe("Precio a consultar");
     expect(displayVehiclePrice(fixed, "USD").primary).toBe("Precio a consultar");
     expect(displayVehiclePrice(contact, "USD").primary).not.toMatch(/0/);

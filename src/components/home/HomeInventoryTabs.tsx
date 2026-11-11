@@ -64,7 +64,7 @@ export function HomeInventoryTabs({
                   ))}
                 </VehicleCarousel>
               </div>
-              {active === "auction" ? <p className="mt-4 text-xs text-[#676a70]">Los precios «Desde» son estimados puestos en RD, sujetos a cotización final según el lote y el día de la subasta. Sin estimado validado, consulta por WhatsApp.</p> : null}
+              {active === "auction" ? <p className="mt-4 text-xs text-[#676a70]">Los precios publicados son estimados puestos en RD, sujetos a cotización final según el lote y el día de la subasta. Sin estimado validado, consulta por WhatsApp.</p> : null}
             </div>
           ) : (
             <div className="rounded-xl border border-[#e5e7eb] bg-white px-5 py-7 text-sm text-[#676a70]">No hay publicaciones disponibles en esta categoría por el momento.</div>

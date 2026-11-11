@@ -365,6 +365,7 @@ export function VehicleCatalog({
           ))}
         </div>
       )}
+      {catalogKind === "auction" ? <p className="text-center text-xs leading-relaxed text-[#676a70]">Los precios publicados son estimados puestos en RD, sujetos a cotización final según el lote y el día de la subasta. Sin estimado validado, consulta por WhatsApp.</p> : null}
       {catalogKind === "local" ? (
         <p className="text-center text-sm text-[#676a70]">
           ¿Buscas opciones en subasta?{" "}
