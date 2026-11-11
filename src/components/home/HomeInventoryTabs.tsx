@@ -58,7 +58,7 @@ export function HomeInventoryTabs({
           ) : items.length ? (
             <div role="tabpanel">
               <div className="-mx-[var(--page-gutter)] px-[var(--page-gutter)] xl:mx-0 xl:px-0">
-                <VehicleCarousel speedSeconds={64}>
+                <VehicleCarousel speedSeconds={64} autoplay={active === "auction"}>
                   {items.map((vehicle) => (
                     <VehicleCard key={vehicle.id} vehicle={vehicle} tone="light" compact actionLabel={active === "available" ? "Ver detalles" : "Ver oportunidad"} />
                   ))}

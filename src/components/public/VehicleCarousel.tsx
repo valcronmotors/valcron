@@ -19,11 +19,13 @@ export function VehicleCarousel({
   children,
   speedSeconds = 56,
   className = "",
+  autoplay = true,
 }: {
   children: ReactNode;
   /** Kept for call-site compatibility; autoplay uses a fixed card cadence. */
   speedSeconds?: number;
   className?: string;
+  autoplay?: boolean;
 }) {
   void speedSeconds;
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -35,7 +37,7 @@ export function VehicleCarousel({
 
   const items = Array.isArray(children) ? children : [children];
   const count = items.filter(Boolean).length;
-  const canAutoplay = count >= 3;
+  const canAutoplay = autoplay && count >= 3;
 
   function clearAdvance() {
     if (advanceTimer.current != null) {
