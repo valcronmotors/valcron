@@ -43,19 +43,19 @@ export default async function Home() {
       <JsonLd data={autoDealerJsonLd()} />
       <main>
         <HomeHero />
+        <HomeBrandCarousel />
         <HomeInventoryTabs
           vehicles={inventory.data}
           auctions={auctions.data}
           inventoryError={inventory.error}
           auctionError={auctions.error}
         />
-        <HomeTrust />
-        <HomeBrandCarousel />
         <HomeImport />
         <HomeModelSpotlight />
         <HomeBuyGuide />
         <HomeFinancingTeaser />
         <HomeFinalCta />
+        <HomeTrust />
       </main>
     </>
   );
