@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import type { PublicVehicle } from "@/types/vehicle";
-import { createAdminClient, isServiceRoleConfigured } from "@/utils/supabase/admin";
-import { confirmedAuctionRunAndDrive } from "@/lib/auction-detail-facts";
+import { createAnonClient } from "@/utils/supabase/anon";
 import { notFound, permanentRedirect } from "next/navigation";
 import { PublicVehicleDetail } from "@/components/public/PublicVehicleDetail";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -13,14 +12,13 @@ import { vehicleDisplayTitle, vehicleSeoDescription } from "@/lib/vehicles/vehic
 import { isVehicleUuid, vehiclePath } from "@/lib/vehicles/vehicle-slugs";
 
 
-// This server-only projection releases one approved lot fact, never the private metadata.
+// RLS exposes only this approved boolean for an already-public auction vehicle.
 async function loadAuctionRunAndDrive(vehicle: PublicVehicle) {
-  if (!vehicle.published || vehicle.listingKind !== "auction" || !isServiceRoleConfigured()) return false;
-  const { data, error } = await createAdminClient()
-    .from("auction_opportunities")
-    .select("auction_metadata")
-    .eq("linked_vehicle_id", vehicle.id)
-    .eq("status", "published")
+  if (!vehicle.published || vehicle.listingKind !== "auction") return false;
+  const { data, error } = await createAnonClient()
+    .from("auction_public_facts")
+    .select("run_and_drive")
+    .eq("vehicle_id", vehicle.id)
     .limit(1)
     .abortSignal(AbortSignal.timeout(5000))
     .maybeSingle();
@@ -28,7 +26,7 @@ async function loadAuctionRunAndDrive(vehicle: PublicVehicle) {
     console.error("auction public run-and-drive lookup failed", error.code);
     return false;
   }
-  return confirmedAuctionRunAndDrive(data?.auction_metadata?.run_and_drive);
+  return data?.run_and_drive === true;
 }
 
 export async function generateMetadata({
