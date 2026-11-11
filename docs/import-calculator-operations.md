@@ -7,7 +7,7 @@ El mismo componente sirve `/importacion` y `/calculadoras/importacion`.
 ## Parámetros operativos del 10 de noviembre de 2026
 
 - Transporte terrestre: US$400; rango US$250–900 según distancia.
-- Flete base: US$1,480; combustible: US$500. Por defecto se suman: US$1,980.
+- Flete base: US$1,075; combustible: US$500. Por defecto se suman: US$1,575.
   Si la cotización base ya contiene el recargo, activar
   `freight.baseIncludesFuelSurcharge` o la casilla equivalente del estimador.
 - Arancel: 20% del CIF; 0% solo al seleccionar origen y elegibilidad DR-CAFTA
