@@ -9,7 +9,7 @@ export const importCostConfig = {
   verifiedOn: "2026-11-10",
   inland: { typicalUsd: 400, minUsd: 250, maxUsd: 900 },
   freight: {
-    baseUsd: 1480,
+    baseUsd: 1075,
     fuelSurchargeUsd: 500,
     // Set true if the quoted base already contains the surcharge; never add twice.
     baseIncludesFuelSurcharge: false,
