@@ -41,7 +41,7 @@ export function VehicleCarousel({
   const count = items.filter(Boolean).length;
   const canAutoplay = autoplay && count >= 3;
   const brandRail = variant === "brands";
-  const itemClass = brandRail ? "brand-carousel-item w-36 shrink-0 snap-start" : ITEM_CLASS;
+  const itemClass = brandRail ? "brand-carousel-item w-28 shrink-0 snap-start" : ITEM_CLASS;
 
   function clearAdvance() {
     if (advanceTimer.current != null) {
@@ -252,12 +252,12 @@ export function VehicleCarousel({
   }
 
   return (
-    <div className={`${brandRail ? "brand-carousel relative px-10" : "vehicle-carousel has-controls relative"} ${className}`}>
-      <div className={`${brandRail ? "brand-carousel-controls flex" : "vehicle-carousel-controls"} pointer-events-none absolute inset-y-0 -left-1 -right-1 z-10 items-center justify-between`}>
+    <div className={`${brandRail ? "brand-carousel relative" : "vehicle-carousel has-controls relative"} ${className}`}>
+      {!brandRail ? <div className="vehicle-carousel-controls pointer-events-none absolute inset-y-0 -left-1 -right-1 z-10 items-center justify-between">
         <button
           type="button"
           className="pointer-events-auto ml-0 inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#e4e6ea] bg-white/95 text-[#08090b] shadow-[0_8px_20px_rgba(8,9,11,0.08)]"
-          aria-label={brandRail ? "Marca anterior" : "Anterior"}
+          aria-label="Anterior"
           onClick={() => scrollByCard(-1)}
         >
           <ChevronLeft className="h-5 w-5" aria-hidden="true" />
@@ -265,12 +265,12 @@ export function VehicleCarousel({
         <button
           type="button"
           className="pointer-events-auto mr-0 inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#e4e6ea] bg-white/95 text-[#08090b] shadow-[0_8px_20px_rgba(8,9,11,0.08)]"
-          aria-label={brandRail ? "Marca siguiente" : "Siguiente"}
+          aria-label="Siguiente"
           onClick={() => scrollByCard(1)}
         >
           <ChevronRight className="h-5 w-5" aria-hidden="true" />
         </button>
-      </div>
+      </div> : null}
       <div
         ref={scrollerRef}
         className="vehicle-carousel-scroller flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-auto overscroll-y-auto touch-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-5"
