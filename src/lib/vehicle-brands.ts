@@ -13,6 +13,10 @@ export const VEHICLE_BRANDS = [
   { name: "Ford", slug: "ford", logoSrc: "/brands/ford.svg" },
   { name: "Mazda", slug: "mazda", logoSrc: "/brands/mazda.svg" },
   { name: "Mitsubishi", slug: "mitsubishi", logoSrc: "/brands/mitsubishi.svg" },
+  { name: "Mercedes-Benz", slug: "mercedes-benz", logoSrc: "/brands/mercedes-benz.svg" },
+  { name: "BMW", slug: "bmw", logoSrc: "/brands/bmw.svg" },
+  { name: "GMC", slug: "gmc", logoSrc: "/brands/gmc.svg" },
+  { name: "Lexus", slug: "lexus", logoSrc: "/brands/lexus.svg" },
 ] as const;
 
 export type VehicleBrandName = (typeof VEHICLE_BRANDS)[number]["name"];

@@ -17,6 +17,24 @@ franchise, authorized dealership, partnership, or sponsorship.
 | Ford | `ford.svg` | Wikimedia Commons `File:Ford_logo_flat.svg` — sourced from Ford Motor Company 2017 Annual Report |
 | Mazda | `mazda.svg` | Wikimedia Commons `File:Mazda_logo_with_emblem,_new.svg` — credit [mazda.com](https://www.mazda.com/) |
 | Mitsubishi | `mitsubishi.svg` | Official [mitsubishicars.com](https://www.mitsubishicars.com/) navigation asset `nav-logo-black.svg` |
+| Mercedes-Benz | `mercedes-benz.svg` | [Commons: Mercedes-Benz Star 2022.svg](https://commons.wikimedia.org/wiki/File:Mercedes-Benz_Star_2022.svg), artwork credited to Mercedes-Benz Group |
+| BMW | `bmw.svg` | [Commons: BMW logo (gray).svg](https://commons.wikimedia.org/wiki/File:BMW_logo_(gray).svg), 2020 roundel credited to BMW and sourced from bmw.com |
+| GMC | `gmc.svg` | [Commons: GMC-Logo.svg](https://commons.wikimedia.org/wiki/File:GMC-Logo.svg), red automotive GMC lettering with transparent background; **not** `GMC_logo.svg` (Greater Manchester Council) |
+| Lexus | `lexus.svg` | [Commons: Lexus.svg](https://commons.wikimedia.org/wiki/File:Lexus.svg), emblem plus LEXUS wordmark |
+
+The four additions were downloaded and visually checked on 2026-11-14. SVG
+artwork is stored unchanged; no marks were redrawn. New tiles retain a 128×48
+image box with proportional containment and a brand-name label underneath.
+
+## Motion and navigation
+
+The brand rail reuses `VehicleCarousel` with its `brands` variant: advance every
+4,200 ms, 2,800 ms interaction recovery, end-to-start looping, offscreen pause,
+and no autoplay for `prefers-reduced-motion`. Brand hover, pointer/touch and
+keyboard focus pause autoplay. Chevron buttons remain available for manual use.
+There are 13 unique links, without duplicate focusable tiles. Links use the
+existing `inventorySearchHref` helper and the canonical `/inventario?marca=…`
+route; `/inventory` is not an existing public catalogue route in this project.
 
 ## Rules
 

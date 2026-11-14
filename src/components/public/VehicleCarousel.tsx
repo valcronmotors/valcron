@@ -20,12 +20,14 @@ export function VehicleCarousel({
   speedSeconds = 56,
   className = "",
   autoplay = true,
+  variant = "vehicles",
 }: {
   children: ReactNode;
   /** Kept for call-site compatibility; autoplay uses a fixed card cadence. */
   speedSeconds?: number;
   className?: string;
   autoplay?: boolean;
+  variant?: "vehicles" | "brands";
 }) {
   void speedSeconds;
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -38,6 +40,8 @@ export function VehicleCarousel({
   const items = Array.isArray(children) ? children : [children];
   const count = items.filter(Boolean).length;
   const canAutoplay = autoplay && count >= 3;
+  const brandRail = variant === "brands";
+  const itemClass = brandRail ? "brand-carousel-item w-36 shrink-0 snap-start" : ITEM_CLASS;
 
   function clearAdvance() {
     if (advanceTimer.current != null) {
@@ -54,7 +58,7 @@ export function VehicleCarousel({
   }
 
   function cardStep(root: HTMLElement) {
-    const card = root.querySelector<HTMLElement>(".vehicle-carousel-item");
+    const card = root.querySelector<HTMLElement>(".vehicle-carousel-item, .brand-carousel-item");
     const width = card?.getBoundingClientRect().width ?? 280;
     const styles = getComputedStyle(root);
     const gap = Number.parseFloat(styles.columnGap || styles.gap || "12") || 12;
@@ -70,9 +74,14 @@ export function VehicleCarousel({
     setActive(Math.max(0, Math.min(count - 1, next)));
   }
 
+  function brandInteraction(root: HTMLElement) {
+    return brandRail && (root.contains(document.activeElement) ||
+      (window.matchMedia("(hover: hover)").matches && root.matches(":hover")));
+  }
+
   function advance() {
     const root = scrollerRef.current;
-    if (!root || interactingRef.current || !visibleRef.current) return;
+    if (!root || interactingRef.current || !visibleRef.current || brandInteraction(root)) return;
     if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
@@ -81,7 +90,7 @@ export function VehicleCarousel({
     const maxScroll = root.scrollWidth - root.clientWidth;
     if (maxScroll <= 4) return;
 
-    if (root.scrollLeft + step >= maxScroll - 4) {
+    if (brandRail ? root.scrollLeft >= maxScroll - 4 : root.scrollLeft + step >= maxScroll - 4) {
       root.scrollTo({ left: 0, behavior: "smooth" });
     } else {
       root.scrollBy({ left: step, behavior: "smooth" });
@@ -94,6 +103,7 @@ export function VehicleCarousel({
   function scheduleAdvance() {
     clearAdvance();
     if (!canAutoplay || interactingRef.current || !visibleRef.current) return;
+    if (scrollerRef.current && brandInteraction(scrollerRef.current)) return;
     if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
@@ -118,7 +128,7 @@ export function VehicleCarousel({
     const root = scrollerRef.current;
     if (!root) return;
     pauseForInteraction();
-    root.scrollBy({ left: direction * cardStep(root), behavior: "smooth" });
+    root.scrollBy({ left: direction * cardStep(root), behavior: brandRail && window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     resumeAfterInteraction();
   }
 
@@ -175,6 +185,15 @@ export function VehicleCarousel({
       }
     };
 
+    const onFocusOut = (event: FocusEvent) => {
+      if (!root.contains(event.relatedTarget as Node | null)) resumeAfterInteraction();
+    };
+    if (brandRail) {
+      root.addEventListener("pointerenter", pauseForInteraction, { passive: true });
+      root.addEventListener("pointerleave", resumeAfterInteraction, { passive: true });
+      root.addEventListener("focusin", pauseForInteraction);
+      root.addEventListener("focusout", onFocusOut);
+    }
     root.addEventListener("pointerdown", onPointerDown, { passive: true });
     root.addEventListener("pointerup", onPointerUp, { passive: true });
     root.addEventListener("pointercancel", onPointerCancel, { passive: true });
@@ -186,6 +205,12 @@ export function VehicleCarousel({
       io.disconnect();
       clearAdvance();
       clearResume();
+      if (brandRail) {
+        root.removeEventListener("pointerenter", pauseForInteraction);
+        root.removeEventListener("pointerleave", resumeAfterInteraction);
+        root.removeEventListener("focusin", pauseForInteraction);
+        root.removeEventListener("focusout", onFocusOut);
+      }
       root.removeEventListener("pointerdown", onPointerDown);
       root.removeEventListener("pointerup", onPointerUp);
       root.removeEventListener("pointercancel", onPointerCancel);
@@ -194,7 +219,7 @@ export function VehicleCarousel({
       reduced.removeEventListener("change", onReducedChange);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- timers bind to this scroller instance
-  }, [canAutoplay, count]);
+  }, [canAutoplay, count, brandRail]);
 
   if (count === 0) {
     return null;
@@ -216,23 +241,23 @@ export function VehicleCarousel({
           className="vehicle-carousel-scroller flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-auto overscroll-y-auto touch-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-auto sm:grid sm:max-w-3xl sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:snap-none md:gap-5"
         >
           {items.map((child, index) => (
-            <div key={index} className={ITEM_CLASS}>
+            <div key={index} className={itemClass}>
               {child}
             </div>
           ))}
         </div>
-        <CarouselDots count={count} active={active} onSelect={scrollToIndex} />
+        {!brandRail ? <CarouselDots count={count} active={active} onSelect={scrollToIndex} /> : null}
       </div>
     );
   }
 
   return (
-    <div className={`vehicle-carousel has-controls relative ${className}`}>
-      <div className="vehicle-carousel-controls pointer-events-none absolute inset-y-0 -left-1 -right-1 z-10 items-center justify-between">
+    <div className={`${brandRail ? "brand-carousel relative px-10" : "vehicle-carousel has-controls relative"} ${className}`}>
+      <div className={`${brandRail ? "brand-carousel-controls flex" : "vehicle-carousel-controls"} pointer-events-none absolute inset-y-0 -left-1 -right-1 z-10 items-center justify-between`}>
         <button
           type="button"
           className="pointer-events-auto ml-0 inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#e4e6ea] bg-white/95 text-[#08090b] shadow-[0_8px_20px_rgba(8,9,11,0.08)]"
-          aria-label="Anterior"
+          aria-label={brandRail ? "Marca anterior" : "Anterior"}
           onClick={() => scrollByCard(-1)}
         >
           <ChevronLeft className="h-5 w-5" aria-hidden="true" />
@@ -240,7 +265,7 @@ export function VehicleCarousel({
         <button
           type="button"
           className="pointer-events-auto mr-0 inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#e4e6ea] bg-white/95 text-[#08090b] shadow-[0_8px_20px_rgba(8,9,11,0.08)]"
-          aria-label="Siguiente"
+          aria-label={brandRail ? "Marca siguiente" : "Siguiente"}
           onClick={() => scrollByCard(1)}
         >
           <ChevronRight className="h-5 w-5" aria-hidden="true" />
@@ -251,12 +276,12 @@ export function VehicleCarousel({
         className="vehicle-carousel-scroller flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-auto overscroll-y-auto touch-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-5"
       >
         {items.map((child, index) => (
-          <div key={index} className={ITEM_CLASS}>
+          <div key={index} className={itemClass}>
             {child}
           </div>
         ))}
       </div>
-      <CarouselDots count={count} active={active} onSelect={scrollToIndex} />
+      {!brandRail ? <CarouselDots count={count} active={active} onSelect={scrollToIndex} /> : null}
     </div>
   );
 }
