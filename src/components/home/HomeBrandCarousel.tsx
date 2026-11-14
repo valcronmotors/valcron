@@ -16,7 +16,8 @@ function BrandTile({
   return (
     <Link
       href={inventorySearchHref({ marca: name })}
-      className="brand-marquee-item flex w-36 shrink-0 snap-start flex-col items-center gap-1.5"
+      className="brand-marquee-item flex w-36 shrink-0 snap-start items-center"
+      aria-label={name}
       tabIndex={duplicate ? -1 : undefined}
       aria-hidden={duplicate ? true : undefined}
     >
@@ -26,14 +27,13 @@ function BrandTile({
       >
         <Image
           src={logoSrc}
-          alt=""
+          alt={name}
           width={128}
           height={48}
           unoptimized
           className="h-12 w-32 object-contain grayscale opacity-70 transition hover:grayscale-0 hover:opacity-100"
         />
       </span>
-      <span className="text-center text-[11px] font-medium text-[#676a70] lg:text-xs">{name}</span>
     </Link>
   );
 }
