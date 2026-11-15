@@ -39,6 +39,15 @@ describe("Calculadora única Valcron", () => {
       ),
     ).toBe(false);
   });
+  it("charges unloading/HIT only for container shipping, including grouped totals", () => {
+    const a = estimateImport(example)!;
+    const b = estimateImport({ ...example, shippingMethod: "roro" })!;
+    expect(a.unloading).toBe(140);
+    expect(b.unloading).toBe(0);
+    expect(b.lines.some((l) => l.key === "unloading")).toBe(false);
+    expect(a.totalUsd - b.totalUsd).toBeCloseTo(140);
+    expect(b.lines.reduce((sum, l) => sum + l.usd, 0)).toBeCloseTo(b.totalUsd);
+  });
   it("uses table FOB for taxes while keeping actual purchase cost in the total", () => {
     const r = estimateImport({
       ...example,

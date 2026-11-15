@@ -367,6 +367,21 @@ function CandidateCard({
       </details>
       <div className="mt-4 grid gap-3">
         {numeric("purchaseUsd", "Precio de compra estimado (US$)", 0.01)}
+        <Field label="Método de envío">
+          <select
+            className={inputClass}
+            value={v.shippingMethod}
+            onChange={(e) =>
+              onChange({
+                shippingMethod: e.target
+                  .value as ImportCandidate["shippingMethod"],
+              })
+            }
+          >
+            <option value="container">Contenedor</option>
+            <option value="roro">RoRo</option>
+          </select>
+        </Field>
         <Field label="Subasta">
           <select
             className={inputClass}

@@ -78,7 +78,7 @@ export async function createImportQuotePdf(
   if (client.trim()) paragraph(`Cliente: ${client.trim().slice(0, 120)}`);
   paragraph(vehicleDescription(v), 11, true);
   paragraph(
-    `Subasta: ${v.provider === "copart" ? "Copart" : "IAAI"} | Título: ${v.title === "clean" ? "Clean" : "Rebuilt/Salvage"} | Valoración: ${v.valuation === "table" ? "Tabla DGA (FOB indicado)" : "Factura"}`,
+    `Subasta: ${v.provider === "copart" ? "Copart" : "IAAI"} | Título: ${v.title === "clean" ? "Clean" : "Rebuilt/Salvage"} | Envío: ${v.shippingMethod === "container" ? "Contenedor" : "RoRo"} | Valoración: ${v.valuation === "table" ? "Tabla DGA (FOB indicado)" : "Factura"}`,
   );
   paragraph(
     `FOB de referencia: ${usd(result.fob)} | CIF de referencia: ${usd(result.cif)} | Cambio: RD$${v.fx}/US$1`,
@@ -98,8 +98,11 @@ export async function createImportQuotePdf(
       line.key === "freight"
         ? {
             ...line,
-            label: "Flete marítimo, seguro y descarga",
-            usd: line.usd + result.insurance + importCostConfig.unloadingUsd,
+            label:
+              v.shippingMethod === "container"
+                ? "Flete marítimo, seguro y descarga"
+                : "Flete marítimo y seguro",
+            usd: line.usd + result.insurance + result.unloading,
           }
         : line,
     );

@@ -18,6 +18,7 @@ export type ImportCandidate = VehicleSpecification & {
   purchaseUsd: number;
   provider: "copart" | "iaai";
   title: "clean" | "rebuilt";
+  shippingMethod: "container" | "roro";
   valuation: "invoice" | "table";
   tableFobUsd: number | null;
   co2Percent: number;
@@ -37,6 +38,7 @@ export function newImportCandidate(id: string): ImportCandidate {
     purchaseUsd: 0,
     provider: "copart",
     title: "clean",
+    shippingMethod: "container",
     valuation: "invoice",
     tableFobUsd: null,
     co2Percent: c.defaults.co2Percent,
@@ -138,6 +140,7 @@ export function estimateImport(v: ImportCandidate) {
     v.year >= c.marbete.cutoffYear ? c.marbete.newerDop : c.marbete.olderDop;
   const dgii = plate + co2 + marbeteDop / v.fx;
   // Seguro real a cargo del cliente: se suma una sola vez y también integra la base CIF.
+  const unloading = v.shippingMethod === "container" ? c.unloadingUsd : 0;
   const subtotal =
     v.purchaseUsd +
     fees.total +
@@ -145,7 +148,7 @@ export function estimateImport(v: ImportCandidate) {
     v.inlandUsd +
     v.freightUsd +
     insurance +
-    c.unloadingUsd +
+    unloading +
     dga +
     dgii +
     v.repairUsd;
@@ -171,7 +174,9 @@ export function estimateImport(v: ImportCandidate) {
       usd: v.freightUsd,
     },
     { key: "insurance", label: "Seguro (2% del FOB)", usd: insurance },
-    { key: "unloading", label: "Descarga + HIT", usd: c.unloadingUsd },
+    ...(v.shippingMethod === "container"
+      ? [{ key: "unloading", label: "Descarga + HIT", usd: unloading }]
+      : []),
     { key: "dga", label: "Impuestos de aduana (DGA)", usd: dga },
     { key: "dgii", label: "Primera placa, CO₂ y marbete (DGII)", usd: dgii },
     ...(repairing
@@ -183,6 +188,7 @@ export function estimateImport(v: ImportCandidate) {
     lines,
     fob,
     insurance,
+    unloading,
     cif,
     tariff,
     itbis,
