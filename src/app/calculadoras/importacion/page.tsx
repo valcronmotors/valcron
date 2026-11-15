@@ -1,6 +1,5 @@
 import { ImportCostCalculator } from "@/components/public/ImportCostCalculator";
-import { PageHero } from "@/components/public/PageHero";
-import { PAGE_HERO_ALTS, PAGE_HERO_IMAGES } from "@/lib/hero-media";
+import { PageContainer } from "@/components/public/layout";
 import { SITE } from "@/lib/site";
 import { publicPageMetadata } from "@/lib/seo";
 
@@ -13,26 +12,23 @@ export const metadata = publicPageMetadata({
 export default function CalculadoraImportacionPage() {
   return (
     <main>
-      <PageHero
-        kicker="Calculadoras"
-        title="Importación"
-        subtitle="Revisa las partidas principales de un costo estimado de llegada. Las cifras son ilustrativas."
-        image={PAGE_HERO_IMAGES.importacion}
-        imageAlt={PAGE_HERO_ALTS.importacion}
-      />
-      <section className="section-light bg-white">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:px-8 md:py-16">
-          <div>
-            <p className="kicker">Estimación</p>
-            <h2 className="mt-3 font-display text-2xl font-semibold tracking-tight text-[#0b0c0e] md:text-4xl">
-              Organiza los costos antes de comprar
-            </h2>
-            <p className="mt-4 text-sm leading-relaxed text-[#5c5c5c]">
-              El resultado no sustituye una cotización formal ni la liquidación aduanal.
-            </p>
-          </div>
+      <section className="section-light bg-white pb-4 pt-6 md:pt-8">
+        <PageContainer>
+          <h1 className="text-2xl font-bold tracking-tight text-[#08090b] md:text-3xl">
+            Importación
+          </h1>
+          <p className="mt-2 text-sm text-[#676a70]">
+            Calcula el costo de tu vehículo puesto en RD.
+          </p>
+        </PageContainer>
+      </section>
+      <section className="section-light bg-white pb-8">
+        <PageContainer>
+          <h2 className="mb-4 text-xl font-bold text-[#08090b]">
+            Calcula tu presupuesto
+          </h2>
           <ImportCostCalculator />
-        </div>
+        </PageContainer>
       </section>
     </main>
   );

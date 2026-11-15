@@ -823,17 +823,7 @@ function ImportCalculatorBody() {
   const best = bestCandidate(candidates);
   return (
     <div className="min-w-0 text-[#08090b]">
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#a54d1c]">
-            Calculadora única Valcron
-          </p>
-          <h3 className="mt-2 text-2xl font-bold">Calcula, compara y elige.</h3>
-          <p className="mt-2 text-sm text-[#676a70]">
-            Marca, modelo y año. Elige una opción con su impuesto y primera
-            placa.
-          </p>
-        </div>
+      <div className="mb-4 flex justify-end">
         <button
           type="button"
           disabled={candidates.length >= 3}
