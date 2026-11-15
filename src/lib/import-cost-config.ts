@@ -43,13 +43,6 @@ export const importCostConfig = {
     copart: { fixedUsd: 130, internetCap: Infinity },
     iaai: { fixedUsd: 140, internetCap: 160 },
   },
-  purchaseManagement: {
-    baseUsd: 325,
-    processingUsd: 75,
-    highThresholdUsd: 60000,
-    highRate: 0.005,
-    repairUsd: 375,
-  },
   insuranceRate: 0.02,
   tariffRate: 0.2,
   itbisRate: 0.18,

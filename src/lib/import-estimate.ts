@@ -104,16 +104,6 @@ export function suggestedCo2(cc: string, fuel: string) {
         : s.largePercent
     : c.defaults.co2Percent;
 }
-export function purchaseManagementForPrice(price: number, repairUsd: number) {
-  return (
-    c.purchaseManagement.baseUsd +
-    c.purchaseManagement.processingUsd +
-    (price > c.purchaseManagement.highThresholdUsd
-      ? price * c.purchaseManagement.highRate
-      : 0) +
-    (repairUsd > 0 ? c.purchaseManagement.repairUsd : 0)
-  );
-}
 export function previewImportCosts(v: ImportCandidate) {
   if (
     ![
@@ -169,12 +159,10 @@ export function previewImportCosts(v: ImportCandidate) {
   const taxAmount =
     identified && officialTax ? v.taxRow!.taxUsd : manual ? dga + dgii : null;
   const fees = auctionFeesForPrice(v.purchaseUsd, v.provider);
-  const autoHall = purchaseManagementForPrice(v.purchaseUsd, v.repairUsd);
   const unloading = v.shippingMethod === "container" ? c.unloadingUsd : 0;
   const subtotal =
     v.purchaseUsd +
     fees.total +
-    autoHall +
     v.inlandUsd +
     v.freightUsd +
     insurance +
@@ -190,11 +178,6 @@ export function previewImportCosts(v: ImportCandidate) {
   const lines = [
     { key: "purchase", label: "Compra del vehículo", usd: v.purchaseUsd },
     { key: "auction", label: "Fee de subasta", usd: fees.total },
-    {
-      key: "autohall",
-      label: "Gestión de compra EE. UU. (Auto Hall)",
-      usd: autoHall,
-    },
     { key: "inland", label: "Grúa USA", usd: v.inlandUsd },
     { key: "freight", label: "Flete marítimo", usd: v.freightUsd },
     {
@@ -261,7 +244,6 @@ export function previewImportCosts(v: ImportCandidate) {
     co2,
     marbeteDop,
     fees,
-    autoHall,
     unloading,
     subtotal,
     dealerFee,
@@ -278,7 +260,7 @@ export function estimateImport(v: ImportCandidate) {
   const result = previewImportCosts(v);
   return result?.ready ? result : null;
 }
-/** Client quote keeps contract charges grouped and does not itemize internal purchase management. */
+/** Client quote keeps Valcron contract charges grouped separately from auction fees. */
 export function clientQuoteLines(v: ImportCandidate) {
   const r = estimateImport(v);
   if (!r) return [];
@@ -286,8 +268,8 @@ export function clientQuoteLines(v: ImportCandidate) {
     { key: "purchase", label: "Compra del vehículo", usd: v.purchaseUsd },
     {
       key: "auction",
-      label: "Fees de subasta y gestión de compra",
-      usd: r.fees.total + r.autoHall,
+      label: "Fees de subasta",
+      usd: r.fees.total,
     },
     { key: "inland", label: "Transporte terrestre en USA", usd: v.inlandUsd },
     {

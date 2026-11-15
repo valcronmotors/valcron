@@ -103,13 +103,13 @@ describe("CSV-backed tax table", () => {
   it("balances the supplied Honda case and fee without duplicate management or taxes", () => {
     const r = estimateImport(candidate(honda))!;
     expect(r.fees.total).toBe(1409);
-    expect(r.autoHall).toBe(400);
+    expect(r.lines.some((l) => l.key === "autohall")).toBe(false);
     expect(r.insurance).toBe(230);
-    expect(r.subtotal).toBe(21787);
+    expect(r.subtotal).toBe(21387);
     expect(r.dealerFee).toBe(1000);
     expect(r.repairFee).toBe(0);
-    expect(r.totalUsd).toBeCloseTo(23380.3399111988, 6);
-    expect(r.totalDop).toBeCloseTo(r.totalUsd * 60.81, 6);
+    expect(r.totalUsd).toBeCloseTo(22980.3399111988, 6);
+    expect(r.totalDop).toBeCloseTo(1397434.47, 2);
     expect(r.lines.filter((l) => l.key === "usa-management")).toHaveLength(1);
   });
   it("does not silently use formulas or keep a stale row after changing identity", () => {
