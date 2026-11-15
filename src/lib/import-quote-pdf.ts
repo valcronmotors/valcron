@@ -157,6 +157,16 @@ export async function downloadImportQuote(v: ImportCandidate, client: string) {
     const r = await fetch(`/fonts/quote/ValcronQuote-${name}.ttf`);
     if (!r.ok) throw new Error("No se pudo cargar la tipografía del PDF.");
     const bytes = new Uint8Array(await r.arrayBuffer());
+    if (
+      bytes.length < 12 ||
+      bytes[0] !== 0 ||
+      bytes[1] !== 1 ||
+      bytes[2] !== 0 ||
+      bytes[3] !== 0
+    )
+      throw new Error(
+        "No se pudo cargar la tipografía del PDF. Recarga e intenta nuevamente.",
+      );
     let binary = "";
     for (const b of bytes) binary += String.fromCharCode(b);
     return btoa(binary);
