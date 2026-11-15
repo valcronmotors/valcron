@@ -43,6 +43,7 @@ const candidate = (r: ImportTaxRow) => ({
   id: "test",
   taxRow: r,
   purchaseUsd: 11500,
+  freightUsd: 1150, // Preserve the existing example’s explicitly quoted freight.
 });
 describe("CSV-backed tax table", () => {
   it("preserves all 15 original columns and removes only identical rows", () => {
