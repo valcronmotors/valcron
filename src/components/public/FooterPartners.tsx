@@ -13,7 +13,7 @@ export function FooterPartners() {
           id="footer-partners-heading"
           className="shrink-0 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-[#b8bdc7]"
         >
-          Asociaciones y plataformas
+          Asociaciones
         </h2>
 
         <ul className="grid min-w-0 grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-stretch sm:justify-end">
@@ -41,8 +41,7 @@ export function FooterPartners() {
                   />
                 )}
                 <span className="text-center text-[0.625rem] leading-tight text-[#d4d7de]">
-                  <span className="sr-only">{partner.name} — </span>
-                  {partner.label}
+                  {partner.name}
                 </span>
               </span>
             );
@@ -54,7 +53,7 @@ export function FooterPartners() {
                     href={partner.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`${partner.name} — ${partner.label}`}
+                    aria-label={partner.name}
                     className="block rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                   >
                     {surface}

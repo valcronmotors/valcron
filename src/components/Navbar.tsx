@@ -23,7 +23,10 @@ function isActivePath(pathname: string, href: string) {
 }
 
 function megaIsActive(pathname: string, item: MegaNavItem) {
-  const hrefs = [item.href, item.featured.href, ...item.columns.flatMap((column) => column.links.map((link) => link.href))];
+  const hrefs = [
+    item.href,
+    ...item.columns.flatMap((column) => column.links.map((link) => link.href)),
+  ];
   return hrefs.some((href) => isActivePath(pathname, href));
 }
 
@@ -112,7 +115,9 @@ export function Navbar() {
           if (window.matchMedia("(min-width: 1024px)").matches) setMegaId(null);
         }}
       >
-        <header className={`site-header sticky top-0 z-[80] ${compact ? "is-compact" : ""}`}>
+        <header
+          className={`site-header sticky top-0 z-[80] ${compact ? "is-compact" : ""}`}
+        >
           <div
             className="mx-auto flex h-full w-full max-w-[var(--content-wide)] items-center gap-4 lg:gap-6"
             style={{ paddingInline: "var(--page-gutter)" }}
@@ -148,13 +153,17 @@ export function Navbar() {
                     aria-expanded={expanded}
                     aria-haspopup="true"
                     aria-controls={panelId}
-                    onClick={() => setMegaId((value) => (value === item.id ? null : item.id))}
+                    onClick={() =>
+                      setMegaId((value) => (value === item.id ? null : item.id))
+                    }
                     onMouseEnter={() => {
-                      if (!window.matchMedia("(min-width: 1024px)").matches) return;
+                      if (!window.matchMedia("(min-width: 1024px)").matches)
+                        return;
                       setMegaId(item.id);
                     }}
                     onFocus={() => {
-                      if (!window.matchMedia("(min-width: 1024px)").matches) return;
+                      if (!window.matchMedia("(min-width: 1024px)").matches)
+                        return;
                       setMegaId(item.id);
                     }}
                   >
@@ -179,7 +188,7 @@ export function Navbar() {
             </nav>
 
             <div className="relative z-10 ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
-              <div className="hidden lg:block">
+              <div>
                 <CurrencySwitch compact tone="light" />
               </div>
               <Link
@@ -187,7 +196,11 @@ export function Navbar() {
                 aria-label="Buscar inventario"
                 className="inline-flex h-11 w-11 items-center justify-center text-[#111111] lg:hidden"
               >
-                <Search className="h-[1.15rem] w-[1.15rem]" strokeWidth={1.75} aria-hidden="true" />
+                <Search
+                  className="h-[1.15rem] w-[1.15rem]"
+                  strokeWidth={1.75}
+                  aria-hidden="true"
+                />
               </Link>
               <Link
                 href="/inventario"
@@ -204,7 +217,10 @@ export function Navbar() {
                 aria-controls="mobile-nav"
                 aria-label={open ? "Cerrar menú" : "Abrir menú"}
               >
-                <span className="flex w-5 flex-col gap-[6px]" aria-hidden="true">
+                <span
+                  className="flex w-5 flex-col gap-[6px]"
+                  aria-hidden="true"
+                >
                   <span
                     className={`h-[1.5px] w-full bg-current transition-transform ${open ? "translate-y-[3.75px] rotate-45" : ""}`}
                   />
@@ -225,7 +241,7 @@ export function Navbar() {
             className="fixed inset-x-0 top-[var(--header-height)] z-[90] hidden border-t border-[#E5E7EB] bg-white shadow-[0_28px_56px_rgba(17,17,17,0.1)] lg:block"
           >
             <div
-              className="mx-auto grid max-w-[var(--content-wide)] gap-10 py-10 lg:grid-cols-[repeat(auto-fit,minmax(11rem,1fr))_minmax(16rem,20rem)] lg:gap-12"
+              className="mx-auto grid max-w-[var(--content-wide)] gap-10 py-10 lg:grid-cols-[repeat(auto-fit,minmax(11rem,1fr))] lg:gap-12"
               style={{ paddingInline: "var(--page-gutter)" }}
             >
               {activeMega.columns.map((column) => (
@@ -239,7 +255,9 @@ export function Navbar() {
                         <Link
                           href={link.href}
                           className={`block rounded-md py-2.5 text-[15px] transition-colors hover:bg-[#F5F5F5] hover:text-[#111111] ${
-                            isActivePath(pathname, link.href) ? "font-semibold text-[#111111]" : "text-[#3B3B3B]"
+                            isActivePath(pathname, link.href)
+                              ? "font-semibold text-[#111111]"
+                              : "text-[#3B3B3B]"
                           }`}
                           onClick={() => setMegaId(null)}
                         >
@@ -250,27 +268,20 @@ export function Navbar() {
                   </ul>
                 </div>
               ))}
-              <div className="border-t border-[#E5E7EB] bg-[#F5F5F5] p-6 lg:border-l lg:border-t-0 lg:pl-8">
-                <h3 className="font-display text-xl font-bold tracking-tight text-[#111111]">
-                  {activeMega.featured.title}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-[#3B3B3B]">{activeMega.featured.copy}</p>
-                <Link
-                  href={activeMega.featured.href}
-                  className="mt-6 inline-flex h-11 items-center rounded-full bg-[#111111] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#3B3B3B]"
-                  onClick={() => setMegaId(null)}
-                >
-                  {activeMega.featured.cta}
-                </Link>
-              </div>
             </div>
           </div>
         ) : null}
       </div>
 
       {open ? (
-        <div id="mobile-nav" className="fixed inset-0 z-[70] flex flex-col bg-white pt-[var(--header-height)] lg:hidden">
-          <nav className="flex flex-1 flex-col overflow-y-auto px-5 pb-4" aria-label="Menú">
+        <div
+          id="mobile-nav"
+          className="fixed inset-0 z-[70] flex flex-col bg-white pt-[var(--header-height)] lg:hidden"
+        >
+          <nav
+            className="flex flex-1 flex-col overflow-y-auto px-5 pb-4"
+            aria-label="Menú"
+          >
             {MEGA_NAV.map((item) => {
               const expanded = mobileSection === item.id;
               return (
@@ -279,7 +290,11 @@ export function Navbar() {
                     type="button"
                     className="flex min-h-14 w-full items-center justify-between text-left text-lg font-semibold text-[#111111]"
                     aria-expanded={expanded}
-                    onClick={() => setMobileSection((value) => (value === item.id ? null : item.id))}
+                    onClick={() =>
+                      setMobileSection((value) =>
+                        value === item.id ? null : item.id,
+                      )
+                    }
                   >
                     {item.label}
                     <ChevronDown
@@ -298,7 +313,9 @@ export function Navbar() {
                               href={link.href}
                               aria-current={active ? "page" : undefined}
                               className={`flex min-h-11 items-center pl-1 text-base ${
-                                active ? "font-semibold text-[#111111]" : "text-[#3B3B3B]"
+                                active
+                                  ? "font-semibold text-[#111111]"
+                                  : "text-[#3B3B3B]"
                               }`}
                               onClick={() => setOpen(false)}
                             >
@@ -324,10 +341,11 @@ export function Navbar() {
             ))}
           </nav>
           <div className="grid gap-3 border-t border-[#E5E7EB] px-5 py-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-            <div className="mb-1">
-              <CurrencySwitch compact tone="light" />
-            </div>
-            <Link href="/inventario" className="btn-primary h-12 w-full" onClick={() => setOpen(false)}>
+            <Link
+              href="/inventario"
+              className="btn-primary h-12 w-full"
+              onClick={() => setOpen(false)}
+            >
               Ver inventario
             </Link>
             <a

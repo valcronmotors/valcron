@@ -41,11 +41,16 @@ export function VehicleCard({
   const transmission = (vehicle.transmission || "").trim();
   const fuel = (vehicle.fuelType || "").trim();
   const drivetrain = (vehicle.drivetrain || "").trim();
-  const specs = [mileage, transmission, drivetrain || fuel].filter(Boolean).slice(0, 3);
+  const specs = [mileage, transmission, drivetrain || fuel]
+    .filter(Boolean)
+    .slice(0, 3);
   const showBadge = Boolean(badge?.label);
   const whatsapp = buildVehicleWhatsAppUrl(vehicle);
   const primaryLabel = actionLabel ?? "Ver detalles";
-  const canSimulate = vehicle.listingKind === "dealer" && vehicle.availability !== "sold" && (vehicle.pricing.usdPrice ?? 0) > 0;
+  const canSimulate =
+    vehicle.listingKind === "dealer" &&
+    vehicle.availability !== "sold" &&
+    (vehicle.pricing.usdPrice ?? 0) > 0;
 
   return (
     <article
@@ -56,8 +61,7 @@ export function VehicleCard({
       }`}
       style={{ borderRadius: "1rem" }}
     >
-      <Link
-        href={href}
+      <div
         className={`vehicle-card-media relative block aspect-[5/3] overflow-hidden sm:aspect-[16/10] ${
           light ? "bg-[#f3f4f6]" : "bg-[#12141a]"
         }`}
@@ -79,7 +83,7 @@ export function VehicleCard({
             {badge.label}
           </span>
         ) : null}
-      </Link>
+      </div>
 
       <div
         className={`flex flex-1 flex-col text-center ${compact ? "px-4 pb-4 pt-3.5" : "px-5 pb-5 pt-4"} ${
@@ -98,18 +102,21 @@ export function VehicleCard({
 
         <h3
           className={`mt-1 font-display font-bold leading-[1.12] tracking-tight ${
-            compact ? "text-[1.25rem] sm:text-xl" : "text-[1.35rem] sm:text-[1.45rem]"
+            compact
+              ? "text-[1.25rem] sm:text-xl"
+              : "text-[1.35rem] sm:text-[1.45rem]"
           }`}
         >
-          <Link href={href} className="transition-opacity hover:opacity-80">
-            {title || "Vehículo"}
-          </Link>
+          {title || "Vehículo"}
         </h3>
 
         {trim ? (
-          <p className={`mt-1 text-sm ${light ? "text-[#676a70]" : "text-[#d4d4d4]"}`}>{trim}</p>
+          <p
+            className={`mt-1 text-sm ${light ? "text-[#676a70]" : "text-[#d4d4d4]"}`}
+          >
+            {trim}
+          </p>
         ) : null}
-
 
         {price.primary ? (
           <div className="mt-2.5">
@@ -121,15 +128,33 @@ export function VehicleCard({
               {price.primary}
             </p>
             {price.secondary ? (
-              <p className={`mt-0.5 text-xs ${light ? "text-[#8a8d91]" : "text-white/55"}`}>
+              <p
+                className={`mt-0.5 text-xs ${light ? "text-[#8a8d91]" : "text-white/55"}`}
+              >
                 {price.secondary}
               </p>
             ) : null}
           </div>
         ) : null}
 
-        {vehicle.listingKind === "auction" && vehicle.pricing.landedEstimateUsd != null ? <p className="mt-2 text-xs font-semibold text-[#a54d1c]">Impuestos y placa incluidos</p> : null}
-        {canSimulate ? <div className="mt-3"><FinanceSimulator key={vehicle.id} priceUsd={vehicle.pricing.usdPrice!} downPaymentDop={vehicle.pricing.downPaymentDop} vehicleTitle={[year, title, trim].filter(Boolean).join(" ")} fixedPrice ctaLabel="Cotizar este vehículo" /></div> : null}
+        {vehicle.listingKind === "auction" &&
+        vehicle.pricing.landedEstimateUsd != null ? (
+          <p className="mt-2 text-xs font-semibold text-[#a54d1c]">
+            Impuestos y placa incluidos
+          </p>
+        ) : null}
+        {canSimulate ? (
+          <div className="mt-3">
+            <FinanceSimulator
+              key={vehicle.id}
+              priceUsd={vehicle.pricing.usdPrice!}
+              downPaymentDop={vehicle.pricing.downPaymentDop}
+              vehicleTitle={[year, title, trim].filter(Boolean).join(" ")}
+              fixedPrice
+              ctaLabel="Cotizar este vehículo"
+            />
+          </div>
+        ) : null}
         {specs.length ? (
           <p
             className={`mt-2 text-[11px] leading-5 ${light ? "text-[#8a8d91]" : "text-[#a8abb0]"}`}
@@ -149,19 +174,24 @@ export function VehicleCard({
           >
             {primaryLabel}
           </Link>
-          {!canSimulate ? <a
-            href={whatsapp}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={
-              light
-                ? "inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#d8dbe0] bg-white px-4 text-sm font-semibold text-[#08090b] transition hover:border-[#08090b]"
-                : "inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/30 px-4 text-sm font-semibold text-white transition hover:border-white"
-            }
-          >
-            <WhatsAppIcon className="h-4 w-4" />
-            {vehicle.listingKind === "auction" || vehicle.availability === "auction" ? "Cotiza por WhatsApp" : "Cotizar este vehículo"}
-          </a> : null}
+          {!canSimulate ? (
+            <a
+              href={whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={
+                light
+                  ? "inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#d8dbe0] bg-white px-4 text-sm font-semibold text-[#08090b] transition hover:border-[#08090b]"
+                  : "inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/30 px-4 text-sm font-semibold text-white transition hover:border-white"
+              }
+            >
+              <WhatsAppIcon className="h-4 w-4" />
+              {vehicle.listingKind === "auction" ||
+              vehicle.availability === "auction"
+                ? "Cotiza por WhatsApp"
+                : "Cotizar este vehículo"}
+            </a>
+          ) : null}
         </div>
       </div>
     </article>

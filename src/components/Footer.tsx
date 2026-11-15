@@ -3,11 +3,7 @@ import { BrandLogo } from "@/components/public/BrandLogo";
 import { BusinessLocation } from "@/components/public/BusinessLocation";
 import { FooterPartners } from "@/components/public/FooterPartners";
 import { FooterSocialIcons } from "@/components/shared/SocialLinks";
-import {
-  LEGAL_NAV,
-  SITE,
-  whatsappHref,
-} from "@/lib/site";
+import { LEGAL_NAV, SITE, whatsappHref } from "@/lib/site";
 
 const headingClass =
   "mb-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-[#b8bdc7]";
@@ -16,15 +12,13 @@ const linkClass =
 
 const FOOTER_EXPLORE_V2 = [
   { href: "/", label: "Inicio" },
-  { href: "/inventario", label: "Inventario Valcron" },
-  { href: "/subastas", label: "Oportunidades de Subasta" },
-  { href: "/comprar", label: "Comprar" },
+  { href: "/inventario", label: "Inventario" },
+  { href: "/subastas", label: "Subastas" },
 ] as const;
 
 const FOOTER_SERVICES_V2 = [
-  { href: "/financiamiento", label: "Financiamiento" },
   { href: "/importacion", label: "Importación" },
-  { href: "/servicios", label: "Servicios" },
+  { href: "/financiamiento", label: "Financiamiento" },
 ] as const;
 
 const FOOTER_COMPANY_V2 = [
@@ -33,13 +27,17 @@ const FOOTER_COMPANY_V2 = [
 ] as const;
 
 const FOOTER_RESOURCES_V2 = [
-  { href: "/blog", label: "Blog" },
-  { href: "/guias", label: "Guías" },
   { href: "/calculadoras", label: "Calculadoras" },
+  { href: "/guias", label: "Guías" },
+  { href: "/blog", label: "Blog" },
   { href: "/preguntas-frecuentes", label: "Preguntas frecuentes" },
 ] as const;
 
-export function Footer({ showCompactMap = false }: { showCompactMap?: boolean }) {
+export function Footer({
+  showCompactMap = false,
+}: {
+  showCompactMap?: boolean;
+}) {
   const year = new Date().getFullYear();
 
   return (
@@ -50,12 +48,16 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
       >
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-10">
           <div className="sm:col-span-2 lg:col-span-3">
-            <Link href="/" aria-label={SITE.brand} className="inline-flex bg-transparent [&_img]:drop-shadow-[0_0_1px_rgba(255,255,255,0.7)]">
+            <Link
+              href="/"
+              aria-label={SITE.brand}
+              className="inline-flex bg-transparent [&_img]:drop-shadow-[0_0_1px_rgba(255,255,255,0.7)]"
+            >
               <BrandLogo size="footer" tone="onDark" variant="full" />
             </Link>
             <p className="mt-3 max-w-[16rem] text-[0.8125rem] leading-relaxed text-[#d4d7de]">
-              Valcron Motors Group, SRL — vehículos, subastas e importación en República
-              Dominicana.
+              Valcron Motors Group, SRL — vehículos, subastas e importación en
+              República Dominicana.
             </p>
             <FooterSocialIcons className="mt-4" />
           </div>
@@ -98,11 +100,6 @@ export function Footer({ showCompactMap = false }: { showCompactMap?: boolean })
                   </a>
                 </p>
               </div>
-              <p className="mt-3">
-                <a className="hover:text-white" href={SITE.url}>
-                  valcronmotors.com
-                </a>
-              </p>
             </address>
             {showCompactMap ? (
               <div className="mt-5">
@@ -160,7 +157,12 @@ function FooterColumn({
         {items.map((item) => (
           <li key={`${item.href}-${item.label}`}>
             {item.href.startsWith("http") ? (
-              <a href={item.href} className={linkClass} target="_blank" rel="noopener noreferrer">
+              <a
+                href={item.href}
+                className={linkClass}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 {item.label}
               </a>
             ) : (
