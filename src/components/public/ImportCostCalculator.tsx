@@ -719,10 +719,16 @@ function CandidateCard({
           )}
         </section>
       ) : null}
+      {!client.trim() ? (
+        <p className="mt-4 text-sm text-[#676a70]">
+          Escribe el nombre del cliente en los datos de la cotización para
+          habilitar la descarga del PDF.
+        </p>
+      ) : null}
       <div className="mt-4 grid gap-2">
         <button
           type="button"
-          disabled={!result || pdfBusy}
+          disabled={!result || !client.trim() || pdfBusy}
           className="min-h-12 rounded-xl bg-[#08090b] px-4 py-3 text-sm font-semibold text-white disabled:opacity-40"
           onClick={async () => {
             setPdfBusy(true);
@@ -846,7 +852,7 @@ function ImportCalculatorBody() {
         </button>
       </div>
       <div className="mb-5 max-w-lg">
-        <Field label="Nombre del cliente (opcional, para el PDF)">
+        <Field label="Nombre del cliente (requerido para el PDF)">
           <input
             className={inputClass}
             maxLength={120}
@@ -854,6 +860,7 @@ function ImportCalculatorBody() {
             onChange={(e) => setClient(e.target.value)}
             placeholder="Nombre y apellido"
             autoComplete="name"
+            required
           />
         </Field>
       </div>

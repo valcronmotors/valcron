@@ -7,7 +7,6 @@ import {
 import {
   estimateImport,
   clientQuoteLines,
-  vehicleDescription,
   type ImportCandidate,
 } from "./import-estimate";
 import { formatDecimal } from "./money";
@@ -21,6 +20,15 @@ export async function createImportQuotePdf(
   now = new Date(),
   fonts?: { regular: string; bold: string },
 ) {
+  const clientName = client.trim();
+  if (!clientName)
+    throw new Error(
+      "Escribe el nombre del cliente para descargar la cotización PDF.",
+    );
+  if (clientName.length > 120)
+    throw new Error(
+      "El nombre del cliente debe tener como máximo 120 caracteres.",
+    );
   const result = estimateImport(v);
   if (!result)
     throw new Error(
@@ -44,77 +52,139 @@ export async function createImportQuotePdf(
   until.setDate(until.getDate() + importCostConfig.quoteValidityDays);
   const date = (d: Date) =>
     d.toLocaleDateString("es-DO", { timeZone: "America/Santo_Domingo" });
-  pdf.setFillColor(18, 20, 23);
-  pdf.rect(0, 0, 210, 42, "F");
-  pdf.addImage(logoPng, "PNG", 15, 5, 31, 31);
-  pdf.setTextColor(255, 255, 255);
-  pdf.setFont(font, "bold");
-  pdf.setFontSize(19);
-  pdf.text("COTIZACIÓN ESTIMADA", 54, 18);
-  pdf.setFont(font, "normal");
-  pdf.setFontSize(10);
-  pdf.text("Valcron Motors Group, SRL", 54, 26);
-  pdf.text("Importación por encargo a República Dominicana", 54, 33);
-  pdf.setTextColor(30, 32, 36);
-  pdf.setFontSize(10);
-  pdf.text(
-    `Fecha: ${date(now)}   |   Válida hasta: ${date(until)} (7 días)`,
-    15,
-    51,
-  );
-  let y = 59;
+  const drawHeader = () => {
+    pdf.setTextColor(0, 0, 0);
+    pdf.setDrawColor(0, 0, 0);
+    const image = pdf.getImageProperties(logoPng);
+    pdf.addImage(
+      logoPng,
+      image.fileType,
+      15,
+      4,
+      43,
+      (43 * image.height) / image.width,
+    );
+    pdf.setFont(font, "bold");
+    pdf.setFontSize(17);
+    pdf.text("COTIZACIÓN ESTIMADA", 195, 17, { align: "right" });
+    pdf.setFont(font, "normal");
+    pdf.setFontSize(9);
+    pdf.text(`Fecha: ${date(now)}`, 195, 27, { align: "right" });
+    pdf.text(`Vigencia: 7 días · Hasta: ${date(until)}`, 195, 33, {
+      align: "right",
+    });
+    pdf.setFontSize(8.5);
+    const address: string[] = pdf.splitTextToSize(
+      "Av. Principal No. 20, Brisa Oriental, Santo Domingo Este, R.D.",
+      101,
+    );
+    pdf.text(address, 15, 53);
+    pdf.text(
+      "RNC: 1-33-62898-8 · Tel: (829) 321-1271",
+      15,
+      53 + address.length * 4 + 3,
+    );
+    pdf.setLineWidth(0.25);
+    pdf.line(15, 69, 195, 69);
+  };
+  drawHeader();
+  let y = 78;
   const ensureSpace = (height: number) => {
     if (y + height > 272) {
       pdf.addPage();
-      y = 20;
+      drawHeader();
+      y = 78;
+      return true;
     }
+    return false;
   };
   const paragraph = (text: string, size = 10, bold = false) => {
     pdf.setFont(font, bold ? "bold" : "normal");
     pdf.setFontSize(size);
     const lines: string[] = pdf.splitTextToSize(printable(text), 178);
-    ensureSpace(lines.length * (size * 0.43) + 3);
+    ensureSpace(lines.length * (size * 0.43) + 2);
     pdf.text(lines, 15, y);
-    y += lines.length * (size * 0.43) + 3;
+    y += lines.length * (size * 0.43) + 2;
   };
-  if (client.trim()) paragraph(`Cliente: ${client.trim().slice(0, 120)}`);
-  paragraph(vehicleDescription(v), 11, true);
+  const sectionTitle = (title: string) => {
+    ensureSpace(18);
+    pdf.setFont(font, "bold");
+    pdf.setFontSize(10);
+    pdf.text(title, 15, y);
+    y += 7;
+  };
+  sectionTitle("CLIENTE");
+  paragraph(clientName, 10);
+  y += 3;
+  sectionTitle("VEHÍCULO");
+  paragraph(`Marca: ${v.make} · Modelo: ${v.model} · Año: ${v.year}`, 10, true);
+  paragraph(`País de origen: ${v.country}`, 9.5);
+  const specification = [
+    `Serie: ${v.series || "No indicada"}`,
+    `Combustible: ${v.fuel || "No indicado"}`,
+    `Cilindros: ${v.cylinders || "No indicados"}`,
+    `CC: ${v.cc || "No indicado"}`,
+    `Pasajeros: ${v.passengers || "No indicados"}`,
+    `Puertas: ${v.doors || "No indicadas"}`,
+    `Tracción: ${v.drive || "No indicada"}`,
+    ...(v.cabins || v.loadWeight || v.axles
+      ? [
+          `Cabinas: ${v.cabins || "No indicadas"}`,
+          `Peso de carga: ${v.loadWeight || "No indicado"}`,
+          `Ejes: ${v.axles || "No indicados"}`,
+        ]
+      : []),
+  ].join(" · ");
+  paragraph(specification, 9);
+  if (v.vin) paragraph(`VIN: ${v.vin}`, 9.5);
   paragraph(
-    `Subasta: ${v.provider === "copart" ? "Copart" : "IAAI"} | Título: ${v.title === "clean" ? "Clean" : "Rebuilt/Salvage"} | Envío: ${v.shippingMethod === "container" ? "Contenedor" : "RoRo"}`,
+    `Subasta: ${v.provider === "copart" ? "Copart" : "IAAI"} · Título: ${v.title === "clean" ? "Clean" : "Rebuilt/Salvage"} · Envío: ${v.shippingMethod === "container" ? "Contenedor" : "RoRo"}`,
+    9,
   );
   paragraph(
     result.officialTax
-      ? `Impuestos y primera placa: tabla oficial de valores DGA. Cambio RD$${v.fx}/US$1.`
-      : `Valoración manual: ${v.valuation === "table" ? "FOB de referencia indicado" : "Factura"}. FOB ${usd(result.fob)} | CIF ${usd(result.cif)} | Cambio RD$${v.fx}/US$1.`,
-    9,
+      ? `Impuestos y primera placa: tabla oficial de valores DGA. Tasa: RD$${v.fx}/US$1.`
+      : `Valoración manual: ${v.valuation === "table" ? "FOB de referencia indicado" : "Factura"}. FOB ${usd(result.fob)} · CIF ${usd(result.cif)} · Tasa RD$${v.fx}/US$1.`,
+    8.5,
   );
-  ensureSpace(25);
   y += 3;
-  pdf.setFillColor(244, 245, 247);
-  pdf.rect(15, y - 5, 180, 9, "F");
-  pdf.setFont(font, "bold");
-  pdf.text("CONCEPTO ESTIMADO", 18, y + 1);
-  pdf.text("US$", 192, y + 1, { align: "right" });
-  y += 13;
+  sectionTitle("DESGLOSE DE COSTOS ESTIMADOS");
+  const tableHeader = () => {
+    pdf.setFont(font, "bold");
+    pdf.setFontSize(9);
+    pdf.text("CONCEPTO", 15, y);
+    pdf.text("US$", 195, y, { align: "right" });
+    pdf.setLineWidth(0.2);
+    pdf.line(15, y + 2, 195, y + 2);
+    y += 9;
+  };
+  ensureSpace(15);
+  tableHeader();
   const quoteLines = clientQuoteLines(v);
   quoteLines.forEach((line) => {
     pdf.setFont(font, "normal");
     pdf.setFontSize(10);
     const label: string[] = pdf.splitTextToSize(printable(line.label), 125);
-    ensureSpace(Math.max(10, label.length * 4.5 + 3));
+    if (ensureSpace(Math.max(8, label.length * 4.5 + 3) + 8)) {
+      tableHeader();
+      pdf.setFont(font, "normal");
+      pdf.setFontSize(10);
+    }
     pdf.text(label, 18, y);
     pdf.text(usd(line.usd), 192, y, { align: "right" });
-    y += Math.max(10, label.length * 4.5 + 3);
+    y += Math.max(8, label.length * 4.5 + 3);
   });
-  ensureSpace(25);
-  pdf.setFillColor(255, 242, 231);
-  pdf.rect(15, y - 3, 180, 22, "F");
+  ensureSpace(24);
+  pdf.setDrawColor(0, 0, 0);
+  pdf.setLineWidth(0.25);
+  pdf.line(15, y - 2, 195, y - 2);
   pdf.setFont(font, "bold");
-  pdf.setFontSize(11);
-  pdf.text("TOTAL PUESTO EN RD · ESTIMADO", 18, y + 4);
-  pdf.text(usd(result.totalUsd), 192, y + 4, { align: "right" });
-  pdf.text(dop(result.totalDop), 192, y + 12, { align: "right" });
-  y += 29;
+  pdf.setFontSize(10.5);
+  pdf.text("TOTAL PUESTO EN RD · ESTIMADO", 15, y + 5);
+  pdf.text(usd(result.totalUsd), 195, y + 5, { align: "right" });
+  pdf.text(dop(result.totalDop), 195, y + 13, { align: "right" });
+  pdf.line(15, y + 17, 195, y + 17);
+  y += 25;
   paragraph(
     result.officialTax ? OFFICIAL_TAX_NOTICE : IMPORT_ESTIMATE_NOTICE,
     9,
@@ -127,18 +197,24 @@ export async function createImportQuotePdf(
     8,
   );
   pdf.setFont(font, "bold");
-  pdf.setTextColor(165, 77, 28);
+  pdf.setTextColor(0, 0, 0);
   pdf.setFontSize(10);
   for (let page = 1; page <= pdf.getNumberOfPages(); page++) {
     pdf.setPage(page);
-    pdf.setFontSize(9);
+    pdf.setFontSize(8);
+    pdf.setLineWidth(0.15);
+    pdf.line(15, 280, 195, 280);
     pdf.text("WhatsApp: (829) 321-1271  |  www.valcronmotors.com", 15, 285);
     pdf.text(`${page}/${pdf.getNumberOfPages()}`, 195, 285, { align: "right" });
   }
   return new Uint8Array(pdf.output("arraybuffer"));
 }
 export async function downloadImportQuote(v: ImportCandidate, client: string) {
-  const response = await fetch("/branding/valcron-logo-dark.webp");
+  if (!client.trim())
+    throw new Error(
+      "Escribe el nombre del cliente para descargar la cotización PDF.",
+    );
+  const response = await fetch("/branding/logo-valcron-blanco.jpg");
   if (!response.ok)
     throw new Error("No se pudo cargar el logo. Intenta descargar nuevamente.");
   const bitmap = await createImageBitmap(await response.blob());
