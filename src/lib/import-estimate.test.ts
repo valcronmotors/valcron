@@ -15,6 +15,7 @@ const example: ImportCandidate = {
   country: "USA",
   year: 2025,
   purchaseUsd: 10000,
+  freightUsd: 1150, // Preserve the existing example’s explicitly quoted freight.
   taxMode: "manual",
 };
 describe("Calculadora única Valcron", () => {

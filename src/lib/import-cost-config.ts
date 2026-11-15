@@ -4,7 +4,7 @@ export const importCostConfig = {
   defaults: {
     year: 2025,
     inlandUsd: 250,
-    freightUsd: 1150,
+    freightUsd: 1075,
     repairUsd: 0,
     fx: 60.81,
     co2Percent: 1,
