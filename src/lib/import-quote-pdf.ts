@@ -1,10 +1,12 @@
 import {
   IMPORT_ESTIMATE_NOTICE,
+  OFFICIAL_TAX_NOTICE,
   AUCTION_FEE_NOTICE,
   importCostConfig,
 } from "./import-cost-config";
 import {
   estimateImport,
+  clientQuoteLines,
   vehicleDescription,
   type ImportCandidate,
 } from "./import-estimate";
@@ -78,10 +80,12 @@ export async function createImportQuotePdf(
   if (client.trim()) paragraph(`Cliente: ${client.trim().slice(0, 120)}`);
   paragraph(vehicleDescription(v), 11, true);
   paragraph(
-    `Subasta: ${v.provider === "copart" ? "Copart" : "IAAI"} | Título: ${v.title === "clean" ? "Clean" : "Rebuilt/Salvage"} | Envío: ${v.shippingMethod === "container" ? "Contenedor" : "RoRo"} | Valoración: ${v.valuation === "table" ? "Tabla DGA (FOB indicado)" : "Factura"}`,
+    `Subasta: ${v.provider === "copart" ? "Copart" : "IAAI"} | Título: ${v.title === "clean" ? "Clean" : "Rebuilt/Salvage"} | Envío: ${v.shippingMethod === "container" ? "Contenedor" : "RoRo"}`,
   );
   paragraph(
-    `FOB de referencia: ${usd(result.fob)} | CIF de referencia: ${usd(result.cif)} | Cambio: RD$${v.fx}/US$1`,
+    result.officialTax
+      ? `Impuestos y primera placa: tabla oficial de valores DGA. Cambio RD$${v.fx}/US$1.`
+      : `Valoración manual: ${v.valuation === "table" ? "FOB de referencia indicado" : "Factura"}. FOB ${usd(result.fob)} | CIF ${usd(result.cif)} | Cambio RD$${v.fx}/US$1.`,
     9,
   );
   ensureSpace(25);
@@ -92,20 +96,7 @@ export async function createImportQuotePdf(
   pdf.text("CONCEPTO ESTIMADO", 18, y + 1);
   pdf.text("US$", 192, y + 1, { align: "right" });
   y += 13;
-  const quoteLines = result.lines
-    .filter((line) => !["insurance", "unloading"].includes(line.key))
-    .map((line) =>
-      line.key === "freight"
-        ? {
-            ...line,
-            label:
-              v.shippingMethod === "container"
-                ? "Flete marítimo, seguro y descarga"
-                : "Flete marítimo y seguro",
-            usd: line.usd + result.insurance + result.unloading,
-          }
-        : line,
-    );
+  const quoteLines = clientQuoteLines(v);
   quoteLines.forEach((line) => {
     pdf.setFont(font, "normal");
     pdf.setFontSize(10);
@@ -124,10 +115,15 @@ export async function createImportQuotePdf(
   pdf.text(usd(result.totalUsd), 192, y + 4, { align: "right" });
   pdf.text(dop(result.totalDop), 192, y + 12, { align: "right" });
   y += 29;
-  paragraph(IMPORT_ESTIMATE_NOTICE, 9);
+  paragraph(
+    result.officialTax ? OFFICIAL_TAX_NOTICE : IMPORT_ESTIMATE_NOTICE,
+    9,
+  );
   paragraph(AUCTION_FEE_NOTICE, 8);
   paragraph(
-    "Preferencia DR-CAFTA simulada para origen USA, sujeta a acreditación documental y aceptación de la DGA. El país/VIN no acredita por sí solo la preferencia. CO2 seleccionado para presupuesto, sujeto a emisiones certificadas. Año y título sujetos a validación antes de comprar.",
+    result.officialTax
+      ? "El importe de tabla sustituye el cálculo por fórmula de impuestos y primera placa; no se suma una segunda liquidación DGA/DGII. Confirma la especificación, el título y la admisibilidad antes de comprar."
+      : "Preferencia DR-CAFTA simulada para origen USA, sujeta a acreditación documental y aceptación de la DGA. El país/VIN no acredita por sí solo la preferencia. CO2 seleccionado para presupuesto, sujeto a emisiones certificadas. Año y título sujetos a validación antes de comprar.",
     8,
   );
   pdf.setFont(font, "bold");

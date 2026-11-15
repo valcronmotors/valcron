@@ -81,3 +81,6 @@ export const IMPORT_ESTIMATE_NOTICE =
   "Cotización estimada. Los impuestos finales los liquida la DGA según su tabla oficial de valores; cualquier diferencia se ajusta en la liquidación final.";
 export const AUCTION_FEE_NOTICE =
   "Fees estimados según parámetros de Valcron (noviembre 2026). El fee final lo fija la subasta según cuenta, título, pago y lote.";
+
+export const OFFICIAL_TAX_NOTICE =
+  "El importe de impuestos y primera placa se toma de la tabla oficial de valores de la DGA suministrada a Valcron para la especificación seleccionada. La liquidación final puede variar y se confirma antes de comprar.";

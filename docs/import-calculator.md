@@ -1,44 +1,35 @@
-# Calculadora única Valcron
+# CSV-backed Valcron import calculator
 
-Shared client component for `/importacion` and `/calculadoras/importacion`. No backend, database writes or customer-data persistence. VIN requests go directly to NHTSA vPIC over HTTPS on explicit lookup; customer names stay local and are used only for the downloaded PDF. Existing delegated WhatsApp tracking handles the CTA.
+## Data and loading
 
-## Final visitor flow
+`tabla-impuestos-placa.csv` (source commit7dd5df6) is the supplied15-field, semicolon-separated tax/first-plate table. `ImpuestoPlaca` is a USD payable amount, **not FOB**. Rebuild after CSV changes with `python scripts/build-import-tax-table.py` and commit the generated manifest/data asset together. The generator validates the schema, preserves all fields and removes only rows identical in all15 fields.
 
-Per candidate: Subasta (purchase + provider + immediate tiered fee) → Gastos variables (repair, inland, freight, shipping, FX) → readonly contract/purchase-management charges → VIN and cascading make/model/year → specifications and country → tax/valuation results → PDF. The fee preview does not depend on completing vehicle identification. Dealer Fee is shown once the complete tax-inclusive subtotal is available.
+Current counts:9067 source rows,9053 unique rows,14 exact duplicates,13 makes,2021–2025. The generated dictionary-encoded JSON is400503bytes (~80485gzip bytes). It is a separate content-addressed file in `public/data`, not a JavaScript import or part of the principal bundle. Only the calculator component mounts its fetch (on /importacion and the existing /calculadoras/importacion calculator route); no other page fetches it. All3 candidates share one cached request. The asset has a long-lived immutable cache header, and the proxy excludes only the versioned public asset pattern. Fetch failure is visible, retryable, and leaves an explicit manual fallback available.
 
-## Editable configuration
+## Selection
 
-`src/lib/import-cost-config.ts` contains Gabriel's commercial assumptions: fee tiers, default freight US$1,150, inland US$250, FX60.81, 2% CIF valuation insurance, taxes, marbete, management, dealer tiers, sweet spot and validity. These are estimated business parameters, not verified account-specific auction charges. Decimal-price fee bands use exclusive upper bounds (e.g. 999.99 remains in the under-1000 band). High-price management surcharge applies to the whole purchase price only when purchase exceeds US$60,000. Dealer tiers use inclusive upper bounds, calculated on the complete subtotal before Valcron honorarios, including repair and converted marbete. All intermediate calculations retain precision; presentation rounds to cents.
+The primary flow has exactly3 vehicle selects: Marca→Modelo→Año. It then lists **all** matching unique rows as touchable radio cards in a bounded scrolling list. Each card includes the full series/country/fuel/cylinders/CC/passengers/doors/drive and any cabins/load-weight/axles, plus IMPUESTO & PLACA inUSD. No separate country/specification menus exist. Selected details and the tax amount appear inUSD andDOP. Changing upstream identity clears the selected row; changing monetary inputs preserves it. NHTSA remains a direct browser request on explicit VIN lookup, normalizes make/model/country aliases (e.g.CR-V→CRV), but never guesses a tax-row specification. The user must confirm the exact card.
 
-CIF = selected FOB + freight + 2% FOB insurance. Following Gabriel’s final correction, insurance is both a CIF valuation basis and an actual cost charged once in the total. Shipping method defaults to Contenedor and can be switched to RoRo per candidate. Screen lines separate maritime freight, 2% insurance and US$140 unloading/HIT (Contenedor only; RoRo omits the charge); the PDF groups these three transport items. Actual purchase remains the purchase line even when table FOB differs. No old fuel surcharge, hybrid discount or previous fees are retained.
+An explicit “Mi especificación no aparece” checkbox enables the manual formula fallback; missing/unselected table rows never silently use a formula. VIN values outside the table can still be entered through this fallback, with country/specification text fields and the existing invoice/reference-FOB/CO2 selectors. Models before2021 remain blocked.
 
-USA simulates 0% tariff; other countries simulate 20%. DGA requires documentary origin compliance, so the UI/PDF do not represent VIN/manufacturing country alone as a guarantee of DR-CAFTA entitlement. The minimum 2021 is the requested calculator eligibility policy; legal admissibility must be checked for the actual import date and title.
+## Calculation and contract charges
 
-## Vehicle data and optional specification catalogue
+The fee schedules, financial defaults and contract rates remain in `src/lib/import-cost-config.ts`. Source CSV taxes are used exactly once: the selected amount **replaces** the formula DGA+DGII tax/plate group. No additional formula tariff/ITBIS/plate/CO2/marbete is appended to that selected-table amount. The manual fallback preserves the formula calculation and editable referenceFOB.
 
-`src/lib/import-vehicle-catalog.ts` contains all 10 requested makes and 39 pool models, plus `DGA_SPECIFICATIONS`. The optional reference catalogue starts empty; the calculator does not depend on ADECI or any external document. Table FOB is editable, defaulting to purchase. Do not invent trim combinations or FOB values. Each optional documented row must include `id`, `make`, `model`, `country`, `year`, `series`, `fuel`, `cylinders`, `cc`, `passengers`, `doors`, `drive`, `fobUsd`, `source`, `effectiveDate`, optionally `co2Percent`. Matching make/model/country/year rows populate the specification selector and table FOB. Example schema (illustrative keys only, no fabricated official prices):
+Maritime insurance is now always2% of **purchase**, including when manual referenceFOB differs. Freight is editable, with no fuel surcharge. Contenedor adds unloading/HIT US$140; RoRo omits it. Auto Hall purchase management remains unchanged ($325+$75;0.5% of purchase only above$60000;+$375 when repair>0).
 
-```ts
-type DgaSpecification = VehicleSpecification & {
-  id: string; make: string; model: string; country: string; year: number;
-  fobUsd: number; co2Percent?: number; source: string; effectiveDate: string;
-};
-```
+Valcron charges are distinct from Auto Hall:
+- One “Gestión de compra USA (Valcron)” charge based on the tax-inclusive subtotal **before honorarios**: ≤25000=$1000;≤40000=$1500;≤70000=$2000;higher=$3000. No duplicate Dealer Fee line.
+- Repair Fee=$400 only when repair>0 **and** `rebuiltManagement` is checked; otherwise0.
+- Custom Fee=$100 always.
+- Dealer service RD=RD$30000 always, converted with the visitor's FX (default60.81).
 
-Specifications can always be entered manually or filled by a valid 17-character NHTSA VIN response. Missing vPIC fields stay empty. Errors/timeouts preserve the manual route. Manual make/model/country/year changes clear dependent specifications/FOB. VIN change cancels the prior request and clears prior identification. Year suggestions are 2021–2025; later valid model years can be entered.
+Known cost lines are shown before tax selection. While tax is unresolved, the USA management tier is clearly provisional and no complete “TOTAL PUESTO EN RD” or PDF is enabled. Once the exact row or complete manual fallback is available, the tier and finalUSD/DOP total resolve. Both displayed breakdown and total use the same pure calculation. Comparison excludes incomplete scenarios and retains the prior sweet-spot priority.
 
-CO2 suggestions are transparent **budget heuristics**, not a DGII emissions determination: electricity-only0%, up to2000CC1%, up to3500CC2%, above3500CC3%, missing engine1%. Editable in config and by the visitor. The actual rate requires certified emissions; displacement cannot establish it.
+Honda reference: HONDA/CRV/2023/ESTADOS UNIDOS/LX/1500CC/AWD=$6708. At purchase11500, Copart fee1409, Auto Hall400, inland250, freight1150, insurance230, Contenedor140, no repair: subtotal21787; Valcron USA1000+Custom100+RDservice30000/60.81 → totalUS$23380.3399111988. DODGE/DURANGO/2025/SRT HELLCAT has tax$38851.
 
-## Comparison and PDF
+## PDF and verification
 
-Up to3 independently editable candidates. Invalid candidates are excluded. Best option = cheapest valid candidate in the US$25,000–45,000 sweet spot, else cheapest valid candidate. Ties retain input order; this is a cost comparison only.
+PDF remains fully client-side and loaded on demand: site logo, embedded font, date/7day validity, client name, full selected specification and grouped client lines. Table quotes use “Impuestos y primera placa (tabla oficial)” and explain the DGA table provenance. Formula quotes are explicitly manual estimates. Quote line sums equal the screen total. Internal Auto Hall components are not itemized separately in the client PDF.
 
-PDF code is dynamically imported on download. Browser fetches the existing website logo plus locally bundled SIL-OFL Valcron Quote Sans regular/bold, a Latin subset of Liberation Sans (license in `public/fonts/quote/`), embeds them, generates the grouped client quote, then downloads a PDF Blob. No Auto Hall/dealer/repair/custom fee components are disclosed separately. Long descriptions paginate. Quote issue date is displayed in Santo Domingo time, validity7days, with the required DGA note and WhatsApp. No PDF library or fonts load on the initial calculator visit.
-
-## Verification
-
-Financial tests cover independent hand-calculated totals, invoice vs table valuation, decimal auction boundaries, IAAI cap, repair and high-price charges, FX/marbete, CAFTA savings, ranking and invalid years/numbers. PDF generated with the same renderer was parsed and rendered locally to check text, totals, logo and layout. Production build and browser checks are recorded in the PR.
-
-Reference method: https://campobroker.com/calculadora-impuestos-vehiculos/ (invoice/table and specification structure only; no Campo commercial charges copied).
-
-Sources: NHTSA API documentation https://vpic.nhtsa.dot.gov/api/ ; DGA origin requirements https://www.aduanas.gob.do/media/05xjgcn2/instructivo-y-formulario-certificado-de-origen-cafta-dr-10-3-22-v4.pdf ; DGA vehicle restrictions https://www.aduanas.gob.do/preguntas-frecuentes/ .
+Tests compare every generated row against the original15 CSV fields; verify unique-row counts, both supplied tax examples, no duplicate formula taxes, invalidated/stale selections, insurance from purchase, each repair/check combination, fee boundaries, exchange rates, and grouping/total consistency. Routing tests protect unrelated admin/private paths. Browser tests verify the primary three-select/card flow and downloads before final delivery. No database, inventory, advertising tag, robot or sitemap changes.

@@ -1,27 +1,39 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { useSearchParams } from "next/navigation";
 import {
   AUCTION_FEE_NOTICE,
   IMPORT_ESTIMATE_NOTICE,
+  OFFICIAL_TAX_NOTICE,
   importCostConfig as config,
 } from "@/lib/import-cost-config";
 import {
   bestCandidate,
   auctionFeesForPrice,
-  purchaseManagementForPrice,
+  previewImportCosts,
   estimateImport,
   newImportCandidate,
   suggestedCo2,
   vehicleDescription,
+  clientQuoteLines,
   type ImportCandidate,
 } from "@/lib/import-estimate";
+import { IMPORT_VEHICLE_POOL } from "@/lib/import-vehicle-catalog";
+import { loadImportTaxTable } from "@/lib/import-tax-client";
 import {
-  IMPORT_COUNTRIES,
-  IMPORT_VEHICLE_POOL,
-  specificationsFor,
-} from "@/lib/import-vehicle-catalog";
+  normalizeVehicleKey,
+  preselectVin,
+  specificationLabel,
+  type ImportTaxRow,
+} from "@/lib/import-tax-table";
 import { decodeImportVin } from "@/lib/import-vin";
 import { formatDecimal } from "@/lib/money";
 import { whatsappHref } from "@/lib/site";
@@ -38,6 +50,16 @@ const emptySpec = {
   passengers: "",
   doors: "",
   drive: "",
+  cabins: "",
+  loadWeight: "",
+  axles: "",
+};
+const sorted = (values: string[]) => {
+  const unique = new Map<string, string>();
+  for (const value of values)
+    if (value && !unique.has(normalizeVehicleKey(value)))
+      unique.set(normalizeVehicleKey(value), value);
+  return [...unique.values()].sort((a, b) => a.localeCompare(b, "es"));
 };
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -47,11 +69,13 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
     </label>
   );
 }
+
 function CandidateCard({
   v,
   index,
   best,
   client,
+  rows,
   onChange,
   onRemove,
 }: {
@@ -59,6 +83,7 @@ function CandidateCard({
   index: number;
   best: boolean;
   client: string;
+  rows: ImportTaxRow[];
   onChange: (patch: Partial<ImportCandidate>) => void;
   onRemove?: () => void;
 }) {
@@ -68,27 +93,76 @@ function CandidateCard({
   const [pdfError, setPdfError] = useState("");
   const request = useRef<AbortController | null>(null);
   useEffect(() => () => request.current?.abort(), []);
-  const result = estimateImport(v);
+  const result = estimateImport(v),
+    preview = previewImportCosts(v),
+    manual = v.taxMode === "manual";
   const previewFees =
     Number.isFinite(v.purchaseUsd) && v.purchaseUsd > 0 && v.purchaseUsd <= 1e7
       ? auctionFeesForPrice(v.purchaseUsd, v.provider)
       : null;
-  const specs = specificationsFor(v.make, v.model, v.country, v.year);
+  const makeRows = useMemo(
+    () => rows.filter((r) => r.make === v.make),
+    [rows, v.make],
+  );
+  const modelRows = useMemo(
+    () => makeRows.filter((r) => r.model === v.model),
+    [makeRows, v.model],
+  );
+  const options = useMemo(
+    () => modelRows.filter((r) => r.year === v.year),
+    [modelRows, v.year],
+  );
+  const poolKey = Object.keys(IMPORT_VEHICLE_POOL).find(
+    (m) => normalizeVehicleKey(m) === normalizeVehicleKey(v.make),
+  );
+  const makes = sorted([
+    ...rows.map((r) => r.make),
+    ...(manual ? Object.keys(IMPORT_VEHICLE_POOL) : []),
+    v.make,
+  ]);
+  const models = sorted([
+    ...makeRows.map((r) => r.model),
+    ...(manual && poolKey ? IMPORT_VEHICLE_POOL[poolKey] : []),
+    v.model,
+  ]);
+  const years = [
+    ...new Set([
+      ...modelRows.map((r) => r.year),
+      ...(manual
+        ? Array.from(
+            { length: new Date().getUTCFullYear() + 3 - config.minimumYear },
+            (_, i) => config.minimumYear + i,
+          )
+        : []),
+      ...(v.year ? [v.year] : []),
+    ]),
+  ].sort((a, b) => b - a);
+  function changeIdentity(patch: Partial<ImportCandidate>) {
+    request.current?.abort();
+    setDecoding(false);
+    setVinMessage("");
+    onChange({
+      ...emptySpec,
+      taxRow: null,
+      tableFobUsd: null,
+      vin: "",
+      ...patch,
+    });
+  }
   const numeric = (
-    key: keyof ImportCandidate,
+    key: "purchaseUsd" | "repairUsd" | "inlandUsd" | "freightUsd" | "fx",
     label: string,
     min = 0,
-    step = "0.01",
   ) => (
     <Field label={label}>
       <input
         className={inputClass}
         type="number"
-        inputMode={step === "1" ? "numeric" : "decimal"}
+        inputMode="decimal"
         min={min}
-        step={step}
-        max={key === "year" ? new Date().getUTCFullYear() + 2 : 10000000}
-        value={Number.isNaN(v[key]) ? "" : String(v[key])}
+        max={10000000}
+        step="0.01"
+        value={Number.isNaN(v[key]) ? "" : v[key]}
         onChange={(e) =>
           onChange({
             [key]: e.target.value === "" ? NaN : Number(e.target.value),
@@ -97,31 +171,6 @@ function CandidateCard({
       />
     </Field>
   );
-  const makes = [
-    ...new Set([
-      ...Object.keys(IMPORT_VEHICLE_POOL),
-      ...(v.make ? [v.make] : []),
-    ]),
-  ];
-  const models = [
-    ...new Set([
-      ...(IMPORT_VEHICLE_POOL[v.make] ?? []),
-      ...(v.model ? [v.model] : []),
-    ]),
-  ];
-  const countries = [
-    ...new Set([...IMPORT_COUNTRIES, ...(v.country ? [v.country] : [])]),
-  ];
-  const message = [
-    "Hola Valcron, quiero cotizar esta importación.",
-    vehicleDescription(v),
-    result
-      ? `TOTAL ESTIMADO: ${usd(result.totalUsd)} / ${dop(result.totalDop)}`
-      : "Quiero completar mi presupuesto.",
-    ...(result?.lines.map((l) => `${l.label}: ${usd(l.usd)}`) ?? []),
-    `Cambio: RD$${v.fx}/US$1`,
-    IMPORT_ESTIMATE_NOTICE,
-  ].join("\n");
   async function decode() {
     request.current?.abort();
     const controller = new AbortController();
@@ -132,18 +181,23 @@ function CandidateCard({
     try {
       const patch = await decodeImportVin(v.vin, controller.signal);
       if (!controller.signal.aborted) {
-        onChange(patch);
+        onChange({
+          ...emptySpec,
+          ...patch,
+          ...preselectVin(rows, patch),
+          taxRow: null,
+        });
         setVinMessage(
-          "Datos recibidos de NHTSA. Revisa los campos; los datos no disponibles quedan para completar.",
+          "Datos recibidos de NHTSA. Confirma una opción exacta de la tabla para fijar los impuestos; no se selecciona una versión automáticamente.",
         );
       }
-    } catch (error) {
+    } catch (e) {
       if (request.current === controller)
         setVinMessage(
           controller.signal.aborted
-            ? "Consulta cancelada o sin respuesta. Puedes completar los datos manualmente."
-            : error instanceof Error
-              ? error.message
+            ? "Consulta cancelada o sin respuesta. Puedes seleccionar el vehículo manualmente."
+            : e instanceof Error
+              ? e.message
               : "No se pudo consultar NHTSA.",
         );
     } finally {
@@ -151,6 +205,16 @@ function CandidateCard({
       if (request.current === controller) setDecoding(false);
     }
   }
+  const message = [
+    "Hola Valcron, quiero cotizar esta importación.",
+    vehicleDescription(v),
+    result
+      ? `TOTAL ESTIMADO: ${usd(result.totalUsd)} / ${dop(result.totalDop)}`
+      : "Quiero completar mi presupuesto.",
+    ...clientQuoteLines(v).map((l) => `${l.label}: ${usd(l.usd)}`),
+    `Cambio: RD$${v.fx}/US$1`,
+    result?.officialTax ? OFFICIAL_TAX_NOTICE : IMPORT_ESTIMATE_NOTICE,
+  ].join("\n");
   return (
     <article
       aria-label={`Vehículo ${index + 1}`}
@@ -166,14 +230,14 @@ function CandidateCard({
         {onRemove ? (
           <button
             type="button"
-            onClick={onRemove}
             className="min-h-11 px-2 text-sm underline"
+            onClick={onRemove}
           >
             Quitar vehículo {index + 1}
           </button>
         ) : null}
       </div>
-      <section aria-label="Subasta" className="mt-4 grid gap-3">
+      <section aria-label="Subasta" className="grid gap-3">
         <h5 className="font-bold">1. Subasta</h5>
         {numeric("purchaseUsd", "Precio de compra estimado (US$)", 0.01)}
         <Field label="Subasta">
@@ -200,13 +264,12 @@ function CandidateCard({
             </p>
             <p className="mt-1 text-xs text-[#676a70]">
               Buyer fee {usd(previewFees.buyer)} · Internet{" "}
-              {usd(previewFees.internet)} · cargos fijos de subasta{" "}
-              {usd(previewFees.fixed)}.
+              {usd(previewFees.internet)} · fijos {usd(previewFees.fixed)}.
             </p>
           </div>
         ) : (
           <p className="text-xs text-[#676a70]">
-            Introduce el precio para calcular automáticamente el fee.
+            Introduce el precio para ver el fee automático.
           </p>
         )}
       </section>
@@ -235,59 +298,80 @@ function CandidateCard({
         </Field>
         <p className="text-xs text-[#676a70]">
           {v.shippingMethod === "container"
-            ? "Descarga + HIT: US$140.00 · incluido por envío en contenedor."
-            : "RoRo: no aplica el cargo de Descarga + HIT."}
+            ? "Descarga + HIT: US$140.00 · solo en contenedor."
+            : "RoRo: sin cargo de Descarga + HIT."}
         </p>
         {numeric("fx", "Tasa RD$/US$", 0.01)}
-      </section>
-      <section
-        aria-label="Gastos fijos del contrato"
-        className="mt-5 border-t border-[#e4e6ea] pt-4"
-      >
-        <h5 className="font-bold">3. Gastos fijos · automáticos</h5>
-        <dl className="mt-3 space-y-2 text-sm">
-          <div>
-            <dt>Gestión de compra</dt>
-            <dd className="font-semibold">
-              {previewFees
-                ? usd(purchaseManagementForPrice(v.purchaseUsd, v.repairUsd))
-                : "Se calcula con el precio de compra"}
-            </dd>
-          </div>
-          <div>
-            <dt>Dealer Fee por tramo</dt>
-            <dd className="font-semibold">
-              {result
-                ? usd(result.dealerFee)
-                : "Se calcula al completar el vehículo y los impuestos"}
-            </dd>
-          </div>
-          <div>
-            <dt>Repair Fee</dt>
-            <dd className="font-semibold">
-              {usd(v.repairUsd > 0 ? config.repairFeeUsd : 0)}
-            </dd>
-          </div>
-          <div>
-            <dt>Custom Fee</dt>
-            <dd className="font-semibold">{usd(config.customFeeUsd)}</dd>
-          </div>
-          <div>
-            <dt>Servicio del dealer en RD</dt>
-            <dd className="font-semibold">{dop(config.dealerServiceDop)}</dd>
-          </div>
-        </dl>
-        <p className="mt-3 text-xs text-[#676a70]">
-          Cargos del contrato, no editables. Dealer Fee según subtotal antes de
-          honorarios: hasta US$25,000 → US$1,000; hasta US$40,000 → US$1,500;
-          hasta US$70,000 → US$2,000; superior → US$3,000.
+        <label className="flex min-h-12 items-center gap-3 rounded-xl border border-[#e4e6ea] p-3 text-sm">
+          <input
+            type="checkbox"
+            checked={v.rebuiltManagement}
+            onChange={(e) => onChange({ rebuiltManagement: e.target.checked })}
+          />
+          Gestión de título salvage a rebuilt
+        </label>
+        <p className="text-xs text-[#676a70]">
+          Repair Fee US$400 solo con reparación mayor que cero y gestión de
+          título marcada.
         </p>
       </section>
       <section
-        aria-label="Identificación del vehículo"
+        aria-label="Cobros de Valcron"
         className="mt-5 border-t border-[#e4e6ea] pt-4"
       >
-        <h5 className="mb-3 font-bold">4. Vehículo</h5>
+        <h5 className="font-bold">3. Cobros automáticos</h5>
+        <dl className="mt-3 space-y-2 text-sm">
+          {preview?.lines
+            .filter((l) =>
+              [
+                "autohall",
+                "usa-management",
+                "repair-fee",
+                "custom-fee",
+                "rd-service",
+              ].includes(l.key),
+            )
+            .map((l) => (
+              <div key={l.key} className="flex flex-wrap justify-between gap-2">
+                <dt>{l.label}</dt>
+                <dd className="font-semibold">
+                  {l.key === "rd-service"
+                    ? dop(config.dealerServiceDop)
+                    : usd(l.usd)}
+                </dd>
+              </div>
+            )) ?? (
+            <>
+              <div>
+                Gestión de compra USA: tramos US$1,000 / 1,500 / 2,000 / 3,000.
+              </div>
+              <div>
+                Repair Fee:{" "}
+                {usd(
+                  v.repairUsd > 0 && v.rebuiltManagement
+                    ? config.repairFeeUsd
+                    : 0,
+                )}
+              </div>
+              <div>Custom Fee: {usd(config.customFeeUsd)}</div>
+              <div>
+                Servicio del dealer en RD: {dop(config.dealerServiceDop)}
+              </div>
+            </>
+          )}
+        </dl>
+        {preview && !result ? (
+          <p className="mt-2 text-xs text-[#676a70]">
+            Tramo provisional con los costos disponibles; se actualiza al
+            seleccionar los impuestos.
+          </p>
+        ) : null}
+      </section>
+      <section
+        aria-label="Selección del vehículo"
+        className="mt-5 grid gap-3 border-t border-[#e4e6ea] pt-4"
+      >
+        <h5 className="font-bold">4. Elige tu vehículo</h5>
         <Field label="Buscar por VIN">
           <input
             className={inputClass}
@@ -300,13 +384,13 @@ function CandidateCard({
               setDecoding(false);
               setVinMessage("");
               onChange({
+                ...emptySpec,
                 vin: e.target.value.toUpperCase().replace(/\s/g, ""),
                 make: "",
                 model: "",
                 country: "",
-                ...emptySpec,
+                taxRow: null,
                 tableFobUsd: null,
-                co2Percent: config.defaults.co2Percent,
               });
             }}
           />
@@ -315,105 +399,158 @@ function CandidateCard({
           type="button"
           onClick={decode}
           disabled={decoding || !v.vin}
-          className="mt-2 min-h-11 w-full rounded-xl border border-[#d8dbe0] px-3 text-sm font-semibold disabled:opacity-50"
+          className="min-h-11 rounded-xl border border-[#d8dbe0] px-3 text-sm font-semibold disabled:opacity-50"
         >
           {decoding ? "Consultando NHTSA…" : "Identificar vehículo"}
         </button>
         {vinMessage ? (
-          <p
-            role="status"
-            className="mt-2 text-xs leading-relaxed text-[#676a70]"
-          >
+          <p role="status" className="text-xs leading-relaxed text-[#676a70]">
             {vinMessage}
           </p>
         ) : null}
-        <div className="mt-4 grid gap-3">
-          <Field label="Marca">
-            <select
-              className={inputClass}
-              value={v.make}
-              onChange={(e) =>
-                onChange({
-                  make: e.target.value,
-                  model: "",
-                  country: "",
-                  ...emptySpec,
-                  tableFobUsd: null,
-                })
-              }
+        <Field label="Marca">
+          <select
+            className={inputClass}
+            value={v.make}
+            disabled={!rows.length && !manual}
+            onChange={(e) =>
+              changeIdentity({
+                make: e.target.value,
+                model: "",
+                year: 0,
+                country: "",
+              })
+            }
+          >
+            <option value="">Selecciona marca</option>
+            {makes.map((m) => (
+              <option key={m}>{m}</option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Modelo">
+          <select
+            className={inputClass}
+            value={v.model}
+            disabled={!v.make}
+            onChange={(e) =>
+              changeIdentity({ model: e.target.value, year: 0, country: "" })
+            }
+          >
+            <option value="">Selecciona modelo</option>
+            {models.map((m) => (
+              <option key={m}>{m}</option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Año modelo">
+          <select
+            className={inputClass}
+            value={v.year || ""}
+            disabled={!v.model}
+            onChange={(e) =>
+              changeIdentity({ year: Number(e.target.value), country: "" })
+            }
+          >
+            <option value="">Selecciona año</option>
+            {years.map((y) => (
+              <option key={y} value={y}>
+                {y}
+                {y < 2021 ? " · no admitido" : ""}
+              </option>
+            ))}
+          </select>
+        </Field>
+        {!manual ? (
+          <>
+            <p className="text-sm font-semibold">
+              {options.length} opciones disponibles · toca la especificación
+              exacta
+            </p>
+            <div
+              role="radiogroup"
+              aria-label={`Opciones de vehículo ${index + 1}`}
+              className="grid max-h-[32rem] gap-2 overflow-y-auto overscroll-contain rounded-xl focus-within:ring-2 focus-within:ring-[#ec752f]/20"
             >
-              <option value="">Selecciona marca</option>
-              {makes.map((m) => (
-                <option key={m}>{m}</option>
+              {options.map((r) => (
+                <label
+                  key={r.id}
+                  className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 ${v.taxRow?.id === r.id ? "border-[#ec752f] bg-[#fff7f0]" : "border-[#e4e6ea]"}`}
+                >
+                  <input
+                    type="radio"
+                    name={`tax-option-${v.id}`}
+                    value={r.id}
+                    checked={v.taxRow?.id === r.id}
+                    className="mt-1 shrink-0"
+                    onChange={() =>
+                      onChange({
+                        ...r,
+                        id: v.id,
+                        taxRow: r,
+                        taxMode: "official",
+                      })
+                    }
+                  />
+                  <span className="min-w-0">
+                    <span className="block text-sm leading-relaxed">
+                      {specificationLabel(r)}
+                    </span>
+                    <span className="mt-2 block text-sm font-bold text-[#a54d1c]">
+                      IMPUESTO &amp; PLACA · {usd(r.taxUsd)}
+                    </span>
+                  </span>
+                </label>
               ))}
-            </select>
-          </Field>
-          <Field label="Modelo">
-            <select
-              className={inputClass}
-              disabled={!v.make}
-              value={v.model}
-              onChange={(e) =>
-                onChange({
-                  model: e.target.value,
-                  country: "",
-                  ...emptySpec,
-                  tableFobUsd: null,
-                })
-              }
-            >
-              <option value="">Selecciona modelo</option>
-              {models.map((m) => (
-                <option key={m}>{m}</option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Año modelo">
-            <select
-              className={inputClass}
-              value={v.year}
-              disabled={!v.model}
-              onChange={(e) =>
-                onChange({
-                  year: Number(e.target.value),
-                  vin: "",
-                  ...emptySpec,
-                  tableFobUsd: null,
-                })
-              }
-            >
-              {[
-                ...new Set([
-                  v.year,
-                  ...Array.from(
-                    {
-                      length:
-                        new Date().getUTCFullYear() + 3 - config.minimumYear,
-                    },
-                    (_, i) => config.minimumYear + i,
-                  ),
-                ]),
-              ]
-                .filter(Number.isFinite)
-                .sort((a, b) => b - a)
-                .map((y) => (
-                  <option key={y} value={y}>
-                    {y}
-                    {y < config.minimumYear ? " · no admitido" : ""}
-                  </option>
-                ))}
-            </select>
-          </Field>
-        </div>
-      </section>
-      <section
-        aria-label="Especificaciones y origen"
-        className="mt-5 grid gap-3 border-t border-[#e4e6ea] pt-4"
-      >
-        <h5 className="font-bold">5. Especificaciones y origen</h5>
-        <section className="mt-3 rounded-xl border border-[#e4e6ea] p-3">
-          <h5 className="text-sm font-semibold">Especificación y motor</h5>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            </div>
+            {v.taxRow ? (
+              <p className="rounded-xl bg-[#fff7f0] p-3 text-sm leading-relaxed">
+                Seleccionado: {specificationLabel(v.taxRow)}. Impuestos y
+                primera placa (tabla oficial):{" "}
+                <strong>
+                  {usd(v.taxRow.taxUsd)} ·{" "}
+                  {Number.isFinite(v.fx) && v.fx > 0
+                    ? dop(v.taxRow.taxUsd * v.fx)
+                    : "indica una tasa válida"}
+                </strong>
+                .
+              </p>
+            ) : (
+              <p className="text-xs text-[#676a70]">
+                {options.length
+                  ? "Selecciona una opción de la lista para fijar el impuesto."
+                  : "Selecciona marca, modelo y año. Si tu especificación no aparece, usa el respaldo manual."}
+              </p>
+            )}
+          </>
+        ) : null}
+        <label className="flex min-h-12 items-center gap-3 text-sm">
+          <input
+            type="checkbox"
+            checked={manual}
+            onChange={(e) =>
+              onChange({
+                taxMode: e.target.checked ? "manual" : "official",
+                taxRow: null,
+              })
+            }
+          />
+          Mi especificación no aparece · usar cálculo manual por fórmula
+        </label>
+        {manual ? (
+          <div className="grid gap-3 rounded-xl border border-[#e4e6ea] p-3">
+            <p className="text-xs font-semibold text-[#a54d1c]">
+              Respaldo manual · no usa el importe de tabla
+            </p>
+            <Field label="País de origen (manual)">
+              <input
+                className={inputClass}
+                value={v.country}
+                maxLength={80}
+                placeholder="USA, México, Canadá, Japón…"
+                onChange={(e) => onChange({ country: e.target.value })}
+              />
+            </Field>
             {(
               [
                 ["series", "Serie / trim"],
@@ -423,6 +560,9 @@ function CandidateCard({
                 ["passengers", "Pasajeros"],
                 ["doors", "Puertas"],
                 ["drive", "Tracción"],
+                ["cabins", "Cabinas"],
+                ["loadWeight", "Peso de carga"],
+                ["axles", "Ejes"],
               ] as const
             ).map(([key, label]) => (
               <Field key={key} label={label}>
@@ -443,218 +583,142 @@ function CandidateCard({
                 />
               </Field>
             ))}
+            <Field label="Método de valoración DGA">
+              <select
+                className={inputClass}
+                value={v.valuation}
+                onChange={(e) =>
+                  onChange({
+                    valuation: e.target.value as ImportCandidate["valuation"],
+                  })
+                }
+              >
+                <option value="invoice">Factura · FOB = compra</option>
+                <option value="table">FOB de referencia editable</option>
+              </select>
+            </Field>
+            {v.valuation === "table" ? (
+              <Field label="FOB de referencia (US$)">
+                <input
+                  className={inputClass}
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  value={v.tableFobUsd ?? v.purchaseUsd}
+                  onChange={(e) =>
+                    onChange({
+                      tableFobUsd: e.target.value
+                        ? Number(e.target.value)
+                        : null,
+                    })
+                  }
+                />
+              </Field>
+            ) : null}
+            <Field label="CO₂ estimado (manual)">
+              <select
+                className={inputClass}
+                value={v.co2Percent}
+                onChange={(e) =>
+                  onChange({ co2Percent: Number(e.target.value) })
+                }
+              >
+                {[0, 1, 2, 3].map((p) => (
+                  <option key={p} value={p}>
+                    {p}% del CIF
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <p className="text-xs text-[#676a70]">
+              Respaldo estimado por fórmula. Origen USA simula DR-CAFTA sujeto a
+              acreditación documental; el VIN no basta. CO₂ sujeto a emisiones
+              certificadas.
+            </p>
           </div>
-          <p className="mt-3 text-xs text-[#676a70]">
-            Confirma la especificación del lote con el VIN o su documentación.
-            No se generan versiones ni FOB oficiales.
-          </p>
-        </section>
-        <Field label="País de fabricación / origen">
-          <select
-            className={inputClass}
-            disabled={!v.model}
-            value={v.country}
-            onChange={(e) =>
-              onChange({
-                country: e.target.value,
-                tableFobUsd: null,
-              })
-            }
-          >
-            <option value="">Confirma país del vehículo</option>
-            {countries.map((m) => (
-              <option key={m} value={m}>
-                {m === "USA"
-                  ? "USA · simular DR-CAFTA 0%"
-                  : `${({ JAPAN: "Japón", CANADA: "Canadá", MEXICO: "México", "SOUTH KOREA": "Corea del Sur", GERMANY: "Alemania", CHINA: "China", "UNITED KINGDOM": "Reino Unido", OTRO: "Otro" } as Record<string, string>)[m] ?? m} · arancel 20%`}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Especificación">
-          <select
-            key={`${v.make}/${v.model}/${v.country}/${v.year}`}
-            className={inputClass}
-            defaultValue="manual"
-            disabled={!v.make || !v.model || !v.country}
-            onChange={(e) => {
-              const s = specs.find((s) => s.id === e.target.value);
-              if (s)
-                onChange({
-                  ...s,
-                  id: v.id,
-                  valuation: "table",
-                  tableFobUsd: s.fobUsd,
-                  co2Percent: s.co2Percent ?? suggestedCo2(s.cc, s.fuel),
-                });
-              else onChange({ ...emptySpec, tableFobUsd: null });
-            }}
-          >
-            <option value="manual">
-              {v.series
-                ? `Revisar / editar: ${v.series}`
-                : "Ingresar especificación manual"}
-            </option>
-            {specs.map((s) => (
-              <option key={s.id} value={s.id}>
-                {[s.series, s.fuel, `${s.cc} CC`, s.drive].join(" · ")}
-              </option>
-            ))}
-          </select>
-        </Field>
+        ) : null}
         <Field label="Tipo de título">
           <select
             className={inputClass}
             value={v.title}
             onChange={(e) =>
-              onChange({
-                title: e.target.value as ImportCandidate["title"],
-                ...(e.target.value === "rebuilt"
-                  ? { valuation: "table" as const }
-                  : {}),
-              })
+              onChange({ title: e.target.value as ImportCandidate["title"] })
             }
           >
             <option value="clean">Clean</option>
             <option value="rebuilt">Rebuilt / Salvage</option>
           </select>
         </Field>
-        <Field label="Método de valoración DGA">
-          <select
-            className={inputClass}
-            value={v.valuation}
-            onChange={(e) =>
-              onChange({
-                valuation: e.target.value as ImportCandidate["valuation"],
-              })
-            }
-          >
-            <option value="invoice">Factura</option>
-            <option value="table">Tabla DGA</option>
-          </select>
-        </Field>{" "}
-        {v.valuation === "table" ? (
-          <Field label="FOB de tabla (US$) · editable">
-            <input
-              className={inputClass}
-              type="number"
-              min="0.01"
-              step="0.01"
-              value={
-                v.tableFobUsd ??
-                (Number.isFinite(v.purchaseUsd) ? v.purchaseUsd : "")
-              }
-              onChange={(e) =>
-                onChange({
-                  tableFobUsd: e.target.value ? Number(e.target.value) : null,
-                })
-              }
-            />
-            <span className="mt-1 block text-xs font-normal text-[#676a70]">
-              Provisional = compra. Sustituye por el FOB oficial de la
-              especificación cuando esté disponible.
-            </span>
-          </Field>
+        {v.year > 0 && v.year < 2021 ? (
+          <p role="alert" className="text-sm font-bold text-red-800">
+            Cálculo bloqueado: solo vehículos 2021 en adelante.
+          </p>
         ) : null}
-        <Field label="CO₂ estimado">
-          <select
-            className={inputClass}
-            value={v.co2Percent}
-            onChange={(e) => onChange({ co2Percent: Number(e.target.value) })}
-          >
-            {[0, 1, 2, 3].map((p) => (
-              <option key={p} value={p}>
-                {p}% del CIF
-              </option>
-            ))}
-          </select>
-          <span className="mt-1 block text-xs font-normal text-[#676a70]">
-            Sugerencia presupuestaria por motor, editable. La tasa legal depende
-            de emisiones certificadas, no solo de cilindrada.
-          </span>
-        </Field>
       </section>
-      <div className="mt-4 space-y-2 text-xs">
-        <p
-          className={
-            v.year >= config.minimumYear
-              ? "text-green-800"
-              : "font-bold text-red-800"
-          }
-        >
-          {v.year >= config.minimumYear
-            ? "Año admitido por esta calculadora (2021+). Validar admisibilidad antes de comprar."
-            : "Cálculo bloqueado: solo modelos 2021 en adelante. Verifica antigüedad según Ley 04-07."}
-        </p>
-        {v.title === "rebuilt" ? (
-          <p className="rounded-lg bg-amber-50 p-2 text-amber-900">
-            Rebuilt/Salvage: usa la tabla DGA como referencia y confirma título,
-            admisibilidad y valoración con Valcron antes de comprar.
-          </p>
-        ) : null}
-        {result?.caftaSavings ? (
-          <p className="text-green-800">
-            Ahorro DR-CAFTA simulado: {usd(result.caftaSavings)} en arancel e
-            ITBIS.
-          </p>
-        ) : null}
-        {result?.sweetSpot ? (
-          <p className="font-semibold text-[#a54d1c]">
-            Punto dulce · total entre US$25,000 y US$45,000
-          </p>
-        ) : null}
-      </div>
-      {result ? (
+      {preview ? (
         <section
           aria-label={`Resultado vehículo ${index + 1}`}
-          className="mt-4 rounded-xl bg-[#fff7f0] p-4"
+          className="mt-5 rounded-xl bg-[#fff7f0] p-4"
         >
-          <p className="text-xs font-bold uppercase tracking-wide text-[#a54d1c]">
-            Total puesto en RD · ESTIMADO
-          </p>
-          <p className="mt-2 text-2xl font-bold">{usd(result.totalUsd)}</p>
-          <p className="mt-1 font-semibold">{dop(result.totalDop)}</p>
+          <h5 className="font-bold">5. Resultado detallado</h5>
+          {result ? (
+            <>
+              <p className="mt-3 text-xs font-bold uppercase tracking-wide text-[#a54d1c]">
+                TOTAL PUESTO EN RD · ESTIMADO
+              </p>
+              <p className="mt-1 text-2xl font-bold">{usd(result.totalUsd)}</p>
+              <p className="font-semibold">{dop(result.totalDop)}</p>
+              {result.sweetSpot ? (
+                <p className="mt-2 text-xs font-semibold text-[#a54d1c]">
+                  Punto dulce · US$25,000–45,000
+                </p>
+              ) : null}
+            </>
+          ) : (
+            <p className="mt-3 text-sm text-[#676a70]">
+              Costos disponibles. Selecciona una opción exacta o completa el
+              respaldo manual para incluir impuestos y cerrar el total.
+            </p>
+          )}
           <dl className="mt-4 divide-y divide-[#edddd1]">
-            {result.lines.map((line) => (
+            {preview.lines.map((l) => (
               <div
-                key={line.key}
-                className="flex flex-wrap justify-between gap-2 py-2 text-xs"
+                key={l.key}
+                className="flex flex-wrap justify-between gap-2 py-2 text-sm"
               >
-                <dt>{line.label}</dt>
-                <dd className="font-semibold">{usd(line.usd)}</dd>
+                <dt>{l.label}</dt>
+                <dd className="font-semibold">
+                  {usd(l.usd)}
+                  <span className="mt-0.5 block text-right text-xs font-normal text-[#676a70]">
+                    {dop(l.usd * v.fx)}
+                  </span>
+                </dd>
               </div>
             ))}
           </dl>
-          <details className="mt-3 text-xs">
-            <summary className="cursor-pointer font-semibold">
-              Honorarios del contrato
-            </summary>
-            <p className="mt-2 leading-relaxed">
-              Dealer Fee {usd(result.dealerFee)} · Repair Fee{" "}
-              {usd(v.repairUsd > 0 ? config.repairFeeUsd : 0)} · Custom Fee{" "}
-              {usd(config.customFeeUsd)} · Servicio dealer RD{" "}
-              {dop(config.dealerServiceDop)}.
+          {!result ? (
+            <p className="mt-3 text-xs text-[#676a70]">
+              El tramo de gestión USA es provisional mientras falte el impuesto.
             </p>
-          </details>
-          <details className="mt-3 text-xs">
-            <summary className="cursor-pointer font-semibold">
-              Bases de cálculo de impuestos
-            </summary>
-            <p className="mt-2 leading-relaxed">
-              FOB {usd(result.fob)} · seguro de valoración 2%{" "}
-              {usd(result.insurance)} · CIF {usd(result.cif)}. Arancel{" "}
-              {usd(result.tariff)} · ITBIS 18% {usd(result.itbis)} · placa 17%{" "}
-              {usd(result.plate)} · CO₂ {usd(result.co2)} · marbete{" "}
-              {dop(result.marbeteDop)}. El seguro integra la base CIF y se cobra
-              una sola vez en su partida.
+          ) : result.officialTax ? (
+            <p className="mt-3 text-xs leading-relaxed text-[#676a70]">
+              {OFFICIAL_TAX_NOTICE} No se suma nuevamente la fórmula DGA/DGII.
             </p>
-          </details>
+          ) : (
+            <details className="mt-3 text-xs">
+              <summary className="cursor-pointer font-semibold">
+                Bases del respaldo por fórmula
+              </summary>
+              <p className="mt-2">
+                FOB {usd(result.fob)} · CIF {usd(result.cif)} · arancel{" "}
+                {usd(result.tariff)} · ITBIS {usd(result.itbis)} · primera placa{" "}
+                {usd(result.plate)} · CO₂ {usd(result.co2)} · marbete{" "}
+                {dop(result.marbeteDop)}.
+              </p>
+            </details>
+          )}
         </section>
-      ) : (
-        <p className="mt-4 rounded-xl bg-[#f5f6f7] p-4 text-sm text-[#676a70]">
-          Completa marca, modelo, país, año y precio válidos para calcular.
-        </p>
-      )}
+      ) : null}
       <div className="mt-4 grid gap-2">
         <button
           type="button"
@@ -699,26 +763,57 @@ function CandidateCard({
 function ImportCalculatorBody() {
   const params = useSearchParams();
   const nextId = useRef(2);
+  const [rows, setRows] = useState<ImportTaxRow[]>([]);
+  const [tableError, setTableError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [retry, setRetry] = useState(0);
   const [candidates, setCandidates] = useState<ImportCandidate[]>(() => {
     const v = newImportCandidate("1");
     const year = Number(params.get("ano"));
     if (year) v.year = year;
     if (params.get("provider") === "iaai") v.provider = "iaai";
-    const description = params.get("vehiculo");
-    if (description) {
+    const desc = params.get("vehiculo");
+    if (desc) {
       const make = Object.keys(IMPORT_VEHICLE_POOL).find((m) =>
-        description.toLowerCase().startsWith(m.toLowerCase()),
+        desc.toLowerCase().startsWith(m.toLowerCase()),
       );
       if (make) {
         v.make = make;
         v.model =
           IMPORT_VEHICLE_POOL[make].find((m) =>
-            description.toLowerCase().includes(m.toLowerCase()),
+            desc.toLowerCase().includes(m.toLowerCase()),
           ) ?? "";
       }
     }
     return [v];
   });
+  useEffect(() => {
+    let alive = true;
+    loadImportTaxTable()
+      .then((data) => {
+        if (alive) {
+          setRows(data);
+          setCandidates((current) =>
+            current.map((v) =>
+              v.taxRow ? v : { ...v, ...preselectVin(data, v) },
+            ),
+          );
+          setTableError("");
+        }
+      })
+      .catch((e) => {
+        if (alive)
+          setTableError(
+            e instanceof Error ? e.message : "No se pudo cargar la tabla.",
+          );
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [retry]);
   const [client, setClient] = useState("");
   const best = bestCandidate(candidates);
   return (
@@ -730,18 +825,21 @@ function ImportCalculatorBody() {
           </p>
           <h3 className="mt-2 text-2xl font-bold">Calcula, compara y elige.</h3>
           <p className="mt-2 text-sm text-[#676a70]">
-            Hasta 3 vehículos. Resultados estimados en tu navegador.
+            Marca, modelo y año. Elige una opción con su impuesto y primera
+            placa.
           </p>
         </div>
         <button
           type="button"
           disabled={candidates.length >= 3}
-          onClick={() =>
-            setCandidates((v) => [
-              ...v,
-              newImportCandidate(String(nextId.current++)),
-            ])
-          }
+          onClick={() => {
+            const id = String(nextId.current++);
+            setCandidates((current) =>
+              current.length >= 3
+                ? current
+                : [...current, newImportCandidate(id)],
+            );
+          }}
           className="home-orange-button min-h-12 rounded-xl px-5 text-sm font-semibold disabled:opacity-40"
         >
           Agregar vehículo ({candidates.length}/3)
@@ -759,6 +857,29 @@ function ImportCalculatorBody() {
           />
         </Field>
       </div>
+      {loading ? (
+        <p role="status" className="mb-4 text-sm text-[#676a70]">
+          Cargando opciones de la tabla…
+        </p>
+      ) : null}
+      {tableError ? (
+        <div
+          role="alert"
+          className="mb-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-900"
+        >
+          {tableError}
+          <button
+            type="button"
+            className="ml-3 min-h-11 underline"
+            onClick={() => {
+              setLoading(true);
+              setRetry((n) => n + 1);
+            }}
+          >
+            Reintentar tabla
+          </button>
+        </div>
+      ) : null}
       <div
         className={`grid min-w-0 gap-4 ${candidates.length === 1 ? "max-w-3xl" : candidates.length === 2 ? "lg:grid-cols-2" : "lg:grid-cols-3"}`}
       >
@@ -767,8 +888,9 @@ function ImportCalculatorBody() {
             key={v.id}
             v={v}
             index={index}
-            client={client}
+            rows={rows}
             best={best === v.id}
+            client={client}
             onChange={(patch) =>
               setCandidates((current) =>
                 current.map((item) =>
@@ -791,37 +913,11 @@ function ImportCalculatorBody() {
         <p className="font-semibold text-[#08090b]">{IMPORT_ESTIMATE_NOTICE}</p>
         <p>{AUCTION_FEE_NOTICE}</p>
         <p>
-          Origen USA simula arancel 0%; otro origen, 20%. La preferencia
-          DR-CAFTA requiere acreditación documental y aceptación de la DGA; el
-          VIN y el país de fabricación no bastan.{" "}
-          <a
-            href="https://www.aduanas.gob.do/media/05xjgcn2/instructivo-y-formulario-certificado-de-origen-cafta-dr-10-3-22-v4.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline"
-          >
-            Requisitos de origen DGA
-          </a>
-          .
-        </p>
-        <p>
-          «Mejor opción» compara únicamente costos estimados válidos: prioriza
-          el menor total dentro del punto dulce; si no hay ninguno, el menor
-          total. No evalúa condición mecánica ni disponibilidad.
-        </p>
-        <p>
-          El FOB de tabla se ingresa manualmente según la referencia que
-          corresponda. El CO₂ sugerido por motor es orientativo; confirma
-          emisiones, título y antigüedad aplicable antes de ofertar.{" "}
-          <a
-            href="https://www.aduanas.gob.do/preguntas-frecuentes/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline"
-          >
-            Consultar DGA
-          </a>
-          .
+          Los importes de la tabla corresponden a cada especificación exacta; no
+          son valores FOB. El respaldo por fórmula se usa solo cuando eliges el
+          modo manual. «Mejor opción» prioriza el menor total dentro de
+          US$25,000–45,000; fuera de ese rango, el menor total válido. No evalúa
+          condición mecánica.
         </p>
       </div>
     </div>

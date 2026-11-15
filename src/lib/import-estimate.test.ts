@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   auctionFeesForPrice,
+  clientQuoteLines,
   bestCandidate,
   estimateImport,
   newImportCandidate,
@@ -14,6 +15,7 @@ const example: ImportCandidate = {
   country: "USA",
   year: 2025,
   purchaseUsd: 10000,
+  taxMode: "manual",
 };
 describe("Calculadora única Valcron", () => {
   it("balances the approved full USD and DOP quotation without duplicate CIF charges", () => {
@@ -34,7 +36,7 @@ describe("Calculadora única Valcron", () => {
       8,
     );
     expect(
-      r.lines.some((l) =>
+      clientQuoteLines(example).some((l) =>
         /Auto Hall|Repair Fee|Dealer Fee|Custom Fee/.test(l.label),
       ),
     ).toBe(false);
@@ -56,9 +58,9 @@ describe("Calculadora única Valcron", () => {
       country: "JAPAN",
     })!;
     expect(r.fob).toBe(20000);
-    expect(r.cif).toBe(21550);
-    expect(r.tariff).toBe(4310);
-    expect(r.itbis).toBeCloseTo(4654.8);
+    expect(r.cif).toBe(21350);
+    expect(r.tariff).toBe(4270);
+    expect(r.itbis).toBeCloseTo(4611.6);
     expect(r.lines[0].usd).toBe(10000);
     expect(
       estimateImport({ ...example, valuation: "table", tableFobUsd: null })!
@@ -89,12 +91,21 @@ describe("Calculadora única Valcron", () => {
   it("adds both repair-related charges exactly once and high-purchase surcharge only above 60000", () => {
     const a = estimateImport({ ...example, repairUsd: 1000 })!;
     const b = estimateImport(example)!;
-    expect(a.totalUsd - b.totalUsd).toBeCloseTo(1775);
+    expect(a.totalUsd - b.totalUsd).toBeCloseTo(1375);
     expect(
-      estimateImport({ ...example, purchaseUsd: 60000 })!.lines[1].usd,
+      estimateImport({ ...example, repairUsd: 1000, rebuiltManagement: true })!
+        .totalUsd - b.totalUsd,
+    ).toBeCloseTo(1775);
+    expect(
+      estimateImport({ ...example, rebuiltManagement: true })!.repairFee,
+    ).toBe(0);
+    expect(
+      estimateImport({ ...example, purchaseUsd: 60000 })!.fees.total +
+        estimateImport({ ...example, purchaseUsd: 60000 })!.autoHall,
     ).toBeCloseTo(60000 * 0.075 + 279 + 130 + 400);
     expect(
-      estimateImport({ ...example, purchaseUsd: 60001 })!.lines[1].usd,
+      estimateImport({ ...example, purchaseUsd: 60001 })!.fees.total +
+        estimateImport({ ...example, purchaseUsd: 60001 })!.autoHall,
     ).toBeCloseTo(60001 * 0.075 + 279 + 130 + 400 + 60001 * 0.005);
   });
   it("uses each candidate exchange rate and model-year marbete and correct CAFTA savings", () => {
