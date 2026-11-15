@@ -324,7 +324,6 @@ function CandidateCard({
           {preview?.lines
             .filter((l) =>
               [
-                "autohall",
                 "usa-management",
                 "repair-fee",
                 "custom-fee",

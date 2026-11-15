@@ -27,9 +27,9 @@ describe("Calculadora única Valcron", () => {
     expect(r.plate).toBeCloseTo(1929.5);
     expect(r.co2).toBe(113.5);
     expect(r.fees.total).toBe(1409);
-    expect(r.subtotal).toBeCloseTo(17700.778654826507, 6);
+    expect(r.subtotal).toBeCloseTo(17300.778654826507, 6);
     expect(r.dealerFee).toBe(1000);
-    expect(r.totalUsd).toBeCloseTo(19294.118566025325, 6);
+    expect(r.totalUsd).toBeCloseTo(18894.118566025325, 6);
     expect(r.totalDop).toBeCloseTo(r.totalUsd * 60.81, 6);
     expect(r.lines.reduce((sum, l) => sum + l.usd, 0)).toBeCloseTo(
       r.totalUsd,
@@ -88,25 +88,45 @@ describe("Calculadora única Valcron", () => {
       total: 1225,
     });
   });
-  it("adds both repair-related charges exactly once and high-purchase surcharge only above 60000", () => {
-    const a = estimateImport({ ...example, repairUsd: 1000 })!;
-    const b = estimateImport(example)!;
-    expect(a.totalUsd - b.totalUsd).toBeCloseTo(1375);
+  it("charges repair management only with repair and title check, without Auto Hall charges", () => {
+    const base = estimateImport(example)!;
+    for (const purchaseUsd of [10000, 60000, 60001]) {
+      const noRepair = estimateImport({ ...example, purchaseUsd })!;
+      const repair = estimateImport({
+        ...example,
+        purchaseUsd,
+        repairUsd: 1000,
+      })!;
+      const rebuilt = estimateImport({
+        ...example,
+        purchaseUsd,
+        repairUsd: 1000,
+        rebuiltManagement: true,
+      })!;
+      expect(repair.subtotal - noRepair.subtotal).toBeCloseTo(1000);
+      expect(rebuilt.subtotal).toBeCloseTo(repair.subtotal);
+      expect(rebuilt.totalUsd - repair.totalUsd).toBeCloseTo(400);
+      expect(repair.repairFee).toBe(0);
+      for (const result of [noRepair, repair, rebuilt]) {
+        expect(
+          result.lines.some((l) => /auto.?hall/i.test(l.key + l.label)),
+        ).toBe(false);
+        expect(result.lines.reduce((sum, l) => sum + l.usd, 0)).toBeCloseTo(
+          result.totalUsd,
+        );
+      }
+    }
     expect(
-      estimateImport({ ...example, repairUsd: 1000, rebuiltManagement: true })!
-        .totalUsd - b.totalUsd,
-    ).toBeCloseTo(1775);
+      estimateImport({ ...example, rebuiltManagement: true })!.totalUsd,
+    ).toBe(base.totalUsd);
+    expect(clientQuoteLines(example).find((l) => l.key === "auction")).toEqual({
+      key: "auction",
+      label: "Fees de subasta",
+      usd: 1409,
+    });
     expect(
-      estimateImport({ ...example, rebuiltManagement: true })!.repairFee,
-    ).toBe(0);
-    expect(
-      estimateImport({ ...example, purchaseUsd: 60000 })!.fees.total +
-        estimateImport({ ...example, purchaseUsd: 60000 })!.autoHall,
-    ).toBeCloseTo(60000 * 0.075 + 279 + 130 + 400);
-    expect(
-      estimateImport({ ...example, purchaseUsd: 60001 })!.fees.total +
-        estimateImport({ ...example, purchaseUsd: 60001 })!.autoHall,
-    ).toBeCloseTo(60001 * 0.075 + 279 + 130 + 400 + 60001 * 0.005);
+      clientQuoteLines(example).reduce((sum, l) => sum + l.usd, 0),
+    ).toBeCloseTo(base.totalUsd);
   });
   it("uses each candidate exchange rate and model-year marbete and correct CAFTA savings", () => {
     const r = estimateImport({ ...example, year: 2021, fx: 50 })!;
