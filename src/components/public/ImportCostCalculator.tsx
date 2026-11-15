@@ -9,6 +9,8 @@ import {
 } from "@/lib/import-cost-config";
 import {
   bestCandidate,
+  auctionFeesForPrice,
+  purchaseManagementForPrice,
   estimateImport,
   newImportCandidate,
   suggestedCo2,
@@ -67,6 +69,10 @@ function CandidateCard({
   const request = useRef<AbortController | null>(null);
   useEffect(() => () => request.current?.abort(), []);
   const result = estimateImport(v);
+  const previewFees =
+    Number.isFinite(v.purchaseUsd) && v.purchaseUsd > 0 && v.purchaseUsd <= 1e7
+      ? auctionFeesForPrice(v.purchaseUsd, v.provider)
+      : null;
   const specs = specificationsFor(v.make, v.model, v.country, v.year);
   const numeric = (
     key: keyof ImportCandidate,
@@ -167,86 +173,282 @@ function CandidateCard({
           </button>
         ) : null}
       </div>
-      <Field label="Buscar por VIN">
-        <input
-          className={inputClass}
-          value={v.vin}
-          maxLength={17}
-          placeholder="VIN de 17 caracteres"
-          autoCapitalize="characters"
-          onChange={(e) => {
-            request.current?.abort();
-            setDecoding(false);
-            setVinMessage("");
-            onChange({
-              vin: e.target.value.toUpperCase().replace(/\s/g, ""),
-              make: "",
-              model: "",
-              country: "",
-              ...emptySpec,
-              tableFobUsd: null,
-              co2Percent: config.defaults.co2Percent,
-            });
-          }}
-        />
-      </Field>
-      <button
-        type="button"
-        onClick={decode}
-        disabled={decoding || !v.vin}
-        className="mt-2 min-h-11 w-full rounded-xl border border-[#d8dbe0] px-3 text-sm font-semibold disabled:opacity-50"
-      >
-        {decoding ? "Consultando NHTSA…" : "Identificar vehículo"}
-      </button>
-      {vinMessage ? (
-        <p
-          role="status"
-          className="mt-2 text-xs leading-relaxed text-[#676a70]"
-        >
-          {vinMessage}
-        </p>
-      ) : null}
-      <div className="mt-4 grid min-w-0 gap-3">
-        <Field label="Marca">
+      <section aria-label="Subasta" className="mt-4 grid gap-3">
+        <h5 className="font-bold">1. Subasta</h5>
+        {numeric("purchaseUsd", "Precio de compra estimado (US$)", 0.01)}
+        <Field label="Subasta">
           <select
             className={inputClass}
-            value={v.make}
+            value={v.provider}
             onChange={(e) =>
               onChange({
-                make: e.target.value,
+                provider: e.target.value as ImportCandidate["provider"],
+              })
+            }
+          >
+            <option value="copart">Copart</option>
+            <option value="iaai">IAAI</option>
+          </select>
+        </Field>
+        {previewFees ? (
+          <div
+            aria-live="polite"
+            className="rounded-xl bg-[#fff7f0] p-3 text-sm"
+          >
+            <p className="font-bold">
+              Fee de subasta estimado: {usd(previewFees.total)}
+            </p>
+            <p className="mt-1 text-xs text-[#676a70]">
+              Buyer fee {usd(previewFees.buyer)} · Internet{" "}
+              {usd(previewFees.internet)} · cargos fijos de subasta{" "}
+              {usd(previewFees.fixed)}.
+            </p>
+          </div>
+        ) : (
+          <p className="text-xs text-[#676a70]">
+            Introduce el precio para calcular automáticamente el fee.
+          </p>
+        )}
+      </section>
+      <section
+        aria-label="Gastos variables"
+        className="mt-5 grid gap-3 border-t border-[#e4e6ea] pt-4"
+      >
+        <h5 className="font-bold">2. Gastos variables</h5>
+        {numeric("repairUsd", "Reparación estimada (US$)")}
+        {numeric("inlandUsd", "Grúa USA (US$)")}
+        {numeric("freightUsd", "Flete marítimo (US$)")}
+        <Field label="Método de envío">
+          <select
+            className={inputClass}
+            value={v.shippingMethod}
+            onChange={(e) =>
+              onChange({
+                shippingMethod: e.target
+                  .value as ImportCandidate["shippingMethod"],
+              })
+            }
+          >
+            <option value="container">Contenedor</option>
+            <option value="roro">RoRo</option>
+          </select>
+        </Field>
+        <p className="text-xs text-[#676a70]">
+          {v.shippingMethod === "container"
+            ? "Descarga + HIT: US$140.00 · incluido por envío en contenedor."
+            : "RoRo: no aplica el cargo de Descarga + HIT."}
+        </p>
+        {numeric("fx", "Tasa RD$/US$", 0.01)}
+      </section>
+      <section
+        aria-label="Gastos fijos del contrato"
+        className="mt-5 border-t border-[#e4e6ea] pt-4"
+      >
+        <h5 className="font-bold">3. Gastos fijos · automáticos</h5>
+        <dl className="mt-3 space-y-2 text-sm">
+          <div>
+            <dt>Gestión de compra</dt>
+            <dd className="font-semibold">
+              {previewFees
+                ? usd(purchaseManagementForPrice(v.purchaseUsd, v.repairUsd))
+                : "Se calcula con el precio de compra"}
+            </dd>
+          </div>
+          <div>
+            <dt>Dealer Fee por tramo</dt>
+            <dd className="font-semibold">
+              {result
+                ? usd(result.dealerFee)
+                : "Se calcula al completar el vehículo y los impuestos"}
+            </dd>
+          </div>
+          <div>
+            <dt>Repair Fee</dt>
+            <dd className="font-semibold">
+              {usd(v.repairUsd > 0 ? config.repairFeeUsd : 0)}
+            </dd>
+          </div>
+          <div>
+            <dt>Custom Fee</dt>
+            <dd className="font-semibold">{usd(config.customFeeUsd)}</dd>
+          </div>
+          <div>
+            <dt>Servicio del dealer en RD</dt>
+            <dd className="font-semibold">{dop(config.dealerServiceDop)}</dd>
+          </div>
+        </dl>
+        <p className="mt-3 text-xs text-[#676a70]">
+          Cargos del contrato, no editables. Dealer Fee según subtotal antes de
+          honorarios: hasta US$25,000 → US$1,000; hasta US$40,000 → US$1,500;
+          hasta US$70,000 → US$2,000; superior → US$3,000.
+        </p>
+      </section>
+      <section
+        aria-label="Identificación del vehículo"
+        className="mt-5 border-t border-[#e4e6ea] pt-4"
+      >
+        <h5 className="mb-3 font-bold">4. Vehículo</h5>
+        <Field label="Buscar por VIN">
+          <input
+            className={inputClass}
+            value={v.vin}
+            maxLength={17}
+            placeholder="VIN de 17 caracteres"
+            autoCapitalize="characters"
+            onChange={(e) => {
+              request.current?.abort();
+              setDecoding(false);
+              setVinMessage("");
+              onChange({
+                vin: e.target.value.toUpperCase().replace(/\s/g, ""),
+                make: "",
                 model: "",
                 country: "",
                 ...emptySpec,
                 tableFobUsd: null,
-              })
-            }
-          >
-            <option value="">Selecciona marca</option>
-            {makes.map((m) => (
-              <option key={m}>{m}</option>
-            ))}
-          </select>
+                co2Percent: config.defaults.co2Percent,
+              });
+            }}
+          />
         </Field>
-        <Field label="Modelo">
-          <select
-            className={inputClass}
-            disabled={!v.make}
-            value={v.model}
-            onChange={(e) =>
-              onChange({
-                model: e.target.value,
-                country: "",
-                ...emptySpec,
-                tableFobUsd: null,
-              })
-            }
+        <button
+          type="button"
+          onClick={decode}
+          disabled={decoding || !v.vin}
+          className="mt-2 min-h-11 w-full rounded-xl border border-[#d8dbe0] px-3 text-sm font-semibold disabled:opacity-50"
+        >
+          {decoding ? "Consultando NHTSA…" : "Identificar vehículo"}
+        </button>
+        {vinMessage ? (
+          <p
+            role="status"
+            className="mt-2 text-xs leading-relaxed text-[#676a70]"
           >
-            <option value="">Selecciona modelo</option>
-            {models.map((m) => (
-              <option key={m}>{m}</option>
+            {vinMessage}
+          </p>
+        ) : null}
+        <div className="mt-4 grid gap-3">
+          <Field label="Marca">
+            <select
+              className={inputClass}
+              value={v.make}
+              onChange={(e) =>
+                onChange({
+                  make: e.target.value,
+                  model: "",
+                  country: "",
+                  ...emptySpec,
+                  tableFobUsd: null,
+                })
+              }
+            >
+              <option value="">Selecciona marca</option>
+              {makes.map((m) => (
+                <option key={m}>{m}</option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Modelo">
+            <select
+              className={inputClass}
+              disabled={!v.make}
+              value={v.model}
+              onChange={(e) =>
+                onChange({
+                  model: e.target.value,
+                  country: "",
+                  ...emptySpec,
+                  tableFobUsd: null,
+                })
+              }
+            >
+              <option value="">Selecciona modelo</option>
+              {models.map((m) => (
+                <option key={m}>{m}</option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Año modelo">
+            <select
+              className={inputClass}
+              value={v.year}
+              disabled={!v.model}
+              onChange={(e) =>
+                onChange({
+                  year: Number(e.target.value),
+                  vin: "",
+                  ...emptySpec,
+                  tableFobUsd: null,
+                })
+              }
+            >
+              {[
+                ...new Set([
+                  v.year,
+                  ...Array.from(
+                    {
+                      length:
+                        new Date().getUTCFullYear() + 3 - config.minimumYear,
+                    },
+                    (_, i) => config.minimumYear + i,
+                  ),
+                ]),
+              ]
+                .filter(Number.isFinite)
+                .sort((a, b) => b - a)
+                .map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                    {y < config.minimumYear ? " · no admitido" : ""}
+                  </option>
+                ))}
+            </select>
+          </Field>
+        </div>
+      </section>
+      <section
+        aria-label="Especificaciones y origen"
+        className="mt-5 grid gap-3 border-t border-[#e4e6ea] pt-4"
+      >
+        <h5 className="font-bold">5. Especificaciones y origen</h5>
+        <section className="mt-3 rounded-xl border border-[#e4e6ea] p-3">
+          <h5 className="text-sm font-semibold">Especificación y motor</h5>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            {(
+              [
+                ["series", "Serie / trim"],
+                ["fuel", "Combustible"],
+                ["cylinders", "Cilindros"],
+                ["cc", "Cilindrada (CC)"],
+                ["passengers", "Pasajeros"],
+                ["doors", "Puertas"],
+                ["drive", "Tracción"],
+              ] as const
+            ).map(([key, label]) => (
+              <Field key={key} label={label}>
+                <input
+                  className={inputClass}
+                  maxLength={100}
+                  value={v[key]}
+                  onChange={(e) =>
+                    onChange({
+                      [key]: e.target.value,
+                      ...(key === "cc"
+                        ? { co2Percent: suggestedCo2(e.target.value, v.fuel) }
+                        : key === "fuel"
+                          ? { co2Percent: suggestedCo2(v.cc, e.target.value) }
+                          : {}),
+                    })
+                  }
+                />
+              </Field>
             ))}
-          </select>
-        </Field>
+          </div>
+          <p className="mt-3 text-xs text-[#676a70]">
+            Confirma la especificación del lote con el VIN o su documentación.
+            No se generan versiones ni FOB oficiales.
+          </p>
+        </section>
         <Field label="País de fabricación / origen">
           <select
             className={inputClass}
@@ -255,7 +457,6 @@ function CandidateCard({
             onChange={(e) =>
               onChange({
                 country: e.target.value,
-                ...emptySpec,
                 tableFobUsd: null,
               })
             }
@@ -265,33 +466,10 @@ function CandidateCard({
               <option key={m} value={m}>
                 {m === "USA"
                   ? "USA · simular DR-CAFTA 0%"
-                  : `${m} · arancel 20%`}
+                  : `${({ JAPAN: "Japón", CANADA: "Canadá", MEXICO: "México", "SOUTH KOREA": "Corea del Sur", GERMANY: "Alemania", CHINA: "China", "UNITED KINGDOM": "Reino Unido", OTRO: "Otro" } as Record<string, string>)[m] ?? m} · arancel 20%`}
               </option>
             ))}
           </select>
-        </Field>
-        <Field label="Año modelo">
-          <input
-            className={inputClass}
-            type="number"
-            list={`years-${v.id}`}
-            min={config.minimumYear}
-            max={new Date().getUTCFullYear() + 2}
-            step={1}
-            value={Number.isNaN(v.year) ? "" : v.year}
-            onChange={(e) =>
-              onChange({
-                year: e.target.value ? Number(e.target.value) : NaN,
-                ...emptySpec,
-                tableFobUsd: null,
-              })
-            }
-          />
-          <datalist id={`years-${v.id}`}>
-            {[2021, 2022, 2023, 2024, 2025].map((y) => (
-              <option key={y} value={y} />
-            ))}
-          </datalist>
         </Field>
         <Field label="Especificación">
           <select
@@ -324,78 +502,6 @@ function CandidateCard({
             ))}
           </select>
         </Field>
-      </div>
-      <details className="mt-3 rounded-xl border border-[#e4e6ea] p-3">
-        <summary className="cursor-pointer text-sm font-semibold">
-          Especificación y motor
-        </summary>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          {(
-            [
-              ["series", "Serie / trim"],
-              ["fuel", "Combustible"],
-              ["cylinders", "Cilindros"],
-              ["cc", "Cilindrada (CC)"],
-              ["passengers", "Pasajeros"],
-              ["doors", "Puertas"],
-              ["drive", "Tracción"],
-            ] as const
-          ).map(([key, label]) => (
-            <Field key={key} label={label}>
-              <input
-                className={inputClass}
-                maxLength={100}
-                value={v[key]}
-                onChange={(e) =>
-                  onChange({
-                    [key]: e.target.value,
-                    ...(key === "cc"
-                      ? { co2Percent: suggestedCo2(e.target.value, v.fuel) }
-                      : key === "fuel"
-                        ? { co2Percent: suggestedCo2(v.cc, e.target.value) }
-                        : {}),
-                  })
-                }
-              />
-            </Field>
-          ))}
-        </div>
-        <p className="mt-3 text-xs text-[#676a70]">
-          Confirma la especificación del lote con el VIN o su documentación. No
-          se generan versiones ni FOB oficiales.
-        </p>
-      </details>
-      <div className="mt-4 grid gap-3">
-        {numeric("purchaseUsd", "Precio de compra estimado (US$)", 0.01)}
-        <Field label="Método de envío">
-          <select
-            className={inputClass}
-            value={v.shippingMethod}
-            onChange={(e) =>
-              onChange({
-                shippingMethod: e.target
-                  .value as ImportCandidate["shippingMethod"],
-              })
-            }
-          >
-            <option value="container">Contenedor</option>
-            <option value="roro">RoRo</option>
-          </select>
-        </Field>
-        <Field label="Subasta">
-          <select
-            className={inputClass}
-            value={v.provider}
-            onChange={(e) =>
-              onChange({
-                provider: e.target.value as ImportCandidate["provider"],
-              })
-            }
-          >
-            <option value="copart">Copart</option>
-            <option value="iaai">IAAI</option>
-          </select>
-        </Field>
         <Field label="Tipo de título">
           <select
             className={inputClass}
@@ -426,7 +532,7 @@ function CandidateCard({
             <option value="invoice">Factura</option>
             <option value="table">Tabla DGA</option>
           </select>
-        </Field>
+        </Field>{" "}
         {v.valuation === "table" ? (
           <Field label="FOB de tabla (US$) · editable">
             <input
@@ -467,18 +573,7 @@ function CandidateCard({
             de emisiones certificadas, no solo de cilindrada.
           </span>
         </Field>
-      </div>
-      <details className="mt-4 rounded-xl border border-[#e4e6ea] p-3">
-        <summary className="cursor-pointer text-sm font-semibold">
-          Transporte, reparación y cambio
-        </summary>
-        <div className="mt-3 grid gap-3">
-          {numeric("inlandUsd", "Grúa USA (US$)")}
-          {numeric("freightUsd", "Flete marítimo (US$)")}
-          {numeric("repairUsd", "Reparación estimada (US$)")}
-          {numeric("fx", "Tasa RD$/US$", 0.01)}
-        </div>
-      </details>
+      </section>
       <div className="mt-4 space-y-2 text-xs">
         <p
           className={
