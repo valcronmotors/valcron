@@ -91,6 +91,16 @@ export function suggestedCo2(cc: string, fuel: string) {
         : s.largePercent
     : c.defaults.co2Percent;
 }
+export function purchaseManagementForPrice(price: number, repairUsd: number) {
+  return (
+    c.purchaseManagement.baseUsd +
+    c.purchaseManagement.processingUsd +
+    (price > c.purchaseManagement.highThresholdUsd
+      ? price * c.purchaseManagement.highRate
+      : 0) +
+    (repairUsd > 0 ? c.purchaseManagement.repairUsd : 0)
+  );
+}
 export function estimateImport(v: ImportCandidate) {
   if (
     !v.make.trim() ||
@@ -122,13 +132,10 @@ export function estimateImport(v: ImportCandidate) {
   if (!Number.isFinite(fob) || fob <= 0 || fob > 1e7) return null;
   const fees = auctionFeesForPrice(v.purchaseUsd, v.provider);
   const repairing = v.repairUsd > 0;
-  const purchaseManagement =
-    c.purchaseManagement.baseUsd +
-    c.purchaseManagement.processingUsd +
-    (v.purchaseUsd > c.purchaseManagement.highThresholdUsd
-      ? v.purchaseUsd * c.purchaseManagement.highRate
-      : 0) +
-    (repairing ? c.purchaseManagement.repairUsd : 0);
+  const purchaseManagement = purchaseManagementForPrice(
+    v.purchaseUsd,
+    v.repairUsd,
+  );
   const insurance = fob * c.insuranceRate;
   const cif = fob + v.freightUsd + insurance;
   const tariff = isUsa(v.country) ? 0 : cif * c.tariffRate;

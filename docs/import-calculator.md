@@ -2,6 +2,10 @@
 
 Shared client component for `/importacion` and `/calculadoras/importacion`. No backend, database writes or customer-data persistence. VIN requests go directly to NHTSA vPIC over HTTPS on explicit lookup; customer names stay local and are used only for the downloaded PDF. Existing delegated WhatsApp tracking handles the CTA.
 
+## Final visitor flow
+
+Per candidate: Subasta (purchase + provider + immediate tiered fee) → Gastos variables (repair, inland, freight, shipping, FX) → readonly contract/purchase-management charges → VIN and cascading make/model/year → specifications and country → tax/valuation results → PDF. The fee preview does not depend on completing vehicle identification. Dealer Fee is shown once the complete tax-inclusive subtotal is available.
+
 ## Editable configuration
 
 `src/lib/import-cost-config.ts` contains Gabriel's commercial assumptions: fee tiers, default freight US$1,150, inland US$250, FX60.81, 2% CIF valuation insurance, taxes, marbete, management, dealer tiers, sweet spot and validity. These are estimated business parameters, not verified account-specific auction charges. Decimal-price fee bands use exclusive upper bounds (e.g. 999.99 remains in the under-1000 band). High-price management surcharge applies to the whole purchase price only when purchase exceeds US$60,000. Dealer tiers use inclusive upper bounds, calculated on the complete subtotal before Valcron honorarios, including repair and converted marbete. All intermediate calculations retain precision; presentation rounds to cents.
