@@ -13,6 +13,7 @@ import {
   buildVehicleWhatsAppUrl,
   displayVehiclePrice,
   formatMileage,
+  formatPublicVehicleModel,
   vehicleDisplayTitle,
   vehicleImageAlt,
   visibleVehicleSpecs,
@@ -50,7 +51,7 @@ export function PublicVehicleDetail({
   const sold = vehicle.availability === "sold";
   const year = vehicle.year || vehicle.ano;
   const make = vehicle.make || vehicle.marca;
-  const model = vehicle.model || vehicle.modelo;
+  const model = formatPublicVehicleModel(vehicle.model || vehicle.modelo);
   const mileage = formatMileage(vehicle.mileage, vehicle.mileageUnit);
   const financeAmount = Math.round(vehicle.pricing.usdPrice || vehicle.precioVentaUsd || 0);
   const dealer = vehicle.listingKind === "dealer";

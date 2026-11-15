@@ -26,6 +26,8 @@ import {
 import { toPublicVehicle } from "@/lib/vehicles/normalizeVehicle";
 import {
   buildVehicleWhatsAppMessage,
+  formatPublicVehicleModel,
+  vehicleDisplayTitle,
   displayVehiclePrice,
   visibleVehicleSpecs,
 } from "@/lib/vehicles/vehicle-formatters";
@@ -170,6 +172,32 @@ describe("public website v2 navigation", () => {
     for (const faq of HOME_FAQS) {
       expect(`${faq.q} ${faq.a}`).not.toMatch(/809.?623.?9381/);
     }
+  });
+});
+
+describe("public vehicle model presentation", () => {
+  it("normalizes model names without damaging model codes or changing source records", () => {
+    for (const [raw, displayed] of [
+      ["COROLLA", "Corolla"],
+      ["civic", "Civic"],
+      ["HIGHLANDER", "Highlander"],
+      ["GRAND CHEROKEE L", "Grand Cherokee L"],
+      ["SANTA FE", "Santa Fe"],
+      ["cr-v", "CR-V"],
+      ["rav4", "RAV4"],
+      ["cx-5", "CX-5"],
+      ["f-150", "F-150"],
+      ["gle", "GLE"],
+      ["rx", "RX"],
+    ]) {
+      expect(formatPublicVehicleModel(raw)).toBe(displayed);
+    }
+    const vehicle = toPublicVehicle(
+      row({ make: "Toyota", model: "COROLLA", trim: "LE" }),
+    );
+    expect(vehicleDisplayTitle(vehicle)).toBe("2023 Toyota Corolla LE");
+    expect(buildVehicleWhatsAppMessage(vehicle)).toContain("Toyota Corolla LE");
+    expect(vehicle.model).toBe("COROLLA");
   });
 });
 

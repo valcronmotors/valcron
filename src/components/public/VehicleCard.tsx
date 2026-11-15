@@ -9,6 +9,7 @@ import {
   buildVehicleWhatsAppUrl,
   displayVehiclePrice,
   formatMileage,
+  formatPublicVehicleModel,
   vehicleImageAlt,
 } from "@/lib/vehicles/vehicle-formatters";
 import { publicListingBadge } from "@/lib/vehicles/vehicle-status";
@@ -35,7 +36,7 @@ export function VehicleCard({
   const cover = vehicle.images[0]?.url;
   const year = vehicle.year ?? vehicle.ano;
   const make = (vehicle.make || vehicle.marca || "").trim();
-  const model = (vehicle.model || vehicle.modelo || "").trim();
+  const model = formatPublicVehicleModel(vehicle.model || vehicle.modelo);
   const title = [make, model].filter(Boolean).join(" ");
   const trim = (vehicle.trim || "").trim();
   const transmission = (vehicle.transmission || "").trim();

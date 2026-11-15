@@ -23,10 +23,58 @@ export function formatPublicVin(vin: string | null | undefined) {
   return `***********${value.slice(-6)}`;
 }
 
+/** Public display only: preserve model codes while normalizing imported uppercase names. */
+export function formatPublicVehicleModel(value: string | null | undefined) {
+  const codes = new Set([
+    "CR-V",
+    "HR-V",
+    "BR-V",
+    "WR-V",
+    "CRV",
+    "HRV",
+    "GLA",
+    "GLB",
+    "GLC",
+    "GLE",
+    "GLS",
+    "GMC",
+    "GT",
+    "GTI",
+    "GTR",
+    "GT-R",
+    "ID",
+    "EV",
+    "ES",
+    "IS",
+    "LS",
+    "LX",
+    "NX",
+    "RX",
+    "UX",
+    "GX",
+    "RC",
+    "LC",
+    "CT",
+  ]);
+  return (value ?? "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .split(" ")
+    .map((word) => {
+      const upper = word.toUpperCase();
+      if (/\d/.test(word) || word.length === 1 || codes.has(upper))
+        return upper;
+      return word
+        .toLowerCase()
+        .replace(/(^|[-/])\p{L}/gu, (letter) => letter.toUpperCase());
+    })
+    .join(" ");
+}
+
 export function vehicleDisplayTitle(vehicle: Pick<PublicVehicle, "year" | "make" | "model" | "trim" | "ano" | "marca" | "modelo">) {
   const year = vehicle.year ?? vehicle.ano;
   const make = vehicle.make ?? vehicle.marca;
-  const model = vehicle.model ?? vehicle.modelo;
+  const model = formatPublicVehicleModel(vehicle.model || vehicle.modelo);
   const trim = vehicle.trim ? ` ${vehicle.trim}` : "";
   return `${year} ${make} ${model}${trim}`.replace(/\s+/g, " ").trim();
 }
@@ -197,7 +245,7 @@ export function visibleVehicleSpecs(vehicle: PublicVehicle) {
   const rows: { label: string; value: string | null }[] = [
     { label: "Año", value: vehicle.year || vehicle.ano ? String(vehicle.year || vehicle.ano) : null },
     { label: "Marca", value: presentText(vehicle.make || vehicle.marca) },
-    { label: "Modelo", value: presentText(vehicle.model || vehicle.modelo) },
+    { label: "Modelo", value: presentText(formatPublicVehicleModel(vehicle.model || vehicle.modelo)) },
     { label: "Versión", value: presentText(vehicle.trim) },
     { label: "VIN", value: formatPublicVin(vehicle.vin) },
     { label: "Número de stock", value: presentText(vehicle.stockNumber) },
