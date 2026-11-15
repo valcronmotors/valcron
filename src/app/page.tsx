@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { HomeInventoryTabs } from "@/components/home/HomeInventoryTabs";
-import { HomeBuyGuide } from "@/components/home/HomeBuyGuide";
 import { HomeFinalCta } from "@/components/home/HomeFinalCta";
 import { HomeFinancingTeaser } from "@/components/home/HomeFinancingTeaser";
 import { HomeTrust } from "@/components/home/HomeTrust";
@@ -17,7 +16,8 @@ import { JsonLd } from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Dealer en Santo Domingo Este | Vehículos en venta | Valcron Motors",
+    absolute:
+      "Dealer en Santo Domingo Este | Vehículos en venta | Valcron Motors",
   },
   description: SITE.valueProposition,
   alternates: { canonical: "/" },
@@ -28,7 +28,14 @@ export const metadata: Metadata = {
     title: "Dealer en Santo Domingo Este | Valcron Motors",
     description: SITE.valueProposition,
     url: SITE.url,
-    images: [{ url: "/api/public/social-image?v=20261110", width: 1200, height: 630, alt: "Valcron Motors — dealer en Santo Domingo Este" }],
+    images: [
+      {
+        url: "/api/public/social-image?v=20261110",
+        width: 1200,
+        height: 630,
+        alt: "Valcron Motors — dealer en Santo Domingo Este",
+      },
+    ],
   },
 };
 
@@ -52,7 +59,6 @@ export default async function Home() {
         />
         <HomeImport />
         <HomeModelSpotlight />
-        <HomeBuyGuide />
         <HomeFinancingTeaser />
         <HomeFinalCta />
         <HomeTrust />

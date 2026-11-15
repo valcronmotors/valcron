@@ -11,8 +11,12 @@ export const PRICE_RANGES = [
 const ECO_PATTERN =
   /\b(hybrid|h[ií]brido|phev|plug-?in|el[eé]ctric[oa]|ev\b|prius|ioniq|bolt|leaf|model [3syx]|id\.?\s?4|mach-?e)\b/i;
 
-export function isEcoVehicle(vehicle: Pick<PublicVehicle, "marca" | "modelo" | "trim" | "make" | "model">) {
-  return ECO_PATTERN.test(`${vehicle.make || vehicle.marca} ${vehicle.model || vehicle.modelo} ${vehicle.trim ?? ""}`);
+export function isEcoVehicle(
+  vehicle: Pick<PublicVehicle, "marca" | "modelo" | "trim" | "make" | "model">,
+) {
+  return ECO_PATTERN.test(
+    `${vehicle.make || vehicle.marca} ${vehicle.model || vehicle.modelo} ${vehicle.trim ?? ""}`,
+  );
 }
 
 export function catalogMake(vehicle: PublicVehicle) {
@@ -28,7 +32,10 @@ export function catalogYear(vehicle: PublicVehicle) {
 }
 
 export function catalogUsdPrice(vehicle: PublicVehicle) {
-  if (!vehicle.pricing?.priceVisible || vehicle.pricing.publicPriceMode === "contact") {
+  if (
+    !vehicle.pricing?.priceVisible ||
+    vehicle.pricing.publicPriceMode === "contact"
+  ) {
     return 0;
   }
   return Number(vehicle.pricing?.usdPrice ?? vehicle.precioVentaUsd ?? 0);
@@ -43,20 +50,27 @@ export function uniqueModelos(vehicles: PublicVehicle[], marca?: string) {
     ...new Set(
       vehicles
         .filter((vehicle) => !marca || catalogMake(vehicle) === marca)
-        .map(catalogModel)
+        .map((vehicle) => catalogModel(vehicle).toUpperCase())
         .filter(Boolean),
     ),
   ].sort();
 }
 
 export function uniqueAnos(vehicles: PublicVehicle[]) {
-  return [...new Set(vehicles.map(catalogYear).filter((year) => year > 0))].sort((a, b) => b - a);
+  return [
+    ...new Set(vehicles.map(catalogYear).filter((year) => year > 0)),
+  ].sort((a, b) => b - a);
 }
 
 export function parsePriceRange(value: string | null | undefined) {
   const range = PRICE_RANGES.find((item) => item.value === (value ?? ""));
   return {
-    precioMin: range && range.min > 0 ? String(range.min) : value === "0-15000" ? "0" : "",
+    precioMin:
+      range && range.min > 0
+        ? String(range.min)
+        : value === "0-15000"
+          ? "0"
+          : "",
     precioMax: range && range.max > 0 ? String(range.max) : "",
   };
 }
@@ -96,7 +110,11 @@ export function inventorySearchHref(filters: {
   return query ? `/inventario?${query}` : "/inventario";
 }
 
-export function monthlyPayment(principal: number, months: number, annualRate = 0.16) {
+export function monthlyPayment(
+  principal: number,
+  months: number,
+  annualRate = 0.16,
+) {
   if (principal <= 0 || months <= 0) {
     return 0;
   }
@@ -139,16 +157,32 @@ export function filterCatalogVehicles(
   const maxUsd = Number(filters.precioMax);
 
   const rows = vehicles.filter((vehicle) => {
-    if (filters.listing === "dealer" && vehicle.listingKind !== "dealer") return false;
-    if (filters.listing === "auction" && vehicle.listingKind !== "auction") return false;
+    if (filters.listing === "dealer" && vehicle.listingKind !== "dealer")
+      return false;
+    if (filters.listing === "auction" && vehicle.listingKind !== "auction")
+      return false;
     if (filters.marca && catalogMake(vehicle) !== filters.marca) return false;
-    if (filters.modelo && catalogModel(vehicle) !== filters.modelo) return false;
-    if (filters.ano && String(catalogYear(vehicle)) !== filters.ano) return false;
+    if (
+      filters.modelo &&
+      catalogModel(vehicle).toUpperCase() !==
+        filters.modelo.trim().toUpperCase()
+    )
+      return false;
+    if (filters.ano && String(catalogYear(vehicle)) !== filters.ano)
+      return false;
     const usdPrice = catalogUsdPrice(vehicle);
-    if (Number.isFinite(minUsd) && minUsd > 0 && usdPrice < minUsd) return false;
-    if (Number.isFinite(maxUsd) && maxUsd > 0 && usdPrice > maxUsd) return false;
+    if (Number.isFinite(minUsd) && minUsd > 0 && usdPrice < minUsd)
+      return false;
+    if (Number.isFinite(maxUsd) && maxUsd > 0 && usdPrice > maxUsd)
+      return false;
     if (!needle) return true;
-    return [catalogMake(vehicle), catalogModel(vehicle), vehicle.trim ?? "", vehicle.vin ?? "", String(catalogYear(vehicle))]
+    return [
+      catalogMake(vehicle),
+      catalogModel(vehicle),
+      vehicle.trim ?? "",
+      vehicle.vin ?? "",
+      String(catalogYear(vehicle)),
+    ]
       .join(" ")
       .toLowerCase()
       .includes(needle);

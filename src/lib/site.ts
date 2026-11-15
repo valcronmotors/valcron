@@ -8,10 +8,12 @@ export const SITE = {
   legalName: "Valcron Motors Group, SRL",
   url: "https://valcronmotors.com",
   tagline: "Más opciones. Más cerca de ti.",
-  seoTitle: "Dealer en Santo Domingo Este | Vehículos en venta | Valcron Motors",
+  seoTitle:
+    "Dealer en Santo Domingo Este | Vehículos en venta | Valcron Motors",
   heroEyebrow: "Valcron Motors Group",
   heroTitle: "Más opciones. Más cerca de ti.",
-  heroSubtitle: "Vehículos en venta en Santo Domingo Este, búsqueda personalizada y orientación con bancos locales. Encuentra tu próximo vehículo con Valcron Motors.",
+  heroSubtitle:
+    "Vehículos en venta en Santo Domingo Este, búsqueda personalizada y orientación con bancos locales. Encuentra tu próximo vehículo con Valcron Motors.",
   valueProposition:
     "Valcron Motors en Santo Domingo Este: vehículos disponibles, búsqueda personalizada, financiamiento con bancos locales y opciones de subasta e importación cuando aplica.",
   address: {
@@ -36,14 +38,16 @@ export const SITE = {
   whatsappSecondaryUrl: "https://wa.me/18492572225",
   instagramUrl: "https://www.instagram.com/valcronmotors/",
   instagramHandle: "@valcronmotors",
-  facebookUrl: "https://www.facebook.com/people/Valcron-Motors-Group/61584457784163/",
+  facebookUrl:
+    "https://www.facebook.com/people/Valcron-Motors-Group/61584457784163/",
   tiktokUrl: "https://www.tiktok.com/@valcronmotors",
   facebookDisplay: "Valcron Motors Group",
   newsletterEnabled: false,
   defaultWhatsappMessage:
     "Hola, quiero información sobre un vehículo con Valcron Motors.",
   maps: {
-    query: "Valcron Motors Group, Av Principal 20, Santo Domingo Este, República Dominicana",
+    query:
+      "Valcron Motors Group, Av Principal 20, Santo Domingo Este, República Dominicana",
     embedTitle: "Ubicación de Valcron Motors Group en Santo Domingo Este",
     embedSrc:
       "https://maps.google.com/maps?hl=es&q=Valcron%20Motors%20Group%2C%20Av%20Principal%2020%2C%20Santo%20Domingo%20Este%2C%20Rep%C3%BAblica%20Dominicana&z=16&output=embed",
@@ -67,7 +71,10 @@ export const PUBLIC_NAV_PRIMARY = [
   { href: "/nosotros", label: "Nosotros" },
 ] as const;
 
-export const PUBLIC_NAV_CONTACT = { href: "/contacto", label: "Contacto" } as const;
+export const PUBLIC_NAV_CONTACT = {
+  href: "/contacto",
+  label: "Contacto",
+} as const;
 
 export const PUBLIC_NAV = [...PUBLIC_NAV_PRIMARY, PUBLIC_NAV_CONTACT] as const;
 
@@ -78,7 +85,11 @@ export const RESOURCE_NAV = [
   { href: "/preguntas-frecuentes", label: "Preguntas frecuentes" },
 ] as const;
 
-export const MOBILE_NAV = [...PUBLIC_NAV_PRIMARY, ...RESOURCE_NAV, PUBLIC_NAV_CONTACT] as const;
+export const MOBILE_NAV = [
+  ...PUBLIC_NAV_PRIMARY,
+  ...RESOURCE_NAV,
+  PUBLIC_NAV_CONTACT,
+] as const;
 
 export type MegaNavLink = { href: string; label: string };
 export type MegaNavColumn = { title: string; links: readonly MegaNavLink[] };
@@ -87,7 +98,6 @@ export type MegaNavItem = {
   label: string;
   href: string;
   columns: readonly MegaNavColumn[];
-  featured: { title: string; copy: string; href: string; cta: string };
 };
 
 /**
@@ -103,17 +113,11 @@ export const MEGA_NAV: readonly MegaNavItem[] = [
       {
         title: "Catálogos",
         links: [
-          { href: "/inventario", label: "Inventario Valcron" },
-          { href: "/subastas", label: "Oportunidades de Subasta" },
+          { href: "/inventario", label: "Inventario" },
+          { href: "/subastas", label: "Subastas" },
         ],
       },
     ],
-    featured: {
-      title: "Inventario Valcron",
-      copy: "Unidades publicadas en Santo Domingo Este.",
-      href: "/inventario",
-      cta: "Ver inventario",
-    },
   },
   {
     id: "comprar",
@@ -124,19 +128,12 @@ export const MEGA_NAV: readonly MegaNavItem[] = [
         title: "Compra",
         links: [
           { href: "/solicitar-vehiculo", label: "Solicitar vehículo" },
-          { href: "/financiamiento", label: "Financiamiento" },
           { href: "/comprar", label: "Cómo comprar" },
-          { href: "/calculadoras", label: "Cotizaciones" },
-          { href: "/contacto?asunto=trade-in", label: "Entrega como parte de pago" },
+          { href: "/financiamiento", label: "Financiamiento" },
+          { href: "/contacto?asunto=trade-in", label: "Parte de pago" },
         ],
       },
     ],
-    featured: {
-      title: "Solicita tu vehículo",
-      copy: "Cuéntanos qué buscas y te orientamos en el proceso.",
-      href: "/solicitar-vehiculo",
-      cta: "Solicitar vehículo",
-    },
   },
   {
     id: "servicios",
@@ -146,19 +143,11 @@ export const MEGA_NAV: readonly MegaNavItem[] = [
       {
         title: "Servicios Valcron",
         links: [
-          { href: "/subastas", label: "Subastas" },
           { href: "/importacion", label: "Importación" },
-          { href: "/financiamiento", label: "Financiamiento" },
-          { href: "/comprar", label: "Asesoría de compra" },
+          { href: "/servicios", label: "Ver servicios" },
         ],
       },
     ],
-    featured: {
-      title: "Servicios claros",
-      copy: "Subastas, importación y financiamiento con información verificable.",
-      href: "/servicios",
-      cta: "Ver servicios",
-    },
   },
   {
     id: "recursos",
@@ -168,19 +157,13 @@ export const MEGA_NAV: readonly MegaNavItem[] = [
       {
         title: "Aprende y calcula",
         links: [
-          { href: "/blog", label: "Blog" },
-          { href: "/guias", label: "Guías" },
           { href: "/calculadoras", label: "Calculadoras" },
+          { href: "/guias", label: "Guías" },
+          { href: "/blog", label: "Blog" },
           { href: "/preguntas-frecuentes", label: "Preguntas frecuentes" },
         ],
       },
     ],
-    featured: {
-      title: "Recursos útiles",
-      copy: "Guías, calculadoras y respuestas antes de decidir.",
-      href: "/guias",
-      cta: "Ver guías",
-    },
   },
 ];
 
@@ -278,17 +261,26 @@ export const PUBLIC_PATHS = [
 const ADMIN_UNAUTH_PATHS = ["/login", "/api/public"] as const;
 
 export function isPublicPath(pathname: string) {
-  if (pathname === "/" || pathname === "/ads.txt" || pathname.startsWith("/_next")) {
+  if (
+    pathname === "/" ||
+    pathname === "/ads.txt" ||
+    pathname.startsWith("/_next")
+  ) {
     return true;
   }
 
   return PUBLIC_PATHS.some(
-    (path) => path !== "/" && (pathname === path || pathname.startsWith(`${path}/`)),
+    (path) =>
+      path !== "/" && (pathname === path || pathname.startsWith(`${path}/`)),
   );
 }
 
 export function usesMarketingChrome(pathname: string) {
-  if (pathname === "/login" || pathname.startsWith("/login/") || pathname.startsWith("/api/")) {
+  if (
+    pathname === "/login" ||
+    pathname.startsWith("/login/") ||
+    pathname.startsWith("/api/")
+  ) {
     return false;
   }
 

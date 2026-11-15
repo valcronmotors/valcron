@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { PUBLIC_INVENTORY_EMPTY, PUBLIC_INVENTORY_FILTER_EMPTY } from "@/lib/admin-copy";
+import {
+  PUBLIC_INVENTORY_EMPTY,
+  PUBLIC_INVENTORY_FILTER_EMPTY,
+} from "@/lib/admin-copy";
 import { HOME_FAQS } from "@/lib/home-content";
 import {
   catalogQueryString,
   filterCatalogVehicles,
+  uniqueModelos,
 } from "@/lib/public-filters";
 import {
   AUCTION_QUOTE_PREFILL,
@@ -11,9 +15,20 @@ import {
   formatCustomerFacingPrice,
 } from "@/lib/public-price-mode";
 import { vehicleJsonLd } from "@/lib/seo";
-import { MEGA_NAV, PUBLIC_NAV, PUBLIC_NAV_PRIMARY, RESOURCE_NAV, MOBILE_NAV, SITE } from "@/lib/site";
+import {
+  MEGA_NAV,
+  PUBLIC_NAV,
+  PUBLIC_NAV_PRIMARY,
+  RESOURCE_NAV,
+  MOBILE_NAV,
+  SITE,
+} from "@/lib/site";
 import { toPublicVehicle } from "@/lib/vehicles/normalizeVehicle";
-import { buildVehicleWhatsAppMessage, displayVehiclePrice, visibleVehicleSpecs } from "@/lib/vehicles/vehicle-formatters";
+import {
+  buildVehicleWhatsAppMessage,
+  displayVehiclePrice,
+  visibleVehicleSpecs,
+} from "@/lib/vehicles/vehicle-formatters";
 import {
   availabilityLabel,
   publicListingBadge,
@@ -117,22 +132,24 @@ describe("public website v2 navigation", () => {
       "Recursos",
     ]);
     expect(
-      MEGA_NAV.flatMap((item) => item.columns.flatMap((column) => column.links.map((link) => link.href))),
+      MEGA_NAV.flatMap((item) =>
+        item.columns.flatMap((column) => column.links.map((link) => link.href)),
+      ),
     ).not.toContain("#");
 
     const vehiculos = MEGA_NAV.find((item) => item.id === "vehiculos");
-    expect(vehiculos?.columns.flatMap((c) => c.links.map((l) => l.label))).toEqual([
-      "Inventario Valcron",
-      "Oportunidades de Subasta",
-    ]);
+    expect(
+      vehiculos?.columns.flatMap((c) => c.links.map((l) => l.label)),
+    ).toEqual(["Inventario", "Subastas"]);
 
     const comprar = MEGA_NAV.find((item) => item.id === "comprar");
-    expect(comprar?.columns.flatMap((c) => c.links.map((l) => l.label))).toEqual([
+    expect(
+      comprar?.columns.flatMap((c) => c.links.map((l) => l.label)),
+    ).toEqual([
       "Solicitar vehículo",
-      "Financiamiento",
       "Cómo comprar",
-      "Cotizaciones",
-      "Entrega como parte de pago",
+      "Financiamiento",
+      "Parte de pago",
     ]);
   });
 
@@ -158,35 +175,71 @@ describe("public website v2 navigation", () => {
 
 describe("public price-mode rendering", () => {
   it("never prints 0, null, undefined or NaN", () => {
-    expect(formatCustomerFacingPrice("contact", null)).toBe("Precio a consultar");
+    expect(formatCustomerFacingPrice("contact", null)).toBe(
+      "Precio a consultar",
+    );
     expect(formatCustomerFacingPrice("contact", 0)).toBe("Precio a consultar");
     expect(formatCustomerFacingPrice("from", 18900)).toBe("Desde US$ 18,900");
-    expect(formatCustomerFacingPrice("estimated", 21500)).toBe("Precio estimado US$ 21,500");
+    expect(formatCustomerFacingPrice("estimated", 21500)).toBe(
+      "Precio estimado US$ 21,500",
+    );
     expect(formatCustomerFacingPrice("fixed", 28500)).toBe("US$ 28,500");
-    expect(formatCustomerFacingPrice("fixed", Number.NaN)).toBe("Precio a consultar");
-    expect(formatCustomerFacingPrice("from", undefined)).toBe("Precio a consultar");
+    expect(formatCustomerFacingPrice("fixed", Number.NaN)).toBe(
+      "Precio a consultar",
+    );
+    expect(formatCustomerFacingPrice("from", undefined)).toBe(
+      "Precio a consultar",
+    );
 
-    const contact = toPublicVehicle(row({ source_type: "other", public_price_mode: "contact", price: null }));
-    expect(displayVehiclePrice(contact, "USD").primary).toBe("Precio a consultar");
-    expect(displayVehiclePrice(contact, "USD").primary).not.toMatch(/0|null|undefined|NaN/i);
+    const contact = toPublicVehicle(
+      row({ source_type: "other", public_price_mode: "contact", price: null }),
+    );
+    expect(displayVehiclePrice(contact, "USD").primary).toBe(
+      "Precio a consultar",
+    );
+    expect(displayVehiclePrice(contact, "USD").primary).not.toMatch(
+      /0|null|undefined|NaN/i,
+    );
   });
 
   it("does not emit a fake Offer price for contact, from or estimated modes", () => {
-    const contact = toPublicVehicle(row({ source_type: "other", public_price_mode: "contact", price: null }));
-    const from = toPublicVehicle(row({ source_type: "other", public_price_mode: "from", price: 18900 }));
-    const estimated = toPublicVehicle(row({ source_type: "other", public_price_mode: "estimated", price: 21500 }));
-    const stock = toPublicVehicle(row({ public_price_mode: "fixed", price: 28500 }));
+    const contact = toPublicVehicle(
+      row({ source_type: "other", public_price_mode: "contact", price: null }),
+    );
+    const from = toPublicVehicle(
+      row({ source_type: "other", public_price_mode: "from", price: 18900 }),
+    );
+    const estimated = toPublicVehicle(
+      row({
+        source_type: "other",
+        public_price_mode: "estimated",
+        price: 21500,
+      }),
+    );
+    const stock = toPublicVehicle(
+      row({ public_price_mode: "fixed", price: 28500 }),
+    );
     expect(vehicleJsonLd(contact).offers).toBeUndefined();
     expect(vehicleJsonLd(from).offers).toBeUndefined();
     expect(vehicleJsonLd(estimated).offers).toBeUndefined();
-    expect(vehicleJsonLd(stock).offers).toMatchObject({ price: 28500, priceCurrency: "USD" });
+    expect(vehicleJsonLd(stock).offers).toMatchObject({
+      price: 28500,
+      priceCurrency: "USD",
+    });
   });
 });
 
 describe("auction vs Valcron labels and CTAs", () => {
   it("labels dealer stock and auction-origin vehicles for the public site", () => {
     const stock = toPublicVehicle(row());
-    const auction = toPublicVehicle(row({ source_type: "other", status: "available", public_price_mode: "contact", price: null }));
+    const auction = toPublicVehicle(
+      row({
+        source_type: "other",
+        status: "available",
+        public_price_mode: "contact",
+        price: null,
+      }),
+    );
     const reserved = toPublicVehicle(row({ status: "reserved" }));
     expect(publicListingBadge(stock).label).toBe("Disponible en Valcron");
     expect(publicListingBadge(auction).label).toBe("Oportunidad de subasta");
@@ -197,7 +250,9 @@ describe("auction vs Valcron labels and CTAs", () => {
 
   it("uses different public CTAs for dealer stock and auction vehicles", () => {
     const stock = toPublicVehicle(row());
-    const auction = toPublicVehicle(row({ source_type: "other", public_price_mode: "contact", price: null }));
+    const auction = toPublicVehicle(
+      row({ source_type: "other", public_price_mode: "contact", price: null }),
+    );
     expect(publicVehicleInquiryLabel(stock)).toBe("Solicitar información");
     expect(publicVehicleInquiryLabel(auction)).toBe("Solicitar cotización");
     expect(publicVehicleCardActionLabel(stock)).toBe("WhatsApp");
@@ -219,7 +274,13 @@ describe("auction vs Valcron labels and CTAs", () => {
     const specText = visibleVehicleSpecs(auction)
       .map((item) => `${item.label} ${item.value}`)
       .join(" ");
-    for (const secret of ["buyItNow", "repairCost", "estimatedRetail", "sellerName", "internalNotes"]) {
+    for (const secret of [
+      "buyItNow",
+      "repairCost",
+      "estimatedRetail",
+      "sellerName",
+      "internalNotes",
+    ]) {
       expect(payload).not.toContain(secret);
       expect(specText).not.toContain(secret);
     }
@@ -228,16 +289,53 @@ describe("auction vs Valcron labels and CTAs", () => {
 
 describe("inventory empty states and filters", () => {
   it("uses customer-facing empty copy", () => {
-    expect(PUBLIC_INVENTORY_EMPTY.title).toMatch(/próximamente nuevas unidades/i);
+    expect(PUBLIC_INVENTORY_EMPTY.title).toMatch(
+      /próximamente nuevas unidades/i,
+    );
     expect(PUBLIC_INVENTORY_EMPTY.copy).toMatch(/buscas algo específico/i);
-    expect(PUBLIC_INVENTORY_FILTER_EMPTY.title).toBe("No encontramos vehículos con estos filtros.");
+    expect(PUBLIC_INVENTORY_FILTER_EMPTY.title).toBe(
+      "No encontramos vehículos con estos filtros.",
+    );
+  });
+
+  it("deduplicates mixed-case models while matching every vehicle and legacy filter URL", () => {
+    const vehicles = ["CIVIC", "Civic", "civic", "Corolla", "COROLLA"].map(
+      (model, index) =>
+        toPublicVehicle(row({ id: String(index), make: "Honda", model })),
+    );
+    expect(uniqueModelos(vehicles, "Honda")).toEqual(["CIVIC", "COROLLA"]);
+    for (const modelo of ["CIVIC", "Civic", "civic"]) {
+      expect(
+        filterCatalogVehicles(vehicles, {
+          listing: "",
+          marca: "Honda",
+          modelo,
+          ano: "",
+          precioMin: "",
+          precioMax: "",
+          search: "",
+        }).map((v) => v.id),
+      ).toEqual(["0", "1", "2"]);
+    }
   });
 
   it("filters by make, year, listing and keeps a shareable query string", () => {
-    const stock = toPublicVehicle(row({ id: "stock-1", make: "Toyota", model: "RAV4", year: 2023 }));
-    const honda = toPublicVehicle(row({ id: "stock-2", make: "Honda", model: "Civic", year: 2021 }));
+    const stock = toPublicVehicle(
+      row({ id: "stock-1", make: "Toyota", model: "RAV4", year: 2023 }),
+    );
+    const honda = toPublicVehicle(
+      row({ id: "stock-2", make: "Honda", model: "Civic", year: 2021 }),
+    );
     const auction = toPublicVehicle(
-      row({ id: "auc-1", source_type: "other", make: "Toyota", model: "Camry", year: 2022, public_price_mode: "contact", price: null }),
+      row({
+        id: "auc-1",
+        source_type: "other",
+        make: "Toyota",
+        model: "Camry",
+        year: 2022,
+        public_price_mode: "contact",
+        price: null,
+      }),
     );
     const empty = {
       listing: "",
@@ -248,16 +346,33 @@ describe("inventory empty states and filters", () => {
       precioMax: "",
       search: "",
     };
-    expect(filterCatalogVehicles([stock, honda, auction], { ...empty, marca: "Toyota" }).map((item) => item.id)).toEqual([
-      "stock-1",
-      "auc-1",
-    ]);
-    expect(filterCatalogVehicles([stock, honda, auction], { ...empty, listing: "dealer" }).every((item) => item.listingKind === "dealer")).toBe(
-      true,
+    expect(
+      filterCatalogVehicles([stock, honda, auction], {
+        ...empty,
+        marca: "Toyota",
+      }).map((item) => item.id),
+    ).toEqual(["stock-1", "auc-1"]);
+    expect(
+      filterCatalogVehicles([stock, honda, auction], {
+        ...empty,
+        listing: "dealer",
+      }).every((item) => item.listingKind === "dealer"),
+    ).toBe(true);
+    expect(
+      filterCatalogVehicles([stock, honda, auction], {
+        ...empty,
+        listing: "auction",
+      }).map((item) => item.id),
+    ).toEqual(["auc-1"]);
+    expect(
+      filterCatalogVehicles([stock, honda, auction], {
+        ...empty,
+        ano: "2021",
+      }).map((item) => item.id),
+    ).toEqual(["stock-2"]);
+    expect(catalogQueryString({ ...empty, marca: "Toyota", ano: "2023" })).toBe(
+      "marca=Toyota&ano=2023",
     );
-    expect(filterCatalogVehicles([stock, honda, auction], { ...empty, listing: "auction" }).map((item) => item.id)).toEqual(["auc-1"]);
-    expect(filterCatalogVehicles([stock, honda, auction], { ...empty, ano: "2021" }).map((item) => item.id)).toEqual(["stock-2"]);
-    expect(catalogQueryString({ ...empty, marca: "Toyota", ano: "2023" })).toBe("marca=Toyota&ano=2023");
   });
 });
 
@@ -270,9 +385,17 @@ describe("public copy constraints", () => {
 
   it("uses Dominican WhatsApp copy with vehicle context", () => {
     const stock = toPublicVehicle(row());
-    const auction = toPublicVehicle(row({ source_type: "other", public_price_mode: "contact", price: null }));
-    expect(buildVehicleWhatsAppMessage(stock)).toMatch(/^Hola Valcron, quiero cotizar este vehículo: 2023 Toyota RAV4/);
-    expect(buildVehicleWhatsAppMessage(stock)).toContain("https://valcronmotors.com/inventario/");
-    expect(buildVehicleWhatsAppMessage(auction)).toMatch(/cotización para esta oportunidad de subasta/);
+    const auction = toPublicVehicle(
+      row({ source_type: "other", public_price_mode: "contact", price: null }),
+    );
+    expect(buildVehicleWhatsAppMessage(stock)).toMatch(
+      /^Hola Valcron, quiero cotizar este vehículo: 2023 Toyota RAV4/,
+    );
+    expect(buildVehicleWhatsAppMessage(stock)).toContain(
+      "https://valcronmotors.com/inventario/",
+    );
+    expect(buildVehicleWhatsAppMessage(auction)).toMatch(
+      /cotización para esta oportunidad de subasta/,
+    );
   });
 });
