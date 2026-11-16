@@ -30,6 +30,26 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/vehiculo/veh_015",
+        destination: "/inventario",
+        statusCode: 301,
+      },
+      {
+        source: "/vehiculo/veh_028",
+        destination: "/inventario",
+        statusCode: 301,
+      },
+      {
+        source: "/blog/ley-103-13-incentivo-vehiculos-hibridos-electricos",
+        destination: "/blog/vehiculos-hibridos-republica-dominicana",
+        statusCode: 301,
+      },
+      {
+        source: "/blog/financiamiento-vehiculos-republica-dominicana-requisitos",
+        destination: "/financiamiento",
+        statusCode: 301,
+      },
+      {
         source: "/quienes-somos",
         destination: "/nosotros",
         statusCode: 301,
