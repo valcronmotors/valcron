@@ -59,6 +59,16 @@ const nextConfig: NextConfig = {
         destination: "/calculadoras/financiamiento",
         statusCode: 301,
       },
+      {
+        source: "/blog/como-importar-vehiculo-eeuu-republica-dominicana",
+        destination: "/blog/comprar-vehiculo-estados-unidos-republica-dominicana",
+        statusCode: 301,
+      },
+      {
+        source: "/blog/subastas-copart-manheim-como-funcionan",
+        destination: "/blog/copart-vs-iaa-subastas-vehiculos-estados-unidos",
+        statusCode: 301,
+      },
     ];
   },
   images: {
