@@ -104,7 +104,6 @@ export function PublicVehicleDetail({
             </p>
             <div className="mt-6 flex flex-col gap-3">
               <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#128c4b] px-4 text-center text-sm font-semibold text-white transition hover:bg-[#0e703c]"><WhatsAppIcon className="h-4 w-4" />Cotizar por WhatsApp</a>
-              <a href="tel:+18293211271" className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-[#08090b] px-4 text-center text-sm font-semibold text-white transition hover:bg-[#191919]">Llamar para reservar</a>
               <Link href="/solicitar-vehiculo" className="inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-[#d8dbe0] bg-white px-4 text-center text-sm font-semibold text-[#08090b] transition hover:border-[#08090b]">Formulario de consulta</Link>
             </div>
             <div className="mt-6 rounded-xl border border-[#eef0f3] bg-[#f8f9fa] px-4 py-4">
@@ -266,14 +265,6 @@ export function PublicVehicleDetail({
                 <WhatsAppIcon className="h-4 w-4" />
                 Cotizar este vehículo
               </a>
-              {!sold ? (
-                <a
-                  href="tel:+18293211271"
-                  className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-[#08090b] text-sm font-semibold text-white transition hover:bg-[#191919]"
-                >
-                  Llamar para reservar
-                </a>
-              ) : null}
               {canFinance ? (
                 <Link
                   href={`/calculadoras/financiamiento?monto=${financeAmount}${vehicle.pricing.downPaymentDop != null ? `&inicialDop=${vehicle.pricing.downPaymentDop}` : ""}`}
