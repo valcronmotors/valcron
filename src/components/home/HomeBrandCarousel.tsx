@@ -31,7 +31,7 @@ function BrandTile({
           width={96}
           height={36}
           unoptimized
-          className="h-9 w-24 object-contain grayscale opacity-70 transition hover:grayscale-0 hover:opacity-100"
+          className="h-9 w-24 object-contain"
         />
       </span>
     </Link>
