@@ -10,7 +10,7 @@ import { formatDecimal } from "@/lib/money";
 export const AUCTION_PROFIT_USD = 1500;
 
 export const AUCTION_PRICE_NOTE =
-  "No incluye flete, impuestos, primera placa ni gestión de importación. Esos costos se cotizan aparte por WhatsApp.";
+  "Flete, impuestos, primera placa y gestión de importación. Se cotizan por WhatsApp.";
 
 export type AuctionFeeProvider = "copart" | "iaai";
 
