@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Search } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { PageContainer } from "@/components/public/layout";
 
 /**
@@ -33,15 +33,15 @@ export function HomeHero() {
             href="/inventario"
             className="home-orange-button flex min-h-12 w-full items-center justify-center gap-1 rounded-xl px-2 text-center text-[12px] font-bold sm:min-h-14 sm:gap-2 sm:px-4 sm:text-base"
           >
-            Ver inventario{" "}
+            Inventario Local{" "}
             <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
           </Link>
           <Link
-            href="/importacion"
-            className="inline-flex min-h-12 w-full items-center justify-center gap-1 rounded-xl border border-[#cbc5c0] bg-white px-2 text-center text-[12px] font-bold text-[#24211f] transition hover:bg-[#fff4ed] sm:min-h-14 sm:gap-2 sm:px-4 sm:text-base"
+            href="/subastas"
+            className="home-orange-button flex min-h-12 w-full items-center justify-center gap-1 rounded-xl px-2 text-center text-[12px] font-bold sm:min-h-14 sm:gap-2 sm:px-4 sm:text-base"
           >
-            <Search className="h-4 w-4 shrink-0" aria-hidden="true" /> Importa
-            tu vehículo
+            Inventario de Subasta{" "}
+            <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
           </Link>
         </div>
       </PageContainer>
