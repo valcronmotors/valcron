@@ -24,8 +24,8 @@ export function HomeInventoryTabs({
   auctionError: string | null;
 }) {
   const [active, setActive] = useState<"available" | "auction">("auction");
-  const available = filterLocalStockVehicles(vehicles);
-  const opportunities = filterAuctionCatalogVehicles(auctions);
+  const available = filterLocalStockVehicles(vehicles).slice(0, 30);
+  const opportunities = filterAuctionCatalogVehicles(auctions).slice(0, 30);
   const items = active === "available" ? available : opportunities;
   const error = active === "available" ? inventoryError : auctionError;
 
@@ -60,11 +60,11 @@ export function HomeInventoryTabs({
               <div className="-mx-[var(--page-gutter)] px-[var(--page-gutter)] xl:mx-0 xl:px-0">
                 <VehicleCarousel speedSeconds={64} autoplay={active === "auction"}>
                   {items.map((vehicle) => (
-                    <VehicleCard key={vehicle.id} vehicle={vehicle} tone="light" compact actionLabel={active === "available" ? "Ver detalles" : "Ver oportunidad"} />
+                    <VehicleCard key={vehicle.id} vehicle={vehicle} tone="light" compact actionLabel="Ver detalles" />
                   ))}
                 </VehicleCarousel>
               </div>
-              {active === "auction" ? <p className="mt-4 text-xs text-[#676a70]">Los precios publicados son estimados puestos en RD, sujetos a cotización final según el lote y el día de la subasta. Sin estimado validado, consulta por WhatsApp.</p> : null}
+              {active === "auction" ? <p className="mt-4 text-xs text-[#676a70]">Los precios publicados son estimados de compra en subasta e incluyen los fees de subasta; el flete, los impuestos y la gestión de importación se cotizan aparte. Cotización final según el lote y el día de la subasta. Sin estimado, consulta por WhatsApp.</p> : null}
             </div>
           ) : (
             <div className="rounded-xl border border-[#e5e7eb] bg-white px-5 py-7 text-sm text-[#676a70]">No hay publicaciones disponibles en esta categoría por el momento.</div>

@@ -420,18 +420,17 @@ export function VehicleCatalog({
                 key={vehicle.id}
                 vehicle={vehicle}
                 tone="light"
-                actionLabel={
-                  catalogKind === "auction" ? "Ver oportunidad" : "Ver detalles"
-                }
+                actionLabel="Ver detalles"
               />
             ))}
           </div>
         )}
         {catalogKind === "auction" ? (
           <p className="text-center text-xs leading-relaxed text-[#676a70]">
-            Los precios publicados son estimados puestos en RD, sujetos a
-            cotización final según el lote y el día de la subasta. Sin estimado
-            validado, consulta por WhatsApp.
+            Los precios publicados son estimados de compra en subasta e incluyen
+            los fees de subasta; el flete, los impuestos y la gestión de
+            importación se cotizan aparte. Cotización final según el lote y el
+            día de la subasta. Sin estimado, consulta por WhatsApp.
           </p>
         ) : null}
         {catalogKind === "local" ? (

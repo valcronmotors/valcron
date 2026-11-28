@@ -138,10 +138,9 @@ export function VehicleCard({
           </div>
         ) : null}
 
-        {vehicle.listingKind === "auction" &&
-        vehicle.pricing.landedEstimateUsd != null ? (
-          <p className="mt-2 text-xs font-semibold text-[#a54d1c]">
-            Impuestos y placa incluidos
+        {vehicle.listingKind === "auction" && vehicle.auction?.lotNumber ? (
+          <p className={`mt-2 text-xs font-semibold ${light ? "text-[#676a70]" : "text-white/70"}`}>
+            Lote {vehicle.auction.lotNumber}
           </p>
         ) : null}
         {canSimulate ? (

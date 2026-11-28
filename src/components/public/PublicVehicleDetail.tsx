@@ -17,7 +17,10 @@ import {
   vehicleDisplayTitle,
   vehicleImageAlt,
   visibleVehicleSpecs,
+  type VinDerivedSpecs,
 } from "@/lib/vehicles/vehicle-formatters";
+import { AUCTION_PRICE_NOTE } from "@/lib/auction-price";
+import { SITE } from "@/lib/site";
 import { publicListingBadge, publicVehicleInquiryLabel } from "@/lib/vehicles/vehicle-status";
 import {
   AUCTION_QUOTE_PREFILL,
@@ -29,10 +32,12 @@ export function PublicVehicleDetail({
   vehicle,
   similar = [],
   auctionRunAndDrive = false,
+  vinSpecs = null,
 }: {
   vehicle: PublicVehicle;
   similar?: PublicVehicle[];
   auctionRunAndDrive?: boolean;
+  vinSpecs?: VinDerivedSpecs | null;
 }) {
   const { currency } = useDisplayCurrency();
   const photos = vehicle.images.length
@@ -44,7 +49,7 @@ export function PublicVehicleDetail({
   const title = vehicleDisplayTitle(vehicle);
   const badge = publicListingBadge(vehicle);
   const whatsapp = buildVehicleWhatsAppUrl(vehicle);
-  const specs = visibleVehicleSpecs(vehicle);
+  const specs = visibleVehicleSpecs(vehicle, vinSpecs);
   const price = displayVehiclePrice(vehicle, currency);
   const features = (vehicle.features ?? []).map((item) => item.trim()).filter(Boolean);
   const description = vehicle.description?.replace(/Tipo de título por confirmar\.?\s*/gi, "").trim() || null;
@@ -58,6 +63,7 @@ export function PublicVehicleDetail({
   const auctionListing = vehicle.listingKind === "auction" || vehicle.availability === "auction";
   const priceMode = vehicle.pricing.publicPriceMode ?? (auctionListing ? "contact" : "fixed");
   const priceNote = auctionListing ? auctionPublicPriceDisclaimer(priceMode) : null;
+  const hasAuctionPrice = Boolean(vehicle.pricing.auctionPriceUsd && vehicle.pricing.auctionPriceUsd > 0);
   const canFinance = !sold && financeAmount > 0 && dealer;
   const primaryCta = publicVehicleInquiryLabel(vehicle);
   const highlightSpecs = [
@@ -74,16 +80,69 @@ export function PublicVehicleDetail({
   if (auctionListing) return (
     <article className="section-light bg-[#f5f6f7] py-6 text-[#08090b] lg:py-12">
       <VehicleContact href={whatsapp} />
-      <div className="mx-auto grid w-full max-w-[var(--content-max)] min-w-0 gap-6 px-[var(--page-gutter)] lg:grid-cols-[minmax(0,1.55fr)_minmax(20rem,0.95fr)] lg:items-start lg:gap-10">
-        <VehicleGallery photos={photos} title={title} />
-        <aside className="min-w-0 rounded-2xl border border-[#e8eaed] bg-white p-5 sm:p-6">
-          <h1 className="break-words text-3xl font-bold tracking-tight">{title}</h1>
-          <p className="mt-6 text-2xl font-bold">{price.primary}</p>
-          {vehicle.pricing.landedEstimateUsd != null ? <p className="mt-3 text-sm font-semibold text-[#a54d1c]">Impuestos y placa incluidos</p> : null}
-          {auctionFacts ? <p className="mt-2 text-xs text-[#676a70]">{auctionFacts}</p> : null}
-          <p className="mt-3 text-xs leading-relaxed text-[#676a70]">Precio estimado. La cotización final se confirma por WhatsApp según el lote y el día de la subasta.</p>
-          <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="home-orange-button mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-4 text-center font-semibold"><WhatsAppIcon className="h-4 w-4" />Cotizar por WhatsApp</a>
-        </aside>
+      <div className="mx-auto w-full max-w-[var(--content-max)] min-w-0 px-[var(--page-gutter)]">
+        <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1.55fr)_minmax(20rem,0.95fr)] lg:items-start lg:gap-10">
+          <VehicleGallery photos={photos} title={title} />
+          <aside className="min-w-0 rounded-2xl border border-[#e8eaed] bg-white p-5 sm:p-6">
+            {vehicle.auction?.lotNumber ? (
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8a8d91]">
+                Lote {vehicle.auction.lotNumber}
+              </p>
+            ) : null}
+            <h1 className="mt-1 break-words text-3xl font-bold tracking-tight">{title}</h1>
+            <p className="mt-6 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8a8d91]">
+              {price.label}
+            </p>
+            <p className="mt-1 text-3xl font-bold tracking-tight">{price.primary}</p>
+            {auctionFacts ? <p className="mt-2 text-xs text-[#676a70]">{auctionFacts}</p> : null}
+            <p className="mt-3 text-xs leading-relaxed text-[#676a70]">
+              {hasAuctionPrice
+                ? AUCTION_PRICE_NOTE
+                : "Precio estimado. La cotización final se confirma por WhatsApp según el lote y el día de la subasta."}
+            </p>
+            <div className="mt-6 flex flex-col gap-3">
+              <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#128c4b] px-4 text-center text-sm font-semibold text-white transition hover:bg-[#0e703c]"><WhatsAppIcon className="h-4 w-4" />Cotizar por WhatsApp</a>
+              <a href="tel:+18293211271" className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-[#08090b] px-4 text-center text-sm font-semibold text-white transition hover:bg-[#191919]">Llamar para reservar</a>
+              <Link href="/solicitar-vehiculo" className="inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-[#d8dbe0] bg-white px-4 text-center text-sm font-semibold text-[#08090b] transition hover:border-[#08090b]">Formulario de consulta</Link>
+            </div>
+            <div className="mt-6 rounded-xl border border-[#eef0f3] bg-[#f8f9fa] px-4 py-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8a8d91]">Ubicación / Envío</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-[#3a3d42]">
+                Vehículo en subasta en Estados Unidos. Valcron lo compra por ti, lo importa y te lo entrega en República Dominicana.
+              </p>
+            </div>
+          </aside>
+        </div>
+
+        {specs.length ? (
+          <section className="mt-12">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-[#08090b]">
+              Especificaciones
+            </h2>
+            <dl
+              className="mt-5 grid grid-cols-1 gap-px overflow-hidden border border-[#e8eaed] bg-[#e8eaed] sm:grid-cols-2 lg:grid-cols-3"
+              style={{ borderRadius: "1rem" }}
+            >
+              {specs.map((item) => (
+                <div key={item.label} className="bg-white px-4 py-4">
+                  <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8a8d91]">
+                    {item.label}
+                  </dt>
+                  <dd className="mt-1 break-words text-sm font-medium text-[#08090b]">{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ) : null}
+
+        {description ? (
+          <section className="mt-12 max-w-3xl">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-[#08090b]">
+              Descripción
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-[#3a3d42]">{description}</p>
+          </section>
+        ) : null}
       </div>
     </article>
   );
@@ -172,7 +231,6 @@ export function PublicVehicleDetail({
               ) : null}
               {canFinance ? <div className="mt-5"><FinanceSimulator key={vehicle.id} priceUsd={financeAmount} downPaymentDop={vehicle.pricing.downPaymentDop} vehicleTitle={title} fixedPrice /></div> : null}
               {auctionListing ? <Link href={`/calculadoras/importacion?${new URLSearchParams({ vehiculo: title, ano: String(year), provider: vehicle.source === "iaai" ? "iaai" : "copart" })}`} className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-[#a54d1c] underline underline-offset-4">¿Cuánto me sale puesto en RD?</Link> : null}
-              {auctionListing && vehicle.pricing.landedEstimateUsd != null ? <p className="mt-3 text-sm font-semibold text-[#a54d1c]">Impuestos y placa incluidos</p> : null}
             </div>
 
             {highlightSpecs.length ? (
@@ -206,6 +264,14 @@ export function PublicVehicleDetail({
                 <WhatsAppIcon className="h-4 w-4" />
                 Cotizar este vehículo
               </a>
+              {!sold ? (
+                <a
+                  href="tel:+18293211271"
+                  className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-[#08090b] text-sm font-semibold text-white transition hover:bg-[#191919]"
+                >
+                  Llamar para reservar
+                </a>
+              ) : null}
               {canFinance ? (
                 <Link
                   href={`/calculadoras/financiamiento?monto=${financeAmount}${vehicle.pricing.downPaymentDop != null ? `&inicialDop=${vehicle.pricing.downPaymentDop}` : ""}`}
@@ -236,6 +302,17 @@ export function PublicVehicleDetail({
                 </div>
               ))}
             </dl>
+          </section>
+        ) : null}
+
+        {!sold ? (
+          <section className="mt-12 max-w-3xl">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-[#08090b]">
+              Ubicación / Entrega
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-[#3a3d42]">
+              Nuestro dealer está en {SITE.address.full}. Escríbenos por WhatsApp para coordinar tu visita o la entrega.
+            </p>
           </section>
         ) : null}
 

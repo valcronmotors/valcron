@@ -1,4 +1,5 @@
 import { landedEstimateLabel } from "@/lib/landed-estimate";
+import { AUCTION_PRICE_LABEL, auctionPriceLabel } from "@/lib/auction-price";
 import {
   formatCustomerFacingPrice,
   resolvePublicPriceMode,
@@ -110,6 +111,9 @@ export function displayVehiclePrice(
   vehicle: PublicVehicle,
   currency: VehicleCurrency,
 ): { label: string; primary: string; secondary?: string } {
+  if (vehicle.pricing.auctionPriceUsd && vehicle.pricing.auctionPriceUsd > 0) {
+    return { label: AUCTION_PRICE_LABEL, primary: `US$${formatDecimal(vehicle.pricing.auctionPriceUsd, vehicle.pricing.auctionPriceUsd % 1 ? 2 : 0)}`, secondary: undefined };
+  }
   if (vehicle.pricing.landedEstimateUsd && vehicle.pricing.landedEstimateUsd > 0) {
     return { label: "Precio", primary: `US$${formatDecimal(vehicle.pricing.landedEstimateUsd, vehicle.pricing.landedEstimateUsd % 1 ? 2 : 0)}`, secondary: undefined };
   }
@@ -186,7 +190,11 @@ export function buildVehicleWhatsAppMessage(vehicle: PublicVehicle) {
     const lot = vehicle.auction?.lotNumber?.trim();
     const provider = vehicle.fuenteSubasta?.trim();
     const lotPart = lot ? ` (lote ${lot}${provider ? ` · ${provider}` : ""})` : provider ? ` (${provider})` : "";
-    const estimate = vehicle.pricing.landedEstimateUsd ? ` ${landedEstimateLabel(vehicle.pricing.landedEstimateUsd)}. Sujeto a cotización final.` : "";
+    const estimate = vehicle.pricing.auctionPriceUsd
+      ? ` ${auctionPriceLabel(vehicle.pricing.auctionPriceUsd)}. No incluye flete, impuestos ni gestión de importación.`
+      : vehicle.pricing.landedEstimateUsd
+        ? ` ${landedEstimateLabel(vehicle.pricing.landedEstimateUsd)}. Sujeto a cotización final.`
+        : "";
     return `Hola, me interesa recibir una cotización para esta oportunidad de subasta: ${title}${lotPart}.${estimate} ${url}`;
   }
   if (vehicle.availability === "sold") {
@@ -239,29 +247,47 @@ export function vehiclePublicPriceBlocks(vehicle: PublicVehicle) {
   ];
 }
 
-export function visibleVehicleSpecs(vehicle: PublicVehicle) {
-  const platform = vehicle.source === "copart" || vehicle.source === "iaai" ? sourceLabel(vehicle.source) : null;
+/** Datos derivados del VIN vía vPIC (NHTSA) que pueden completar la ficha pública. */
+export type VinDerivedSpecs = {
+  bodyClass?: string | null;
+  cylinders?: string | null;
+  horsepower?: string | null;
+};
+
+/**
+ * Tabla pública de especificaciones estilo dealer. Solo muestra datos del
+ * registro del vehículo o derivados de su VIN (vPIC); los campos sin dato se
+ * omiten. Nunca incluye tipo de título, daño ni condición (eso es solo /admin).
+ * El MPG no se muestra: no existe una fuente confiable en el registro ni en vPIC.
+ */
+export function visibleVehicleSpecs(vehicle: PublicVehicle, vinSpecs?: VinDerivedSpecs | null) {
+  const auctionListing = vehicle.listingKind === "auction" || vehicle.availability === "auction";
 
   const rows: { label: string; value: string | null }[] = [
+    auctionListing
+      ? { label: "N.º de lote", value: presentText(vehicle.auction?.lotNumber) }
+      : { label: "Número de stock", value: presentText(vehicle.stockNumber) },
+    { label: "VIN", value: formatPublicVin(vehicle.vin) },
     { label: "Año", value: vehicle.year || vehicle.ano ? String(vehicle.year || vehicle.ano) : null },
     { label: "Marca", value: presentText(vehicle.make || vehicle.marca) },
     { label: "Modelo", value: presentText(formatPublicVehicleModel(vehicle.model || vehicle.modelo)) },
     { label: "Versión", value: presentText(vehicle.trim) },
-    { label: "VIN", value: formatPublicVin(vehicle.vin) },
-    { label: "Número de stock", value: presentText(vehicle.stockNumber) },
-    { label: "Número de lote", value: presentText(vehicle.auction?.lotNumber) },
-    { label: "Plataforma de origen", value: platform },
-    { label: "Estado", value: availabilityLabel(vehicle.availability) },
-    { label: "Kilometraje", value: formatMileage(vehicle.mileage, vehicle.mileageUnit) },
-    { label: "Motor", value: presentText(vehicle.engine) },
-    { label: "Cilindros", value: vehicle.cylinders ? String(vehicle.cylinders) : null },
-    { label: "Combustible", value: presentText(vehicle.fuelType) },
-    { label: "Transmisión", value: presentText(vehicle.transmission) },
-    { label: "Tracción", value: presentText(vehicle.drivetrain) },
+    { label: "Carrocería", value: presentText(vehicle.bodyType) ?? presentText(vinSpecs?.bodyClass) },
+    {
+      label: vehicle.mileageUnit === "km" ? "Kilometraje" : "Millas",
+      value: formatMileage(vehicle.mileage, vehicle.mileageUnit),
+    },
     { label: "Color exterior", value: presentText(vehicle.exteriorColor) },
     { label: "Color interior", value: presentText(vehicle.interiorColor) },
-    { label: "Tipo de carrocería", value: presentText(vehicle.bodyType) },
-    { label: "Condición", value: presentText(vehicle.condition) },
+    { label: "Motor", value: presentText(vehicle.engine) },
+    {
+      label: "Cilindros",
+      value: vehicle.cylinders ? String(vehicle.cylinders) : presentText(vinSpecs?.cylinders),
+    },
+    { label: "Caballos de fuerza", value: presentText(vinSpecs?.horsepower) },
+    { label: "Transmisión", value: presentText(vehicle.transmission) },
+    { label: "Tracción", value: presentText(vehicle.drivetrain) },
+    { label: "Combustible", value: presentText(vehicle.fuelType) },
   ];
 
   return rows.filter((row): row is { label: string; value: string } => Boolean(row.value));

@@ -56,6 +56,7 @@ export type VehicleRow = {
   down_payment_dop?: number | null;
   landed_estimate_usd?: number | null;
   landed_estimate_validated?: boolean;
+  auction_purchase_estimate_usd?: number | null;
   public_price_mode?: PublicPriceMode | null;
   location: string | null;
   source_type: VehicleSourceType;

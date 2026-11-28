@@ -15,5 +15,5 @@ export function validatedLandedEstimate(row: { source_type: string; landed_estim
 }
 
 export function landedEstimateLabel(amount: number) {
-  return `Desde US$${formatDecimal(amount, amount % 1 ? 2 : 0)} puesto en RD — precio estimado`;
+  return `Desde US$${formatDecimal(amount, amount % 1 ? 2 : 0)} — precio estimado`;
 }

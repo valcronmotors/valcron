@@ -8,9 +8,46 @@ import { loadPublicVehicleById } from "@/lib/public-inventory";
 import { SITE } from "@/lib/site";
 import { absoluteUrl, breadcrumbJsonLd, publicPageMetadata, vehicleJsonLd } from "@/lib/seo";
 import { getSimilarVehicles } from "@/lib/vehicles/adapter";
-import { vehicleDisplayTitle, vehicleSeoDescription } from "@/lib/vehicles/vehicle-formatters";
+import {
+  vehicleDisplayTitle,
+  vehicleSeoDescription,
+  type VinDerivedSpecs,
+} from "@/lib/vehicles/vehicle-formatters";
 import { isVehicleUuid, vehiclePath } from "@/lib/vehicles/vehicle-slugs";
 
+
+/**
+ * Datos públicos derivados del VIN vía vPIC (NHTSA) para completar la tabla de
+ * especificaciones cuando el registro no los trae (carrocería, cilindros, HP).
+ * Cualquier fallo devuelve null y la ficha se muestra solo con datos del registro.
+ */
+async function loadVinSpecs(vehicle: PublicVehicle): Promise<VinDerivedSpecs | null> {
+  const vin = vehicle.vin?.trim().toUpperCase() ?? "";
+  if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(vin)) return null;
+  try {
+    const response = await fetch(
+      `https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/${encodeURIComponent(vin)}?format=json`,
+      { signal: AbortSignal.timeout(3500), next: { revalidate: 86400 } },
+    );
+    if (!response.ok) return null;
+    const payload = (await response.json()) as { Results?: Array<Record<string, unknown>> };
+    const result = payload.Results?.[0];
+    if (!result) return null;
+    const clean = (value: unknown) => {
+      if (typeof value !== "string") return null;
+      const trimmed = value.trim();
+      return !trimmed || trimmed === "Not Applicable" ? null : trimmed;
+    };
+    const horsepower = clean(result.EngineHP);
+    return {
+      bodyClass: clean(result.BodyClass),
+      cylinders: clean(result.EngineCylinders),
+      horsepower: horsepower ? `${horsepower} hp` : null,
+    };
+  } catch {
+    return null;
+  }
+}
 
 // RLS exposes only this approved boolean for an already-public auction vehicle.
 async function loadAuctionRunAndDrive(vehicle: PublicVehicle) {
@@ -82,7 +119,11 @@ export default async function InventarioDetallePage({
     permanentRedirect(vehiclePath(result.data.slug));
   }
 
-  const [similar, runAndDrive] = await Promise.all([getSimilarVehicles(result.data, 4), loadAuctionRunAndDrive(result.data)]);
+  const [similar, runAndDrive, vinSpecs] = await Promise.all([
+    getSimilarVehicles(result.data, 4),
+    loadAuctionRunAndDrive(result.data),
+    loadVinSpecs(result.data),
+  ]);
   const title = vehicleDisplayTitle(result.data);
 
   return (
@@ -95,7 +136,7 @@ export default async function InventarioDetallePage({
         ])}
       />
       <JsonLd data={vehicleJsonLd(result.data)} />
-      <PublicVehicleDetail vehicle={result.data} similar={similar.data} auctionRunAndDrive={runAndDrive} />
+      <PublicVehicleDetail vehicle={result.data} similar={similar.data} auctionRunAndDrive={runAndDrive} vinSpecs={vinSpecs} />
     </main>
   );
 }

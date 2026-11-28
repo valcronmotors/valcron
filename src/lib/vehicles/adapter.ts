@@ -17,6 +17,17 @@ import {
 } from "@/lib/vehicles/filters";
 import { PUBLIC_INVENTORY_CACHE_TAG, PUBLIC_INVENTORY_REVALIDATE_SECONDS } from "@/lib/public-cache";
 import { isMissingPublicPriceModeColumn, vehicleSelectWithoutPublicPriceMode } from "@/lib/public-price-mode";
+import { isMissingAuctionPurchaseColumn, vehicleSelectWithoutAuctionPurchase } from "@/lib/auction-price";
+
+/** True when a select failed only because an optional, migration-pending column is absent. */
+function isMissingOptionalColumnError(error: { message?: string | null } | null | undefined) {
+  return isMissingPublicPriceModeColumn(error) || isMissingAuctionPurchaseColumn(error);
+}
+
+/** Select sin las columnas opcionales pendientes de migración (public_price_mode, auction_purchase_estimate_usd). */
+function vehicleSelectWithoutOptionalColumns(select: string) {
+  return vehicleSelectWithoutAuctionPurchase(vehicleSelectWithoutPublicPriceMode(select));
+}
 import { isPublicCatalogListing, isPublicDetailListing } from "@/lib/website-schema";
 import { buildVehicleSlug, isVehicleUuid, matchesVehicleSlug } from "@/lib/vehicles/vehicle-slugs";
 import type { PublicVehicle, VehicleListResult, VehicleQuery } from "@/types/vehicle";
@@ -74,10 +85,10 @@ async function loadCatalogRows(): Promise<{ data: PublicVehicle[]; error: string
     .eq("published", true)
     .in("status", [...CATALOG_STATUSES])
     .order("updated_at", { ascending: false });
-  if (error && isMissingPublicPriceModeColumn(error)) {
+  if (error && isMissingOptionalColumnError(error)) {
     ({ data, error } = await supabase
       .from("vehicles")
-      .select(vehicleSelectWithoutPublicPriceMode(PUBLIC_VEHICLE_LIST_SELECT))
+      .select(vehicleSelectWithoutOptionalColumns(PUBLIC_VEHICLE_LIST_SELECT))
       .eq("published", true)
       .in("status", [...CATALOG_STATUSES])
       .order("updated_at", { ascending: false }));
@@ -164,10 +175,10 @@ async function loadVehicleRowById(id: string) {
     .select(PUBLIC_VEHICLE_SELECT)
     .eq("id", id)
     .maybeSingle();
-  if (error && isMissingPublicPriceModeColumn(error)) {
+  if (error && isMissingOptionalColumnError(error)) {
     ({ data, error } = await supabase
       .from("vehicles")
-      .select(vehicleSelectWithoutPublicPriceMode(PUBLIC_VEHICLE_SELECT))
+      .select(vehicleSelectWithoutOptionalColumns(PUBLIC_VEHICLE_SELECT))
       .eq("id", id)
       .maybeSingle());
   }
@@ -244,10 +255,10 @@ export async function getSimilarVehicles(vehicle: PublicVehicle, limit = 4) {
     .neq("id", vehicle.id)
     .order("updated_at", { ascending: false })
     .limit(24);
-  if (error && isMissingPublicPriceModeColumn(error)) {
+  if (error && isMissingOptionalColumnError(error)) {
     ({ data, error } = await supabase
       .from("vehicles")
-      .select(vehicleSelectWithoutPublicPriceMode(PUBLIC_VEHICLE_LIST_SELECT))
+      .select(vehicleSelectWithoutOptionalColumns(PUBLIC_VEHICLE_LIST_SELECT))
       .eq("published", true)
       .in("status", [...CATALOG_STATUSES])
       .neq("id", vehicle.id)

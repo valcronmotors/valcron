@@ -50,6 +50,10 @@ export interface VehiclePricing {
   kind?: VehiclePriceKind;
   downPaymentDop?: number | null;
   landedEstimateUsd?: number | null;
+  /** Compra estimada en subasta (hammer) registrada en admin, si existe. */
+  auctionPurchaseEstimateUsd?: number | null;
+  /** Precio público con la fórmula 2026-11-27: compra estimada + fees de subasta + US$1,500. */
+  auctionPriceUsd?: number | null;
   publicPriceMode?: "contact" | "from" | "estimated" | "fixed";
   exchangeRate?: number | null;
 }

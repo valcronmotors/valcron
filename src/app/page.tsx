@@ -42,7 +42,8 @@ export const metadata: Metadata = {
 export default async function Home() {
   const [inventory, auctions] = await Promise.all([
     loadLocalStockVehicles(),
-    loadAuctionCatalogVehicles(),
+    // La sección de vehículos de la home muestra hasta 30 vehículos (los más recientes).
+    loadAuctionCatalogVehicles({ limit: 30 }),
   ]);
 
   return (

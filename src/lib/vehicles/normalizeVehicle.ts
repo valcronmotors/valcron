@@ -4,6 +4,11 @@ import {
   resolvePublicPriceMode,
 } from "@/lib/public-price-mode";
 import { landedEstimateLabel, validatedLandedEstimate } from "@/lib/landed-estimate";
+import {
+  auctionPriceLabel,
+  auctionProviderFromPlatform,
+  auctionPublicPriceUsd,
+} from "@/lib/auction-price";
 import { DEFAULT_TASA_USD_DOP } from "@/lib/fx";
 import { sortVehiclePhotos, vehicleImageAdminPath, vehicleImagePublicPath } from "@/lib/storage";
 import { buildVehicleSlug } from "@/lib/vehicles/vehicle-slugs";
@@ -80,9 +85,14 @@ export function toPublicVehicle(row: VehicleRow): PublicVehicle {
   const listingKind = listingKindFromAvailability(availability);
   const images = photosToImages(row.vehicle_photos, title);
   const landed = validatedLandedEstimate(row);
-  const price = auctionOrigin ? landed : numberOrNull(row.price);
+  const purchaseEstimate = auctionOrigin ? numberOrNull(row.auction_purchase_estimate_usd) : null;
+  const auctionPrice =
+    purchaseEstimate != null
+      ? auctionPublicPriceUsd(purchaseEstimate, auctionProviderFromPlatform(auctionHints?.platform))
+      : null;
+  const price = auctionOrigin ? (auctionPrice ?? landed) : numberOrNull(row.price);
   const currency = auctionOrigin ? "USD" : row.currency === "DOP" ? "DOP" : "USD";
-  const mode = auctionOrigin ? (landed != null ? "from" : "contact") : resolvePublicPriceMode(row.source_type, row.public_price_mode);
+  const mode = auctionOrigin ? (price != null ? "from" : "contact") : resolvePublicPriceMode(row.source_type, row.public_price_mode);
   const lotNumber = auctionOrigin ? cleanText(row.stock_number) : null;
   const tasaUsdDop = DEFAULT_TASA_USD_DOP;
   const usdPrice =
@@ -147,6 +157,8 @@ export function toPublicVehicle(row: VehicleRow): PublicVehicle {
       currency,
       downPaymentDop: !auctionOrigin ? numberOrNull(row.down_payment_dop) : null,
       landedEstimateUsd: landed,
+      auctionPurchaseEstimateUsd: purchaseEstimate,
+      auctionPriceUsd: auctionPrice,
       publicPrice: priceVisible ? price : null,
       rdPrice: numericRd,
       usdPrice: numericUsd,
@@ -154,7 +166,7 @@ export function toPublicVehicle(row: VehicleRow): PublicVehicle {
       buyNowPrice: auctionOrigin && mode === "fixed" ? price : null,
       estimatedPrice: mode === "estimated" && priceVisible ? price : null,
       priceVisible,
-      priceLabel: landed != null ? landedEstimateLabel(landed) : formatCustomerFacingPrice(mode, price, currency, {
+      priceLabel: auctionPrice != null ? auctionPriceLabel(auctionPrice) : landed != null ? landedEstimateLabel(landed) : formatCustomerFacingPrice(mode, price, currency, {
         auctionBuyNow: auctionOrigin && mode === "fixed",
       }),
       kind: auctionOrigin && mode === "fixed" ? "buy_now" : publicPriceKind(mode),
@@ -225,7 +237,7 @@ export function toAdminPreviewVehicle(row: VehicleRow): PublicVehicle {
 
 export const PUBLIC_VEHICLE_LIST_SELECT = `
   id, stock_number, vin, year, make, model, trim, mileage, mileage_unit,
-  price, currency, public_price_mode, down_payment_dop, landed_estimate_usd, landed_estimate_validated, location, source_type, status, featured, published,
+  price, currency, public_price_mode, down_payment_dop, landed_estimate_usd, landed_estimate_validated, auction_purchase_estimate_usd, location, source_type, status, featured, published,
   published_at, created_at, updated_at, condition, title_status, description
 `.replace(/\s+/g, " ").trim();
 

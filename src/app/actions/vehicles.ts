@@ -4,6 +4,7 @@ import { revalidatePath, updateTag } from "next/cache";
 import { publicActionError } from "@/lib/action-errors";
 import { requireAdmin } from "@/lib/auth";
 import { parseLandedEstimate } from "@/lib/landed-estimate";
+import { parseAuctionPurchaseEstimate } from "@/lib/auction-price";
 import {
   canPublishVehicleListing,
   publicationBlockers,
@@ -304,7 +305,21 @@ export async function saveVehicleLandedEstimate(formData: FormData): Promise<Veh
   if (error || !data) return { error: publicActionError(error, "No se pudo guardar el estimado de esta subasta.") };
   revalidateVehicles(id);
   revalidatePath("/admin/subastas/[id]", "page");
-  return { error: null, success: parsed.data.landed_estimate_validated ? "Estimado validado: se mostrará como Desde, puesto en RD." : "Guardado sin validar: el público verá Precio a consultar." };
+  return { error: null, success: parsed.data.landed_estimate_validated ? "Estimado validado: se mostrará como precio estimado." : "Guardado sin validar: el público verá Precio a consultar." };
+}
+
+export async function saveVehicleAuctionPurchaseEstimate(formData: FormData): Promise<VehicleActionState> {
+  await requireAdmin();
+  const id = required(formData, "id");
+  if (!UUID_RE.test(id)) return { error: "Vehículo inválido." };
+  const parsed = parseAuctionPurchaseEstimate(String(formData.get("auction_purchase_estimate_usd") ?? ""));
+  if (!parsed.data) return { error: parsed.error };
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("vehicles").update(parsed.data).eq("id", id).eq("source_type", "other").select("id").maybeSingle();
+  if (error || !data) return { error: publicActionError(error, "No se pudo guardar la compra estimada de esta subasta.") };
+  revalidateVehicles(id);
+  revalidatePath("/admin/subastas/[id]", "page");
+  return { error: null, success: parsed.data.auction_purchase_estimate_usd != null ? "Compra estimada guardada: el precio público será compra + fees de subasta + US$1,500." : "Compra estimada eliminada: la ficha vuelve al precio anterior." };
 }
 
 export async function createVehicle(
