@@ -13,8 +13,8 @@ import type { PublicVehicle } from "@/types/vehicle";
 
 /**
  * Home — Inventario destacado (orden de Gabriel, 2026-11-27): lista limpia
- * estilo Deluxe, 10 vehículos de subasta bajando, tarjeta simple con foto,
- * nombre, precio solo (sin etiqueta) y «Ver detalles».
+ * estilo Deluxe, 12 vehículos de subasta en 3 columnas × 4 filas, tarjeta
+ * simple con foto, nombre, precio solo (sin etiqueta) y «Ver detalles».
  */
 export function HomeFeaturedList({
   vehicles,
@@ -24,7 +24,7 @@ export function HomeFeaturedList({
   error: string | null;
 }) {
   if (error) return null;
-  const items = filterAuctionCatalogVehicles(vehicles).slice(0, 10);
+  const items = filterAuctionCatalogVehicles(vehicles).slice(0, 12);
   if (items.length === 0) return null;
 
   return (
@@ -39,7 +39,7 @@ export function HomeFeaturedList({
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((vehicle) => (
             <FeaturedCard key={vehicle.id} vehicle={vehicle} />
           ))}

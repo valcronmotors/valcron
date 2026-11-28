@@ -37,8 +37,8 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  // Inventario destacado de la home: 10 vehículos de subasta en lista limpia.
-  const auctions = await loadAuctionCatalogVehicles({ limit: 10 });
+  // Inventario destacado de la home: 12 vehículos de subasta (3 columnas × 4).
+  const auctions = await loadAuctionCatalogVehicles({ limit: 12 });
 
   return (
     <>
