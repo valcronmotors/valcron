@@ -110,7 +110,7 @@ export function AdminMediaPicker({
           data-testid="photo-files-input"
           aria-describedby={`${id}-file-hint`}
         />
-        <p id={`${id}-file-hint`} className={`mt-2 text-xs ${hintClass}`}>{auctionUnlimited ? "Selecciona todas las fotos de Copart. Se conserva el orden y la primera es la portada." : "Selecciona hasta 5 imágenes. El orden de selección se conserva; la primera se usa como portada."}</p>
+        <p id={`${id}-file-hint`} className={`mt-2 text-xs ${hintClass}`}>{auctionUnlimited ? "Selecciona todas las fotos de Copart. Se conserva el orden y la primera es la portada." : "Selecciona hasta 20 imágenes. El orden de selección se conserva; la primera se usa como portada."}</p>
       </div>
 
       {/* Camera only — separate input */}

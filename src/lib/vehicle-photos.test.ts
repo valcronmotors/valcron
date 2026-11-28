@@ -14,13 +14,13 @@ describe("multi-photo upload", () => {
     prepare.mockImplementation(async (input: File) => input);
     upload.mockResolvedValue({ error: null });
   });
-  it("uploads at most five files individually with their normalized content types", async () => {
-    const files = Array.from({ length: 10 }, (_, i) => file(`${i}.png`));
+  it("uploads at most twenty files individually with their normalized content types", async () => {
+    const files = Array.from({ length: 25 }, (_, i) => file(`${i}.png`));
     const result = await uploadVehiclePhotos(files, { vehicleId, currentCount: 0 });
     expect(result.error).toBeNull();
-    expect(result.paths).toHaveLength(5);
-    expect(result.fileIndexes).toEqual([0, 1, 2, 3, 4]);
-    expect(upload).toHaveBeenCalledTimes(5);
+    expect(result.paths).toHaveLength(20);
+    expect(result.fileIndexes).toEqual(Array.from({ length: 20 }, (_, i) => i));
+    expect(upload).toHaveBeenCalledTimes(20);
     expect(upload.mock.calls.every((call) => call[2].contentType === "image/png")).toBe(true);
   });
   it("stores converted HEIC as JPEG with the matching filename and MIME", async () => {
