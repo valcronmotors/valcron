@@ -1,5 +1,5 @@
 import { landedEstimateLabel } from "@/lib/landed-estimate";
-import { AUCTION_PRICE_LABEL, auctionPriceLabel } from "@/lib/auction-price";
+import { auctionPriceLabel } from "@/lib/auction-price";
 import {
   formatCustomerFacingPrice,
   resolvePublicPriceMode,
@@ -112,7 +112,7 @@ export function displayVehiclePrice(
   currency: VehicleCurrency,
 ): { label: string; primary: string; secondary?: string } {
   if (vehicle.pricing.auctionPriceUsd && vehicle.pricing.auctionPriceUsd > 0) {
-    return { label: AUCTION_PRICE_LABEL, primary: `US$${formatDecimal(vehicle.pricing.auctionPriceUsd, vehicle.pricing.auctionPriceUsd % 1 ? 2 : 0)}`, secondary: undefined };
+    return { label: "", primary: `US$${formatDecimal(vehicle.pricing.auctionPriceUsd, vehicle.pricing.auctionPriceUsd % 1 ? 2 : 0)}`, secondary: undefined };
   }
   if (vehicle.pricing.landedEstimateUsd && vehicle.pricing.landedEstimateUsd > 0) {
     return { label: "Precio", primary: `US$${formatDecimal(vehicle.pricing.landedEstimateUsd, vehicle.pricing.landedEstimateUsd % 1 ? 2 : 0)}`, secondary: undefined };

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { HomeInventoryTabs } from "@/components/home/HomeInventoryTabs";
+import { HomeFeaturedList } from "@/components/home/HomeFeaturedList";
 import { HomeFinalCta } from "@/components/home/HomeFinalCta";
 import { HomeFinancingTeaser } from "@/components/home/HomeFinancingTeaser";
 import { HomeTrust } from "@/components/home/HomeTrust";
@@ -7,10 +7,7 @@ import { HomeImport } from "@/components/home/HomeImport";
 import { HomeHero } from "@/components/home/HomeHero";
 import { HomeBrandCarousel } from "@/components/home/HomeBrandCarousel";
 import { HomeModelSpotlight } from "@/components/home/HomeModelSpotlight";
-import {
-  loadAuctionCatalogVehicles,
-  loadLocalStockVehicles,
-} from "@/lib/public-inventory";
+import { loadAuctionCatalogVehicles } from "@/lib/public-inventory";
 import { SITE, autoDealerJsonLd } from "@/lib/site";
 import { JsonLd } from "@/components/seo/JsonLd";
 
@@ -40,11 +37,8 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [inventory, auctions] = await Promise.all([
-    loadLocalStockVehicles(),
-    // La sección de vehículos de la home muestra hasta 30 vehículos (los más recientes).
-    loadAuctionCatalogVehicles({ limit: 30 }),
-  ]);
+  // Inventario destacado de la home: 10 vehículos de subasta en lista limpia.
+  const auctions = await loadAuctionCatalogVehicles({ limit: 10 });
 
   return (
     <>
@@ -52,12 +46,7 @@ export default async function Home() {
       <main>
         <HomeHero />
         <HomeBrandCarousel />
-        <HomeInventoryTabs
-          vehicles={inventory.data}
-          auctions={auctions.data}
-          inventoryError={inventory.error}
-          auctionError={auctions.error}
-        />
+        <HomeFeaturedList vehicles={auctions.data} error={auctions.error} />
         <HomeImport />
         <HomeModelSpotlight />
         <HomeFinancingTeaser />

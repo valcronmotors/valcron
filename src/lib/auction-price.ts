@@ -9,8 +9,6 @@ import { formatDecimal } from "@/lib/money";
  */
 export const AUCTION_PROFIT_USD = 1500;
 
-export const AUCTION_PRICE_LABEL = "Precio estimado en subasta (incluye fees de subasta)";
-
 export const AUCTION_PRICE_NOTE =
   "No incluye flete, impuestos, primera placa ni gestión de importación. Esos costos se cotizan aparte por WhatsApp.";
 
@@ -36,8 +34,9 @@ export function auctionPublicPriceUsd(
   return Math.round(purchase + auctionFeesTotalUsd(purchase, provider) + AUCTION_PROFIT_USD);
 }
 
+/** Precio público formateado, sin etiqueta (orden de Gabriel, 2026-11-27: el precio sale solo). */
 export function auctionPriceLabel(amount: number) {
-  return `${AUCTION_PRICE_LABEL}: US$${formatDecimal(amount, amount % 1 ? 2 : 0)}`;
+  return `US$${formatDecimal(amount, amount % 1 ? 2 : 0)}`;
 }
 
 export function parseAuctionPurchaseEstimate(raw: string) {

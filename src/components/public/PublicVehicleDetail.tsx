@@ -90,10 +90,12 @@ export function PublicVehicleDetail({
               </p>
             ) : null}
             <h1 className="mt-1 break-words text-3xl font-bold tracking-tight">{title}</h1>
-            <p className="mt-6 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8a8d91]">
-              {price.label}
-            </p>
-            <p className="mt-1 text-3xl font-bold tracking-tight">{price.primary}</p>
+            {price.label ? (
+              <p className="mt-6 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8a8d91]">
+                {price.label}
+              </p>
+            ) : null}
+            <p className={`${price.label ? "mt-1" : "mt-6"} text-3xl font-bold tracking-tight`}>{price.primary}</p>
             {auctionFacts ? <p className="mt-2 text-xs text-[#676a70]">{auctionFacts}</p> : null}
             <p className="mt-3 text-xs leading-relaxed text-[#676a70]">
               {hasAuctionPrice
