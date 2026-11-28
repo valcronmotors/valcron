@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { FinanceSimulator } from "@/components/public/FinanceSimulator";
 import { useDisplayCurrency } from "@/components/public/CurrencyProvider";
 import { VehiclePhoto } from "@/components/shared/VehiclePhoto";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
@@ -48,10 +47,6 @@ export function VehicleCard({
   const showBadge = Boolean(badge?.label);
   const whatsapp = buildVehicleWhatsAppUrl(vehicle);
   const primaryLabel = actionLabel ?? "Ver detalles";
-  const canSimulate =
-    vehicle.listingKind === "dealer" &&
-    vehicle.availability !== "sold" &&
-    (vehicle.pricing.usdPrice ?? 0) > 0;
 
   return (
     <article
@@ -71,7 +66,11 @@ export function VehicleCard({
           src={cover}
           alt={vehicleImageAlt(vehicle)}
           sizes="(min-width: 1600px) 20vw, (min-width: 1280px) 24vw, (min-width: 1024px) 31vw, (min-width: 768px) 45vw, 96vw"
-          className="object-cover object-center"
+          className={
+            vehicle.listingKind === "dealer"
+              ? "object-contain object-center"
+              : "object-cover object-center"
+          }
         />
         {showBadge ? (
           <span
@@ -143,18 +142,6 @@ export function VehicleCard({
             Lote {vehicle.auction.lotNumber}
           </p>
         ) : null}
-        {canSimulate ? (
-          <div className="mt-3">
-            <FinanceSimulator
-              key={vehicle.id}
-              priceUsd={vehicle.pricing.usdPrice!}
-              downPaymentDop={vehicle.pricing.downPaymentDop}
-              vehicleTitle={[year, title, trim].filter(Boolean).join(" ")}
-              fixedPrice
-              ctaLabel="Cotizar este vehículo"
-            />
-          </div>
-        ) : null}
         {specs.length ? (
           <p
             className={`mt-2 text-[11px] leading-5 ${light ? "text-[#8a8d91]" : "text-[#a8abb0]"}`}
@@ -174,24 +161,22 @@ export function VehicleCard({
           >
             {primaryLabel}
           </Link>
-          {!canSimulate ? (
-            <a
-              href={whatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={
-                light
-                  ? "inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#d8dbe0] bg-white px-4 text-sm font-semibold text-[#08090b] transition hover:border-[#08090b]"
-                  : "inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/30 px-4 text-sm font-semibold text-white transition hover:border-white"
-              }
-            >
-              <WhatsAppIcon className="h-4 w-4" />
-              {vehicle.listingKind === "auction" ||
-              vehicle.availability === "auction"
-                ? "Cotiza por WhatsApp"
-                : "Cotizar este vehículo"}
-            </a>
-          ) : null}
+          <a
+            href={whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={
+              light
+                ? "inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#d8dbe0] bg-white px-4 text-sm font-semibold text-[#08090b] transition hover:border-[#08090b]"
+                : "inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/30 px-4 text-sm font-semibold text-white transition hover:border-white"
+            }
+          >
+            <WhatsAppIcon className="h-4 w-4" />
+            {vehicle.listingKind === "auction" ||
+            vehicle.availability === "auction"
+              ? "Cotiza por WhatsApp"
+              : "Cotizar este vehículo"}
+          </a>
         </div>
       </div>
     </article>
